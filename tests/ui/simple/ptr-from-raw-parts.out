@@ -2,14 +2,17 @@
 // Final ULLBC:
 
 // Full name: core::ptr::metadata::from_raw_parts::<[u32], [u32; 2usize]>
-pub fn from_raw_parts::<[u32], [u32; 2usize]>(data_pointer_1: *const [u32; 2usize], metadata_2: usize) -> *const [u32]
+pub fn from_raw_parts::<[u32], [u32; 2usize]>(data_pointer: *const [u32; 2usize], metadata: usize) -> *const [u32]
 {
     let _0: *const [u32]; // return
-    let data_pointer_1: *const [u32; 2usize]; // arg #1
-    let metadata_2: usize; // arg #2
+    let data_pointer: *const [u32; 2usize]; // arg #1
+    let metadata: usize; // arg #2
 
     bb0: {
-        _0 = *const (copy data_pointer_1, copy metadata_2);
+        storage_live(_0);
+        _0 = *const (copy data_pointer, copy metadata);
+        storage_dead(metadata);
+        storage_dead(data_pointer);
         return;
     }
 }
@@ -21,17 +24,18 @@ trait FakeTrait
 fn main()
 {
     let _0: (); // return
-    let a_1: [u32; 2usize]; // local
+    let a: [u32; 2usize]; // local
     let _2: *const [u32]; // anonymous local
     let _3: *const [u32; 2usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(a_1);
-        a_1 = [const 1u32; 2usize];
+        storage_live(a);
+        a = [const 1u32; 2usize];
         storage_live(_2);
         storage_live(_3);
-        _3 = &raw const a_1;
+        _3 = &raw const a;
         _2 = from_raw_parts::<[u32], [u32; 2usize]>(move _3, const 2usize) -> bb1 (unwind: bb2);
     }
 
@@ -39,7 +43,7 @@ fn main()
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
-        storage_dead(a_1);
+        storage_dead(a);
         return;
     }
 

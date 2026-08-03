@@ -25,14 +25,17 @@ impl "impl_Trait_for_unit" Trait for () {
 }
 
 // Full name: test_crate::{impl Trait for ()}::method1
-fn method1(self_1: (), _other_2: &'_ u32) -> bool
+fn method1(self: (), _other: &'_ u32) -> bool
 {
     let _0: bool; // return
-    let self_1: (); // arg #1
-    let _other_2: &'_ u32; // arg #2
+    let self: (); // arg #1
+    let _other: &'_ u32; // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = const true;
+        storage_dead(_other);
+        storage_dead(self);
         return;
     }
 }
@@ -46,14 +49,17 @@ impl<'a> MyCompare<&'_ ()> for &'_ () {
 }
 
 // Full name: test_crate::{impl MyCompare<&'_ ()> for &'_ ()}::compare::<'_>
-fn compare::<'_>(self_1: &'_ (), _other_2: &'_ ()) -> bool
+fn compare::<'_>(self: &'_ (), _other: &'_ ()) -> bool
 {
     let _0: bool; // return
-    let self_1: &'_ (); // arg #1
-    let _other_2: &'_ (); // arg #2
+    let self: &'_ (); // arg #1
+    let _other: &'_ (); // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = const true;
+        storage_dead(_other);
+        storage_dead(self);
         return;
     }
 }
@@ -78,6 +84,7 @@ fn main()
     let _14: &'_ (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
@@ -117,6 +124,9 @@ fn main()
     }
 
     bb2: {
+        storage_dead(_11);
+        storage_dead(_10);
+        storage_dead(_9);
         unwind_continue;
     }
 
@@ -126,10 +136,16 @@ fn main()
         storage_dead(_8);
         storage_dead(_5);
         _0 = ();
+        storage_dead(_11);
+        storage_dead(_10);
+        storage_dead(_9);
         return;
     }
 
     bb4: {
+        storage_dead(_11);
+        storage_dead(_10);
+        storage_dead(_9);
         unwind_continue;
     }
 }
@@ -143,23 +159,26 @@ impl "impl_Foo_for_unit" Foo for () {
 }
 
 // Full name: test_crate::{impl Foo for ()}::foo
-fn foo(x_1: &'_ (), y_2: &'_ ()) -> &'_ ()
+fn foo(x: &'_ (), y: &'_ ()) -> &'_ ()
 {
     let _0: &'_ (); // return
-    let x_1: &'_ (); // arg #1
-    let y_2: &'_ (); // arg #2
+    let x: &'_ (); // arg #1
+    let y: &'_ (); // arg #2
 
     bb0: {
-        _0 = copy x_1;
+        storage_live(_0);
+        _0 = copy x;
+        storage_dead(y);
+        storage_dead(x);
         return;
     }
 }
 
 // Full name: test_crate::call_foo
-fn call_foo(x_1: &'_ ()) -> &'_ ()
+fn call_foo(x: &'_ ()) -> &'_ ()
 {
     let _0: &'_ (); // return
-    let x_1: &'_ (); // arg #1
+    let x: &'_ (); // arg #1
     let _2: &'_ (); // anonymous local
     let _3: &'_ (); // anonymous local
     let _4: &'_ (); // anonymous local
@@ -168,10 +187,11 @@ fn call_foo(x_1: &'_ ()) -> &'_ ()
     let _7: &'_ (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_6);
         storage_live(_2);
         storage_live(_3);
-        _3 = &(*x_1);
+        _3 = &(*x);
         storage_live(_4);
         storage_live(_5);
         storage_live(_7);
@@ -188,10 +208,14 @@ fn call_foo(x_1: &'_ ()) -> &'_ ()
         storage_dead(_3);
         storage_dead(_5);
         storage_dead(_2);
+        storage_dead(_6);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(_6);
+        storage_dead(x);
         unwind_continue;
     }
 }

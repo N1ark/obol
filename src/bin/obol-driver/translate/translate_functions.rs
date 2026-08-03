@@ -91,6 +91,7 @@ impl ItemTransCtx<'_, '_> {
             return Ok(FunSig {
                 is_unsafe: false,
                 abi: Abi::rust(),
+                is_variadic: false,
                 inputs: vec![],
                 output,
             });
@@ -109,6 +110,7 @@ impl ItemTransCtx<'_, '_> {
                     return Ok(FunSig {
                         is_unsafe: false,
                         abi: Abi::rust(),
+                        is_variadic: false,
                         inputs: vec![],
                         output,
                     });
@@ -143,6 +145,7 @@ impl ItemTransCtx<'_, '_> {
         Ok(FunSig {
             inputs,
             output,
+            is_variadic: instance_abi.c_variadic,
             // TODO: not sure how to get those
             is_unsafe: false,
             abi: Abi::rust(),

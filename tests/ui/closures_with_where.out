@@ -23,42 +23,46 @@ pub fn from_residual::<[[u8; 1usize]; 1usize]>(_1: NeverShortCircuitResidual) ->
     let _1: NeverShortCircuitResidual; // arg #1
 
     bb0: {
+        storage_live(_0);
         undefined_behavior;
     }
 }
 
 // Full name: core::ops::try_trait::{impl Try for NeverShortCircuit::<_>}::from_output::<[[u8; 1usize]; 1usize]>
-pub fn from_output::<[[u8; 1usize]; 1usize]>(x_1: [[u8; 1usize]; 1usize]) -> NeverShortCircuit::<[[u8; 1usize]; 1usize]>
+pub fn from_output::<[[u8; 1usize]; 1usize]>(x: [[u8; 1usize]; 1usize]) -> NeverShortCircuit::<[[u8; 1usize]; 1usize]>
 {
     let _0: NeverShortCircuit::<[[u8; 1usize]; 1usize]>; // return
-    let x_1: [[u8; 1usize]; 1usize]; // arg #1
+    let x: [[u8; 1usize]; 1usize]; // arg #1
 
     bb0: {
-        _0 = NeverShortCircuit::<[[u8; 1usize]; 1usize]> { 0: copy x_1 };
+        storage_live(_0);
+        _0 = NeverShortCircuit::<[[u8; 1usize]; 1usize]> { 0: copy x };
+        storage_dead(x);
         return;
     }
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<NeverShortCircuitResidual, ()>
+#[diagnostic_item("ControlFlow")]
 pub enum ControlFlow::<NeverShortCircuitResidual, ()> {
   Continue(0: ()),
   Break(0: NeverShortCircuitResidual),
 }
 
 // Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 1usize]>
-#[lang_item("maybe_dangling")]
+#[lang_item(MaybeDangling)]
 pub struct MaybeDangling::<[u8; 1usize]> {
   0: [u8; 1usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
-#[lang_item("manually_drop")]
+#[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 1usize]> {
   value: MaybeDangling::<[u8; 1usize]>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 1usize]>
-#[lang_item("maybe_uninit")]
+#[lang_item(MaybeUninit)]
 pub union MaybeUninit::<[u8; 1usize]> {
   uninit: (),
   value: ManuallyDrop::<[u8; 1usize]>,
@@ -68,22 +72,30 @@ pub union MaybeUninit::<[u8; 1usize]> {
 pub fn assert_inhabited::<[[u8; 1usize]; 1usize]>()
 = <intrinsic:assert_inhabited>
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::fmt::Error
 pub struct Error {}
 
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: FakeTrait
@@ -97,6 +109,7 @@ pub struct FormattingOptions {
 }
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
@@ -109,32 +122,29 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::ptr::non_null::NonNull::<str>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -143,14 +153,14 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -163,16 +173,21 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message_1: &'_ Arguments::<'_>, location_2: &'_ Location::<'_>, can_unwind_3: bool, force_no_backtrace_4: bool) -> PanicInfo::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
     let _0: PanicInfo::<'_>; // return
-    let message_1: &'_ Arguments::<'_>; // arg #1
-    let location_2: &'_ Location::<'_>; // arg #2
-    let can_unwind_3: bool; // arg #3
-    let force_no_backtrace_4: bool; // arg #4
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
-        _0 = PanicInfo::<'_> { message: copy message_1, location: copy location_2, can_unwind: copy can_unwind_3, force_no_backtrace: copy force_no_backtrace_4 };
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        storage_dead(force_no_backtrace);
+        storage_dead(can_unwind);
+        storage_dead(location);
+        storage_dead(message);
         return;
     }
 }
@@ -187,6 +202,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     let _0: &'_ Location::<'_>; // return
 
     bb0: {
+        storage_live(_0);
         _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
@@ -204,14 +220,14 @@ pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::panicking::panic_fmt
-#[lang_item("panic_fmt")]
-pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
+    let fmt: Arguments::<'_>; // arg #1
     let _2: bool; // anonymous local
     let _3: !; // anonymous local
-    let pi_4: PanicInfo::<'_>; // local
+    let pi: PanicInfo::<'_>; // local
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
@@ -220,6 +236,7 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _2 = const false;
         if move _2 -> bb1 else -> bb2;
@@ -232,10 +249,10 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb2: {
         storage_dead(_2);
-        storage_live(pi_4);
+        storage_live(pi);
         storage_live(_5);
         storage_live(_6);
-        _6 = &fmt_1;
+        _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
         storage_live(_8);
@@ -252,10 +269,15 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb5: {
         _7 = &(*_8);
-        pi_4 = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
     bb6: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -266,12 +288,17 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
         storage_dead(_6);
         storage_live(_9);
         storage_live(_10);
-        _10 = &pi_4;
+        _10 = &pi;
         _9 = &(*_10);
         _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
     }
 
     bb8: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -280,19 +307,25 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     }
 
     bb10: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
-fn compiletime(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
+fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
-    let force_no_backtrace_2: bool; // arg #2
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
 
     bb0: {
-        _0 = panic_fmt(move fmt_1) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -300,26 +333,29 @@ fn compiletime(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
     }
 
     bb2: {
+        storage_dead(force_no_backtrace);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
-pub fn panic_nounwind_fmt(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
+pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
-    let force_no_backtrace_2: bool; // arg #2
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
     let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy fmt_1;
+        _4 = copy fmt;
         storage_live(_5);
-        _5 = copy force_no_backtrace_2;
+        _5 = copy force_no_backtrace;
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
@@ -331,18 +367,21 @@ pub fn panic_nounwind_fmt(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) ->
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(force_no_backtrace);
+        storage_dead(fmt);
         unwind_terminate;
     }
 }
 
 // Full name: core::slice::index::{impl SliceIndex<[T]> for usize}::get_unchecked_mut::precondition_check
-fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this_1: usize, len_2: usize)
+fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this: usize, len: usize)
 {
     let _0: (); // return
-    let this_1: usize; // arg #1
-    let len_2: usize; // arg #2
+    let this: usize; // arg #1
+    let len: usize; // arg #2
     let _3: bool; // anonymous local
-    let msg_4: &'_ str; // local
+    let msg: &'_ str; // local
     let _5: !; // anonymous local
     let _6: Arguments::<'_>; // anonymous local
     let _7: NonNull::<u8>; // anonymous local
@@ -355,26 +394,32 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this_1
     let _14: &'_ [u8]; // anonymous local
 
     bb0: {
-        storage_live(msg_4);
+        storage_live(_0);
+        storage_live(msg);
         storage_live(_5);
         _0 = ();
         storage_live(_3);
-        _3 = copy this_1 < copy len_2;
+        _3 = copy this < copy len;
         if move _3 -> bb1 else -> bb2;
     }
 
     bb1: {
         storage_dead(_3);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(msg);
+        storage_dead(len);
+        storage_dead(this);
         return;
     }
 
     bb2: {
-        msg_4 = const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        msg = const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
         storage_live(_13);
-        _13 = &raw const (*msg_4) with_metadata(copy msg_4.metadata);
+        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
         _8 = cast<*const str, *const u8>(copy _13);
         storage_dead(_13);
         _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
@@ -409,15 +454,15 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this_1
 }
 
 // Full name: core::slice::index::{impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check
-fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(start_1: usize, end_2: usize, len_3: usize)
+fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(start: usize, end: usize, len: usize)
 {
     let _0: (); // return
-    let start_1: usize; // arg #1
-    let end_2: usize; // arg #2
-    let len_3: usize; // arg #3
+    let start: usize; // arg #1
+    let end: usize; // arg #2
+    let len: usize; // arg #3
     let _4: bool; // anonymous local
     let _5: bool; // anonymous local
-    let msg_6: &'_ str; // local
+    let msg: &'_ str; // local
     let _7: !; // anonymous local
     let _8: Arguments::<'_>; // anonymous local
     let _9: NonNull::<u8>; // anonymous local
@@ -430,27 +475,28 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
     let _16: &'_ [u8]; // anonymous local
 
     bb0: {
-        storage_live(msg_6);
+        storage_live(_0);
+        storage_live(msg);
         storage_live(_7);
         _0 = ();
         storage_live(_4);
-        _4 = copy end_2 >= copy start_1;
+        _4 = copy end >= copy start;
         if move _4 -> bb1 else -> bb2;
     }
 
     bb1: {
         storage_live(_5);
-        _5 = copy end_2 <= copy len_3;
+        _5 = copy end <= copy len;
         if move _5 -> bb3 else -> bb2;
     }
 
     bb2: {
-        msg_6 = const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the range is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        msg = const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the range is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_15);
-        _15 = &raw const (*msg_6) with_metadata(copy msg_6.metadata);
+        _15 = &raw const (*msg) with_metadata(copy msg.metadata);
         _10 = cast<*const str, *const u8>(copy _15);
         storage_dead(_15);
         _9 = transmute<*const u8, NonNull::<u8>>(copy _10);
@@ -478,6 +524,12 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
     bb3: {
         storage_dead(_5);
         storage_dead(_4);
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(msg);
+        storage_dead(len);
+        storage_dead(end);
+        storage_dead(start);
         return;
     }
 
@@ -491,14 +543,16 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
 }
 
 // Full name: core::ptr::drop_glue::<[[u8; 1usize]]>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<[[u8; 1usize]]>(_1: &'_ mut [[u8; 1usize]])
 {
     let _0: (); // return
     let _1: &'_ mut [[u8; 1usize]]; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -516,30 +570,31 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
     let self_1: &'_ mut Guard::<'_, [u8; 1usize]>; // arg #1
     let _2: (); // anonymous local
     let self_3: &'_ mut [MaybeUninit::<[u8; 1usize]>]; // local
-    let index_4: usize; // local
+    let index: usize; // local
     let self_5: &'_ mut [MaybeUninit::<[u8; 1usize]>]; // local
     let _6: *mut [MaybeUninit::<[u8; 1usize]>]; // anonymous local
-    let slice_7: *mut [MaybeUninit::<[u8; 1usize]>]; // local
+    let slice: *mut [MaybeUninit::<[u8; 1usize]>]; // local
     let _8: (); // anonymous local
     let _9: usize; // anonymous local
     let _10: *mut MaybeUninit::<[u8; 1usize]>; // anonymous local
-    let to_drop_11: *mut [[u8; 1usize]]; // local
+    let to_drop: *mut [[u8; 1usize]]; // local
     let _12: *mut [MaybeUninit::<[u8; 1usize]>]; // anonymous local
     let _13: &'_ mut [[u8; 1usize]]; // anonymous local
     let _14: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        storage_live(index_4);
+        storage_live(index);
         storage_live(self_5);
         storage_live(_8);
         _0 = ();
         storage_live(self_3);
         self_5 = copy ((*self_1)).array_mut;
-        index_4 = copy ((*self_1)).initialized;
+        index = copy ((*self_1)).initialized;
         storage_live(_6);
-        storage_live(slice_7);
-        slice_7 = &raw mut (*self_5) with_metadata(copy self_5.metadata);
+        storage_live(slice);
+        slice = &raw mut (*self_5) with_metadata(copy self_5.metadata);
         storage_live(_14);
         _14 = ub_checks<bool>;
         if move _14 -> bb1 else -> bb2;
@@ -548,19 +603,19 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
     bb1: {
         storage_live(_9);
         _9 = copy self_5.metadata;
-        _8 = {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(const 0usize, copy index_4, move _9) -> bb3 (unwind: bb4);
+        _8 = {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(const 0usize, copy index, move _9) -> bb3 (unwind: bb4);
     }
 
     bb2: {
         storage_live(_10);
-        _10 = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut MaybeUninit::<[u8; 1usize]>>(copy slice_7);
-        _6 = *mut  (copy _10, copy index_4);
+        _10 = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut MaybeUninit::<[u8; 1usize]>>(copy slice);
+        _6 = *mut  (copy _10, copy index);
         storage_dead(_10);
-        storage_dead(slice_7);
+        storage_dead(slice);
         self_3 = &mut (*_6) with_metadata(copy _6.metadata);
         storage_dead(_6);
-        storage_live(to_drop_11);
-        switch copy index_4 -> 0usize: bb5, otherwise: bb6;
+        storage_live(to_drop);
+        switch copy index -> 0usize: bb5, otherwise: bb6;
     }
 
     bb3: {
@@ -573,17 +628,23 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
     }
 
     bb5: {
-        storage_dead(to_drop_11);
+        storage_dead(to_drop);
         storage_dead(self_3);
+        storage_dead(_14);
+        storage_dead(_8);
+        storage_dead(self_5);
+        storage_dead(index);
+        storage_dead(_2);
+        storage_dead(self_1);
         return;
     }
 
     bb6: {
         storage_live(_12);
         _12 = &raw mut (*self_3) with_metadata(copy self_3.metadata);
-        to_drop_11 = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut [[u8; 1usize]]>(copy _12);
+        to_drop = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut [[u8; 1usize]]>(copy _12);
         storage_live(_13);
-        _13 = &mut (*to_drop_11) with_metadata(copy to_drop_11.metadata);
+        _13 = &mut (*to_drop) with_metadata(copy to_drop.metadata);
         _2 = drop_glue::<[[u8; 1usize]]>(move _13) -> bb7 (unwind: bb8);
     }
 
@@ -594,12 +655,18 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
     }
 
     bb8: {
+        storage_dead(_14);
+        storage_dead(_8);
+        storage_dead(self_5);
+        storage_dead(index);
+        storage_dead(_2);
+        storage_dead(self_1);
         unwind_continue;
     }
 }
 
 // Full name: core::ptr::drop_glue::<Guard::<'_, [u8; 1usize]>>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<Guard::<'_, [u8; 1usize]>>(_1: &'_ mut Guard::<'_, [u8; 1usize]>)
 {
     let _0: (); // return
@@ -608,6 +675,7 @@ fn drop_glue::<Guard::<'_, [u8; 1usize]>>(_1: &'_ mut Guard::<'_, [u8; 1usize]>)
     let _3: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         _0 = ();
@@ -616,10 +684,16 @@ fn drop_glue::<Guard::<'_, [u8; 1usize]>>(_1: &'_ mut Guard::<'_, [u8; 1usize]>)
     }
 
     bb1: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -630,91 +704,104 @@ struct NeverShortCircuit::<[u8; 1usize]> {
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>
+#[diagnostic_item("ControlFlow")]
 pub enum ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]> {
   Continue(0: [u8; 1usize]),
   Break(0: NeverShortCircuitResidual),
 }
 
 // Full name: core::ops::try_trait::{impl Try for NeverShortCircuit::<_>}::branch::<[u8; 1usize]>
-pub fn branch::<[u8; 1usize]>(self_1: NeverShortCircuit::<[u8; 1usize]>) -> ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>
+pub fn branch::<[u8; 1usize]>(self: NeverShortCircuit::<[u8; 1usize]>) -> ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>
 {
     let _0: ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>; // return
-    let self_1: NeverShortCircuit::<[u8; 1usize]>; // arg #1
+    let self: NeverShortCircuit::<[u8; 1usize]>; // arg #1
     let _2: [u8; 1usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = move (self_1).0;
+        _2 = move (self).0;
         _0 = ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>::Continue { 0: move _2 };
         storage_dead(_2);
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::{impl Ops<K> for [u8; 1usize]}::of_usize::<0usize>
-fn of_usize::<0usize>(x_1: usize) -> [u8; 1usize]
+fn of_usize::<0usize>(x: usize) -> [u8; 1usize]
 {
     let _0: [u8; 1usize]; // return
-    let x_1: usize; // arg #1
+    let x: usize; // arg #1
     let _2: u8; // anonymous local
     let _3: usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = copy x_1;
+        _3 = copy x;
         _2 = cast<usize, u8>(move _3);
         storage_dead(_3);
         _0 = [move _2];
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 }
 
-fn test_crate::test::closure::<[u8; 1usize], i16, extern "rust-call" fn((usize,)) -> [u8; 1usize], (), 0usize>(_1: &'_ mut test_crate::test::closure::closure, spread_args_2: (usize,)) -> [u8; 1usize]
+fn test_crate::test::closure::<[u8; 1usize], i16, extern "rust-call" fn((usize,)) -> [u8; 1usize], (), 0usize>(_1: &'_ mut test_crate::test::closure::closure, spread_args: (usize,)) -> [u8; 1usize]
 {
     let _0: [u8; 1usize]; // return
     let _1: &'_ mut test_crate::test::closure::closure; // arg #1
-    let spread_args_2: (usize,); // arg #2
-    let i_3: usize; // local
+    let spread_args: (usize,); // arg #2
+    let i: usize; // local
     let _4: usize; // anonymous local
 
     bb0: {
-        storage_live(i_3);
-        i_3 = move spread_args_2.0;
+        storage_live(_0);
+        storage_live(i);
+        i = move spread_args.0;
         storage_live(_4);
-        _4 = copy i_3;
+        _4 = copy i;
         _0 = of_usize::<0usize>(move _4) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_4);
+        storage_dead(i);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(i);
+        storage_dead(spread_args);
+        storage_dead(_1);
         unwind_continue;
     }
 }
 
-fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<[u8; 1usize], usize, test_crate::test::closure::closure, i16, extern "rust-call" fn((usize,)) -> NeverShortCircuit::<[u8; 1usize]>, (test_crate::test::closure::closure,)>(_1: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, spread_args_2: (usize,)) -> NeverShortCircuit::<[u8; 1usize]>
+fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<[u8; 1usize], usize, test_crate::test::closure::closure, i16, extern "rust-call" fn((usize,)) -> NeverShortCircuit::<[u8; 1usize]>, (test_crate::test::closure::closure,)>(_1: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, spread_args: (usize,)) -> NeverShortCircuit::<[u8; 1usize]>
 {
     let _0: NeverShortCircuit::<[u8; 1usize]>; // return
     let _1: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // arg #1
-    let spread_args_2: (usize,); // arg #2
-    let a_3: usize; // local
+    let spread_args: (usize,); // arg #2
+    let a: usize; // local
     let _4: [u8; 1usize]; // anonymous local
     let _5: &'_ mut test_crate::test::closure::closure; // anonymous local
     let _6: (usize,); // anonymous local
 
     bb0: {
-        storage_live(a_3);
-        a_3 = move spread_args_2.0;
+        storage_live(_0);
+        storage_live(a);
+        a = move spread_args.0;
         storage_live(_4);
         storage_live(_5);
         _5 = &mut ((*_1)).upvar_0;
         storage_live(_6);
-        _6 = (copy a_3,);
+        _6 = (copy a,);
         _4 = test_crate::test::closure::<[u8; 1usize], i16, extern "rust-call" fn((usize,)) -> [u8; 1usize], (), 0usize>(move _5, move _6) -> bb1 (unwind: bb2);
     }
 
@@ -723,10 +810,16 @@ fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<[u8; 1u
         storage_dead(_5);
         _0 = NeverShortCircuit::<[u8; 1usize]> { 0: move _4 };
         storage_dead(_4);
+        storage_dead(a);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(a);
+        storage_dead(spread_args);
+        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -736,23 +829,25 @@ pub enum Infallible {
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<NeverShortCircuitResidual, Infallible>
+#[diagnostic_item("ControlFlow")]
 pub enum ControlFlow::<NeverShortCircuitResidual, Infallible> {
   Continue(0: Infallible),
   Break(0: NeverShortCircuitResidual),
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>
+#[diagnostic_item("ControlFlow")]
 pub enum ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]> {
   Continue(0: [u8; 1usize]),
   Break(0: ControlFlow::<NeverShortCircuitResidual, Infallible>),
 }
 
-fn core::num::{usize}::unchecked_add::precondition_check(lhs_1: usize, rhs_2: usize)
+fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
 {
     let _0: (); // return
-    let lhs_1: usize; // arg #1
-    let rhs_2: usize; // arg #2
-    let msg_3: &'_ str; // local
+    let lhs: usize; // arg #1
+    let rhs: usize; // arg #2
+    let msg: &'_ str; // local
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
@@ -769,15 +864,16 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs_1: usize, rhs_2: us
     let _17: &'_ [u8]; // anonymous local
 
     bb0: {
-        storage_live(msg_3);
+        storage_live(_0);
+        storage_live(msg);
         storage_live(_4);
         storage_live(_6);
         _0 = ();
         storage_live(_7);
         storage_live(_8);
-        _8 = cast<usize, u64>(copy lhs_1);
+        _8 = cast<usize, u64>(copy lhs);
         storage_live(_9);
-        _9 = cast<usize, u64>(copy rhs_2);
+        _9 = cast<usize, u64>(copy rhs);
         _7 = move _8 checked.+ move _9;
         storage_dead(_9);
         storage_dead(_8);
@@ -787,12 +883,12 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs_1: usize, rhs_2: us
     }
 
     bb1: {
-        msg_3 = const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        msg = const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_5);
         storage_live(_10);
         storage_live(_11);
         storage_live(_16);
-        _16 = &raw const (*msg_3) with_metadata(copy msg_3.metadata);
+        _16 = &raw const (*msg) with_metadata(copy msg.metadata);
         _11 = cast<*const str, *const u8>(copy _16);
         storage_dead(_16);
         _10 = transmute<*const u8, NonNull::<u8>>(copy _11);
@@ -818,6 +914,12 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs_1: usize, rhs_2: us
     }
 
     bb2: {
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(msg);
+        storage_dead(rhs);
+        storage_dead(lhs);
         return;
     }
 
@@ -834,13 +936,17 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs_1: usize, rhs_2: us
 pub fn assert_inhabited::<[u8; 1usize]>()
 = <intrinsic:assert_inhabited>
 
+// Full name: core::intrinsics::assume
+pub fn assume(b_1: bool)
+= <intrinsic:assume>
+
 // Full name: core::array::try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>
-fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>(buffer_1: &'_ mut [MaybeUninit::<[u8; 1usize]>], generator_2: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure) -> ControlFlow::<NeverShortCircuitResidual, ()>
+fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>(buffer: &'_ mut [MaybeUninit::<[u8; 1usize]>], generator: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure) -> ControlFlow::<NeverShortCircuitResidual, ()>
 {
     let _0: ControlFlow::<NeverShortCircuitResidual, ()>; // return
-    let buffer_1: &'_ mut [MaybeUninit::<[u8; 1usize]>]; // arg #1
-    let generator_2: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // arg #2
-    let guard_3: Guard::<'_, [u8; 1usize]>; // local
+    let buffer: &'_ mut [MaybeUninit::<[u8; 1usize]>]; // arg #1
+    let generator: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // arg #2
+    let guard: Guard::<'_, [u8; 1usize]>; // local
     let _4: bool; // anonymous local
     let _5: usize; // anonymous local
     let _6: usize; // anonymous local
@@ -850,14 +956,14 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
     let _10: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // anonymous local
     let _11: (usize,); // anonymous local
     let _12: usize; // anonymous local
-    let residual_13: ControlFlow::<NeverShortCircuitResidual, Infallible>; // local
-    let item_14: [u8; 1usize]; // local
+    let residual: ControlFlow::<NeverShortCircuitResidual, Infallible>; // local
+    let item: [u8; 1usize]; // local
     let _15: &'_ mut [MaybeUninit::<[u8; 1usize]>]; // anonymous local
     let _16: isize; // anonymous local
-    let c_17: [u8; 1usize]; // local
-    let b_18: NeverShortCircuitResidual; // local
+    let c: [u8; 1usize]; // local
+    let b: NeverShortCircuitResidual; // local
     let _19: ControlFlow::<NeverShortCircuitResidual, Infallible>; // anonymous local
-    let index_20: usize; // local
+    let index: usize; // local
     let _21: usize; // anonymous local
     let self_22: usize; // local
     let self_23: &'_ mut [MaybeUninit::<[u8; 1usize]>]; // local
@@ -877,12 +983,14 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
     let _37: *mut Guard::<'_, [u8; 1usize]>; // anonymous local
     let _38: (); // anonymous local
     let _39: bool; // anonymous local
-    let _40: *mut Guard::<'_, [u8; 1usize]>; // anonymous local
-    let _41: (); // anonymous local
-    let _42: bool; // anonymous local
+    let _40: (); // anonymous local
+    let _41: *mut Guard::<'_, [u8; 1usize]>; // anonymous local
+    let _42: (); // anonymous local
+    let _43: bool; // anonymous local
 
     bb0: {
-        storage_live(item_14);
+        storage_live(_0);
+        storage_live(item);
         storage_live(_15);
         storage_live(self_23);
         storage_live(_25);
@@ -892,17 +1000,18 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         storage_live(_38);
         storage_live(_40);
         storage_live(_41);
-        storage_live(guard_3);
-        guard_3 = Guard::<'_, [u8; 1usize]> { array_mut: copy buffer_1, initialized: const 0usize };
+        storage_live(_42);
+        storage_live(guard);
+        guard = Guard::<'_, [u8; 1usize]> { array_mut: copy buffer, initialized: const 0usize };
         goto bb1;
     }
 
     bb1: {
         storage_live(_4);
         storage_live(_5);
-        _5 = copy (guard_3).initialized;
+        _5 = copy (guard).initialized;
         storage_live(_6);
-        _15 = copy (guard_3).array_mut;
+        _15 = copy (guard).array_mut;
         _6 = copy _15.metadata;
         _4 = move _5 < move _6;
         if move _4 -> bb2 else -> bb3;
@@ -915,10 +1024,10 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         storage_live(self_8);
         storage_live(_9);
         storage_live(_10);
-        _10 = &mut generator_2;
+        _10 = &mut generator;
         storage_live(_11);
         storage_live(_12);
-        _12 = copy (guard_3).initialized;
+        _12 = copy (guard).initialized;
         _11 = (move _12,);
         _9 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<[u8; 1usize], usize, test_crate::test::closure::closure, i16, extern "rust-call" fn((usize,)) -> NeverShortCircuit::<[u8; 1usize]>, (test_crate::test::closure::closure,)>(move _10, move _11) -> bb4 (unwind: bb5);
     }
@@ -929,12 +1038,12 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         storage_dead(_4);
         storage_live(t_35);
         storage_live(t_36);
-        t_35 = move (guard_3).array_mut;
-        t_36 = move (guard_3).initialized;
+        t_35 = move (guard).array_mut;
+        t_36 = move (guard).initialized;
         storage_dead(t_35);
         storage_dead(t_36);
         _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Continue { 0: const () };
-        storage_dead(guard_3);
+        storage_dead(guard);
         goto bb6;
     }
 
@@ -946,11 +1055,26 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
     }
 
     bb5: {
-        _37 = &raw mut guard_3;
+        _37 = &raw mut guard;
         _38 = drop_glue::<Guard::<'_, [u8; 1usize]>>(move _37) -> bb8 (unwind: bb9);
     }
 
     bb6: {
+        storage_dead(_43);
+        storage_dead(_42);
+        storage_dead(_41);
+        storage_dead(_40);
+        storage_dead(_39);
+        storage_dead(_38);
+        storage_dead(_37);
+        storage_dead(_31);
+        storage_dead(_30);
+        storage_dead(_25);
+        storage_dead(self_23);
+        storage_dead(_15);
+        storage_dead(item);
+        storage_dead(generator);
+        storage_dead(buffer);
         return;
     }
 
@@ -962,59 +1086,78 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
     }
 
     bb8: {
+        storage_dead(_43);
+        storage_dead(_42);
+        storage_dead(_41);
+        storage_dead(_40);
+        storage_dead(_39);
+        storage_dead(_38);
+        storage_dead(_37);
+        storage_dead(_31);
+        storage_dead(_30);
+        storage_dead(_25);
+        storage_dead(self_23);
+        storage_dead(_15);
+        storage_dead(item);
+        storage_dead(generator);
+        storage_dead(buffer);
         unwind_continue;
     }
 
     bb9: {
+        storage_dead(_43);
+        storage_dead(_42);
+        storage_dead(_41);
+        storage_dead(_40);
+        storage_dead(_39);
+        storage_dead(_38);
+        storage_dead(_37);
+        storage_dead(_31);
+        storage_dead(_30);
+        storage_dead(_25);
+        storage_dead(self_23);
+        storage_dead(_15);
+        storage_dead(item);
+        storage_dead(generator);
+        storage_dead(buffer);
         unwind_terminate;
     }
 
     bb10: {
-        storage_live(c_17);
-        c_17 = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>::Continue).0;
-        _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>::Continue { 0: copy c_17 };
-        storage_dead(c_17);
+        storage_live(c);
+        c = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>::Continue).0;
+        _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>::Continue { 0: copy c };
+        storage_dead(c);
         storage_dead(_16);
         storage_dead(self_8);
-        item_14 = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>::Continue).0;
+        item = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>::Continue).0;
         storage_dead(_7);
         storage_live(self_24);
-        self_23 = copy (guard_3).array_mut;
-        storage_live(index_20);
-        index_20 = copy (guard_3).initialized;
+        self_23 = copy (guard).array_mut;
+        storage_live(index);
+        index = copy (guard).initialized;
         storage_live(_39);
         _39 = ub_checks<bool>;
         if move _39 -> bb13 else -> bb14;
     }
 
     bb11: {
-        storage_live(b_18);
-        b_18 = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>::Break).0;
+        storage_live(b);
+        b = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>::Break).0;
         storage_live(_19);
-        _19 = ControlFlow::<NeverShortCircuitResidual, Infallible>::Break { 0: copy b_18 };
+        _19 = ControlFlow::<NeverShortCircuitResidual, Infallible>::Break { 0: copy b };
         _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>::Break { 0: move _19 };
         storage_dead(_19);
-        storage_dead(b_18);
+        storage_dead(b);
         storage_dead(_16);
         storage_dead(self_8);
-        storage_live(residual_13);
-        residual_13 = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>::Break).0;
+        storage_live(residual);
+        residual = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, [u8; 1usize]>::Break).0;
         storage_live(_32);
         storage_live(_34);
-        _32 = @discriminant(residual_13);
+        _32 = @discriminant(residual);
         _34 = copy _32 == const 1isize;
-        assert(move _34 == true) else undefined_behavior;
-        storage_live(_33);
-        _33 = copy (residual_13 as variant ControlFlow::<NeverShortCircuitResidual, Infallible>::Break).0;
-        _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Break { 0: copy _33 };
-        storage_dead(_33);
-        storage_dead(_34);
-        storage_dead(_32);
-        storage_dead(residual_13);
-        storage_dead(_7);
-        storage_dead(_4);
-        _40 = &raw mut guard_3;
-        _41 = drop_glue::<Guard::<'_, [u8; 1usize]>>(move _40) -> bb15 (unwind: bb8);
+        _40 = assume(move _34) -> bb15 (unwind: bb16);
     }
 
     bb12: {
@@ -1024,46 +1167,51 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
     bb13: {
         storage_live(_26);
         _26 = copy self_23.metadata;
-        _25 = impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(copy index_20, move _26) -> bb16 (unwind: bb17);
+        _25 = impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(copy index, move _26) -> bb18 (unwind: bb19);
     }
 
     bb14: {
-        self_24 = &raw mut (*self_23)[copy index_20];
-        storage_dead(index_20);
+        self_24 = &raw mut (*self_23)[copy index];
+        storage_dead(index);
         storage_live(_27);
         storage_live(_28);
         storage_live(_29);
-        _29 = MaybeDangling::<[u8; 1usize]> { 0: copy item_14 };
+        _29 = MaybeDangling::<[u8; 1usize]> { 0: copy item };
         _28 = ManuallyDrop::<[u8; 1usize]> { value: move _29 };
         storage_dead(_29);
         _27 = MaybeUninit::<[u8; 1usize]> { value: move _28 };
         storage_dead(_28);
         (*self_24) = move _27;
         storage_dead(_27);
-        _30 = assert_inhabited::<[u8; 1usize]>() -> bb18 (unwind: bb19);
+        _30 = assert_inhabited::<[u8; 1usize]>() -> bb20 (unwind: bb21);
     }
 
     bb15: {
-        storage_dead(guard_3);
-        goto bb6;
+        storage_live(_33);
+        _33 = copy (residual as variant ControlFlow::<NeverShortCircuitResidual, Infallible>::Break).0;
+        _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Break { 0: copy _33 };
+        storage_dead(_33);
+        storage_dead(_34);
+        storage_dead(_32);
+        storage_dead(residual);
+        storage_dead(_7);
+        storage_dead(_4);
+        _41 = &raw mut guard;
+        _42 = drop_glue::<Guard::<'_, [u8; 1usize]>>(move _41) -> bb17 (unwind: bb8);
     }
 
     bb16: {
-        storage_dead(_26);
-        goto bb14;
-    }
-
-    bb17: {
         undefined_behavior;
     }
 
+    bb17: {
+        storage_dead(guard);
+        goto bb6;
+    }
+
     bb18: {
-        storage_live(_21);
-        storage_live(self_22);
-        self_22 = copy (guard_3).initialized;
-        storage_live(_42);
-        _42 = ub_checks<bool>;
-        if move _42 -> bb20 else -> bb21;
+        storage_dead(_26);
+        goto bb14;
     }
 
     bb19: {
@@ -1071,40 +1219,54 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
     }
 
     bb20: {
-        _31 = core::num::{usize}::unchecked_add::precondition_check(copy self_22, const 1usize) -> bb21 (unwind: bb22);
+        storage_live(_21);
+        storage_live(self_22);
+        self_22 = copy (guard).initialized;
+        storage_live(_43);
+        _43 = ub_checks<bool>;
+        if move _43 -> bb22 else -> bb23;
     }
 
     bb21: {
+        undefined_behavior;
+    }
+
+    bb22: {
+        _31 = core::num::{usize}::unchecked_add::precondition_check(copy self_22, const 1usize) -> bb23 (unwind: bb24);
+    }
+
+    bb23: {
         _21 = copy self_22 ub.+ const 1usize;
         storage_dead(self_22);
-        (guard_3).initialized = move _21;
+        (guard).initialized = move _21;
         storage_dead(_21);
         storage_dead(self_24);
         storage_dead(_4);
         goto bb1;
     }
 
-    bb22: {
+    bb24: {
         undefined_behavior;
     }
 }
 
 // Full name: core::array::try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, 1usize>
-pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, 1usize>(cb_1: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure) -> NeverShortCircuit::<[[u8; 1usize]; 1usize]>
+pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, 1usize>(cb: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure) -> NeverShortCircuit::<[[u8; 1usize]; 1usize]>
 {
     let _0: NeverShortCircuit::<[[u8; 1usize]; 1usize]>; // return
-    let cb_1: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // arg #1
+    let cb: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // arg #1
     let array_2: [MaybeUninit::<[u8; 1usize]>; 1usize]; // local
     let _3: ControlFlow::<NeverShortCircuitResidual, ()>; // anonymous local
     let _4: &'_ mut [MaybeUninit::<[u8; 1usize]>]; // anonymous local
     let _5: &'_ mut [MaybeUninit::<[u8; 1usize]>; 1usize]; // anonymous local
     let _6: isize; // anonymous local
-    let r_7: NeverShortCircuitResidual; // local
+    let r: NeverShortCircuitResidual; // local
     let _8: [[u8; 1usize]; 1usize]; // anonymous local
     let array_9: [MaybeUninit::<[u8; 1usize]>; 1usize]; // local
     let _10: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_6);
         storage_live(_10);
         storage_live(array_2);
@@ -1114,7 +1276,7 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
         storage_live(_5);
         _5 = &mut array_2;
         _4 = unsize_cast<&'_ mut [MaybeUninit::<[u8; 1usize]>; 1usize], &'_ mut [MaybeUninit::<[u8; 1usize]>], 1usize>(copy _5);
-        _3 = try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>(move _4, move cb_1) -> bb1 (unwind: bb2);
+        _3 = try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>(move _4, move cb) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -1124,6 +1286,9 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
     }
 
     bb2: {
+        storage_dead(_10);
+        storage_dead(_6);
+        storage_dead(cb);
         unwind_continue;
     }
 
@@ -1135,9 +1300,9 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
     }
 
     bb4: {
-        storage_live(r_7);
-        r_7 = move (_3 as variant ControlFlow::<NeverShortCircuitResidual, ()>::Break).0;
-        _0 = from_residual::<[[u8; 1usize]; 1usize]>(move r_7) -> bb8 (unwind: bb9);
+        storage_live(r);
+        r = move (_3 as variant ControlFlow::<NeverShortCircuitResidual, ()>::Break).0;
+        _0 = from_residual::<[[u8; 1usize]; 1usize]>(move r) -> bb8 (unwind: bb9);
     }
 
     bb5: {
@@ -1155,11 +1320,14 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
     }
 
     bb8: {
-        storage_dead(r_7);
+        storage_dead(r);
         goto bb12;
     }
 
     bb9: {
+        storage_dead(_10);
+        storage_dead(_6);
+        storage_dead(cb);
         unwind_continue;
     }
 
@@ -1169,6 +1337,9 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
     }
 
     bb11: {
+        storage_dead(_10);
+        storage_dead(_6);
+        storage_dead(cb);
         unwind_continue;
     }
 
@@ -1176,22 +1347,26 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
         storage_dead(_5);
         storage_dead(_3);
         storage_dead(array_2);
+        storage_dead(_10);
+        storage_dead(_6);
+        storage_dead(cb);
         return;
     }
 }
 
 // Full name: core::array::from_fn::<[u8; 1usize], test_crate::test::closure::closure, 1usize>
-pub fn from_fn::<[u8; 1usize], test_crate::test::closure::closure, 1usize>(f_1: test_crate::test::closure::closure) -> [[u8; 1usize]; 1usize]
+pub fn from_fn::<[u8; 1usize], test_crate::test::closure::closure, 1usize>(f: test_crate::test::closure::closure) -> [[u8; 1usize]; 1usize]
 {
     let _0: [[u8; 1usize]; 1usize]; // return
-    let f_1: test_crate::test::closure::closure; // arg #1
+    let f: test_crate::test::closure::closure; // arg #1
     let _2: NeverShortCircuit::<[[u8; 1usize]; 1usize]>; // anonymous local
     let _3: core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure { upvar_0: copy f_1 };
+        _3 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure { upvar_0: copy f };
         _2 = try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, 1usize>(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -1199,16 +1374,18 @@ pub fn from_fn::<[u8; 1usize], test_crate::test::closure::closure, 1usize>(f_1: 
         storage_dead(_3);
         _0 = move (_2).0;
         storage_dead(_2);
+        storage_dead(f);
         return;
     }
 
     bb2: {
+        storage_dead(f);
         unwind_continue;
     }
 }
 
 // Full name: core::ops::drop::Drop
-#[lang_item("drop")]
+#[lang_item(Drop)]
 trait Drop
 
 // Full name: core::array::{impl Drop for Guard::<'_, _>}
@@ -1217,17 +1394,18 @@ impl<'_, _, T> Drop for Guard::<'_, _> {
 }
 
 // Full name: core::ops::range::Range::<usize>
-#[lang_item("Range")]
+#[lang_item(Range)]
 pub struct Range::<usize> {
   start: usize,
   end: usize,
 }
 
 // Full name: core::ops::try_trait::Try
-#[lang_item("Try")]
+#[lang_item(Try)]
 trait Try
 
 // Full name: core::ops::try_trait::FromResidual
+#[diagnostic_item("FromResidual")]
 trait FromResidual
 
 // Full name: core::ops::try_trait::{impl Try for NeverShortCircuit::<_>}
@@ -1241,7 +1419,7 @@ impl<T> FromResidual<type_error("unsupported alias type")> for NeverShortCircuit
 }
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -1250,7 +1428,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -1259,6 +1437,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::slice::index::SliceIndex
+#[diagnostic_item("SliceIndex")]
 trait SliceIndex
 
 // Full name: core::slice::index::{impl SliceIndex<[T]> for usize}
@@ -1281,6 +1460,7 @@ fn test::<[u8; 1usize], 0usize>() -> [[u8; 1usize]; 1usize]
     let _1: test_crate::test::closure::closure; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_1);
         _1 = test_crate::test::closure::closure {  };
         _0 = from_fn::<[u8; 1usize], test_crate::test::closure::closure, 1usize>(move _1) -> bb1 (unwind: bb2);
@@ -1308,6 +1488,7 @@ fn main()
     let _1: [[u8; 1usize]; 1usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         _1 = test::<[u8; 1usize], 0usize>() -> bb1 (unwind: bb2);

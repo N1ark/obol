@@ -2,13 +2,16 @@
 // Final ULLBC:
 
 // Full name: core::ptr::const_ptr::{*const T}::cast::<u32, [u8; 4usize]>
-pub fn cast::<u32, [u8; 4usize]>(self_1: *const u32) -> *const [u8; 4usize]
+#[diagnostic_item("const_ptr_cast")]
+pub fn cast::<u32, [u8; 4usize]>(self: *const u32) -> *const [u8; 4usize]
 {
     let _0: *const [u8; 4usize]; // return
-    let self_1: *const u32; // arg #1
+    let self: *const u32; // arg #1
 
     bb0: {
-        _0 = cast<*const u32, *const [u8; 4usize]>(copy self_1);
+        storage_live(_0);
+        _0 = cast<*const u32, *const [u8; 4usize]>(copy self);
+        storage_dead(self);
         return;
     }
 }
@@ -25,19 +28,20 @@ impl<'a> Convert<&'_ [u8; 4usize]> for &'_ u32 {
 }
 
 // Full name: test_crate::{impl Convert<&'_ [u8; 4usize]> for &'_ u32}::method::<'_>
-fn method::<'_>(self_1: &'_ u32) -> &'_ [u8; 4usize]
+fn method::<'_>(self: &'_ u32) -> &'_ [u8; 4usize]
 {
     let _0: &'_ [u8; 4usize]; // return
-    let self_1: &'_ u32; // arg #1
+    let self: &'_ u32; // arg #1
     let _2: &'_ [u8; 4usize]; // anonymous local
     let _3: *const [u8; 4usize]; // anonymous local
     let _4: *const u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
-        _4 = &raw const (*self_1);
+        _4 = &raw const (*self);
         _3 = cast::<u32, [u8; 4usize]>(move _4) -> bb1 (unwind: bb2);
     }
 
@@ -47,49 +51,55 @@ fn method::<'_>(self_1: &'_ u32) -> &'_ [u8; 4usize]
         _0 = &(*_2);
         storage_dead(_3);
         storage_dead(_2);
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::convert::<&'_ u32, &'_ [u8; 4usize]>
-fn convert::<&'_ u32, &'_ [u8; 4usize]>(x_1: &'_ u32) -> &'_ [u8; 4usize]
+fn convert::<&'_ u32, &'_ [u8; 4usize]>(x: &'_ u32) -> &'_ [u8; 4usize]
 {
     let _0: &'_ [u8; 4usize]; // return
-    let x_1: &'_ u32; // arg #1
+    let x: &'_ u32; // arg #1
     let _2: &'_ u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = move x_1;
+        _2 = move x;
         _0 = method::<'_>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::to_bytes_by_ref
-pub fn to_bytes_by_ref(s_1: &'_ u32) -> &'_ [u8; 4usize]
+pub fn to_bytes_by_ref(s: &'_ u32) -> &'_ [u8; 4usize]
 {
     let _0: &'_ [u8; 4usize]; // return
-    let s_1: &'_ u32; // arg #1
+    let s: &'_ u32; // arg #1
     let _2: &'_ [u8; 4usize]; // anonymous local
     let _3: &'_ u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = copy s_1;
+        _3 = copy s;
         _2 = convert::<&'_ u32, &'_ [u8; 4usize]>(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -97,10 +107,12 @@ pub fn to_bytes_by_ref(s_1: &'_ u32) -> &'_ [u8; 4usize]
         _0 = &(*_2);
         storage_dead(_3);
         storage_dead(_2);
+        storage_dead(s);
         return;
     }
 
     bb2: {
+        storage_dead(s);
         unwind_continue;
     }
 }

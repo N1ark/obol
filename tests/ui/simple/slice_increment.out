@@ -5,22 +5,25 @@
 trait FakeTrait
 
 // Full name: test_crate::incr
-pub fn incr(s_1: &'_ mut [u32])
+pub fn incr(s: &'_ mut [u32])
 {
     let _0: (); // return
-    let s_1: &'_ mut [u32]; // arg #1
+    let s: &'_ mut [u32]; // arg #1
     let _2: usize; // anonymous local
     let _3: u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         _0 = ();
         storage_live(_2);
         _2 = const 0usize;
-        _3 = copy (*s_1)[copy _2] panic.+ const 1u32;
-        (*s_1)[copy _2] = move _3;
+        _3 = copy (*s)[copy _2] panic.+ const 1u32;
+        (*s)[copy _2] = move _3;
         storage_dead(_2);
         _0 = ();
+        storage_dead(_3);
+        storage_dead(s);
         return;
     }
 }

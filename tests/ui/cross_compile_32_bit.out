@@ -15,24 +15,33 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -42,23 +51,19 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
@@ -69,16 +74,17 @@ pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::ptr::non_null::NonNull::<str>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -94,7 +100,7 @@ pub fn caller_location() -> &'_ Location::<'_>
 pub const MAX: usize = 4294967295usize
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -108,6 +114,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     let _0: &'_ Location::<'_>; // return
 
     bb0: {
+        storage_live(_0);
         _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
@@ -121,7 +128,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -130,7 +137,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -139,16 +146,21 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message_1: &'_ Arguments::<'_>, location_2: &'_ Location::<'_>, can_unwind_3: bool, force_no_backtrace_4: bool) -> PanicInfo::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
     let _0: PanicInfo::<'_>; // return
-    let message_1: &'_ Arguments::<'_>; // arg #1
-    let location_2: &'_ Location::<'_>; // arg #2
-    let can_unwind_3: bool; // arg #3
-    let force_no_backtrace_4: bool; // arg #4
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
-        _0 = PanicInfo::<'_> { message: copy message_1, location: copy location_2, can_unwind: copy can_unwind_3, force_no_backtrace: copy force_no_backtrace_4 };
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        storage_dead(force_no_backtrace);
+        storage_dead(can_unwind);
+        storage_dead(location);
+        storage_dead(message);
         return;
     }
 }
@@ -158,14 +170,14 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
-#[lang_item("panic_fmt")]
-pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
+    let fmt: Arguments::<'_>; // arg #1
     let _2: bool; // anonymous local
     let _3: !; // anonymous local
-    let pi_4: PanicInfo::<'_>; // local
+    let pi: PanicInfo::<'_>; // local
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
@@ -174,6 +186,7 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _2 = const false;
         if move _2 -> bb1 else -> bb2;
@@ -186,10 +199,10 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb2: {
         storage_dead(_2);
-        storage_live(pi_4);
+        storage_live(pi);
         storage_live(_5);
         storage_live(_6);
-        _6 = &fmt_1;
+        _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
         storage_live(_8);
@@ -206,10 +219,15 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb5: {
         _7 = &(*_8);
-        pi_4 = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
     bb6: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -220,12 +238,17 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
         storage_dead(_6);
         storage_live(_9);
         storage_live(_10);
-        _10 = &pi_4;
+        _10 = &pi;
         _9 = &(*_10);
         _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
     }
 
     bb8: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -234,19 +257,25 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     }
 
     bb10: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
-fn compiletime(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
+fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
-    let force_no_backtrace_2: bool; // arg #2
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
 
     bb0: {
-        _0 = panic_fmt(move fmt_1) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -254,26 +283,29 @@ fn compiletime(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
     }
 
     bb2: {
+        storage_dead(force_no_backtrace);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
-pub fn panic_nounwind_fmt(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
+pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
-    let force_no_backtrace_2: bool; // arg #2
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
     let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy fmt_1;
+        _4 = copy fmt;
         storage_live(_5);
-        _5 = copy force_no_backtrace_2;
+        _5 = copy force_no_backtrace;
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
@@ -285,21 +317,25 @@ pub fn panic_nounwind_fmt(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) ->
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(force_no_backtrace);
+        storage_dead(fmt);
         unwind_terminate;
     }
 }
 
 // Full name: core::ptr::non_null::NonNull::<usize>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<usize> {
   pointer: *const usize is !null,
 }
 
 // Full name: core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check
-fn precondition_check(ptr_1: *mut ())
+fn precondition_check(ptr: *mut ())
 {
     let _0: (); // return
-    let ptr_1: *mut (); // arg #1
-    let msg_2: &'_ str; // local
+    let ptr: *mut (); // arg #1
+    let msg: &'_ str; // local
     let _3: !; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: usize; // anonymous local
@@ -315,14 +351,15 @@ fn precondition_check(ptr_1: *mut ())
     let _15: *mut (); // anonymous local
 
     bb0: {
-        storage_live(msg_2);
+        storage_live(_0);
+        storage_live(msg);
         storage_live(_3);
         _0 = ();
         storage_live(_5);
         storage_live(_14);
         storage_live(_15);
         _15 = cast<usize, *mut ()>(const 0usize);
-        _14 = copy ptr_1 != move _15;
+        _14 = copy ptr != move _15;
         _5 = cast<bool, usize>(move _14);
         storage_dead(_14);
         switch copy _5 -> 0usize: bb1, otherwise: bb2;
@@ -330,12 +367,12 @@ fn precondition_check(ptr_1: *mut ())
 
     bb1: {
         storage_dead(_5);
-        msg_2 = const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        msg = const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_4);
         storage_live(_6);
         storage_live(_7);
         storage_live(_12);
-        _12 = &raw const (*msg_2) with_metadata(copy msg_2.metadata);
+        _12 = &raw const (*msg) with_metadata(copy msg.metadata);
         _7 = cast<*const str, *const u8>(copy _12);
         storage_dead(_12);
         _6 = transmute<*const u8, NonNull::<u8>>(copy _7);
@@ -362,6 +399,10 @@ fn precondition_check(ptr_1: *mut ())
 
     bb2: {
         storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(msg);
+        storage_dead(ptr);
         return;
     }
 
@@ -375,15 +416,16 @@ fn precondition_check(ptr_1: *mut ())
 }
 
 // Full name: core::ptr::non_null::{NonNull::<_>}::new_unchecked::<usize>
-pub fn new_unchecked::<usize>(ptr_1: *mut usize) -> NonNull::<usize>
+pub fn new_unchecked::<usize>(ptr: *mut usize) -> NonNull::<usize>
 {
     let _0: NonNull::<usize>; // return
-    let ptr_1: *mut usize; // arg #1
+    let ptr: *mut usize; // arg #1
     let _2: (); // anonymous local
     let _3: *mut (); // anonymous local
     let _4: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_4);
         _4 = ub_checks<bool>;
@@ -392,12 +434,15 @@ pub fn new_unchecked::<usize>(ptr_1: *mut usize) -> NonNull::<usize>
 
     bb1: {
         storage_live(_3);
-        _3 = cast<*mut usize, *mut ()>(copy ptr_1);
+        _3 = cast<*mut usize, *mut ()>(copy ptr);
         _2 = precondition_check(move _3) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        _0 = transmute<*mut usize, NonNull::<usize>>(copy ptr_1);
+        _0 = transmute<*mut usize, NonNull::<usize>>(copy ptr);
+        storage_dead(_4);
+        storage_dead(_2);
+        storage_dead(ptr);
         return;
     }
 
@@ -421,52 +466,55 @@ enum HasPointerNiche {
 fn main()
 {
     let _0: (); // return
-    let x_1: usize; // local
-    let y_2: usize; // local
-    let z_3: usize; // local
+    let x: usize; // local
+    let y: usize; // local
+    let z: usize; // local
     let _4: usize; // anonymous local
     let _5: usize; // anonymous local
     let _6: usize; // anonymous local
-    let a_7: HasPointerNiche; // local
+    let a: HasPointerNiche; // local
     let _8: NonNull::<usize>; // anonymous local
     let _9: *mut usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_6);
         _0 = ();
-        storage_live(x_1);
-        x_1 = const 52usize;
-        storage_live(y_2);
-        y_2 = copy MAX;
-        storage_live(z_3);
+        storage_live(x);
+        x = const 52usize;
+        storage_live(y);
+        y = copy MAX;
+        storage_live(z);
         storage_live(_4);
-        _4 = copy y_2;
+        _4 = copy y;
         storage_live(_5);
-        _5 = copy x_1;
+        _5 = copy x;
         _6 = copy _4 panic.- copy _5;
-        z_3 = move _6;
+        z = move _6;
         storage_dead(_5);
         storage_dead(_4);
-        storage_live(a_7);
+        storage_live(a);
         storage_live(_8);
         storage_live(_9);
-        _9 = &raw mut x_1;
+        _9 = &raw mut x;
         _8 = new_unchecked::<usize>(move _9) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_9);
-        a_7 = HasPointerNiche::Second { 0: move _8 };
+        a = HasPointerNiche::Second { 0: move _8 };
         storage_dead(_8);
         _0 = ();
-        storage_dead(a_7);
-        storage_dead(z_3);
-        storage_dead(y_2);
-        storage_dead(x_1);
+        storage_dead(a);
+        storage_dead(z);
+        storage_dead(y);
+        storage_dead(x);
+        storage_dead(_6);
         return;
     }
 
     bb2: {
+        storage_dead(_6);
         unwind_continue;
     }
 }

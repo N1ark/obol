@@ -67,7 +67,7 @@ fn run_passes(ctx: &mut TransformCtx) {
         // insert an extra assignment just before returning.
         CowBox::Borrowed(&finish_translation::insert_assign_return_unit::Transform),
         // Insert `StorageLive` for locals that don't have one (that's allowed in MIR).
-        CowBox::Borrowed(&finish_translation::insert_storage_lives::Transform),
+        CowBox::Borrowed(&finish_translation::insert_storage_statements::Transform),
         // Inline all asserts that correspond to dynamic checks into statements.
         // The following pass will then merge the generated gotos as part of this substitution,
         // and [reconstruct_fallible_operations] can then use the inlined asserts to

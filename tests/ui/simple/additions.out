@@ -5,42 +5,51 @@ pub fn core::intrinsics::saturating_add::<u8>(a_1: u8, b_2: u8) -> u8
 = <intrinsic:saturating_add>
 
 // Full name: core::num::{u8}::wrapping_add
-pub fn wrapping_add(self_1: u8, rhs_2: u8) -> u8
+pub fn wrapping_add(self: u8, rhs: u8) -> u8
 {
     let _0: u8; // return
-    let self_1: u8; // arg #1
-    let rhs_2: u8; // arg #2
+    let self: u8; // arg #1
+    let rhs: u8; // arg #2
 
     bb0: {
-        _0 = copy self_1 wrap.+ copy rhs_2;
+        storage_live(_0);
+        _0 = copy self wrap.+ copy rhs;
+        storage_dead(rhs);
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: core::num::{u8}::overflowing_add
-pub fn overflowing_add(self_1: u8, rhs_2: u8) -> (u8, bool)
+pub fn overflowing_add(self: u8, rhs: u8) -> (u8, bool)
 {
     let _0: (u8, bool); // return
-    let self_1: u8; // arg #1
-    let rhs_2: u8; // arg #2
+    let self: u8; // arg #1
+    let rhs: u8; // arg #2
 
     bb0: {
-        _0 = copy self_1 checked.+ copy rhs_2;
+        storage_live(_0);
+        _0 = copy self checked.+ copy rhs;
+        storage_dead(rhs);
+        storage_dead(self);
         return;
     }
 }
 
-pub fn core::num::{u8}::saturating_add(self_1: u8, rhs_2: u8) -> u8
+pub fn core::num::{u8}::saturating_add(self: u8, rhs: u8) -> u8
 {
     let _0: u8; // return
-    let self_1: u8; // arg #1
-    let rhs_2: u8; // arg #2
+    let self: u8; // arg #1
+    let rhs: u8; // arg #2
 
     bb0: {
-        _0 = core::intrinsics::saturating_add::<u8>(move self_1, move rhs_2) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = core::intrinsics::saturating_add::<u8>(move self, move rhs) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(rhs);
+        storage_dead(self);
         return;
     }
 
@@ -61,6 +70,7 @@ fn main()
     let _3: u8; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         _1 = wrapping_add(const 255u8, const 1u8) -> bb1 (unwind: bb2);

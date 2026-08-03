@@ -10,20 +10,21 @@ trait Trait
 // Full name: test_crate::Foo
 struct Foo {}
 
-fn test_crate::Trait::provided1::<Foo>(self_1: &'_ Foo)
+fn test_crate::Trait::provided1::<Foo>(self: &'_ Foo)
 {
     let _0: (); // return
-    let self_1: &'_ Foo; // arg #1
+    let self: &'_ Foo; // arg #1
     let _2: (); // anonymous local
     let _3: &'_ Foo; // anonymous local
     let _4: (); // anonymous local
     let _5: &'_ Foo; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &(*self_1);
+        _3 = &(*self);
         _2 = impl_Trait_for_Foo::required(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -32,11 +33,12 @@ fn test_crate::Trait::provided1::<Foo>(self_1: &'_ Foo)
         storage_dead(_2);
         storage_live(_4);
         storage_live(_5);
-        _5 = &(*self_1);
+        _5 = &(*self);
         _4 = provided2::<Foo>(move _5) -> bb3 (unwind: bb4);
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 
@@ -44,29 +46,32 @@ fn test_crate::Trait::provided1::<Foo>(self_1: &'_ Foo)
         storage_dead(_5);
         storage_dead(_4);
         _0 = ();
+        storage_dead(self);
         return;
     }
 
     bb4: {
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::Trait::provided2::<Foo>
-fn provided2::<Foo>(self_1: &'_ Foo)
+fn provided2::<Foo>(self: &'_ Foo)
 {
     let _0: (); // return
-    let self_1: &'_ Foo; // arg #1
+    let self: &'_ Foo; // arg #1
     let _2: (); // anonymous local
     let _3: &'_ Foo; // anonymous local
     let _4: (); // anonymous local
     let _5: &'_ Foo; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &(*self_1);
+        _3 = &(*self);
         _2 = impl_Trait_for_Foo::required(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -75,11 +80,12 @@ fn provided2::<Foo>(self_1: &'_ Foo)
         storage_dead(_2);
         storage_live(_4);
         storage_live(_5);
-        _5 = &(*self_1);
+        _5 = &(*self);
         _4 = test_crate::Trait::provided1::<Foo>(move _5) -> bb3 (unwind: bb4);
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 
@@ -87,27 +93,30 @@ fn provided2::<Foo>(self_1: &'_ Foo)
         storage_dead(_5);
         storage_dead(_4);
         _0 = ();
+        storage_dead(self);
         return;
     }
 
     bb4: {
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::{impl Trait for Foo}::required
-fn impl_Trait_for_Foo::required(self_1: &'_ Foo)
+fn impl_Trait_for_Foo::required(self: &'_ Foo)
 {
     let _0: (); // return
-    let self_1: &'_ Foo; // arg #1
+    let self: &'_ Foo; // arg #1
     let _2: (); // anonymous local
     let _3: &'_ Foo; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &(*self_1);
+        _3 = &(*self);
         _2 = test_crate::Trait::provided1::<Foo>(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -115,10 +124,12 @@ fn impl_Trait_for_Foo::required(self_1: &'_ Foo)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 }
@@ -127,20 +138,21 @@ fn impl_Trait_for_Foo::required(self_1: &'_ Foo)
 struct Bar {}
 
 // Full name: test_crate::Trait::provided2::<Bar>
-fn provided2::<Bar>(self_1: &'_ Bar)
+fn provided2::<Bar>(self: &'_ Bar)
 {
     let _0: (); // return
-    let self_1: &'_ Bar; // arg #1
+    let self: &'_ Bar; // arg #1
     let _2: (); // anonymous local
     let _3: &'_ Bar; // anonymous local
     let _4: (); // anonymous local
     let _5: &'_ Bar; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &(*self_1);
+        _3 = &(*self);
         _2 = impl_Trait_for_Bar::required(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -149,11 +161,12 @@ fn provided2::<Bar>(self_1: &'_ Bar)
         storage_dead(_2);
         storage_live(_4);
         storage_live(_5);
-        _5 = &(*self_1);
+        _5 = &(*self);
         _4 = impl_Trait_for_Bar::provided1(move _5) -> bb3 (unwind: bb4);
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 
@@ -161,27 +174,30 @@ fn provided2::<Bar>(self_1: &'_ Bar)
         storage_dead(_5);
         storage_dead(_4);
         _0 = ();
+        storage_dead(self);
         return;
     }
 
     bb4: {
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::{impl Trait for Bar}::required
-fn impl_Trait_for_Bar::required(self_1: &'_ Bar)
+fn impl_Trait_for_Bar::required(self: &'_ Bar)
 {
     let _0: (); // return
-    let self_1: &'_ Bar; // arg #1
+    let self: &'_ Bar; // arg #1
     let _2: (); // anonymous local
     let _3: &'_ Bar; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &(*self_1);
+        _3 = &(*self);
         _2 = provided2::<Bar>(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -189,27 +205,30 @@ fn impl_Trait_for_Bar::required(self_1: &'_ Bar)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::{impl Trait for Bar}::provided1
-fn impl_Trait_for_Bar::provided1(self_1: &'_ Bar)
+fn impl_Trait_for_Bar::provided1(self: &'_ Bar)
 {
     let _0: (); // return
-    let self_1: &'_ Bar; // arg #1
+    let self: &'_ Bar; // arg #1
     let _2: (); // anonymous local
     let _3: &'_ Bar; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &(*self_1);
+        _3 = &(*self);
         _2 = provided2::<Bar>(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -217,10 +236,12 @@ fn impl_Trait_for_Bar::provided1(self_1: &'_ Bar)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 }

@@ -5,13 +5,16 @@
 struct NotCopy {}
 
 // Full name: core::mem::drop::<NotCopy>
-pub fn drop::<NotCopy>(_x_1: NotCopy)
+#[diagnostic_item("mem_drop")]
+pub fn drop::<NotCopy>(_x: NotCopy)
 {
     let _0: (); // return
-    let _x_1: NotCopy; // arg #1
+    let _x: NotCopy; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_x);
         return;
     }
 }
@@ -23,21 +26,22 @@ struct test_crate::main::closure::closure {
   upvar_0: NotCopy,
 }
 
-fn test_crate::main::closure::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(_1: test_crate::main::closure::closure, spread_args_2: (u8,)) -> u8
+fn test_crate::main::closure::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(_1: test_crate::main::closure::closure, spread_args: (u8,)) -> u8
 {
     let _0: u8; // return
     let _1: test_crate::main::closure::closure; // arg #1
-    let spread_args_2: (u8,); // arg #2
-    let x_3: u8; // local
+    let spread_args: (u8,); // arg #2
+    let x: u8; // local
     let _4: (); // anonymous local
     let _5: NotCopy; // anonymous local
     let _6: u8; // anonymous local
     let _7: u8; // anonymous local
 
     bb0: {
-        storage_live(x_3);
+        storage_live(_0);
+        storage_live(x);
         storage_live(_7);
-        x_3 = move spread_args_2.0;
+        x = move spread_args.0;
         storage_live(_4);
         storage_live(_5);
         _5 = move (_1).upvar_0;
@@ -48,29 +52,38 @@ fn test_crate::main::closure::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy
         storage_dead(_5);
         storage_dead(_4);
         storage_live(_6);
-        _6 = copy x_3;
+        _6 = copy x;
         _7 = copy _6 panic.+ const 1u8;
         _0 = move _7;
         storage_dead(_6);
+        storage_dead(_7);
+        storage_dead(x);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_7);
+        storage_dead(x);
+        storage_dead(spread_args);
+        storage_dead(_1);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::apply_to_zero_once::<test_crate::main::closure::closure>
-fn apply_to_zero_once::<test_crate::main::closure::closure>(f_1: test_crate::main::closure::closure) -> u8
+fn apply_to_zero_once::<test_crate::main::closure::closure>(f: test_crate::main::closure::closure) -> u8
 {
     let _0: u8; // return
-    let f_1: test_crate::main::closure::closure; // arg #1
+    let f: test_crate::main::closure::closure; // arg #1
     let _2: test_crate::main::closure::closure; // anonymous local
     let _3: (u8,); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = move f_1;
+        _2 = move f;
         storage_live(_3);
         _3 = (const 0u8,);
         _0 = test_crate::main::closure::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(move _2, move _3) -> bb1 (unwind: bb2);
@@ -79,10 +92,12 @@ fn apply_to_zero_once::<test_crate::main::closure::closure>(f_1: test_crate::mai
     bb1: {
         storage_dead(_3);
         storage_dead(_2);
+        storage_dead(f);
         return;
     }
 
     bb2: {
+        storage_dead(f);
         unwind_continue;
     }
 }
@@ -91,17 +106,18 @@ fn apply_to_zero_once::<test_crate::main::closure::closure>(f_1: test_crate::mai
 fn main()
 {
     let _0: (); // return
-    let z_1: NotCopy; // local
+    let z: NotCopy; // local
     let _2: u8; // anonymous local
     let _3: test_crate::main::closure::closure; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(z_1);
-        z_1 = NotCopy {  };
+        storage_live(z);
+        z = NotCopy {  };
         storage_live(_2);
         storage_live(_3);
-        _3 = test_crate::main::closure::closure { upvar_0: move z_1 };
+        _3 = test_crate::main::closure::closure { upvar_0: move z };
         _2 = apply_to_zero_once::<test_crate::main::closure::closure>(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -109,7 +125,7 @@ fn main()
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
-        storage_dead(z_1);
+        storage_dead(z);
         return;
     }
 

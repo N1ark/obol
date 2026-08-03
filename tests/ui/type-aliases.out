@@ -18,14 +18,16 @@ impl Sink<u8> for Holder::<u32> {
 }
 
 // Full name: test_crate::{impl Sink<u8> for Holder::<u32>}::sink
-pub fn {impl Sink<u8> for Holder::<u32>}::sink(self_1: Holder::<u32>)
+pub fn {impl Sink<u8> for Holder::<u32>}::sink(self: Holder::<u32>)
 {
     let _0: (); // return
-    let self_1: Holder::<u32>; // arg #1
+    let self: Holder::<u32>; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
@@ -41,27 +43,31 @@ impl<T> Sink<type_error("unsupported alias type")> for PolyWrap::<_> {
 }
 
 // Full name: test_crate::{impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>
-pub fn {impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>(self_1: PolyWrap::<u32>)
+pub fn {impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>(self: PolyWrap::<u32>)
 {
     let _0: (); // return
-    let self_1: PolyWrap::<u32>; // arg #1
+    let self: PolyWrap::<u32>; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::feed::<u32>
-pub fn feed::<u32>(_x_1: u8)
+pub fn feed::<u32>(_x: u8)
 {
     let _0: (); // return
-    let _x_1: u8; // arg #1
+    let _x: u8; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_x);
         return;
     }
 }
@@ -70,9 +76,9 @@ pub fn feed::<u32>(_x_1: u8)
 pub fn main()
 {
     let _0: (); // return
-    let _len_1: usize; // local
-    let _bytes_2: (u8, u8); // local
-    let _buf_3: [usize; 4usize]; // local
+    let _len: usize; // local
+    let _bytes: (u8, u8); // local
+    let _buf: [usize; 4usize]; // local
     let _4: (); // anonymous local
     let _5: Holder::<u32>; // anonymous local
     let _6: (); // anonymous local
@@ -80,13 +86,14 @@ pub fn main()
     let _8: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(_len_1);
-        _len_1 = const 3usize;
-        storage_live(_bytes_2);
-        _bytes_2 = (const 1u8, const 2u8);
-        storage_live(_buf_3);
-        _buf_3 = [const 0usize; 4usize];
+        storage_live(_len);
+        _len = const 3usize;
+        storage_live(_bytes);
+        _bytes = (const 1u8, const 2u8);
+        storage_live(_buf);
+        _buf = [const 0usize; 4usize];
         storage_live(_4);
         storage_live(_5);
         _5 = Holder::<u32> { 0: const 5u32 };
@@ -120,9 +127,9 @@ pub fn main()
     bb5: {
         storage_dead(_8);
         _0 = ();
-        storage_dead(_buf_3);
-        storage_dead(_bytes_2);
-        storage_dead(_len_1);
+        storage_dead(_buf);
+        storage_dead(_bytes);
+        storage_dead(_len);
         return;
     }
 

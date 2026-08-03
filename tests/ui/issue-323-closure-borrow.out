@@ -8,14 +8,16 @@ trait FakeTrait
 struct Rng {}
 
 // Full name: test_crate::{Rng}::next_u64
-fn next_u64(self_1: &'_ mut Rng)
+fn next_u64(self: &'_ mut Rng)
 {
     let _0: (); // return
-    let self_1: &'_ mut Rng; // arg #1
+    let self: &'_ mut Rng; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
@@ -26,22 +28,24 @@ struct closure {
 }
 
 // Full name: test_crate::new
-fn new(rng_1: &'_ mut Rng)
+fn new(rng: &'_ mut Rng)
 {
     let _0: (); // return
-    let rng_1: &'_ mut Rng; // arg #1
+    let rng: &'_ mut Rng; // arg #1
     let _2: closure; // anonymous local
     let _3: &'_ mut Rng; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &uniq (*rng_1);
+        _3 = &uniq (*rng);
         _2 = closure { upvar_0: move _3 };
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(rng);
         return;
     }
 }

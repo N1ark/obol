@@ -5,28 +5,33 @@
 pub opaque type Error
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub opaque type Formatter::<'_>
 
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub opaque type Arguments::<'_>
 
+#[diagnostic_item("Debug")]
 trait core::fmt::Debug
 
 // Full name: core::ptr::drop_glue::<&'_ i32>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
 {
     let _0: (); // return
     let _1: &'_ mut &'_ i32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
 
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
@@ -36,34 +41,37 @@ pub enum Result::<(), Error> {
 pub fn fmt::<'_, i32>(_1: &'_ &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 = <opaque>
 
+#[diagnostic_item("Debug")]
 fn {vtable}::core::fmt::Debug::<&'_ i32>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <&i32 as std::fmt::Debug>::fmt_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <&i32 as std::fmt::Debug>::fmt: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<&i32 as std::fmt::Debug>::fmt_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<&'_ i32>, *const ()>(const drop_glue::<&'_ i32>);
-        size_2 = transmute<usize, *const ()>(const 8usize);
-        align_3 = transmute<usize, *const ()>(const 8usize);
-        <&i32 as std::fmt::Debug>::fmt_4 = cast<fmt::<'_, i32>, *const ()>(const fmt::<'_, i32>);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <&i32 as std::fmt::Debug>::fmt_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<&i32 as std::fmt::Debug>::fmt);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<&'_ i32>, *const ()>(const drop_glue::<&'_ i32>);
+        size = transmute<usize, *const ()>(const 8usize);
+        align = transmute<usize, *const ()>(const 8usize);
+        <&i32 as std::fmt::Debug>::fmt = cast<fmt::<'_, i32>, *const ()>(const fmt::<'_, i32>);
+        entry_array = [move drop, move size, move align, move <&i32 as std::fmt::Debug>::fmt];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
 
+#[diagnostic_item("Debug")]
 static {vtable}::core::fmt::Debug::<&'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ i32>()
 
 // Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
@@ -72,7 +80,8 @@ impl<'_, _, T> core::fmt::Debug for &'_ T {
 }
 
 // Full name: core::option::Option::<Arguments::<'_>>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<Arguments::<'_>> {
   None,
   Some(0: Arguments::<'_>),
@@ -93,28 +102,29 @@ fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn Fak
 = <missing>
 
 // Full name: core::panicking::assert_failed::<i32, i32>
-pub fn assert_failed::<i32, i32>(kind_1: AssertKind, left_2: &'_ i32, right_3: &'_ i32, args_4: Option::<Arguments::<'_>>) -> !
+pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32, args: Option::<Arguments::<'_>>) -> !
 {
     let _0: !; // return
-    let kind_1: AssertKind; // arg #1
-    let left_2: &'_ i32; // arg #2
-    let right_3: &'_ i32; // arg #3
-    let args_4: Option::<Arguments::<'_>>; // arg #4
+    let kind: AssertKind; // arg #1
+    let left: &'_ i32; // arg #2
+    let right: &'_ i32; // arg #3
+    let args: Option::<Arguments::<'_>>; // arg #4
     let _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: &'_ &'_ i32; // anonymous local
     let _7: &'_ (dyn FakeTrait); // anonymous local
     let _8: &'_ &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_5);
         storage_live(_6);
-        _6 = &left_2;
+        _6 = &left;
         _5 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<&'_ i32>>(copy _6);
         storage_live(_7);
         storage_live(_8);
-        _8 = &right_3;
+        _8 = &right;
         _7 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<&'_ i32>>(copy _8);
-        _0 = assert_failed_inner(move kind_1, move _5, move _7, move args_4) -> bb1 (unwind: bb2);
+        _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -122,6 +132,14 @@ pub fn assert_failed::<i32, i32>(kind_1: AssertKind, left_2: &'_ i32, right_3: &
     }
 
     bb2: {
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(args);
+        storage_dead(right);
+        storage_dead(left);
+        storage_dead(kind);
         unwind_continue;
     }
 }
@@ -133,16 +151,16 @@ const anon_const_0: i32 = 42i32
 fn main()
 {
     let _0: (); // return
-    let x_1: i32; // local
+    let x: i32; // local
     let _2: (&'_ i32, &'_ i32); // anonymous local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
-    let left_val_5: &'_ i32; // local
-    let right_val_6: &'_ i32; // local
+    let left_val: &'_ i32; // local
+    let right_val: &'_ i32; // local
     let _7: bool; // anonymous local
     let _8: i32; // anonymous local
     let _9: i32; // anonymous local
-    let kind_10: AssertKind; // local
+    let kind: AssertKind; // local
     let _11: !; // anonymous local
     let _12: AssertKind; // anonymous local
     let _13: &'_ i32; // anonymous local
@@ -154,13 +172,14 @@ fn main()
     let _19: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_18);
         _0 = ();
-        storage_live(x_1);
-        x_1 = const 42i32;
+        storage_live(x);
+        x = const 42i32;
         storage_live(_2);
         storage_live(_3);
-        _3 = &x_1;
+        _3 = &x;
         storage_live(_4);
         storage_live(_19);
         _19 = &anon_const_0;
@@ -169,15 +188,15 @@ fn main()
         _2 = (move _3, move _4);
         storage_dead(_4);
         storage_dead(_3);
-        storage_live(left_val_5);
-        left_val_5 = copy _2.0;
-        storage_live(right_val_6);
-        right_val_6 = copy _2.1;
+        storage_live(left_val);
+        left_val = copy _2.0;
+        storage_live(right_val);
+        right_val = copy _2.1;
         storage_live(_7);
         storage_live(_8);
-        _8 = copy (*left_val_5);
+        _8 = copy (*left_val);
         storage_live(_9);
-        _9 = copy (*right_val_6);
+        _9 = copy (*right_val);
         _7 = move _8 == move _9;
         if move _7 -> bb1 else -> bb2;
     }
@@ -186,29 +205,38 @@ fn main()
         storage_dead(_9);
         storage_dead(_8);
         storage_dead(_7);
-        storage_dead(right_val_6);
-        storage_dead(left_val_5);
+        storage_dead(right_val);
+        storage_dead(left_val);
         storage_dead(_2);
         _0 = ();
-        storage_dead(x_1);
+        storage_dead(x);
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_12);
+        storage_dead(_11);
+        storage_dead(kind);
         return;
     }
 
     bb2: {
         storage_dead(_9);
         storage_dead(_8);
-        storage_live(kind_10);
-        kind_10 = AssertKind::Eq {  };
+        storage_live(kind);
+        kind = AssertKind::Eq {  };
         storage_live(_11);
         storage_live(_12);
-        _12 = move kind_10;
+        _12 = move kind;
         storage_live(_13);
         storage_live(_14);
-        _14 = &(*left_val_5);
+        _14 = &(*left_val);
         _13 = &(*_14);
         storage_live(_15);
         storage_live(_16);
-        _16 = &(*right_val_6);
+        _16 = &(*right_val);
         _15 = &(*_16);
         storage_live(_17);
         _17 = Option::<Arguments::<'_>>::None {  };
@@ -220,6 +248,15 @@ fn main()
     }
 
     bb4: {
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_12);
+        storage_dead(_11);
+        storage_dead(kind);
         unwind_continue;
     }
 }

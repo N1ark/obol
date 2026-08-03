@@ -13,38 +13,43 @@ impl "impl_Trait_for_bool" Trait for bool {
 }
 
 // Full name: test_crate::{impl Trait for bool}::method
-pub fn method(self_1: &'_ bool)
+pub fn method(self: &'_ bool)
 {
     let _0: (); // return
-    let self_1: &'_ bool; // arg #1
+    let self: &'_ bool; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::do_test::<bool>
-fn do_test::<bool>(x_1: bool)
+fn do_test::<bool>(x: bool)
 {
     let _0: (); // return
-    let x_1: bool; // arg #1
+    let x: bool; // arg #1
     let _2: &'_ bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
-        _2 = &x_1;
+        _2 = &x;
         _0 = method(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 }
@@ -56,6 +61,7 @@ fn main()
     let _1: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         _1 = do_test::<bool>(const true) -> bb1 (unwind: bb2);

@@ -2,7 +2,8 @@
 // Final ULLBC:
 
 // Full name: core::clone::Clone
-#[lang_item("clone")]
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
 trait Clone
 
 // Full name: core::clone::impls::{impl Clone for i32}
@@ -11,26 +12,30 @@ impl "impl_Clone_for_i32" Clone for i32 {
 }
 
 // Full name: core::clone::impls::{impl Clone for i32}::clone
-pub fn clone(self_1: &'_ i32) -> i32
+pub fn clone(self: &'_ i32) -> i32
 {
     let _0: i32; // return
-    let self_1: &'_ i32; // arg #1
+    let self: &'_ i32; // arg #1
 
     bb0: {
-        _0 = copy (*self_1);
+        storage_live(_0);
+        _0 = copy (*self);
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: core::ptr::drop_glue::<i32>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<i32>(_1: &'_ mut i32)
 {
     let _0: (); // return
     let _1: &'_ mut i32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -44,57 +49,65 @@ const anon_const_0: i32 = 42i32
 trait test_crate::Modifiable
 
 // Full name: test_crate::{impl test_crate::Modifiable<T> for i32}::modify::<i32>
-fn impl_Modifiable_for_i32::modify::<i32>(self_1: &'_ mut i32, arg_2: &'_ i32) -> i32
+fn impl_Modifiable_for_i32::modify::<i32>(self: &'_ mut i32, arg: &'_ i32) -> i32
 {
     let _0: i32; // return
-    let self_1: &'_ mut i32; // arg #1
-    let arg_2: &'_ i32; // arg #2
+    let self: &'_ mut i32; // arg #1
+    let arg: &'_ i32; // arg #2
     let _3: i32; // anonymous local
     let _4: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self_1) panic.+ const 1i32;
-        (*self_1) = move _3;
+        _3 = copy (*self) panic.+ const 1i32;
+        (*self) = move _3;
         storage_live(_4);
-        _4 = &(*arg_2);
+        _4 = &(*arg);
         _0 = clone(move _4) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(arg);
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(arg);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 fn {vtable}::test_crate::Modifiable::<i32, i32>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <i32 as test_crate::Modifiable<i32>>::modify_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <i32 as test_crate::Modifiable<i32>>::modify: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<i32 as test_crate::Modifiable<i32>>::modify_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<i32>, *const ()>(const drop_glue::<i32>);
-        size_2 = transmute<usize, *const ()>(const 4usize);
-        align_3 = transmute<usize, *const ()>(const 4usize);
-        <i32 as test_crate::Modifiable<i32>>::modify_4 = cast<impl_Modifiable_for_i32::modify::<i32>, *const ()>(const impl_Modifiable_for_i32::modify::<i32>);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <i32 as test_crate::Modifiable<i32>>::modify_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<i32 as test_crate::Modifiable<i32>>::modify);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<i32>, *const ()>(const drop_glue::<i32>);
+        size = transmute<usize, *const ()>(const 4usize);
+        align = transmute<usize, *const ()>(const 4usize);
+        <i32 as test_crate::Modifiable<i32>>::modify = cast<impl_Modifiable_for_i32::modify::<i32>, *const ()>(const impl_Modifiable_for_i32::modify::<i32>);
+        entry_array = [move drop, move size, move align, move <i32 as test_crate::Modifiable<i32>>::modify];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
@@ -110,11 +123,11 @@ impl<T> "impl_Modifiable_for_i32" test_crate::Modifiable<T> for i32 {
 }
 
 // Full name: test_crate::modify_trait_object::<i32>
-fn modify_trait_object::<i32>(arg_1: &'_ i32) -> i32
+fn modify_trait_object::<i32>(arg: &'_ i32) -> i32
 {
     let _0: i32; // return
-    let arg_1: &'_ i32; // arg #1
-    let x_2: &'_ mut (dyn FakeTrait); // local
+    let arg: &'_ i32; // arg #1
+    let x: &'_ mut (dyn FakeTrait); // local
     let _3: &'_ mut i32; // anonymous local
     let _4: &'_ mut i32; // anonymous local
     let _5: i32; // anonymous local
@@ -123,21 +136,22 @@ fn modify_trait_object::<i32>(arg_1: &'_ i32) -> i32
     let _8: *const *const (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_8);
-        storage_live(x_2);
+        storage_live(x);
         storage_live(_3);
         storage_live(_4);
         storage_live(_5);
         _5 = const 199i32;
         _4 = &mut _5;
         _3 = &mut (*_4);
-        x_2 = unsize_cast<&'_ mut i32, &'_ mut (dyn FakeTrait), {vtable}::test_crate::Modifiable::<i32, i32>>(move _3);
+        x = unsize_cast<&'_ mut i32, &'_ mut (dyn FakeTrait), {vtable}::test_crate::Modifiable::<i32, i32>>(move _3);
         storage_dead(_3);
         storage_dead(_4);
         storage_live(_6);
-        _6 = &two-phase-mut (*x_2) with_metadata(copy x_2.metadata);
+        _6 = &two-phase-mut (*x) with_metadata(copy x.metadata);
         storage_live(_7);
-        _7 = &(*arg_1);
+        _7 = &(*arg);
         _8 = copy _6.metadata offset const 3usize;
         _0 = (copy (*_8))(move _6, move _7) -> bb1 (unwind: bb2);
     }
@@ -146,11 +160,15 @@ fn modify_trait_object::<i32>(arg_1: &'_ i32) -> i32
         storage_dead(_7);
         storage_dead(_6);
         storage_dead(_5);
-        storage_dead(x_2);
+        storage_dead(x);
+        storage_dead(_8);
+        storage_dead(arg);
         return;
     }
 
     bb2: {
+        storage_dead(_8);
+        storage_dead(arg);
         unwind_continue;
     }
 }
@@ -166,6 +184,7 @@ fn main()
     let _5: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_4);
         _0 = ();
         storage_live(_1);
@@ -184,10 +203,12 @@ fn main()
         storage_dead(_3);
         storage_dead(_1);
         _0 = ();
+        storage_dead(_4);
         return;
     }
 
     bb2: {
+        storage_dead(_4);
         unwind_continue;
     }
 }

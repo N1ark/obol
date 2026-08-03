@@ -13,6 +13,7 @@ fn call_root() -> i32
     let _0: i32; // return
 
     bb0: {
+        storage_live(_0);
         _0 = test_crate::same_name(const 0i32) -> bb1 (unwind: bb2);
     }
 
@@ -33,6 +34,7 @@ pub fn test_crate::first::call() -> i32
     let _0: i32; // return
 
     bb0: {
+        storage_live(_0);
         _0 = test_crate::first::same_name(const 1i32) -> bb1 (unwind: bb2);
     }
 
@@ -53,6 +55,7 @@ pub fn test_crate::second::nested::call() -> i32
     let _0: i32; // return
 
     bb0: {
+        storage_live(_0);
         _0 = test_crate::second::nested::same_name(const 2i32) -> bb1 (unwind: bb2);
     }
 
@@ -65,13 +68,15 @@ pub fn test_crate::second::nested::call() -> i32
     }
 }
 
-pub fn test_crate::local_impl::same_name(x_1: i32) -> i32
+pub fn test_crate::local_impl::same_name(x: i32) -> i32
 {
     let _0: i32; // return
-    let x_1: i32; // arg #1
+    let x: i32; // arg #1
 
     bb0: {
-        _0 = copy x_1;
+        storage_live(_0);
+        _0 = copy x;
+        storage_dead(x);
         return;
     }
 }
@@ -81,6 +86,7 @@ pub fn test_crate::local_impl::call() -> i32
     let _0: i32; // return
 
     bb0: {
+        storage_live(_0);
         _0 = test_crate::local_impl::same_name(const 3i32) -> bb1 (unwind: bb2);
     }
 

@@ -5,13 +5,15 @@
 trait FakeTrait
 
 // Full name: test_crate::condition
-fn condition(_x_1: u32) -> bool
+fn condition(_x: u32) -> bool
 {
     let _0: bool; // return
-    let _x_1: u32; // arg #1
+    let _x: u32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = const true;
+        storage_dead(_x);
         return;
     }
 }
@@ -22,6 +24,7 @@ fn foo()
     let _0: (); // return
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
         return;
@@ -34,6 +37,7 @@ fn bar()
     let _0: (); // return
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
         return;
@@ -50,6 +54,7 @@ fn absorb_full()
     let _4: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         storage_live(_2);

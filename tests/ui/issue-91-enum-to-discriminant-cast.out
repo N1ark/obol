@@ -2,7 +2,8 @@
 // Final ULLBC:
 
 // Full name: core::clone::Clone
-#[lang_item("clone")]
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
 trait Clone
 
 // Full name: FakeTrait
@@ -20,13 +21,15 @@ impl "impl_Clone_for_Foo" Clone for Foo {
 }
 
 // Full name: test_crate::{impl Clone for Foo}::clone
-pub fn clone(self_1: &'_ Foo) -> Foo
+pub fn clone(self: &'_ Foo) -> Foo
 {
     let _0: Foo; // return
-    let self_1: &'_ Foo; // arg #1
+    let self: &'_ Foo; // arg #1
 
     bb0: {
-        _0 = copy (*self_1);
+        storage_live(_0);
+        _0 = copy (*self);
+        storage_dead(self);
         return;
     }
 }
@@ -55,6 +58,7 @@ fn main()
     let _11: isize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_4);
         storage_live(_7);
         storage_live(_11);
@@ -87,6 +91,9 @@ fn main()
         _0 = ();
         storage_dead(x_8);
         storage_dead(x_1);
+        storage_dead(_11);
+        storage_dead(_7);
+        storage_dead(_4);
         return;
     }
 }

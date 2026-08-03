@@ -2,6 +2,7 @@
 // Final ULLBC:
 
 // Full name: core::result::Result::<bool, ()>
+#[diagnostic_item("Result")]
 pub enum Result::<bool, ()> {
   Ok(0: bool),
   Err(0: ()),
@@ -19,17 +20,19 @@ impl<'_> "impl_From_for_bool" From<&'_ bool> for bool {
 }
 
 // Full name: test_crate::{impl From<&'_ bool> for bool}::from::<'_>
-pub fn from::<'_>(v_1: &'_ bool) -> Result::<bool, ()>
+pub fn from::<'_>(v: &'_ bool) -> Result::<bool, ()>
 {
     let _0: Result::<bool, ()>; // return
-    let v_1: &'_ bool; // arg #1
+    let v: &'_ bool; // arg #1
     let _2: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy (*v_1);
+        _2 = copy (*v);
         _0 = Result::<bool, ()>::Ok { 0: move _2 };
         storage_dead(_2);
+        storage_dead(v);
         return;
     }
 }

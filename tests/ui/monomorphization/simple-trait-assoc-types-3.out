@@ -2,27 +2,31 @@
 // Final ULLBC:
 
 // Full name: core::ptr::drop_glue::<i32>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<i32>(_1: &'_ mut i32)
 {
     let _0: (); // return
     let _1: &'_ mut i32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
 
 // Full name: core::ptr::drop_glue::<usize>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<usize>(_1: &'_ mut usize)
 {
     let _0: (); // return
     let _1: &'_ mut usize; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -39,88 +43,94 @@ const anon_const_1: usize = 42usize
 trait test_crate::Trait
 
 // Full name: test_crate::{impl test_crate::Trait for i32}::comsume
-fn impl_Trait_for_i32::comsume(self_1: &'_ i32)
+fn impl_Trait_for_i32::comsume(self: &'_ i32)
 {
     let _0: (); // return
-    let self_1: &'_ i32; // arg #1
+    let self: &'_ i32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 fn {vtable}::test_crate::Trait::<i32>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <i32 as test_crate::Trait>::comsume_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <i32 as test_crate::Trait>::comsume: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<i32 as test_crate::Trait>::comsume_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<i32>, *const ()>(const drop_glue::<i32>);
-        size_2 = transmute<usize, *const ()>(const 4usize);
-        align_3 = transmute<usize, *const ()>(const 4usize);
-        <i32 as test_crate::Trait>::comsume_4 = cast<impl_Trait_for_i32::comsume, *const ()>(const impl_Trait_for_i32::comsume);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <i32 as test_crate::Trait>::comsume_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<i32 as test_crate::Trait>::comsume);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<i32>, *const ()>(const drop_glue::<i32>);
+        size = transmute<usize, *const ()>(const 4usize);
+        align = transmute<usize, *const ()>(const 4usize);
+        <i32 as test_crate::Trait>::comsume = cast<impl_Trait_for_i32::comsume, *const ()>(const impl_Trait_for_i32::comsume);
+        entry_array = [move drop, move size, move align, move <i32 as test_crate::Trait>::comsume];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
 
+static {vtable}::test_crate::Trait::<i32>: *const () = {vtable}::test_crate::Trait::<i32>()
+
 // Full name: test_crate::{impl test_crate::Trait for usize}::comsume
-fn impl_Trait_for_usize::comsume(self_1: &'_ usize)
+fn impl_Trait_for_usize::comsume(self: &'_ usize)
 {
     let _0: (); // return
-    let self_1: &'_ usize; // arg #1
+    let self: &'_ usize; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 fn {vtable}::test_crate::Trait::<usize>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <usize as test_crate::Trait>::comsume_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <usize as test_crate::Trait>::comsume: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<usize as test_crate::Trait>::comsume_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<usize>, *const ()>(const drop_glue::<usize>);
-        size_2 = transmute<usize, *const ()>(const 8usize);
-        align_3 = transmute<usize, *const ()>(const 8usize);
-        <usize as test_crate::Trait>::comsume_4 = cast<impl_Trait_for_usize::comsume, *const ()>(const impl_Trait_for_usize::comsume);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <usize as test_crate::Trait>::comsume_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<usize as test_crate::Trait>::comsume);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<usize>, *const ()>(const drop_glue::<usize>);
+        size = transmute<usize, *const ()>(const 8usize);
+        align = transmute<usize, *const ()>(const 8usize);
+        <usize as test_crate::Trait>::comsume = cast<impl_Trait_for_usize::comsume, *const ()>(const impl_Trait_for_usize::comsume);
+        entry_array = [move drop, move size, move align, move <usize as test_crate::Trait>::comsume];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
-
-static {vtable}::test_crate::Trait::<i32>: *const () = {vtable}::test_crate::Trait::<i32>()
 
 static {vtable}::test_crate::Trait::<usize>: *const () = {vtable}::test_crate::Trait::<usize>()
 
@@ -141,12 +151,12 @@ impl "impl_Trait_for_usize" test_crate::Trait for usize {
 fn main()
 {
     let _0: (); // return
-    let a_1: &'_ (dyn FakeTrait); // local
+    let a: &'_ (dyn FakeTrait); // local
     let _2: &'_ i32; // anonymous local
     let _3: &'_ i32; // anonymous local
     let _4: (); // anonymous local
     let _5: &'_ (dyn FakeTrait); // anonymous local
-    let b_6: &'_ (dyn FakeTrait); // local
+    let b: &'_ (dyn FakeTrait); // local
     let _7: &'_ usize; // anonymous local
     let _8: &'_ usize; // anonymous local
     let _9: (); // anonymous local
@@ -159,12 +169,13 @@ fn main()
     let _16: &'_ usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         _0 = ();
-        storage_live(a_1);
+        storage_live(a);
         storage_live(_2);
         storage_live(_3);
         storage_live(_15);
@@ -172,12 +183,12 @@ fn main()
         _12 = move _15;
         _3 = &(*_12);
         _2 = &(*_3);
-        a_1 = unsize_cast<&'_ i32, &'_ (dyn FakeTrait), {vtable}::test_crate::Trait::<i32>>(move _2);
+        a = unsize_cast<&'_ i32, &'_ (dyn FakeTrait), {vtable}::test_crate::Trait::<i32>>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
-        _5 = &(*a_1) with_metadata(copy a_1.metadata);
+        _5 = &(*a) with_metadata(copy a.metadata);
         _13 = copy _5.metadata offset const 3usize;
         _4 = (copy (*_13))(move _5) -> bb1 (unwind: bb2);
     }
@@ -185,7 +196,7 @@ fn main()
     bb1: {
         storage_dead(_5);
         storage_dead(_4);
-        storage_live(b_6);
+        storage_live(b);
         storage_live(_7);
         storage_live(_8);
         storage_live(_16);
@@ -193,17 +204,21 @@ fn main()
         _11 = move _16;
         _8 = &(*_11);
         _7 = &(*_8);
-        b_6 = unsize_cast<&'_ usize, &'_ (dyn FakeTrait), {vtable}::test_crate::Trait::<usize>>(move _7);
+        b = unsize_cast<&'_ usize, &'_ (dyn FakeTrait), {vtable}::test_crate::Trait::<usize>>(move _7);
         storage_dead(_7);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
-        _10 = &(*b_6) with_metadata(copy b_6.metadata);
+        _10 = &(*b) with_metadata(copy b.metadata);
         _14 = copy _10.metadata offset const 3usize;
         _9 = (copy (*_14))(move _10) -> bb3 (unwind: bb4);
     }
 
     bb2: {
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_12);
+        storage_dead(_11);
         unwind_continue;
     }
 
@@ -211,12 +226,20 @@ fn main()
         storage_dead(_10);
         storage_dead(_9);
         _0 = ();
-        storage_dead(b_6);
-        storage_dead(a_1);
+        storage_dead(b);
+        storage_dead(a);
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_12);
+        storage_dead(_11);
         return;
     }
 
     bb4: {
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_12);
+        storage_dead(_11);
         unwind_continue;
     }
 }

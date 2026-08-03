@@ -2,14 +2,15 @@
 // Final ULLBC:
 
 // Full name: core::marker::PhantomData::<List::<&'_ mut u32>>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<List::<&'_ mut u32>> {}
 
 // Full name: alloc::alloc::Global
-#[lang_item("global_alloc_ty")]
+#[lang_item(GlobalAlloc)]
 pub struct Global {}
 
 // Full name: core::ptr::non_null::NonNull::<List::<&'_ mut u32>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<List::<&'_ mut u32>> {
   pointer: *const List::<&'_ mut u32> is !null,
 }
@@ -21,7 +22,7 @@ pub struct Unique::<List::<&'_ mut u32>> {
 }
 
 // Full name: alloc::boxed::Box::<List::<&'_ mut u32>, Global>
-#[lang_item("owned_box")]
+#[lang_item(OwnedBox)]
 pub struct Box::<List::<&'_ mut u32>, Global> {
   0: Unique::<List::<&'_ mut u32>>,
   1: Global,
@@ -64,8 +65,10 @@ fn use_foo(_1: Foo3::<&'_ mut u32>)
     let _1: Foo3::<&'_ mut u32>; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -77,8 +80,10 @@ fn use_list_mut(_1: &'_ List::<&'_ mut u32>)
     let _1: &'_ List::<&'_ mut u32>; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -101,8 +106,11 @@ fn use_const_generic(_1: ArrayWrapper::<&'_ mut u32, 1usize>, _2: ArrayWrapper::
     let _2: ArrayWrapper::<&'_ mut u32, 2usize>; // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 }

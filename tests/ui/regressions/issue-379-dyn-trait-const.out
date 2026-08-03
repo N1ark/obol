@@ -5,14 +5,16 @@
 struct S {}
 
 // Full name: core::ptr::drop_glue::<S>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<S>(_1: &'_ mut S)
 {
     let _0: (); // return
     let _1: &'_ mut S; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -26,41 +28,44 @@ const anon_const_0: S = S {  }
 trait test_crate::MyTrait
 
 // Full name: test_crate::{impl test_crate::MyTrait for S}::val
-pub fn val(self_1: &'_ S) -> u32
+pub fn val(self: &'_ S) -> u32
 {
     let _0: u32; // return
-    let self_1: &'_ S; // arg #1
+    let self: &'_ S; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = const 42u32;
+        storage_dead(self);
         return;
     }
 }
 
 fn {vtable}::test_crate::MyTrait::<S>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <test_crate::S as test_crate::MyTrait>::val_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <test_crate::S as test_crate::MyTrait>::val: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<test_crate::S as test_crate::MyTrait>::val_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<S>, *const ()>(const drop_glue::<S>);
-        size_2 = transmute<usize, *const ()>(const 0usize);
-        align_3 = transmute<usize, *const ()>(const 1usize);
-        <test_crate::S as test_crate::MyTrait>::val_4 = cast<val, *const ()>(const val);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <test_crate::S as test_crate::MyTrait>::val_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<test_crate::S as test_crate::MyTrait>::val);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<S>, *const ()>(const drop_glue::<S>);
+        size = transmute<usize, *const ()>(const 0usize);
+        align = transmute<usize, *const ()>(const 1usize);
+        <test_crate::S as test_crate::MyTrait>::val = cast<val, *const ()>(const val);
+        entry_array = [move drop, move size, move align, move <test_crate::S as test_crate::MyTrait>::val];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
@@ -85,6 +90,7 @@ pub fn get() -> &'_ (dyn FakeTrait)
     let _4: &'_ (dyn FakeTrait); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_1);
         storage_live(_2);
         storage_live(_3);

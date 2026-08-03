@@ -3,18 +3,22 @@
 
 struct test_crate::main::closure#1::closure {}
 
-fn test_crate::main::closure#1::<i8, extern "rust-call" fn((&'_ u16,)), ()>(_1: &'_ test_crate::main::closure#1::closure, spread_args_2: (&'_ u16,))
+fn test_crate::main::closure#1::<i8, extern "rust-call" fn((&'_ u16,)), ()>(_1: &'_ test_crate::main::closure#1::closure, spread_args: (&'_ u16,))
 {
     let _0: (); // return
     let _1: &'_ test_crate::main::closure#1::closure; // arg #1
-    let spread_args_2: (&'_ u16,); // arg #2
+    let spread_args: (&'_ u16,); // arg #2
     let _3: &'_ u16; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         _0 = ();
-        _3 = move spread_args_2.0;
+        _3 = move spread_args.0;
         _0 = ();
+        storage_dead(_3);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 }
@@ -28,6 +32,7 @@ pub fn call_once::<test_crate::main::closure#1::closure, (&'_ u16,)>(_1: test_cr
     let _3: &'_ mut test_crate::main::closure#1::closure; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         _0 = ();
         _3 = &mut _1;
@@ -35,10 +40,16 @@ pub fn call_once::<test_crate::main::closure#1::closure, (&'_ u16,)>(_1: test_cr
     }
 
     bb1: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -53,34 +64,43 @@ fn make_early::<u16>(_1: fn(&'_ u16))
     let _1: fn(&'_ u16); // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
 
 // Full name: test_crate::main::closure#1::closure_as_fn
-fn closure_as_fn(arg1_1: &'_ u16)
+fn closure_as_fn(arg1: &'_ u16)
 {
     let _0: (); // return
-    let arg1_1: &'_ u16; // arg #1
-    let args_2: (&'_ u16,); // local
-    let state_3: test_crate::main::closure#1::closure; // local
+    let arg1: &'_ u16; // arg #1
+    let args: (&'_ u16,); // local
+    let state: test_crate::main::closure#1::closure; // local
 
     bb0: {
-        storage_live(args_2);
-        storage_live(state_3);
+        storage_live(_0);
+        storage_live(args);
+        storage_live(state);
         _0 = ();
-        args_2 = (move arg1_1,);
-        state_3 = test_crate::main::closure#1::closure {  };
-        _0 = call_once::<test_crate::main::closure#1::closure, (&'_ u16,)>(move state_3, move args_2) -> bb1 (unwind: bb2);
+        args = (move arg1,);
+        state = test_crate::main::closure#1::closure {  };
+        _0 = call_once::<test_crate::main::closure#1::closure, (&'_ u16,)>(move state, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(state);
+        storage_dead(args);
+        storage_dead(arg1);
         return;
     }
 
     bb2: {
+        storage_dead(state);
+        storage_dead(args);
+        storage_dead(arg1);
         unwind_continue;
     }
 }
@@ -97,6 +117,7 @@ fn main()
     let _4: test_crate::main::closure#1::closure; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         _1 = test_crate::main::closure::closure {  };

@@ -11,20 +11,22 @@ const anon_const_0: i32 = 0i32
 pub fn method::<fn(), u32>()
 {
     let _0: (); // return
-    let _promoted_1: &'_ i32; // local
+    let _promoted: &'_ i32; // local
     let _2: &'_ i32; // anonymous local
     let _3: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _0 = ();
-        storage_live(_promoted_1);
+        storage_live(_promoted);
         storage_live(_3);
         _3 = &anon_const_0;
         _2 = move _3;
-        _promoted_1 = &(*_2);
+        _promoted = &(*_2);
         _0 = ();
-        storage_dead(_promoted_1);
+        storage_dead(_promoted);
+        storage_dead(_2);
         return;
     }
 }
@@ -36,6 +38,7 @@ fn main()
     let _1: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         _1 = method::<fn(), u32>() -> bb1 (unwind: bb2);

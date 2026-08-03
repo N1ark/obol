@@ -1,25 +1,32 @@
 
 // Final ULLBC:
 
+pub fn core::intrinsics::assume(b_1: bool)
+= <intrinsic:assume>
+
 // Full name: core::ptr::const_ptr::{*const T}::read::<u32>
-pub fn read::<u32>(self_1: *const u32) -> u32
+pub fn read::<u32>(self: *const u32) -> u32
 {
     let _0: u32; // return
-    let self_1: *const u32; // arg #1
+    let self: *const u32; // arg #1
 
     bb0: {
-        _0 = copy (*self_1);
+        storage_live(_0);
+        _0 = copy (*self);
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: core::ptr::null::<u32>
+#[diagnostic_item("ptr_null")]
 pub fn null::<u32>() -> *const u32
 {
     let _0: *const u32; // return
     let _1: *const u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_1);
         _1 = cast<usize, *const u32>(const 0usize);
         _0 = move _1;
@@ -34,20 +41,21 @@ trait FakeTrait
 fn call_unsafe_fn()
 {
     let _0: (); // return
-    let x_1: *const u32; // local
+    let x: *const u32; // local
     let _2: u32; // anonymous local
     let _3: *const u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(x_1);
-        x_1 = null::<u32>() -> bb1 (unwind: bb2);
+        storage_live(x);
+        x = null::<u32>() -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_live(_2);
         storage_live(_3);
-        _3 = copy x_1;
+        _3 = copy x;
         _2 = read::<u32>(move _3) -> bb3 (unwind: bb4);
     }
 
@@ -59,7 +67,7 @@ fn call_unsafe_fn()
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
-        storage_dead(x_1);
+        storage_dead(x);
         return;
     }
 
@@ -72,21 +80,22 @@ fn call_unsafe_fn()
 fn deref_raw_ptr()
 {
     let _0: (); // return
-    let x_1: *const u32; // local
+    let x: *const u32; // local
     let _2: u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(x_1);
-        x_1 = null::<u32>() -> bb1 (unwind: bb2);
+        storage_live(x);
+        x = null::<u32>() -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_live(_2);
-        _2 = copy (*x_1);
+        _2 = copy (*x);
         storage_dead(_2);
         _0 = ();
-        storage_dead(x_1);
+        storage_dead(x);
         return;
     }
 
@@ -101,6 +110,7 @@ fn COUNTER() -> usize
     let _0: usize; // return
 
     bb0: {
+        storage_live(_0);
         _0 = const 0usize;
         return;
     }
@@ -118,6 +128,7 @@ fn access_mutable_static()
     let _3: *mut usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _0 = ();
         storage_live(_1);
@@ -128,6 +139,7 @@ fn access_mutable_static()
         (*_1) = move _2;
         storage_dead(_1);
         _0 = ();
+        storage_dead(_2);
         return;
     }
 }
@@ -142,31 +154,42 @@ union Foo {
 fn access_union_field()
 {
     let _0: (); // return
-    let one_1: Foo; // local
-    let _two_2: [u32; 2usize]; // local
+    let one: Foo; // local
+    let _two: [u32; 2usize]; // local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(one_1);
-        one_1 = Foo { one: const 42u64 };
-        storage_live(_two_2);
-        _two_2 = copy (one_1).two;
+        storage_live(one);
+        one = Foo { one: const 42u64 };
+        storage_live(_two);
+        _two = copy (one).two;
         _0 = ();
-        storage_dead(_two_2);
-        storage_dead(one_1);
+        storage_dead(_two);
+        storage_dead(one);
         return;
     }
 }
 
-// Full name: test_crate::assume
-fn assume()
+fn test_crate::assume()
 {
     let _0: (); // return
+    let _1: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
+        storage_live(_1);
         _0 = ();
-        assert(const true == true) else undefined_behavior;
+        _1 = core::intrinsics::assume(const true) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_1);
         return;
+    }
+
+    bb2: {
+        undefined_behavior;
     }
 }
 

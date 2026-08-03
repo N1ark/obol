@@ -7,7 +7,7 @@ pub struct Align8::<u64> {
 }
 
 // Full name: core::cell::UnsafeCell::<Align8::<u64>>
-#[lang_item("unsafe_cell")]
+#[lang_item(UnsafeCell)]
 pub struct UnsafeCell::<Align8::<u64>> {
   value: Align8::<u64>,
 }
@@ -26,24 +26,33 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -53,23 +62,19 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
@@ -98,16 +103,17 @@ pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::ptr::non_null::NonNull::<str>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -120,7 +126,7 @@ pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -134,6 +140,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     let _0: &'_ Location::<'_>; // return
 
     bb0: {
+        storage_live(_0);
         _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
@@ -147,7 +154,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -156,7 +163,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -165,16 +172,21 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message_1: &'_ Arguments::<'_>, location_2: &'_ Location::<'_>, can_unwind_3: bool, force_no_backtrace_4: bool) -> PanicInfo::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
     let _0: PanicInfo::<'_>; // return
-    let message_1: &'_ Arguments::<'_>; // arg #1
-    let location_2: &'_ Location::<'_>; // arg #2
-    let can_unwind_3: bool; // arg #3
-    let force_no_backtrace_4: bool; // arg #4
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
-        _0 = PanicInfo::<'_> { message: copy message_1, location: copy location_2, can_unwind: copy can_unwind_3, force_no_backtrace: copy force_no_backtrace_4 };
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        storage_dead(force_no_backtrace);
+        storage_dead(can_unwind);
+        storage_dead(location);
+        storage_dead(message);
         return;
     }
 }
@@ -184,14 +196,14 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
-#[lang_item("panic_fmt")]
-pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
+    let fmt: Arguments::<'_>; // arg #1
     let _2: bool; // anonymous local
     let _3: !; // anonymous local
-    let pi_4: PanicInfo::<'_>; // local
+    let pi: PanicInfo::<'_>; // local
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
@@ -200,6 +212,7 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _2 = const false;
         if move _2 -> bb1 else -> bb2;
@@ -212,10 +225,10 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb2: {
         storage_dead(_2);
-        storage_live(pi_4);
+        storage_live(pi);
         storage_live(_5);
         storage_live(_6);
-        _6 = &fmt_1;
+        _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
         storage_live(_8);
@@ -232,10 +245,15 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb5: {
         _7 = &(*_8);
-        pi_4 = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
     bb6: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -246,12 +264,17 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
         storage_dead(_6);
         storage_live(_9);
         storage_live(_10);
-        _10 = &pi_4;
+        _10 = &pi;
         _9 = &(*_10);
         _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
     }
 
     bb8: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -260,16 +283,23 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     }
 
     bb10: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::sync::atomic::Atomic::<u64>
+#[diagnostic_item("Atomic")]
 pub struct Atomic::<u64> {
   v: UnsafeCell::<Align8::<u64>>,
 }
 
 // Full name: core::sync::atomic::Ordering
+#[diagnostic_item("Ordering")]
 pub enum Ordering {
   Relaxed,
   Release,
@@ -278,11 +308,11 @@ pub enum Ordering {
   SeqCst,
 }
 
-fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) -> u64
+fn core::sync::atomic::atomic_load::<u64>(dst: *const u64, order: Ordering) -> u64
 {
     let _0: u64; // return
-    let dst_1: *const u64; // arg #1
-    let order_2: Ordering; // arg #2
+    let dst: *const u64; // arg #1
+    let order: Ordering; // arg #2
     let _3: isize; // anonymous local
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
@@ -308,15 +338,16 @@ fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) 
     let _25: &'_ [u8]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_4);
         storage_live(_6);
-        _3 = @discriminant(order_2);
+        _3 = @discriminant(order);
         switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, 3isize: bb4, 4isize: bb5, otherwise: bb6;
     }
 
     bb1: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }>(move dst_1) -> bb7 (unwind: bb8);
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }>(move dst) -> bb7 (unwind: bb8);
     }
 
     bb2: {
@@ -353,7 +384,7 @@ fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) 
     }
 
     bb3: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }>(move dst_1) -> bb7 (unwind: bb11);
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }>(move dst) -> bb7 (unwind: bb11);
     }
 
     bb4: {
@@ -390,7 +421,7 @@ fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) 
     }
 
     bb5: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }>(move dst_1) -> bb7 (unwind: bb14);
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }>(move dst) -> bb7 (unwind: bb14);
     }
 
     bb6: {
@@ -398,6 +429,13 @@ fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) 
     }
 
     bb7: {
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(order);
+        storage_dead(dst);
         return;
     }
 
@@ -410,6 +448,13 @@ fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) 
     }
 
     bb10: {
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(order);
+        storage_dead(dst);
         unwind_continue;
     }
 
@@ -422,6 +467,13 @@ fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) 
     }
 
     bb13: {
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(order);
+        storage_dead(dst);
         unwind_continue;
     }
 
@@ -431,28 +483,35 @@ fn core::sync::atomic::atomic_load::<u64>(dst_1: *const u64, order_2: Ordering) 
 }
 
 // Full name: core::sync::atomic::{Atomic::<u64>}::load
-pub fn load(self_1: &'_ Atomic::<u64>, order_2: Ordering) -> u64
+pub fn load(self: &'_ Atomic::<u64>, order: Ordering) -> u64
 {
     let _0: u64; // return
-    let self_1: &'_ Atomic::<u64>; // arg #1
-    let order_2: Ordering; // arg #2
+    let self: &'_ Atomic::<u64>; // arg #1
+    let order: Ordering; // arg #2
     let _3: *const u64; // anonymous local
     let _4: *const UnsafeCell::<Align8::<u64>>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_4);
         storage_live(_3);
-        _4 = &raw const ((*self_1)).v;
+        _4 = &raw const ((*self)).v;
         _3 = cast<*const UnsafeCell::<Align8::<u64>>, *const u64>(copy _4);
-        _0 = core::sync::atomic::atomic_load::<u64>(move _3, move order_2) -> bb1 (unwind: bb2);
+        _0 = core::sync::atomic::atomic_load::<u64>(move _3, move order) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_3);
+        storage_dead(_4);
+        storage_dead(order);
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(_4);
+        storage_dead(order);
+        storage_dead(self);
         unwind_continue;
     }
 }
@@ -466,6 +525,7 @@ fn HART_STATES() -> [Atomic::<u64>; 2usize]
     let _0: [Atomic::<u64>; 2usize]; // return
 
     bb0: {
+        storage_live(_0);
         _0 = [copy INITIAL_STATE; 2usize];
         return;
     }
@@ -478,7 +538,7 @@ static HART_STATES: [Atomic::<u64>; 2usize] = HART_STATES()
 fn main()
 {
     let _0: (); // return
-    let _x_1: u64; // local
+    let _x: u64; // local
     let _2: &'_ Atomic::<u64>; // anonymous local
     let _3: &'_ [Atomic::<u64>; 2usize]; // anonymous local
     let _4: usize; // anonymous local
@@ -486,8 +546,9 @@ fn main()
     let _6: &'_ [Atomic::<u64>; 2usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(_x_1);
+        storage_live(_x);
         storage_live(_2);
         storage_live(_3);
         storage_live(_6);
@@ -498,7 +559,7 @@ fn main()
         _2 = &(*_3)[copy _4];
         storage_live(_5);
         _5 = Ordering::Relaxed {  };
-        _x_1 = load(move _2, move _5) -> bb1 (unwind: bb2);
+        _x = load(move _2, move _5) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -507,7 +568,7 @@ fn main()
         storage_dead(_4);
         storage_dead(_3);
         _0 = ();
-        storage_dead(_x_1);
+        storage_dead(_x);
         return;
     }
 

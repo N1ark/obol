@@ -4,6 +4,7 @@ pub mod translate_closures;
 pub mod translate_constants;
 pub mod translate_crate;
 pub mod translate_ctx;
+pub mod translate_from_rustc;
 pub mod translate_functions;
 pub mod translate_items;
 pub mod translate_meta;

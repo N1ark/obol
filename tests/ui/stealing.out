@@ -15,30 +15,40 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -48,39 +58,38 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
+#[diagnostic_item("Debug")]
 trait core::fmt::Debug
 
 // Full name: core::ptr::drop_glue::<&'_ usize>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<&'_ usize>(_1: &'_ mut &'_ usize)
 {
     let _0: (); // return
     let _1: &'_ mut &'_ usize; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -98,20 +107,21 @@ pub fn impl_LowerHex_for_usize::fmt(_1: &'_ usize, _2: &'_ mut Formatter::<'_>) 
 = <missing>
 
 // Full name: core::fmt::num::{impl core::fmt::Debug for usize}::fmt
-pub fn impl_Debug_for_usize::fmt(self_1: &'_ usize, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn impl_Debug_for_usize::fmt(self: &'_ usize, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
-    let self_1: &'_ usize; // arg #1
-    let f_2: &'_ mut Formatter::<'_>; // arg #2
+    let self: &'_ usize; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f_2)).options).flags;
+        _4 = copy (((*f)).options).flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -121,7 +131,7 @@ pub fn impl_Debug_for_usize::fmt(self_1: &'_ usize, f_2: &'_ mut Formatter::<'_>
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f_2)).options).flags;
+        _6 = copy (((*f)).options).flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -129,90 +139,109 @@ pub fn impl_Debug_for_usize::fmt(self_1: &'_ usize, f_2: &'_ mut Formatter::<'_>
 
     bb2: {
         storage_dead(_3);
-        _0 = impl_LowerHex_for_usize::fmt(move self_1, move f_2) -> bb5 (unwind: bb6);
+        _0 = impl_LowerHex_for_usize::fmt(move self, move f) -> bb5 (unwind: bb6);
     }
 
     bb3: {
         storage_dead(_5);
-        _0 = impl_Display_for_usize::fmt(move self_1, move f_2) -> bb5 (unwind: bb7);
+        _0 = impl_Display_for_usize::fmt(move self, move f) -> bb5 (unwind: bb7);
     }
 
     bb4: {
         storage_dead(_5);
-        _0 = impl_UpperHex_for_usize::fmt(move self_1, move f_2) -> bb5 (unwind: bb8);
+        _0 = impl_UpperHex_for_usize::fmt(move self, move f) -> bb5 (unwind: bb8);
     }
 
     bb5: {
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
     bb6: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 
     bb7: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 
     bb8: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>
-pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>(self_1: &'_ &'_ usize, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>(self: &'_ &'_ usize, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
-    let self_1: &'_ &'_ usize; // arg #1
-    let f_2: &'_ mut Formatter::<'_>; // arg #2
+    let self: &'_ &'_ usize; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
     let _3: &'_ usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self_1);
-        _0 = impl_Debug_for_usize::fmt(move _3, move f_2) -> bb1 (unwind: bb2);
+        _3 = copy (*self);
+        _0 = impl_Debug_for_usize::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
+#[diagnostic_item("Debug")]
 fn {vtable}::core::fmt::Debug::<&'_ usize>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <&usize as std::fmt::Debug>::fmt_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <&usize as std::fmt::Debug>::fmt: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<&usize as std::fmt::Debug>::fmt_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<&'_ usize>, *const ()>(const drop_glue::<&'_ usize>);
-        size_2 = transmute<usize, *const ()>(const 8usize);
-        align_3 = transmute<usize, *const ()>(const 8usize);
-        <&usize as std::fmt::Debug>::fmt_4 = cast<{impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>, *const ()>(const {impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <&usize as std::fmt::Debug>::fmt_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<&usize as std::fmt::Debug>::fmt);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<&'_ usize>, *const ()>(const drop_glue::<&'_ usize>);
+        size = transmute<usize, *const ()>(const 8usize);
+        align = transmute<usize, *const ()>(const 8usize);
+        <&usize as std::fmt::Debug>::fmt = cast<{impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>, *const ()>(const {impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>);
+        entry_array = [move drop, move size, move align, move <&usize as std::fmt::Debug>::fmt];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
 
+#[diagnostic_item("Debug")]
 static {vtable}::core::fmt::Debug::<&'_ usize>: *const () = {vtable}::core::fmt::Debug::<&'_ usize>()
 
 // Full name: core::fmt::Display
+#[diagnostic_item("Display")]
 trait Display
 
 // Full name: core::fmt::LowerHex
@@ -247,7 +276,8 @@ impl "impl_Display_for_usize" Display for usize {
 }
 
 // Full name: core::option::Option::<Arguments::<'_>>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<Arguments::<'_>> {
   None,
   Some(0: Arguments::<'_>),
@@ -265,28 +295,29 @@ fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn Fak
 = <missing>
 
 // Full name: core::panicking::assert_failed::<usize, usize>
-pub fn assert_failed::<usize, usize>(kind_1: AssertKind, left_2: &'_ usize, right_3: &'_ usize, args_4: Option::<Arguments::<'_>>) -> !
+pub fn assert_failed::<usize, usize>(kind: AssertKind, left: &'_ usize, right: &'_ usize, args: Option::<Arguments::<'_>>) -> !
 {
     let _0: !; // return
-    let kind_1: AssertKind; // arg #1
-    let left_2: &'_ usize; // arg #2
-    let right_3: &'_ usize; // arg #3
-    let args_4: Option::<Arguments::<'_>>; // arg #4
+    let kind: AssertKind; // arg #1
+    let left: &'_ usize; // arg #2
+    let right: &'_ usize; // arg #3
+    let args: Option::<Arguments::<'_>>; // arg #4
     let _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: &'_ &'_ usize; // anonymous local
     let _7: &'_ (dyn FakeTrait); // anonymous local
     let _8: &'_ &'_ usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_5);
         storage_live(_6);
-        _6 = &left_2;
+        _6 = &left;
         _5 = unsize_cast<&'_ &'_ usize, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<&'_ usize>>(copy _6);
         storage_live(_7);
         storage_live(_8);
-        _8 = &right_3;
+        _8 = &right;
         _7 = unsize_cast<&'_ &'_ usize, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<&'_ usize>>(copy _8);
-        _0 = assert_failed_inner(move kind_1, move _5, move _7, move args_4) -> bb1 (unwind: bb2);
+        _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -294,19 +325,29 @@ pub fn assert_failed::<usize, usize>(kind_1: AssertKind, left_2: &'_ usize, righ
     }
 
     bb2: {
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(args);
+        storage_dead(right);
+        storage_dead(left);
+        storage_dead(kind);
         unwind_continue;
     }
 }
 
 // Full name: core::slice::{[T]}::len::<()>
-#[lang_item("slice_len_fn")]
-pub fn len::<()>(self_1: &'_ [()]) -> usize
+#[lang_item(SliceLen)]
+pub fn len::<()>(self: &'_ [()]) -> usize
 {
     let _0: usize; // return
-    let self_1: &'_ [()]; // arg #1
+    let self: &'_ [()]; // arg #1
 
     bb0: {
-        _0 = copy self_1.metadata;
+        storage_live(_0);
+        _0 = copy self.metadata;
+        storage_dead(self);
         return;
     }
 }
@@ -321,6 +362,7 @@ fn SLICE() -> [(); 4usize]
     let _1: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_1);
         _1 = ();
         _0 = [move _1; 4usize];
@@ -347,6 +389,7 @@ fn four() -> usize
     let _3: usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_1);
         _1 = copy BAR;
@@ -356,6 +399,7 @@ fn four() -> usize
         storage_dead(_2);
         _3 = const 2usize panic.+ const 2usize;
         _0 = move _3;
+        storage_dead(_3);
         return;
     }
 }
@@ -371,12 +415,12 @@ fn main()
     let _5: &'_ [(); 4usize]; // anonymous local
     let _6: &'_ [(); 4usize]; // anonymous local
     let _7: &'_ usize; // anonymous local
-    let left_val_8: &'_ usize; // local
-    let right_val_9: &'_ usize; // local
+    let left_val: &'_ usize; // local
+    let right_val: &'_ usize; // local
     let _10: bool; // anonymous local
     let _11: usize; // anonymous local
     let _12: usize; // anonymous local
-    let kind_13: AssertKind; // local
+    let kind: AssertKind; // local
     let _14: !; // anonymous local
     let _15: AssertKind; // anonymous local
     let _16: &'_ usize; // anonymous local
@@ -389,6 +433,7 @@ fn main()
     let _23: &'_ usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_21);
         _0 = ();
         storage_live(_1);
@@ -417,20 +462,29 @@ fn main()
         _1 = (move _2, move _7);
         storage_dead(_7);
         storage_dead(_2);
-        storage_live(left_val_8);
-        left_val_8 = copy _1.0;
-        storage_live(right_val_9);
-        right_val_9 = copy _1.1;
+        storage_live(left_val);
+        left_val = copy _1.0;
+        storage_live(right_val);
+        right_val = copy _1.1;
         storage_live(_10);
         storage_live(_11);
-        _11 = copy (*left_val_8);
+        _11 = copy (*left_val);
         storage_live(_12);
-        _12 = copy (*right_val_9);
+        _12 = copy (*right_val);
         _10 = move _11 == move _12;
         if move _10 -> bb3 else -> bb4;
     }
 
     bb2: {
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(kind);
         unwind_continue;
     }
 
@@ -438,30 +492,39 @@ fn main()
         storage_dead(_12);
         storage_dead(_11);
         storage_dead(_10);
-        storage_dead(right_val_9);
-        storage_dead(left_val_8);
+        storage_dead(right_val);
+        storage_dead(left_val);
         storage_dead(_6);
         storage_dead(_3);
         storage_dead(_1);
         _0 = ();
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(kind);
         return;
     }
 
     bb4: {
         storage_dead(_12);
         storage_dead(_11);
-        storage_live(kind_13);
-        kind_13 = AssertKind::Eq {  };
+        storage_live(kind);
+        kind = AssertKind::Eq {  };
         storage_live(_14);
         storage_live(_15);
-        _15 = move kind_13;
+        _15 = move kind;
         storage_live(_16);
         storage_live(_17);
-        _17 = &(*left_val_8);
+        _17 = &(*left_val);
         _16 = &(*_17);
         storage_live(_18);
         storage_live(_19);
-        _19 = &(*right_val_9);
+        _19 = &(*right_val);
         _18 = &(*_19);
         storage_live(_20);
         _20 = Option::<Arguments::<'_>>::None {  };
@@ -473,6 +536,15 @@ fn main()
     }
 
     bb6: {
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(kind);
         unwind_continue;
     }
 }

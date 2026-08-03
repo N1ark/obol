@@ -16,6 +16,7 @@ fn foo::<()>()
     let _3: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _0 = ();
         storage_live(_1);
@@ -25,6 +26,7 @@ fn foo::<()>()
         _1 = &(*_2);
         storage_dead(_1);
         _0 = ();
+        storage_dead(_2);
         return;
     }
 }
@@ -36,6 +38,7 @@ fn main()
     let _1: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         _1 = foo::<()>() -> bb1 (unwind: bb2);

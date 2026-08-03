@@ -2,14 +2,16 @@
 // Final ULLBC:
 
 // Full name: core::ptr::drop_glue::<()>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<()>(_1: &'_ mut ())
 {
     let _0: (); // return
     let _1: &'_ mut (); // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -23,42 +25,45 @@ const anon_const_0: () = ()
 trait test_crate::Broken
 
 // Full name: test_crate::{impl test_crate::Broken for T}::broken::<()>
-pub fn broken::<()>(self_1: &'_ ())
+pub fn broken::<()>(self: &'_ ())
 {
     let _0: (); // return
-    let self_1: &'_ (); // arg #1
+    let self: &'_ (); // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 fn {vtable}::test_crate::Broken::<()>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <() as test_crate::Broken>::broken_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <() as test_crate::Broken>::broken: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<() as test_crate::Broken>::broken_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<()>, *const ()>(const drop_glue::<()>);
-        size_2 = transmute<usize, *const ()>(const 0usize);
-        align_3 = transmute<usize, *const ()>(const 1usize);
-        <() as test_crate::Broken>::broken_4 = cast<broken::<()>, *const ()>(const broken::<()>);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <() as test_crate::Broken>::broken_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<() as test_crate::Broken>::broken);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<()>, *const ()>(const drop_glue::<()>);
+        size = transmute<usize, *const ()>(const 0usize);
+        align = transmute<usize, *const ()>(const 1usize);
+        <() as test_crate::Broken>::broken = cast<broken::<()>, *const ()>(const broken::<()>);
+        entry_array = [move drop, move size, move align, move <() as test_crate::Broken>::broken];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
@@ -74,16 +79,17 @@ impl<T> "impl_Broken_for_T" test_crate::Broken for T {
 fn main()
 {
     let _0: (); // return
-    let _m_1: &'_ (dyn FakeTrait); // local
+    let _m: &'_ (dyn FakeTrait); // local
     let _2: &'_ (); // anonymous local
     let _3: &'_ (); // anonymous local
     let _4: &'_ (); // anonymous local
     let _5: &'_ (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_4);
         _0 = ();
-        storage_live(_m_1);
+        storage_live(_m);
         storage_live(_2);
         storage_live(_3);
         storage_live(_5);
@@ -91,11 +97,12 @@ fn main()
         _4 = move _5;
         _3 = &(*_4);
         _2 = &(*_3);
-        _m_1 = unsize_cast<&'_ (), &'_ (dyn FakeTrait), {vtable}::test_crate::Broken::<()>>(move _2);
+        _m = unsize_cast<&'_ (), &'_ (dyn FakeTrait), {vtable}::test_crate::Broken::<()>>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         _0 = ();
-        storage_dead(_m_1);
+        storage_dead(_m);
+        storage_dead(_4);
         return;
     }
 }

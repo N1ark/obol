@@ -3,18 +3,22 @@
 
 struct test_crate::foo::{const}::closure::closure {}
 
-fn test_crate::foo::{const}::closure::<(), i8, extern "rust-call" fn(((),)), ()>(_1: &'_ test_crate::foo::{const}::closure::closure, spread_args_2: ((),))
+fn test_crate::foo::{const}::closure::<(), i8, extern "rust-call" fn(((),)), ()>(_1: &'_ test_crate::foo::{const}::closure::closure, spread_args: ((),))
 {
     let _0: (); // return
     let _1: &'_ test_crate::foo::{const}::closure::closure; // arg #1
-    let spread_args_2: ((),); // arg #2
-    let x_3: (); // local
+    let spread_args: ((),); // arg #2
+    let x: (); // local
 
     bb0: {
-        storage_live(x_3);
+        storage_live(_0);
+        storage_live(x);
         _0 = ();
-        x_3 = move spread_args_2.0;
+        x = move spread_args.0;
         _0 = ();
+        storage_dead(x);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 }
@@ -28,6 +32,7 @@ pub fn call_once::<test_crate::foo::{const}::closure::closure, ((),)>(_1: test_c
     let _3: &'_ mut test_crate::foo::{const}::closure::closure; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         _0 = ();
         _3 = &mut _1;
@@ -35,10 +40,16 @@ pub fn call_once::<test_crate::foo::{const}::closure::closure, ((),)>(_1: test_c
     }
 
     bb1: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -47,49 +58,57 @@ pub fn call_once::<test_crate::foo::{const}::closure::closure, ((),)>(_1: test_c
 trait FakeTrait
 
 // Full name: test_crate::foo::{const}::closure::closure_as_fn
-fn closure_as_fn(arg1_1: ())
+fn closure_as_fn(arg1: ())
 {
     let _0: (); // return
-    let arg1_1: (); // arg #1
-    let args_2: ((),); // local
-    let state_3: test_crate::foo::{const}::closure::closure; // local
+    let arg1: (); // arg #1
+    let args: ((),); // local
+    let state: test_crate::foo::{const}::closure::closure; // local
 
     bb0: {
-        storage_live(args_2);
-        storage_live(state_3);
+        storage_live(_0);
+        storage_live(args);
+        storage_live(state);
         _0 = ();
-        args_2 = (move arg1_1,);
-        state_3 = test_crate::foo::{const}::closure::closure {  };
-        _0 = call_once::<test_crate::foo::{const}::closure::closure, ((),)>(move state_3, move args_2) -> bb1 (unwind: bb2);
+        args = (move arg1,);
+        state = test_crate::foo::{const}::closure::closure {  };
+        _0 = call_once::<test_crate::foo::{const}::closure::closure, ((),)>(move state, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(state);
+        storage_dead(args);
+        storage_dead(arg1);
         return;
     }
 
     bb2: {
+        storage_dead(state);
+        storage_dead(args);
+        storage_dead(arg1);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::foo::<()>
-fn foo::<()>(x_1: ())
+fn foo::<()>(x: ())
 {
     let _0: (); // return
-    let x_1: (); // arg #1
-    let f_2: fn(()); // local
+    let x: (); // arg #1
+    let f: fn(()); // local
     let _3: fn(()); // anonymous local
     let _4: (); // anonymous local
     let _5: fn(()); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(f_2);
+        storage_live(f);
         storage_live(_5);
         _5 = cast<closure_as_fn<test_crate::foo::{const}::closure::closure, ((),)>, fn(())>(const closure_as_fn<test_crate::foo::{const}::closure::closure, ((),)>);
-        f_2 = move _5;
+        f = move _5;
         storage_live(_3);
-        _3 = copy f_2;
+        _3 = copy f;
         storage_live(_4);
         _4 = ();
         _0 = (move _3)(move _4) -> bb1 (unwind: bb2);
@@ -98,11 +117,13 @@ fn foo::<()>(x_1: ())
     bb1: {
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(f_2);
+        storage_dead(f);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 }
@@ -115,6 +136,7 @@ pub fn main()
     let _2: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         storage_live(_2);

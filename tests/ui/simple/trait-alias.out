@@ -2,7 +2,8 @@
 // Final ULLBC:
 
 // Full name: core::clone::Clone
-#[lang_item("clone")]
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
 trait Clone
 
 // Full name: FakeTrait
@@ -17,30 +18,33 @@ impl "impl_Clone_for_Struct" Clone for Struct {
 }
 
 // Full name: test_crate::{impl Clone for Struct}::clone
-pub fn clone(self_1: &'_ Struct) -> Struct
+pub fn clone(self: &'_ Struct) -> Struct
 {
     let _0: Struct; // return
-    let self_1: &'_ Struct; // arg #1
+    let self: &'_ Struct; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = Struct {  };
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::takes_alias::<Struct>
-fn takes_alias::<Struct>(x_1: Struct)
+fn takes_alias::<Struct>(x: Struct)
 {
     let _0: (); // return
-    let x_1: Struct; // arg #1
+    let x: Struct; // arg #1
     let _2: Struct; // anonymous local
     let _3: &'_ Struct; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = &x_1;
+        _3 = &x;
         _2 = clone(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -48,10 +52,12 @@ fn takes_alias::<Struct>(x_1: Struct)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 }
@@ -64,6 +70,7 @@ fn use_alias()
     let _2: Struct; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         storage_live(_2);

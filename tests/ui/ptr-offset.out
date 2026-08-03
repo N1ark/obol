@@ -15,24 +15,33 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -42,40 +51,36 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
     let _0: Arguments::<'_>; // return
-    let s_1: &'_ str; // arg #1
+    let s: &'_ str; // arg #1
     let _2: NonNull::<u8>; // anonymous local
     let _3: *const u8; // anonymous local
     let _4: NonNull::<Argument::<'_>>; // anonymous local
@@ -86,10 +91,11 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
     let _9: &'_ [u8]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         storage_live(_8);
-        _8 = &raw const (*s_1) with_metadata(copy s_1.metadata);
+        _8 = &raw const (*s) with_metadata(copy s.metadata);
         _3 = cast<*const str, *const u8>(copy _8);
         storage_dead(_8);
         _2 = transmute<*const u8, NonNull::<u8>>(copy _3);
@@ -99,7 +105,7 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
         storage_live(_6);
         storage_live(_7);
         storage_live(_9);
-        _9 = transmute<&'_ str, &'_ [u8]>(copy s_1);
+        _9 = transmute<&'_ str, &'_ [u8]>(copy s);
         _7 = copy _9.metadata;
         storage_dead(_9);
         _6 = move _7 wrap.<< const 1i32;
@@ -111,6 +117,7 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
         storage_dead(_2);
+        storage_dead(s);
         return;
     }
 }
@@ -124,16 +131,17 @@ pub fn cold_path()
 = <intrinsic:cold_path>
 
 // Full name: core::ptr::non_null::NonNull::<str>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -146,11 +154,11 @@ pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
 // Full name: core::mem::SizedTypeProperties::SIZE::<i32>
-#[lang_item("mem_size_const")]
+#[lang_item(SizeOf)]
 pub const SIZE::<i32>: usize = 4usize
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -164,6 +172,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     let _0: &'_ Location::<'_>; // return
 
     bb0: {
+        storage_live(_0);
         _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
@@ -177,7 +186,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -186,7 +195,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -195,16 +204,21 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message_1: &'_ Arguments::<'_>, location_2: &'_ Location::<'_>, can_unwind_3: bool, force_no_backtrace_4: bool) -> PanicInfo::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
     let _0: PanicInfo::<'_>; // return
-    let message_1: &'_ Arguments::<'_>; // arg #1
-    let location_2: &'_ Location::<'_>; // arg #2
-    let can_unwind_3: bool; // arg #3
-    let force_no_backtrace_4: bool; // arg #4
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
-        _0 = PanicInfo::<'_> { message: copy message_1, location: copy location_2, can_unwind: copy can_unwind_3, force_no_backtrace: copy force_no_backtrace_4 };
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        storage_dead(force_no_backtrace);
+        storage_dead(can_unwind);
+        storage_dead(location);
+        storage_dead(message);
         return;
     }
 }
@@ -214,14 +228,14 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
-#[lang_item("panic_fmt")]
-pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
+    let fmt: Arguments::<'_>; // arg #1
     let _2: bool; // anonymous local
     let _3: !; // anonymous local
-    let pi_4: PanicInfo::<'_>; // local
+    let pi: PanicInfo::<'_>; // local
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
@@ -230,6 +244,7 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _2 = const false;
         if move _2 -> bb1 else -> bb2;
@@ -242,10 +257,10 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb2: {
         storage_dead(_2);
-        storage_live(pi_4);
+        storage_live(pi);
         storage_live(_5);
         storage_live(_6);
-        _6 = &fmt_1;
+        _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
         storage_live(_8);
@@ -262,10 +277,15 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb5: {
         _7 = &(*_8);
-        pi_4 = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
     bb6: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -276,12 +296,17 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
         storage_dead(_6);
         storage_live(_9);
         storage_live(_10);
-        _10 = &pi_4;
+        _10 = &pi;
         _9 = &(*_10);
         _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
     }
 
     bb8: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -290,19 +315,25 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     }
 
     bb10: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
-fn compiletime(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
+fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
-    let force_no_backtrace_2: bool; // arg #2
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
 
     bb0: {
-        _0 = panic_fmt(move fmt_1) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -310,26 +341,29 @@ fn compiletime(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
     }
 
     bb2: {
+        storage_dead(force_no_backtrace);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
-pub fn panic_nounwind_fmt(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) -> !
+pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
-    let force_no_backtrace_2: bool; // arg #2
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
     let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy fmt_1;
+        _4 = copy fmt;
         storage_live(_5);
-        _5 = copy force_no_backtrace_2;
+        _5 = copy force_no_backtrace;
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
@@ -341,25 +375,29 @@ pub fn panic_nounwind_fmt(fmt_1: Arguments::<'_>, force_no_backtrace_2: bool) ->
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(force_no_backtrace);
+        storage_dead(fmt);
         unwind_terminate;
     }
 }
 
 // Full name: core::panicking::panic
-#[lang_item("panic")]
-pub fn panic(expr_1: &'_ str) -> !
+#[lang_item(Panic)]
+pub fn panic(expr: &'_ str) -> !
 {
     let _0: !; // return
-    let expr_1: &'_ str; // arg #1
+    let expr: &'_ str; // arg #1
     let _2: !; // anonymous local
     let _3: Arguments::<'_>; // anonymous local
     let _4: &'_ str; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy expr_1;
+        _4 = copy expr;
         _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
     }
 
@@ -369,6 +407,9 @@ pub fn panic(expr_1: &'_ str) -> !
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(expr);
         unwind_continue;
     }
 
@@ -377,32 +418,35 @@ pub fn panic(expr_1: &'_ str) -> !
     }
 
     bb4: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(expr);
         unwind_continue;
     }
 }
 
 // Full name: core::ptr::const_ptr::{*const T}::offset::precondition_check
-fn precondition_check(this_1: *const (), count_2: isize, size_3: usize)
+fn precondition_check(this: *const (), count: isize, size: usize)
 {
     let _0: (); // return
-    let this_1: *const (); // arg #1
-    let count_2: isize; // arg #2
-    let size_3: usize; // arg #3
+    let this: *const (); // arg #1
+    let count: isize; // arg #2
+    let size: usize; // arg #3
     let _4: bool; // anonymous local
-    let msg_5: &'_ str; // local
+    let msg: &'_ str; // local
     let _6: !; // anonymous local
     let _7: Arguments::<'_>; // anonymous local
-    let rhs_8: isize; // local
-    let self_9: usize; // local
+    let rhs: isize; // local
+    let self: usize; // local
     let _10: i64; // anonymous local
-    let b_11: bool; // local
+    let b: bool; // local
     let _12: (i64, bool); // anonymous local
     let _13: i64; // anonymous local
     let _14: i64; // anonymous local
-    let byte_offset_15: isize; // local
+    let byte_offset: isize; // local
     let _16: (); // anonymous local
     let _17: usize; // anonymous local
-    let overflow_18: bool; // local
+    let overflow: bool; // local
     let _19: bool; // anonymous local
     let _20: bool; // anonymous local
     let _21: (u64, bool); // anonymous local
@@ -418,31 +462,32 @@ fn precondition_check(this_1: *const (), count_2: isize, size_3: usize)
     let _31: &'_ [u8]; // anonymous local
 
     bb0: {
-        storage_live(msg_5);
+        storage_live(_0);
+        storage_live(msg);
         storage_live(_6);
-        storage_live(byte_offset_15);
+        storage_live(byte_offset);
         storage_live(_16);
         _0 = ();
         storage_live(_4);
-        storage_live(overflow_18);
-        storage_live(rhs_8);
-        rhs_8 = cast<usize, isize>(copy size_3);
-        storage_live(b_11);
+        storage_live(overflow);
+        storage_live(rhs);
+        rhs = cast<usize, isize>(copy size);
+        storage_live(b);
         storage_live(_12);
         storage_live(_13);
-        _13 = cast<isize, i64>(copy count_2);
+        _13 = cast<isize, i64>(copy count);
         storage_live(_14);
-        _14 = cast<isize, i64>(copy rhs_8);
+        _14 = cast<isize, i64>(copy rhs);
         _12 = move _13 checked.* move _14;
         storage_dead(_14);
         storage_dead(_13);
         storage_live(_10);
         _10 = copy _12.0;
-        b_11 = copy _12.1;
+        b = copy _12.1;
         storage_dead(_12);
-        byte_offset_15 = cast<i64, isize>(copy _10);
+        byte_offset = cast<i64, isize>(copy _10);
         storage_dead(_10);
-        if copy b_11 -> bb1 else -> bb2;
+        if copy b -> bb1 else -> bb2;
     }
 
     bb1: {
@@ -450,16 +495,16 @@ fn precondition_check(this_1: *const (), count_2: isize, size_3: usize)
     }
 
     bb2: {
-        storage_dead(b_11);
-        storage_dead(rhs_8);
-        storage_live(self_9);
-        self_9 = transmute<*const (), usize>(copy this_1);
+        storage_dead(b);
+        storage_dead(rhs);
+        storage_live(self);
+        self = transmute<*const (), usize>(copy this);
         storage_live(_20);
         storage_live(_17);
-        _17 = cast<isize, usize>(copy byte_offset_15);
+        _17 = cast<isize, usize>(copy byte_offset);
         storage_live(_21);
         storage_live(_22);
-        _22 = cast<usize, u64>(copy self_9);
+        _22 = cast<usize, u64>(copy self);
         storage_live(_23);
         _23 = cast<usize, u64>(copy _17);
         _21 = move _22 checked.+ move _23;
@@ -469,20 +514,20 @@ fn precondition_check(this_1: *const (), count_2: isize, size_3: usize)
         storage_dead(_21);
         storage_dead(_17);
         storage_live(_19);
-        _19 = copy byte_offset_15 < const 0isize;
-        overflow_18 = copy _20 ^ move _19;
+        _19 = copy byte_offset < const 0isize;
+        overflow = copy _20 ^ move _19;
         storage_dead(_19);
         storage_dead(_20);
-        storage_dead(self_9);
-        _4 = ~(copy overflow_18);
-        storage_dead(overflow_18);
+        storage_dead(self);
+        _4 = ~(copy overflow);
+        storage_dead(overflow);
         if move _4 -> bb5 else -> bb6;
     }
 
     bb3: {
-        storage_dead(b_11);
-        storage_dead(rhs_8);
-        storage_dead(overflow_18);
+        storage_dead(b);
+        storage_dead(rhs);
+        storage_dead(overflow);
         goto bb6;
     }
 
@@ -492,16 +537,24 @@ fn precondition_check(this_1: *const (), count_2: isize, size_3: usize)
 
     bb5: {
         storage_dead(_4);
+        storage_dead(_16);
+        storage_dead(byte_offset);
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(msg);
+        storage_dead(size);
+        storage_dead(count);
+        storage_dead(this);
         return;
     }
 
     bb6: {
-        msg_5 = const "unsafe precondition(s) violated: ptr::offset requires the address calculation to not overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        msg = const "unsafe precondition(s) violated: ptr::offset requires the address calculation to not overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_7);
         storage_live(_24);
         storage_live(_25);
         storage_live(_30);
-        _30 = &raw const (*msg_5) with_metadata(copy msg_5.metadata);
+        _30 = &raw const (*msg) with_metadata(copy msg.metadata);
         _25 = cast<*const str, *const u8>(copy _30);
         storage_dead(_30);
         _24 = transmute<*const u8, NonNull::<u8>>(copy _25);
@@ -536,16 +589,17 @@ fn precondition_check(this_1: *const (), count_2: isize, size_3: usize)
 }
 
 // Full name: core::ptr::const_ptr::{*const T}::offset::<i32>
-pub fn offset::<i32>(self_1: *const i32, count_2: isize) -> *const i32
+pub fn offset::<i32>(self: *const i32, count: isize) -> *const i32
 {
     let _0: *const i32; // return
-    let self_1: *const i32; // arg #1
-    let count_2: isize; // arg #2
+    let self: *const i32; // arg #1
+    let count: isize; // arg #2
     let _3: (); // anonymous local
     let _4: *const (); // anonymous local
     let _5: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_5);
         _5 = ub_checks<bool>;
@@ -554,12 +608,16 @@ pub fn offset::<i32>(self_1: *const i32, count_2: isize) -> *const i32
 
     bb1: {
         storage_live(_4);
-        _4 = cast<*const i32, *const ()>(copy self_1);
-        _3 = precondition_check(move _4, copy count_2, copy SIZE::<i32>) -> bb3 (unwind: bb4);
+        _4 = cast<*const i32, *const ()>(copy self);
+        _3 = precondition_check(move _4, copy count, copy SIZE::<i32>) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        _0 = copy self_1 offset copy count_2;
+        _0 = copy self offset copy count;
+        storage_dead(_5);
+        storage_dead(_3);
+        storage_dead(count);
+        storage_dead(self);
         return;
     }
 
@@ -574,17 +632,19 @@ pub fn offset::<i32>(self_1: *const i32, count_2: isize) -> *const i32
 }
 
 // Full name: core::slice::{[T]}::as_ptr::<i32>
-pub fn as_ptr::<i32>(self_1: &'_ [i32]) -> *const i32
+pub fn as_ptr::<i32>(self: &'_ [i32]) -> *const i32
 {
     let _0: *const i32; // return
-    let self_1: &'_ [i32]; // arg #1
+    let self: &'_ [i32]; // arg #1
     let _2: *const [i32]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = &raw const (*self_1) with_metadata(copy self_1.metadata);
+        _2 = &raw const (*self) with_metadata(copy self.metadata);
         _0 = cast<*const [i32], *const i32>(copy _2);
         storage_dead(_2);
+        storage_dead(self);
         return;
     }
 }
@@ -593,8 +653,8 @@ pub fn as_ptr::<i32>(self_1: &'_ [i32]) -> *const i32
 fn main()
 {
     let _0: (); // return
-    let s_1: [i32; 2usize]; // local
-    let ptr_2: *const i32; // local
+    let s: [i32; 2usize]; // local
+    let ptr: *const i32; // local
     let _3: &'_ [i32]; // anonymous local
     let _4: &'_ [i32; 2usize]; // anonymous local
     let _5: bool; // anonymous local
@@ -604,16 +664,17 @@ fn main()
     let _9: !; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(s_1);
-        s_1 = [const 11i32, const 42i32];
-        storage_live(ptr_2);
+        storage_live(s);
+        s = [const 11i32, const 42i32];
+        storage_live(ptr);
         storage_live(_3);
         storage_live(_4);
-        _4 = &s_1;
+        _4 = &s;
         _3 = unsize_cast<&'_ [i32; 2usize], &'_ [i32], 2usize>(move _4);
         storage_dead(_4);
-        ptr_2 = as_ptr::<i32>(move _3) -> bb1 (unwind: bb2);
+        ptr = as_ptr::<i32>(move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -622,11 +683,12 @@ fn main()
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
-        _8 = copy ptr_2;
+        _8 = copy ptr;
         _7 = offset::<i32>(move _8, const 1isize) -> bb3 (unwind: bb4);
     }
 
     bb2: {
+        storage_dead(_9);
         unwind_continue;
     }
 
@@ -638,6 +700,7 @@ fn main()
     }
 
     bb4: {
+        storage_dead(_9);
         unwind_continue;
     }
 
@@ -646,8 +709,9 @@ fn main()
         storage_dead(_7);
         storage_dead(_5);
         _0 = ();
-        storage_dead(ptr_2);
-        storage_dead(s_1);
+        storage_dead(ptr);
+        storage_dead(s);
+        storage_dead(_9);
         return;
     }
 
@@ -663,6 +727,7 @@ fn main()
     }
 
     bb8: {
+        storage_dead(_9);
         unwind_continue;
     }
 }

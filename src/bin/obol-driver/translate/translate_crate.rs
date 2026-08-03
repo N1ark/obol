@@ -4,6 +4,7 @@ extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_public_bridge;
+extern crate rustc_span;
 
 use crate::translate::my_gen_args::MyGenericArgs;
 use obol_lib::args::CliOpts;
@@ -22,6 +23,7 @@ use rustc_public::mir::mono::Instance;
 use rustc_public::rustc_internal::{self};
 use rustc_public::{CrateDef, DefId, mir, ty};
 use rustc_public_bridge::IndexedVal;
+use rustc_span::{Symbol, sym};
 use std::cell::RefCell;
 use std::fmt::Debug;
 use std::hash::Hash;
@@ -471,6 +473,30 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 }
 
 impl<'tcx> TranslateCtx<'tcx> {
+    /// Resolve `core::intrinsics::$name` to its `DefId`.
+    ///
+    /// Rustc exposes no name -> `DefId` map for intrinsics, so we walk down `core`'s module tree
+    /// to find it. Returns `None` if the name doesn't resolve to an intrinsic of that name.
+    pub(crate) fn resolve_intrinsic(&self, name: Symbol) -> Option<rustc_span::def_id::DefId> {
+        let core = *self
+            .tcx
+            .crates(())
+            .iter()
+            .find(|&&krate| self.tcx.crate_name(krate) == sym::core)?;
+        let child = |def_id, name| {
+            Some(
+                self.tcx
+                    .module_children(def_id)
+                    .iter()
+                    .find(|child| child.ident.name == name)?
+                    .res
+                    .opt_def_id()?,
+            )
+        };
+        let def_id = child(child(core.as_def_id(), sym::intrinsics)?, name)?;
+        self.tcx.is_intrinsic(def_id, name).then_some(def_id)
+    }
+
     /// When building a test binary (OBOL_BUILDING_TEST is set), scan all local const items for
     /// the `#[rustc_test_marker = "path"]` attribute that rustc adds when expanding `#[test]`.
     /// Returns a set of test function paths (e.g. "my_test" or "submod::my_test") that can be
@@ -579,6 +605,61 @@ impl<'tcx> TranslateCtx<'tcx> {
 
 pub(crate) const FAKE_DYN_TRAIT: TraitDeclId = TraitDeclId::ZERO;
 
+/// Describe the target platform we're compiling for. Mirrors charon's `register_target_info`.
+fn target_info(tcx: TyCtxt<'_>) -> TargetInfo {
+    let target_data = &tcx.data_layout;
+
+    let mut primitive_alignments = SeqHashMap::new();
+    primitive_alignments.insert(LiteralTy::Bool, target_data.i8_align.bytes());
+    primitive_alignments.insert(LiteralTy::Int(IntTy::I8), target_data.i8_align.bytes());
+    primitive_alignments.insert(LiteralTy::Int(IntTy::I16), target_data.i16_align.bytes());
+    primitive_alignments.insert(LiteralTy::Int(IntTy::I32), target_data.i32_align.bytes());
+    primitive_alignments.insert(LiteralTy::Int(IntTy::I64), target_data.i64_align.bytes());
+    primitive_alignments.insert(LiteralTy::Int(IntTy::I128), target_data.i128_align.bytes());
+    primitive_alignments.insert(
+        LiteralTy::Int(IntTy::Isize),
+        target_data.pointer_align().bytes(),
+    );
+    primitive_alignments.insert(LiteralTy::UInt(UIntTy::U8), target_data.i8_align.bytes());
+    primitive_alignments.insert(LiteralTy::UInt(UIntTy::U16), target_data.i16_align.bytes());
+    primitive_alignments.insert(LiteralTy::UInt(UIntTy::U32), target_data.i32_align.bytes());
+    primitive_alignments.insert(LiteralTy::UInt(UIntTy::U64), target_data.i64_align.bytes());
+    primitive_alignments.insert(
+        LiteralTy::UInt(UIntTy::U128),
+        target_data.i128_align.bytes(),
+    );
+    primitive_alignments.insert(
+        LiteralTy::UInt(UIntTy::Usize),
+        target_data.pointer_align().bytes(),
+    );
+    primitive_alignments.insert(
+        LiteralTy::Float(FloatTy::F16),
+        target_data.f16_align.bytes(),
+    );
+    primitive_alignments.insert(
+        LiteralTy::Float(FloatTy::F32),
+        target_data.f32_align.bytes(),
+    );
+    primitive_alignments.insert(
+        LiteralTy::Float(FloatTy::F64),
+        target_data.f64_align.bytes(),
+    );
+    primitive_alignments.insert(
+        LiteralTy::Float(FloatTy::F128),
+        target_data.f128_align.bytes(),
+    );
+    // INFO: This is not explicitly guaranteed by the reference, but by the implementation of rustc.
+    // https://doc.rust-lang.org/1.97.1/nightly-rustc/src/rustc_ty_utils/layout.rs.html#391
+    primitive_alignments.insert(LiteralTy::Char, target_data.i32_align.bytes());
+
+    TargetInfo {
+        target_pointer_size: target_data.pointer_size().bytes(),
+        is_little_endian: matches!(target_data.endian, rustc_abi::Endian::Little),
+        c_enum_min_size: target_data.c_enum_min_size.size().bytes(),
+        primitive_alignments,
+    }
+}
+
 pub fn translate<'tcx, 'ctx>(
     options: &CliOpts,
     tcx: TyCtxt<'tcx>,
@@ -625,13 +706,9 @@ pub fn translate<'tcx, 'ctx>(
     };
 
     let triple = ctx.get_target_triple();
-    ctx.translated.target_information.insert(
-        triple,
-        TargetInfo {
-            target_pointer_size: tcx.data_layout.pointer_size().bytes(),
-            is_little_endian: matches!(tcx.data_layout.endian, rustc_abi::Endian::Little),
-        },
-    );
+    ctx.translated
+        .target_information
+        .insert(triple, target_info(tcx));
 
     // When building a test binary, detect #[test] functions via rustc_test_marker and store
     // the paths so translate_attr_info can inject a synthetic "test" attribute on them.

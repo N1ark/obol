@@ -15,27 +15,32 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+#[diagnostic_item("Debug")]
 trait core::fmt::Debug
 
 // Full name: core::ptr::drop_glue::<u32>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<u32>(_1: &'_ mut u32)
 {
     let _0: (); // return
     let _1: &'_ mut u32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
 
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
@@ -54,20 +59,21 @@ pub fn impl_LowerHex_for_u32::fmt(_1: &'_ u32, _2: &'_ mut Formatter::<'_>) -> R
 = <missing>
 
 // Full name: core::fmt::num::{impl core::fmt::Debug for u32}::fmt
-pub fn impl_Debug_for_u32::fmt(self_1: &'_ u32, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
-    let self_1: &'_ u32; // arg #1
-    let f_2: &'_ mut Formatter::<'_>; // arg #2
+    let self: &'_ u32; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f_2)).options).flags;
+        _4 = copy (((*f)).options).flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -77,7 +83,7 @@ pub fn impl_Debug_for_u32::fmt(self_1: &'_ u32, f_2: &'_ mut Formatter::<'_>) ->
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f_2)).options).flags;
+        _6 = copy (((*f)).options).flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -85,67 +91,79 @@ pub fn impl_Debug_for_u32::fmt(self_1: &'_ u32, f_2: &'_ mut Formatter::<'_>) ->
 
     bb2: {
         storage_dead(_3);
-        _0 = impl_LowerHex_for_u32::fmt(move self_1, move f_2) -> bb5 (unwind: bb6);
+        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb5 (unwind: bb6);
     }
 
     bb3: {
         storage_dead(_5);
-        _0 = impl_Display_for_u32::fmt(move self_1, move f_2) -> bb5 (unwind: bb7);
+        _0 = impl_Display_for_u32::fmt(move self, move f) -> bb5 (unwind: bb7);
     }
 
     bb4: {
         storage_dead(_5);
-        _0 = impl_UpperHex_for_u32::fmt(move self_1, move f_2) -> bb5 (unwind: bb8);
+        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb5 (unwind: bb8);
     }
 
     bb5: {
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
     bb6: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 
     bb7: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 
     bb8: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
+#[diagnostic_item("Debug")]
 fn {vtable}::core::fmt::Debug::<u32>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let core::fmt::num::<impl std::fmt::Debug for u32>::fmt_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let core::fmt::num::<impl std::fmt::Debug for u32>::fmt: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(core::fmt::num::<impl std::fmt::Debug for u32>::fmt_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<u32>, *const ()>(const drop_glue::<u32>);
-        size_2 = transmute<usize, *const ()>(const 4usize);
-        align_3 = transmute<usize, *const ()>(const 4usize);
-        core::fmt::num::<impl std::fmt::Debug for u32>::fmt_4 = cast<impl_Debug_for_u32::fmt, *const ()>(const impl_Debug_for_u32::fmt);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move core::fmt::num::<impl std::fmt::Debug for u32>::fmt_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(core::fmt::num::<impl std::fmt::Debug for u32>::fmt);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<u32>, *const ()>(const drop_glue::<u32>);
+        size = transmute<usize, *const ()>(const 4usize);
+        align = transmute<usize, *const ()>(const 4usize);
+        core::fmt::num::<impl std::fmt::Debug for u32>::fmt = cast<impl_Debug_for_u32::fmt, *const ()>(const impl_Debug_for_u32::fmt);
+        entry_array = [move drop, move size, move align, move core::fmt::num::<impl std::fmt::Debug for u32>::fmt];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
 
+#[diagnostic_item("Debug")]
 static {vtable}::core::fmt::Debug::<u32>: *const () = {vtable}::core::fmt::Debug::<u32>()
 
 // Full name: core::fmt::Display
+#[diagnostic_item("Display")]
 trait Display
 
 // Full name: core::fmt::LowerHex
@@ -175,6 +193,7 @@ impl "impl_Display_for_u32" Display for u32 {
 }
 
 // Full name: core::result::Result::<u32, u32>
+#[diagnostic_item("Result")]
 pub enum Result::<u32, u32> {
   Ok(0: u32),
   Err(0: u32),
@@ -184,34 +203,41 @@ pub enum Result::<u32, u32> {
 fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
 = <missing>
 
-pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self_1: Result::<u32, u32>) -> u32
+pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u32>) -> u32
 {
-    let t_0: u32; // return
-    let self_1: Result::<u32, u32>; // arg #1
+    let t: u32; // return
+    let self: Result::<u32, u32>; // arg #1
     let _2: isize; // anonymous local
-    let e_3: u32; // local
+    let e: u32; // local
     let _4: !; // anonymous local
     let _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: &'_ u32; // anonymous local
 
     bb0: {
+        storage_live(t);
         storage_live(_2);
         storage_live(_4);
-        _2 = @discriminant(self_1);
+        _2 = @discriminant(self);
         switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
     }
 
     bb1: {
-        t_0 = move (self_1 as variant Result::<u32, u32>::Ok).0;
+        t = move (self as variant Result::<u32, u32>::Ok).0;
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(e);
+        storage_dead(_2);
+        storage_dead(self);
         return;
     }
 
     bb2: {
-        storage_live(e_3);
-        e_3 = move (self_1 as variant Result::<u32, u32>::Err).0;
+        storage_live(e);
+        e = move (self as variant Result::<u32, u32>::Err).0;
         storage_live(_5);
         storage_live(_6);
-        _6 = &e_3;
+        _6 = &e;
         _5 = unsize_cast<&'_ u32, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<u32>>(copy _6);
         _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb4 (unwind: bb5);
     }
@@ -225,28 +251,37 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self_1: Result::<u32, 
     }
 
     bb5: {
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(e);
+        storage_dead(_2);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
-fn test_crate::unwrap(res_1: Result::<u32, u32>) -> u32
+fn test_crate::unwrap(res: Result::<u32, u32>) -> u32
 {
     let _0: u32; // return
-    let res_1: Result::<u32, u32>; // arg #1
+    let res: Result::<u32, u32>; // arg #1
     let _2: Result::<u32, u32>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy res_1;
+        _2 = copy res;
         _0 = core::result::{Result::<_, _>}::unwrap::<u32, u32>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(res);
         return;
     }
 
     bb2: {
+        storage_dead(res);
         unwind_continue;
     }
 }

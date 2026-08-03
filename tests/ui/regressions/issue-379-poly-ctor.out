@@ -2,7 +2,8 @@
 // Final ULLBC:
 
 // Full name: core::option::Option::<u32>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<u32> {
   None,
   Some(0: u32),
@@ -15,7 +16,9 @@ pub fn Some::<u32>(_1: u32) -> Option::<u32>
     let _1: u32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = Option::<u32>::Some { 0: move _1 };
+        storage_dead(_1);
         return;
     }
 }
@@ -28,19 +31,25 @@ pub fn call_once::<Some::<u32>, (u32,)>(_1: Some::<u32>, _2: (u32,)) -> Option::
     let _2: (u32,); // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = Some::<u32>(move _2.0) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_2);
+        storage_dead(_1);
         unwind_continue;
     }
 }
 
 // Full name: core::result::Result::<u32, u8>
+#[diagnostic_item("Result")]
 pub enum Result::<u32, u8> {
   Ok(0: u32),
   Err(0: u8),
@@ -53,7 +62,9 @@ pub fn Ok::<u32, u8>(_1: u32) -> Result::<u32, u8>
     let _1: u32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = Result::<u32, u8>::Ok { 0: move _1 };
+        storage_dead(_1);
         return;
     }
 }
@@ -66,47 +77,55 @@ pub fn call_once::<Ok::<u32, u8>, (u32,)>(_1: Ok::<u32, u8>, _2: (u32,)) -> Resu
     let _2: (u32,); // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = Ok::<u32, u8>(move _2.0) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_2);
+        storage_dead(_1);
         unwind_continue;
     }
 }
 
 // Full name: core::option::Option::<Option::<u32>>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<Option::<u32>> {
   None,
   Some(0: Option::<u32>),
 }
 
 // Full name: core::option::Option::<Result::<u32, u8>>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<Result::<u32, u8>> {
   None,
   Some(0: Result::<u32, u8>),
 }
 
 // Full name: core::option::{Option::<_>}::map::<u32, Option::<u32>, Some::<u32>>
-pub fn map::<u32, Option::<u32>, Some::<u32>>(self_1: Option::<u32>, f_2: Some::<u32>) -> Option::<Option::<u32>>
+pub fn map::<u32, Option::<u32>, Some::<u32>>(self: Option::<u32>, f: Some::<u32>) -> Option::<Option::<u32>>
 {
     let _0: Option::<Option::<u32>>; // return
-    let self_1: Option::<u32>; // arg #1
-    let f_2: Some::<u32>; // arg #2
+    let self: Option::<u32>; // arg #1
+    let f: Some::<u32>; // arg #2
     let _3: isize; // anonymous local
-    let x_4: u32; // local
+    let x: u32; // local
     let _5: Option::<u32>; // anonymous local
     let _6: Some::<u32>; // anonymous local
     let _7: (u32,); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
-        _3 = @discriminant(self_1);
+        _3 = @discriminant(self);
         switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
     }
 
@@ -116,13 +135,13 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self_1: Option::<u32>, f_2: Some::
     }
 
     bb2: {
-        storage_live(x_4);
-        x_4 = move (self_1 as variant Option::<u32>::Some).0;
+        storage_live(x);
+        x = move (self as variant Option::<u32>::Some).0;
         storage_live(_5);
         storage_live(_6);
-        _6 = move f_2;
+        _6 = move f;
         storage_live(_7);
-        _7 = (copy x_4,);
+        _7 = (copy x,);
         _5 = call_once::<Some::<u32>, (u32,)>(move _6, move _7) -> bb5 (unwind: bb6);
     }
 
@@ -131,6 +150,9 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self_1: Option::<u32>, f_2: Some::
     }
 
     bb4: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
@@ -139,30 +161,34 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self_1: Option::<u32>, f_2: Some::
         storage_dead(_6);
         _0 = Option::<Option::<u32>>::Some { 0: move _5 };
         storage_dead(_5);
-        storage_dead(x_4);
+        storage_dead(x);
         goto bb4;
     }
 
     bb6: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: core::option::{Option::<_>}::map::<u32, Result::<u32, u8>, Ok::<u32, u8>>
-pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self_1: Option::<u32>, f_2: Ok::<u32, u8>) -> Option::<Result::<u32, u8>>
+pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self: Option::<u32>, f: Ok::<u32, u8>) -> Option::<Result::<u32, u8>>
 {
     let _0: Option::<Result::<u32, u8>>; // return
-    let self_1: Option::<u32>; // arg #1
-    let f_2: Ok::<u32, u8>; // arg #2
+    let self: Option::<u32>; // arg #1
+    let f: Ok::<u32, u8>; // arg #2
     let _3: isize; // anonymous local
-    let x_4: u32; // local
+    let x: u32; // local
     let _5: Result::<u32, u8>; // anonymous local
     let _6: Ok::<u32, u8>; // anonymous local
     let _7: (u32,); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
-        _3 = @discriminant(self_1);
+        _3 = @discriminant(self);
         switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
     }
 
@@ -172,13 +198,13 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self_1: Option::<u32>, f_2: 
     }
 
     bb2: {
-        storage_live(x_4);
-        x_4 = move (self_1 as variant Option::<u32>::Some).0;
+        storage_live(x);
+        x = move (self as variant Option::<u32>::Some).0;
         storage_live(_5);
         storage_live(_6);
-        _6 = move f_2;
+        _6 = move f;
         storage_live(_7);
-        _7 = (copy x_4,);
+        _7 = (copy x,);
         _5 = call_once::<Ok::<u32, u8>, (u32,)>(move _6, move _7) -> bb5 (unwind: bb6);
     }
 
@@ -187,6 +213,9 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self_1: Option::<u32>, f_2: 
     }
 
     bb4: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
@@ -195,11 +224,14 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self_1: Option::<u32>, f_2: 
         storage_dead(_6);
         _0 = Option::<Result::<u32, u8>>::Some { 0: move _5 };
         storage_dead(_5);
-        storage_dead(x_4);
+        storage_dead(x);
         goto bb4;
     }
 
     bb6: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }
@@ -208,47 +240,53 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self_1: Option::<u32>, f_2: 
 trait FakeTrait
 
 // Full name: test_crate::wrap_some
-pub fn wrap_some(x_1: Option::<u32>) -> Option::<Option::<u32>>
+pub fn wrap_some(x: Option::<u32>) -> Option::<Option::<u32>>
 {
     let _0: Option::<Option::<u32>>; // return
-    let x_1: Option::<u32>; // arg #1
+    let x: Option::<u32>; // arg #1
     let _2: Option::<u32>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy x_1;
+        _2 = copy x;
         _0 = map::<u32, Option::<u32>, Some::<u32>>(move _2, const Some::<u32>) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::wrap_ok
-pub fn wrap_ok(x_1: Option::<u32>) -> Option::<Result::<u32, u8>>
+pub fn wrap_ok(x: Option::<u32>) -> Option::<Result::<u32, u8>>
 {
     let _0: Option::<Result::<u32, u8>>; // return
-    let x_1: Option::<u32>; // arg #1
+    let x: Option::<u32>; // arg #1
     let _2: Option::<u32>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy x_1;
+        _2 = copy x;
         _0 = map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(move _2, const Ok::<u32, u8>) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 }

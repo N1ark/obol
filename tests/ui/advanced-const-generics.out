@@ -2,10 +2,12 @@
 // Final ULLBC:
 
 // Full name: core::cmp::PartialEq
-#[lang_item("eq")]
+#[lang_item(PartialEq)]
+#[diagnostic_item("PartialEq")]
 trait PartialEq
 
 // Full name: core::cmp::Eq
+#[diagnostic_item("Eq")]
 trait Eq
 
 // Full name: core::fmt::Error
@@ -22,21 +24,25 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
 // Full name: core::fmt::Debug
+#[diagnostic_item("Debug")]
 trait Debug
 
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
@@ -58,38 +64,41 @@ impl "impl_PartialEq_Foo_for_Foo" PartialEq<Foo> for Foo {
 }
 
 // Full name: test_crate::{impl PartialEq<Foo> for Foo}::eq
-pub fn eq(self_1: &'_ Foo, other_2: &'_ Foo) -> bool
+pub fn eq(self: &'_ Foo, other: &'_ Foo) -> bool
 {
     let _0: bool; // return
-    let self_1: &'_ Foo; // arg #1
-    let other_2: &'_ Foo; // arg #2
-    let __self_discr_3: isize; // local
+    let self: &'_ Foo; // arg #1
+    let other: &'_ Foo; // arg #2
+    let __self_discr: isize; // local
     let _4: &'_ Foo; // anonymous local
-    let __arg1_discr_5: isize; // local
+    let __arg1_discr: isize; // local
     let _6: &'_ Foo; // anonymous local
     let _7: isize; // anonymous local
     let _8: isize; // anonymous local
 
     bb0: {
-        storage_live(__self_discr_3);
+        storage_live(_0);
+        storage_live(__self_discr);
         storage_live(_4);
-        _4 = &(*self_1);
-        __self_discr_3 = @discriminant((*_4));
+        _4 = &(*self);
+        __self_discr = @discriminant((*_4));
         storage_dead(_4);
-        storage_live(__arg1_discr_5);
+        storage_live(__arg1_discr);
         storage_live(_6);
-        _6 = &(*other_2);
-        __arg1_discr_5 = @discriminant((*_6));
+        _6 = &(*other);
+        __arg1_discr = @discriminant((*_6));
         storage_dead(_6);
         storage_live(_7);
-        _7 = copy __self_discr_3;
+        _7 = copy __self_discr;
         storage_live(_8);
-        _8 = copy __arg1_discr_5;
+        _8 = copy __arg1_discr;
         _0 = move _7 == move _8;
         storage_dead(_8);
         storage_dead(_7);
-        storage_dead(__arg1_discr_5);
-        storage_dead(__self_discr_3);
+        storage_dead(__arg1_discr);
+        storage_dead(__self_discr);
+        storage_dead(other);
+        storage_dead(self);
         return;
     }
 }
@@ -100,14 +109,16 @@ impl "impl_Eq_for_Foo" Eq for Foo {
 }
 
 // Full name: test_crate::{impl Eq for Foo}::assert_fields_are_eq
-pub fn assert_fields_are_eq(self_1: &'_ Foo)
+pub fn assert_fields_are_eq(self: &'_ Foo)
 {
     let _0: (); // return
-    let self_1: &'_ Foo; // arg #1
+    let self: &'_ Foo; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
@@ -118,11 +129,11 @@ impl "impl_Debug_for_Foo" Debug for Foo {
 }
 
 // Full name: test_crate::{impl Debug for Foo}::fmt
-pub fn fmt(self_1: &'_ Foo, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
-    let self_1: &'_ Foo; // arg #1
-    let f_2: &'_ mut Formatter::<'_>; // arg #2
+    let self: &'_ Foo; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
     let _3: &'_ mut Formatter::<'_>; // anonymous local
     let _4: &'_ str; // anonymous local
     let _5: isize; // anonymous local
@@ -130,11 +141,12 @@ pub fn fmt(self_1: &'_ Foo, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
     let _7: &'_ str; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_5);
         storage_live(_3);
-        _3 = &two-phase-mut (*f_2);
+        _3 = &two-phase-mut (*f);
         storage_live(_4);
-        _5 = @discriminant((*self_1));
+        _5 = @discriminant((*self));
         switch move _5 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
     }
 
@@ -165,10 +177,16 @@ pub fn fmt(self_1: &'_ Foo, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
     bb5: {
         storage_dead(_4);
         storage_dead(_3);
+        storage_dead(_5);
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
     bb6: {
+        storage_dead(_5);
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }

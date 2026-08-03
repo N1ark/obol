@@ -5,15 +5,18 @@
 trait FakeTrait
 
 // Full name: test_crate::use_trait::<u32, ()>
-fn use_trait::<u32, ()>(_x_1: u32, _y_2: ())
+fn use_trait::<u32, ()>(_x: u32, _y: ())
 {
     let _0: (); // return
-    let _x_1: u32; // arg #1
-    let _y_2: (); // arg #2
+    let _x: u32; // arg #1
+    let _y: (); // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_y);
+        storage_dead(_x);
         return;
     }
 }
@@ -26,6 +29,7 @@ fn main()
     let _2: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         storage_live(_2);

@@ -15,24 +15,33 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -42,40 +51,36 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
     let _0: Arguments::<'_>; // return
-    let s_1: &'_ str; // arg #1
+    let s: &'_ str; // arg #1
     let _2: NonNull::<u8>; // anonymous local
     let _3: *const u8; // anonymous local
     let _4: NonNull::<Argument::<'_>>; // anonymous local
@@ -86,10 +91,11 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
     let _9: &'_ [u8]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         storage_live(_8);
-        _8 = &raw const (*s_1) with_metadata(copy s_1.metadata);
+        _8 = &raw const (*s) with_metadata(copy s.metadata);
         _3 = cast<*const str, *const u8>(copy _8);
         storage_dead(_8);
         _2 = transmute<*const u8, NonNull::<u8>>(copy _3);
@@ -99,7 +105,7 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
         storage_live(_6);
         storage_live(_7);
         storage_live(_9);
-        _9 = transmute<&'_ str, &'_ [u8]>(copy s_1);
+        _9 = transmute<&'_ str, &'_ [u8]>(copy s);
         _7 = copy _9.metadata;
         storage_dead(_9);
         _6 = move _7 wrap.<< const 1i32;
@@ -111,12 +117,13 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
         storage_dead(_2);
+        storage_dead(s);
         return;
     }
 }
 
 // Full name: core::ops::drop::Drop
-#[lang_item("drop")]
+#[lang_item(Drop)]
 trait Drop
 
 // Full name: test_crate::Foo
@@ -127,14 +134,15 @@ pub fn _print(_1: Arguments::<'_>)
 = <missing>
 
 // Full name: test_crate::{impl Drop for Foo}::drop
-pub fn drop(self_1: &'_ mut Foo)
+pub fn drop(self: &'_ mut Foo)
 {
     let _0: (); // return
-    let self_1: &'_ mut Foo; // arg #1
+    let self: &'_ mut Foo; // arg #1
     let _2: (); // anonymous local
     let _3: Arguments::<'_>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
@@ -146,6 +154,7 @@ pub fn drop(self_1: &'_ mut Foo)
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 
@@ -153,16 +162,18 @@ pub fn drop(self_1: &'_ mut Foo)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(self);
         return;
     }
 
     bb4: {
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: core::ptr::drop_glue::<Foo>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<Foo>(_1: &'_ mut Foo)
 {
     let _0: (); // return
@@ -171,6 +182,7 @@ fn drop_glue::<Foo>(_1: &'_ mut Foo)
     let _3: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         _0 = ();
@@ -179,10 +191,16 @@ fn drop_glue::<Foo>(_1: &'_ mut Foo)
     }
 
     bb1: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -196,38 +214,45 @@ impl "impl_Drop_for_Foo" Drop for Foo {
 fn main()
 {
     let _0: (); // return
-    let f_1: Foo; // local
+    let f: Foo; // local
     let _2: u8; // anonymous local
     let _3: u8; // anonymous local
-    let f_ref_4: &'_ Foo; // local
+    let f_ref: &'_ Foo; // local
     let _5: *mut Foo; // anonymous local
     let _6: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_5);
         storage_live(_6);
         _0 = ();
-        storage_live(f_1);
-        f_1 = Foo {  };
+        storage_live(f);
+        f = Foo {  };
         storage_live(_2);
         _3 = const 255u8 panic.+ const 1u8;
         _2 = move _3;
         storage_dead(_2);
-        storage_live(f_ref_4);
-        f_ref_4 = &f_1;
+        storage_live(f_ref);
+        f_ref = &f;
         _0 = ();
-        storage_dead(f_ref_4);
-        _5 = &raw mut f_1;
+        storage_dead(f_ref);
+        _5 = &raw mut f;
         _6 = drop_glue::<Foo>(move _5) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(f_1);
+        storage_dead(f);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_3);
         return;
     }
 
     bb2: {
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_3);
         unwind_continue;
     }
 }

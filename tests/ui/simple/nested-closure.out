@@ -2,7 +2,8 @@
 // Final ULLBC:
 
 // Full name: core::clone::Clone
-#[lang_item("clone")]
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
 trait Clone
 
 // Full name: core::clone::impls::{impl Clone for i32}
@@ -11,13 +12,15 @@ impl "impl_Clone_for_i32" Clone for i32 {
 }
 
 // Full name: core::clone::impls::{impl Clone for i32}::clone
-pub fn clone(self_1: &'_ i32) -> i32
+pub fn clone(self: &'_ i32) -> i32
 {
     let _0: i32; // return
-    let self_1: &'_ i32; // arg #1
+    let self: &'_ i32; // arg #1
 
     bb0: {
-        _0 = copy (*self_1);
+        storage_live(_0);
+        _0 = copy (*self);
+        storage_dead(self);
         return;
     }
 }
@@ -36,30 +39,40 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -69,39 +82,38 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
+#[diagnostic_item("Debug")]
 trait core::fmt::Debug
 
 // Full name: core::ptr::drop_glue::<&'_ i32>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
 {
     let _0: (); // return
     let _1: &'_ mut &'_ i32; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -119,20 +131,21 @@ pub fn impl_LowerHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> R
 = <missing>
 
 // Full name: core::fmt::num::{impl core::fmt::Debug for i32}::fmt
-pub fn impl_Debug_for_i32::fmt(self_1: &'_ i32, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
-    let self_1: &'_ i32; // arg #1
-    let f_2: &'_ mut Formatter::<'_>; // arg #2
+    let self: &'_ i32; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f_2)).options).flags;
+        _4 = copy (((*f)).options).flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -142,7 +155,7 @@ pub fn impl_Debug_for_i32::fmt(self_1: &'_ i32, f_2: &'_ mut Formatter::<'_>) ->
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f_2)).options).flags;
+        _6 = copy (((*f)).options).flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -150,90 +163,109 @@ pub fn impl_Debug_for_i32::fmt(self_1: &'_ i32, f_2: &'_ mut Formatter::<'_>) ->
 
     bb2: {
         storage_dead(_3);
-        _0 = impl_LowerHex_for_i32::fmt(move self_1, move f_2) -> bb5 (unwind: bb6);
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb5 (unwind: bb6);
     }
 
     bb3: {
         storage_dead(_5);
-        _0 = impl_Display_for_i32::fmt(move self_1, move f_2) -> bb5 (unwind: bb7);
+        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb5 (unwind: bb7);
     }
 
     bb4: {
         storage_dead(_5);
-        _0 = impl_UpperHex_for_i32::fmt(move self_1, move f_2) -> bb5 (unwind: bb8);
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb5 (unwind: bb8);
     }
 
     bb5: {
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
     bb6: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 
     bb7: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 
     bb8: {
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>
-pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self_1: &'_ &'_ i32, f_2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
-    let self_1: &'_ &'_ i32; // arg #1
-    let f_2: &'_ mut Formatter::<'_>; // arg #2
+    let self: &'_ &'_ i32; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
     let _3: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self_1);
-        _0 = impl_Debug_for_i32::fmt(move _3, move f_2) -> bb1 (unwind: bb2);
+        _3 = copy (*self);
+        _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(f);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
+#[diagnostic_item("Debug")]
 fn {vtable}::core::fmt::Debug::<&'_ i32>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <&i32 as std::fmt::Debug>::fmt_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <&i32 as std::fmt::Debug>::fmt: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<&i32 as std::fmt::Debug>::fmt_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<&'_ i32>, *const ()>(const drop_glue::<&'_ i32>);
-        size_2 = transmute<usize, *const ()>(const 8usize);
-        align_3 = transmute<usize, *const ()>(const 8usize);
-        <&i32 as std::fmt::Debug>::fmt_4 = cast<{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>, *const ()>(const {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <&i32 as std::fmt::Debug>::fmt_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<&i32 as std::fmt::Debug>::fmt);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<&'_ i32>, *const ()>(const drop_glue::<&'_ i32>);
+        size = transmute<usize, *const ()>(const 8usize);
+        align = transmute<usize, *const ()>(const 8usize);
+        <&i32 as std::fmt::Debug>::fmt = cast<{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>, *const ()>(const {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>);
+        entry_array = [move drop, move size, move align, move <&i32 as std::fmt::Debug>::fmt];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
 
+#[diagnostic_item("Debug")]
 static {vtable}::core::fmt::Debug::<&'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ i32>()
 
 // Full name: core::fmt::Display
+#[diagnostic_item("Display")]
 trait Display
 
 // Full name: core::fmt::LowerHex
@@ -268,7 +300,8 @@ impl "impl_Display_for_i32" Display for i32 {
 }
 
 // Full name: core::option::Option::<Arguments::<'_>>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<Arguments::<'_>> {
   None,
   Some(0: Arguments::<'_>),
@@ -286,28 +319,29 @@ fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn Fak
 = <missing>
 
 // Full name: core::panicking::assert_failed::<i32, i32>
-pub fn assert_failed::<i32, i32>(kind_1: AssertKind, left_2: &'_ i32, right_3: &'_ i32, args_4: Option::<Arguments::<'_>>) -> !
+pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32, args: Option::<Arguments::<'_>>) -> !
 {
     let _0: !; // return
-    let kind_1: AssertKind; // arg #1
-    let left_2: &'_ i32; // arg #2
-    let right_3: &'_ i32; // arg #3
-    let args_4: Option::<Arguments::<'_>>; // arg #4
+    let kind: AssertKind; // arg #1
+    let left: &'_ i32; // arg #2
+    let right: &'_ i32; // arg #3
+    let args: Option::<Arguments::<'_>>; // arg #4
     let _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: &'_ &'_ i32; // anonymous local
     let _7: &'_ (dyn FakeTrait); // anonymous local
     let _8: &'_ &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_5);
         storage_live(_6);
-        _6 = &left_2;
+        _6 = &left;
         _5 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<&'_ i32>>(copy _6);
         storage_live(_7);
         storage_live(_8);
-        _8 = &right_3;
+        _8 = &right;
         _7 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<&'_ i32>>(copy _8);
-        _0 = assert_failed_inner(move kind_1, move _5, move _7, move args_4) -> bb1 (unwind: bb2);
+        _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -315,6 +349,14 @@ pub fn assert_failed::<i32, i32>(kind_1: AssertKind, left_2: &'_ i32, right_3: &
     }
 
     bb2: {
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(args);
+        storage_dead(right);
+        storage_dead(left);
+        storage_dead(kind);
         unwind_continue;
     }
 }
@@ -337,19 +379,20 @@ struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closu
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, spread_args_2: (&'_ u32,)) -> i32
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, spread_args: (&'_ u32,)) -> i32
 {
     let _0: i32; // return
     let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // arg #1
-    let spread_args_2: (&'_ u32,); // arg #2
-    let _z_3: &'_ u32; // local
+    let spread_args: (&'_ u32,); // arg #2
+    let _z: &'_ u32; // local
     let _4: &'_ i32; // anonymous local
     let _5: &'_ i32; // anonymous local
 
     bb0: {
-        storage_live(_z_3);
+        storage_live(_0);
+        storage_live(_z);
         storage_live(_5);
-        _z_3 = move spread_args_2.0;
+        _z = move spread_args.0;
         storage_live(_4);
         _5 = copy ((*_1)).upvar_0;
         _4 = &(*_5);
@@ -358,10 +401,18 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::
 
     bb1: {
         storage_dead(_4);
+        storage_dead(_5);
+        storage_dead(_z);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 
     bb2: {
+        storage_dead(_5);
+        storage_dead(_z);
+        storage_dead(spread_args);
+        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -370,24 +421,29 @@ struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closu
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, spread_args_2: (&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, spread_args: (&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure
 {
     let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // return
     let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // arg #1
-    let spread_args_2: (&'_ u32,); // arg #2
-    let _y_3: &'_ u32; // local
+    let spread_args: (&'_ u32,); // arg #2
+    let _y: &'_ u32; // local
     let _4: &'_ i32; // anonymous local
     let _5: &'_ i32; // anonymous local
 
     bb0: {
-        storage_live(_y_3);
+        storage_live(_0);
+        storage_live(_y);
         storage_live(_5);
-        _y_3 = move spread_args_2.0;
+        _y = move spread_args.0;
         storage_live(_4);
         _5 = copy ((*_1)).upvar_0;
         _4 = &(*_5);
         _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure { upvar_0: move _4 };
         storage_dead(_4);
+        storage_dead(_5);
+        storage_dead(_y);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 }
@@ -396,31 +452,35 @@ struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure {
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure, spread_args_2: ()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure, spread_args: ()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure
 {
     let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // return
     let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // arg #1
-    let spread_args_2: (); // arg #2
+    let spread_args: (); // arg #2
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_4);
         storage_live(_3);
         _4 = copy ((*_1)).upvar_0;
         _3 = &(*_4);
         _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure { upvar_0: move _3 };
         storage_dead(_3);
+        storage_dead(_4);
+        storage_dead(spread_args);
+        storage_dead(_1);
         return;
     }
 }
 
 // Full name: test_crate::{Foo::<'_, _>}::test_nested_closures::<'_, i32>
-pub fn test_nested_closures::<'_, i32>(x_1: &'_ &'_ i32) -> i32
+pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
 {
     let _0: i32; // return
-    let x_1: &'_ &'_ i32; // arg #1
-    let clo_2: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // local
+    let x: &'_ &'_ i32; // arg #1
+    let clo: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // anonymous local
     let _5: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // anonymous local
@@ -441,21 +501,22 @@ pub fn test_nested_closures::<'_, i32>(x_1: &'_ &'_ i32) -> i32
     let _20: &'_ u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_16);
         storage_live(_17);
         storage_live(_18);
-        storage_live(clo_2);
+        storage_live(clo);
         storage_live(_3);
-        _18 = copy (*x_1);
+        _18 = copy (*x);
         _3 = &(*_18);
-        clo_2 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure { upvar_0: move _3 };
+        clo = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure { upvar_0: move _3 };
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
-        _8 = &clo_2;
+        _8 = &clo;
         storage_live(_9);
         _9 = ();
         _7 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (&'_ i32,)>(move _8, move _9) -> bb1 (unwind: bb2);
@@ -478,6 +539,10 @@ pub fn test_nested_closures::<'_, i32>(x_1: &'_ &'_ i32) -> i32
     }
 
     bb2: {
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(x);
         unwind_continue;
     }
 
@@ -499,6 +564,10 @@ pub fn test_nested_closures::<'_, i32>(x_1: &'_ &'_ i32) -> i32
     }
 
     bb4: {
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(x);
         unwind_continue;
     }
 
@@ -506,15 +575,23 @@ pub fn test_nested_closures::<'_, i32>(x_1: &'_ &'_ i32) -> i32
         storage_dead(_14);
         storage_dead(_13);
         storage_dead(_4);
-        storage_dead(clo_2);
+        storage_dead(clo);
         storage_dead(_15);
         storage_dead(_12);
         storage_dead(_7);
         storage_dead(_5);
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(x);
         return;
     }
 
     bb6: {
+        storage_dead(_18);
+        storage_dead(_17);
+        storage_dead(_16);
+        storage_dead(x);
         unwind_continue;
     }
 }
@@ -523,8 +600,8 @@ pub fn test_nested_closures::<'_, i32>(x_1: &'_ &'_ i32) -> i32
 fn main()
 {
     let _0: (); // return
-    let x_1: i32; // local
-    let foo_2: Foo::<'_, i32>; // local
+    let x: i32; // local
+    let foo: Foo::<'_, i32>; // local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
     let _5: (&'_ i32, &'_ i32); // anonymous local
@@ -534,12 +611,12 @@ fn main()
     let _9: &'_ &'_ i32; // anonymous local
     let _10: &'_ i32; // anonymous local
     let _11: &'_ i32; // anonymous local
-    let left_val_12: &'_ i32; // local
-    let right_val_13: &'_ i32; // local
+    let left_val: &'_ i32; // local
+    let right_val: &'_ i32; // local
     let _14: bool; // anonymous local
     let _15: i32; // anonymous local
     let _16: i32; // anonymous local
-    let kind_17: AssertKind; // local
+    let kind: AssertKind; // local
     let _18: !; // anonymous local
     let _19: AssertKind; // anonymous local
     let _20: &'_ i32; // anonymous local
@@ -551,16 +628,17 @@ fn main()
     let _26: &'_ i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_25);
         _0 = ();
-        storage_live(x_1);
-        x_1 = const 42i32;
-        storage_live(foo_2);
+        storage_live(x);
+        x = const 42i32;
+        storage_live(foo);
         storage_live(_3);
         storage_live(_4);
-        _4 = &x_1;
+        _4 = &x;
         _3 = &(*_4);
-        foo_2 = Foo::<'_, i32> { 0: move _3 };
+        foo = Foo::<'_, i32> { 0: move _3 };
         storage_dead(_3);
         storage_dead(_4);
         storage_live(_5);
@@ -569,7 +647,7 @@ fn main()
         storage_live(_8);
         storage_live(_9);
         storage_live(_10);
-        _10 = &x_1;
+        _10 = &x;
         _9 = &_10;
         _8 = &(*_9);
         _7 = test_nested_closures::<'_, i32>(move _8) -> bb1 (unwind: bb2);
@@ -586,20 +664,29 @@ fn main()
         _5 = (move _6, move _11);
         storage_dead(_11);
         storage_dead(_6);
-        storage_live(left_val_12);
-        left_val_12 = copy _5.0;
-        storage_live(right_val_13);
-        right_val_13 = copy _5.1;
+        storage_live(left_val);
+        left_val = copy _5.0;
+        storage_live(right_val);
+        right_val = copy _5.1;
         storage_live(_14);
         storage_live(_15);
-        _15 = copy (*left_val_12);
+        _15 = copy (*left_val);
         storage_live(_16);
-        _16 = copy (*right_val_13);
+        _16 = copy (*right_val);
         _14 = move _15 == move _16;
         if move _14 -> bb3 else -> bb4;
     }
 
     bb2: {
+        storage_dead(_25);
+        storage_dead(_24);
+        storage_dead(_23);
+        storage_dead(_22);
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_18);
+        storage_dead(kind);
         unwind_continue;
     }
 
@@ -607,33 +694,42 @@ fn main()
         storage_dead(_16);
         storage_dead(_15);
         storage_dead(_14);
-        storage_dead(right_val_13);
-        storage_dead(left_val_12);
+        storage_dead(right_val);
+        storage_dead(left_val);
         storage_dead(_10);
         storage_dead(_9);
         storage_dead(_7);
         storage_dead(_5);
         _0 = ();
-        storage_dead(foo_2);
-        storage_dead(x_1);
+        storage_dead(foo);
+        storage_dead(x);
+        storage_dead(_25);
+        storage_dead(_24);
+        storage_dead(_23);
+        storage_dead(_22);
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_18);
+        storage_dead(kind);
         return;
     }
 
     bb4: {
         storage_dead(_16);
         storage_dead(_15);
-        storage_live(kind_17);
-        kind_17 = AssertKind::Eq {  };
+        storage_live(kind);
+        kind = AssertKind::Eq {  };
         storage_live(_18);
         storage_live(_19);
-        _19 = move kind_17;
+        _19 = move kind;
         storage_live(_20);
         storage_live(_21);
-        _21 = &(*left_val_12);
+        _21 = &(*left_val);
         _20 = &(*_21);
         storage_live(_22);
         storage_live(_23);
-        _23 = &(*right_val_13);
+        _23 = &(*right_val);
         _22 = &(*_23);
         storage_live(_24);
         _24 = Option::<Arguments::<'_>>::None {  };
@@ -645,6 +741,15 @@ fn main()
     }
 
     bb6: {
+        storage_dead(_25);
+        storage_dead(_24);
+        storage_dead(_23);
+        storage_dead(_22);
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_18);
+        storage_dead(kind);
         unwind_continue;
     }
 }

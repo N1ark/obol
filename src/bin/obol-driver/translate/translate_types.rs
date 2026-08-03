@@ -88,7 +88,12 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             binder: Binder {
                 params: GenericParams {
                     regions: vec![].into(),
-                    types: vec![TypeParam::new(TypeVarId::ZERO, "dyn".into())].into(),
+                    types: vec![TypeParam::new(
+                        TypeVarId::ZERO,
+                        "dyn".into(),
+                        Variance::Unknown,
+                    )]
+                    .into(),
                     const_generics: vec![].into(),
                     trait_clauses: vec![TraitParam {
                         clause_id: TraitClauseId::ZERO,
@@ -348,6 +353,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     inputs,
                     output,
                     abi: self.translate_abi(&sig.abi),
+                    is_variadic: sig.c_variadic,
                     is_unsafe: matches!(sig.safety, mir::Safety::Unsafe),
                 }))
             }

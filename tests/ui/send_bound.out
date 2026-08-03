@@ -5,14 +5,16 @@
 trait FakeTrait
 
 // Full name: test_crate::foo::<()>
-fn foo::<()>(_msg_1: ())
+fn foo::<()>(_msg: ())
 {
     let _0: (); // return
-    let _msg_1: (); // arg #1
+    let _msg: (); // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_msg);
         return;
     }
 }
@@ -25,6 +27,7 @@ fn main()
     let _2: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         storage_live(_2);

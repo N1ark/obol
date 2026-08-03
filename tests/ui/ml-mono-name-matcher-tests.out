@@ -15,36 +15,47 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -54,29 +65,26 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::Display
+#[diagnostic_item("Display")]
 trait Display
 
 // Full name: core::fmt::num::imp::{impl Display for usize}
@@ -93,16 +101,17 @@ pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::ptr::non_null::NonNull::<str>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -115,39 +124,43 @@ pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
 // Full name: core::ops::index::Index
-#[lang_item("index")]
+#[lang_item(Index)]
 trait Index
 
 // Full name: core::ops::range::RangeFrom::<usize>
-#[lang_item("RangeFrom")]
+#[lang_item(RangeFrom)]
 pub struct RangeFrom::<usize> {
   start: usize,
 }
 
 // Full name: core::option::Option::<i32>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<i32> {
   None,
   Some(0: i32),
 }
 
 // Full name: core::option::{Option::<_>}::is_some::<i32>
-pub fn is_some::<i32>(self_1: &'_ Option::<i32>) -> bool
+pub fn is_some::<i32>(self: &'_ Option::<i32>) -> bool
 {
     let _0: bool; // return
-    let self_1: &'_ Option::<i32>; // arg #1
+    let self: &'_ Option::<i32>; // arg #1
     let _2: isize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = @discriminant((*self_1));
+        _2 = @discriminant((*self));
         _0 = copy _2 == const 1isize;
+        storage_dead(_2);
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -161,6 +174,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     let _0: &'_ Location::<'_>; // return
 
     bb0: {
+        storage_live(_0);
         _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
@@ -174,7 +188,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -183,7 +197,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -192,16 +206,21 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message_1: &'_ Arguments::<'_>, location_2: &'_ Location::<'_>, can_unwind_3: bool, force_no_backtrace_4: bool) -> PanicInfo::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
     let _0: PanicInfo::<'_>; // return
-    let message_1: &'_ Arguments::<'_>; // arg #1
-    let location_2: &'_ Location::<'_>; // arg #2
-    let can_unwind_3: bool; // arg #3
-    let force_no_backtrace_4: bool; // arg #4
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
-        _0 = PanicInfo::<'_> { message: copy message_1, location: copy location_2, can_unwind: copy can_unwind_3, force_no_backtrace: copy force_no_backtrace_4 };
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        storage_dead(force_no_backtrace);
+        storage_dead(can_unwind);
+        storage_dead(location);
+        storage_dead(message);
         return;
     }
 }
@@ -211,14 +230,14 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
-#[lang_item("panic_fmt")]
-pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
+    let fmt: Arguments::<'_>; // arg #1
     let _2: bool; // anonymous local
     let _3: !; // anonymous local
-    let pi_4: PanicInfo::<'_>; // local
+    let pi: PanicInfo::<'_>; // local
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
@@ -227,6 +246,7 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _2 = const false;
         if move _2 -> bb1 else -> bb2;
@@ -239,10 +259,10 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb2: {
         storage_dead(_2);
-        storage_live(pi_4);
+        storage_live(pi);
         storage_live(_5);
         storage_live(_6);
-        _6 = &fmt_1;
+        _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
         storage_live(_8);
@@ -259,10 +279,15 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb5: {
         _7 = &(*_8);
-        pi_4 = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
     bb6: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -273,12 +298,17 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
         storage_dead(_6);
         storage_live(_9);
         storage_live(_10);
-        _10 = &pi_4;
+        _10 = &pi;
         _9 = &(*_10);
         _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
     }
 
     bb8: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -287,6 +317,11 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     }
 
     bb10: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -299,11 +334,11 @@ impl<T, I> "impl_Index_for_slice" Index<I> for [T] {
 // Full name: anon_const_4
 const anon_const_4: [u8; 55usize] = [16u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 101u8, 110u8, 100u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 192u8, 34u8, 32u8, 111u8, 117u8, 116u8, 32u8, 111u8, 102u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 111u8, 102u8, 32u8, 108u8, 101u8, 110u8, 103u8, 116u8, 104u8, 32u8, 192u8, 0u8]
 
-fn core::slice::index::slice_index_fail::do_panic#3::runtime(end_1: usize, len_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic#3::runtime(end: usize, len: usize) -> !
 {
     let _0: !; // return
-    let end_1: usize; // arg #1
-    let len_2: usize; // arg #2
+    let end: usize; // arg #1
+    let len: usize; // arg #2
     let _3: !; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let args_5: &'_ usize; // local
@@ -329,12 +364,13 @@ fn core::slice::index::slice_index_fail::do_panic#3::runtime(end_1: usize, len_2
     let _25: &'_ [u8; 55usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(args_5);
         storage_live(args_6);
         storage_live(_4);
-        args_5 = &end_1;
-        args_6 = &len_2;
+        args_5 = &end;
+        args_6 = &len;
         storage_live(args_7);
         storage_live(_8);
         storage_live(_15);
@@ -397,18 +433,26 @@ fn core::slice::index::slice_index_fail::do_panic#3::runtime(end_1: usize, len_2
     }
 
     bb2: {
+        storage_dead(args_7);
+        storage_dead(args_6);
+        storage_dead(args_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(len);
+        storage_dead(end);
         unwind_continue;
     }
 }
 
-fn core::slice::index::slice_index_fail::do_panic#3(end_1: usize, len_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic#3(end: usize, len: usize) -> !
 {
     let _0: !; // return
-    let end_1: usize; // arg #1
-    let len_2: usize; // arg #2
+    let end: usize; // arg #1
+    let len: usize; // arg #2
 
     bb0: {
-        _0 = core::slice::index::slice_index_fail::do_panic#3::runtime(move end_1, move len_2) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = core::slice::index::slice_index_fail::do_panic#3::runtime(move end, move len) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -416,6 +460,8 @@ fn core::slice::index::slice_index_fail::do_panic#3(end_1: usize, len_2: usize) 
     }
 
     bb2: {
+        storage_dead(len);
+        storage_dead(end);
         unwind_continue;
     }
 }
@@ -423,11 +469,11 @@ fn core::slice::index::slice_index_fail::do_panic#3(end_1: usize, len_2: usize) 
 // Full name: anon_const_5
 const anon_const_5: [u8; 40usize] = [22u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 115u8, 116u8, 97u8, 114u8, 116u8, 115u8, 32u8, 97u8, 116u8, 32u8, 192u8, 13u8, 32u8, 98u8, 117u8, 116u8, 32u8, 101u8, 110u8, 100u8, 115u8, 32u8, 97u8, 116u8, 32u8, 192u8, 0u8]
 
-fn core::slice::index::slice_index_fail::do_panic#2::runtime(start_1: usize, end_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic#2::runtime(start: usize, end: usize) -> !
 {
     let _0: !; // return
-    let start_1: usize; // arg #1
-    let end_2: usize; // arg #2
+    let start: usize; // arg #1
+    let end: usize; // arg #2
     let _3: !; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let args_5: &'_ usize; // local
@@ -453,12 +499,13 @@ fn core::slice::index::slice_index_fail::do_panic#2::runtime(start_1: usize, end
     let _25: &'_ [u8; 40usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(args_5);
         storage_live(args_6);
         storage_live(_4);
-        args_5 = &start_1;
-        args_6 = &end_2;
+        args_5 = &start;
+        args_6 = &end;
         storage_live(args_7);
         storage_live(_8);
         storage_live(_15);
@@ -521,18 +568,26 @@ fn core::slice::index::slice_index_fail::do_panic#2::runtime(start_1: usize, end
     }
 
     bb2: {
+        storage_dead(args_7);
+        storage_dead(args_6);
+        storage_dead(args_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(end);
+        storage_dead(start);
         unwind_continue;
     }
 }
 
-fn core::slice::index::slice_index_fail::do_panic#2(start_1: usize, end_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic#2(start: usize, end: usize) -> !
 {
     let _0: !; // return
-    let start_1: usize; // arg #1
-    let end_2: usize; // arg #2
+    let start: usize; // arg #1
+    let end: usize; // arg #2
 
     bb0: {
-        _0 = core::slice::index::slice_index_fail::do_panic#2::runtime(move start_1, move end_2) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = core::slice::index::slice_index_fail::do_panic#2::runtime(move start, move end) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -540,15 +595,17 @@ fn core::slice::index::slice_index_fail::do_panic#2(start_1: usize, end_2: usize
     }
 
     bb2: {
+        storage_dead(end);
+        storage_dead(start);
         unwind_continue;
     }
 }
 
-fn core::slice::index::slice_index_fail::do_panic#1::runtime(end_1: usize, len_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic#1::runtime(end: usize, len: usize) -> !
 {
     let _0: !; // return
-    let end_1: usize; // arg #1
-    let len_2: usize; // arg #2
+    let end: usize; // arg #1
+    let len: usize; // arg #2
     let _3: !; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let args_5: &'_ usize; // local
@@ -574,12 +631,13 @@ fn core::slice::index::slice_index_fail::do_panic#1::runtime(end_1: usize, len_2
     let _25: &'_ [u8; 55usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(args_5);
         storage_live(args_6);
         storage_live(_4);
-        args_5 = &end_1;
-        args_6 = &len_2;
+        args_5 = &end;
+        args_6 = &len;
         storage_live(args_7);
         storage_live(_8);
         storage_live(_15);
@@ -642,18 +700,26 @@ fn core::slice::index::slice_index_fail::do_panic#1::runtime(end_1: usize, len_2
     }
 
     bb2: {
+        storage_dead(args_7);
+        storage_dead(args_6);
+        storage_dead(args_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(len);
+        storage_dead(end);
         unwind_continue;
     }
 }
 
-fn core::slice::index::slice_index_fail::do_panic#1(end_1: usize, len_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic#1(end: usize, len: usize) -> !
 {
     let _0: !; // return
-    let end_1: usize; // arg #1
-    let len_2: usize; // arg #2
+    let end: usize; // arg #1
+    let len: usize; // arg #2
 
     bb0: {
-        _0 = core::slice::index::slice_index_fail::do_panic#1::runtime(move end_1, move len_2) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = core::slice::index::slice_index_fail::do_panic#1::runtime(move end, move len) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -661,6 +727,8 @@ fn core::slice::index::slice_index_fail::do_panic#1(end_1: usize, len_2: usize) 
     }
 
     bb2: {
+        storage_dead(len);
+        storage_dead(end);
         unwind_continue;
     }
 }
@@ -668,11 +736,11 @@ fn core::slice::index::slice_index_fail::do_panic#1(end_1: usize, len_2: usize) 
 // Full name: anon_const_3
 const anon_const_3: [u8; 57usize] = [18u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 115u8, 116u8, 97u8, 114u8, 116u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 192u8, 34u8, 32u8, 111u8, 117u8, 116u8, 32u8, 111u8, 102u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 111u8, 102u8, 32u8, 108u8, 101u8, 110u8, 103u8, 116u8, 104u8, 32u8, 192u8, 0u8]
 
-fn core::slice::index::slice_index_fail::do_panic::runtime(start_1: usize, len_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic::runtime(start: usize, len: usize) -> !
 {
     let _0: !; // return
-    let start_1: usize; // arg #1
-    let len_2: usize; // arg #2
+    let start: usize; // arg #1
+    let len: usize; // arg #2
     let _3: !; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let args_5: &'_ usize; // local
@@ -698,12 +766,13 @@ fn core::slice::index::slice_index_fail::do_panic::runtime(start_1: usize, len_2
     let _25: &'_ [u8; 57usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_3);
         storage_live(args_5);
         storage_live(args_6);
         storage_live(_4);
-        args_5 = &start_1;
-        args_6 = &len_2;
+        args_5 = &start;
+        args_6 = &len;
         storage_live(args_7);
         storage_live(_8);
         storage_live(_15);
@@ -766,18 +835,26 @@ fn core::slice::index::slice_index_fail::do_panic::runtime(start_1: usize, len_2
     }
 
     bb2: {
+        storage_dead(args_7);
+        storage_dead(args_6);
+        storage_dead(args_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(len);
+        storage_dead(start);
         unwind_continue;
     }
 }
 
-fn core::slice::index::slice_index_fail::do_panic(start_1: usize, len_2: usize) -> !
+fn core::slice::index::slice_index_fail::do_panic(start: usize, len: usize) -> !
 {
     let _0: !; // return
-    let start_1: usize; // arg #1
-    let len_2: usize; // arg #2
+    let start: usize; // arg #1
+    let len: usize; // arg #2
 
     bb0: {
-        _0 = core::slice::index::slice_index_fail::do_panic::runtime(move start_1, move len_2) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = core::slice::index::slice_index_fail::do_panic::runtime(move start, move len) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -785,17 +862,19 @@ fn core::slice::index::slice_index_fail::do_panic(start_1: usize, len_2: usize) 
     }
 
     bb2: {
+        storage_dead(len);
+        storage_dead(start);
         unwind_continue;
     }
 }
 
 // Full name: core::slice::index::slice_index_fail
-fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
+fn slice_index_fail(start: usize, end: usize, len: usize) -> !
 {
     let _0: !; // return
-    let start_1: usize; // arg #1
-    let end_2: usize; // arg #2
-    let len_3: usize; // arg #3
+    let start: usize; // arg #1
+    let end: usize; // arg #2
+    let len: usize; // arg #3
     let _4: bool; // anonymous local
     let _5: usize; // anonymous local
     let _6: usize; // anonymous local
@@ -818,11 +897,12 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
     let _23: usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_4);
         storage_live(_5);
-        _5 = copy start_1;
+        _5 = copy start;
         storage_live(_6);
-        _6 = copy len_3;
+        _6 = copy len;
         _4 = move _5 > move _6;
         if move _4 -> bb1 else -> bb2;
     }
@@ -832,9 +912,9 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
         storage_dead(_5);
         storage_live(_7);
         storage_live(_8);
-        _8 = copy start_1;
+        _8 = copy start;
         storage_live(_9);
-        _9 = copy len_3;
+        _9 = copy len;
         _7 = core::slice::index::slice_index_fail::do_panic(move _8, move _9) -> bb3 (unwind: bb4);
     }
 
@@ -844,9 +924,9 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
         storage_dead(_4);
         storage_live(_10);
         storage_live(_11);
-        _11 = copy end_2;
+        _11 = copy end;
         storage_live(_12);
-        _12 = copy len_3;
+        _12 = copy len;
         _10 = move _11 > move _12;
         if move _10 -> bb5 else -> bb6;
     }
@@ -856,6 +936,20 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
     }
 
     bb4: {
+        storage_dead(_23);
+        storage_dead(_22);
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_9);
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(len);
+        storage_dead(end);
+        storage_dead(start);
         unwind_continue;
     }
 
@@ -864,9 +958,9 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
         storage_dead(_11);
         storage_live(_13);
         storage_live(_14);
-        _14 = copy end_2;
+        _14 = copy end;
         storage_live(_15);
-        _15 = copy len_3;
+        _15 = copy len;
         _13 = core::slice::index::slice_index_fail::do_panic#1(move _14, move _15) -> bb7 (unwind: bb8);
     }
 
@@ -876,9 +970,9 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
         storage_dead(_10);
         storage_live(_16);
         storage_live(_17);
-        _17 = copy start_1;
+        _17 = copy start;
         storage_live(_18);
-        _18 = copy end_2;
+        _18 = copy end;
         _16 = move _17 > move _18;
         if move _16 -> bb9 else -> bb10;
     }
@@ -888,6 +982,20 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
     }
 
     bb8: {
+        storage_dead(_23);
+        storage_dead(_22);
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_9);
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(len);
+        storage_dead(end);
+        storage_dead(start);
         unwind_continue;
     }
 
@@ -896,9 +1004,9 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
         storage_dead(_17);
         storage_live(_19);
         storage_live(_20);
-        _20 = copy start_1;
+        _20 = copy start;
         storage_live(_21);
-        _21 = copy end_2;
+        _21 = copy end;
         _19 = core::slice::index::slice_index_fail::do_panic#2(move _20, move _21) -> bb11 (unwind: bb12);
     }
 
@@ -907,9 +1015,9 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
         storage_dead(_17);
         storage_dead(_16);
         storage_live(_22);
-        _22 = copy end_2;
+        _22 = copy end;
         storage_live(_23);
-        _23 = copy len_3;
+        _23 = copy len;
         _0 = core::slice::index::slice_index_fail::do_panic#3(move _22, move _23) -> bb13 (unwind: bb14);
     }
 
@@ -918,6 +1026,20 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
     }
 
     bb12: {
+        storage_dead(_23);
+        storage_dead(_22);
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_9);
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(len);
+        storage_dead(end);
+        storage_dead(start);
         unwind_continue;
     }
 
@@ -926,59 +1048,79 @@ fn slice_index_fail(start_1: usize, end_2: usize, len_3: usize) -> !
     }
 
     bb14: {
+        storage_dead(_23);
+        storage_dead(_22);
+        storage_dead(_21);
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_9);
+        storage_dead(_8);
+        storage_dead(_7);
+        storage_dead(len);
+        storage_dead(end);
+        storage_dead(start);
         unwind_continue;
     }
 }
 
 // Full name: core::slice::index::{impl SliceIndex<[T]> for RangeFrom::<usize>}::index::<bool>
-pub fn {impl SliceIndex<[T]> for RangeFrom::<usize>}::index::<bool>(self_1: RangeFrom::<usize>, slice_2: &'_ [bool]) -> &'_ [bool]
+pub fn {impl SliceIndex<[T]> for RangeFrom::<usize>}::index::<bool>(self: RangeFrom::<usize>, slice: &'_ [bool]) -> &'_ [bool]
 {
     let _0: &'_ [bool]; // return
-    let self_1: RangeFrom::<usize>; // arg #1
-    let slice_2: &'_ [bool]; // arg #2
+    let self: RangeFrom::<usize>; // arg #1
+    let slice: &'_ [bool]; // arg #2
     let _3: bool; // anonymous local
-    let offset_4: usize; // local
+    let offset: usize; // local
     let _5: usize; // anonymous local
     let _6: !; // anonymous local
-    let new_len_7: usize; // local
+    let new_len: usize; // local
     let _8: *const [bool]; // anonymous local
     let _9: *const [bool]; // anonymous local
     let _10: *const bool; // anonymous local
     let _11: *const bool; // anonymous local
 
     bb0: {
-        storage_live(offset_4);
+        storage_live(_0);
+        storage_live(offset);
         storage_live(_5);
         storage_live(_6);
         storage_live(_3);
-        offset_4 = copy (self_1).start;
-        _5 = copy slice_2.metadata;
-        _3 = copy offset_4 > copy _5;
+        offset = copy (self).start;
+        _5 = copy slice.metadata;
+        _3 = copy offset > copy _5;
         if move _3 -> bb1 else -> bb2;
     }
 
     bb1: {
-        _6 = slice_index_fail(move offset_4, copy _5, move _5) -> bb3 (unwind: bb4);
+        _6 = slice_index_fail(move offset, copy _5, move _5) -> bb3 (unwind: bb4);
     }
 
     bb2: {
         storage_dead(_3);
-        storage_live(new_len_7);
-        new_len_7 = copy _5 ub.- copy offset_4;
+        storage_live(new_len);
+        new_len = copy _5 ub.- copy offset;
         storage_live(_8);
         storage_live(_9);
-        _9 = &raw const (*slice_2) with_metadata(copy slice_2.metadata);
+        _9 = &raw const (*slice) with_metadata(copy slice.metadata);
         storage_live(_10);
         _10 = cast<*const [bool], *const bool>(copy _9);
         storage_live(_11);
-        _11 = copy _10 offset copy offset_4;
-        _8 = *const (copy _11, copy new_len_7);
+        _11 = copy _10 offset copy offset;
+        _8 = *const (copy _11, copy new_len);
         storage_dead(_11);
         storage_dead(_10);
         storage_dead(_9);
         _0 = &(*_8) with_metadata(copy _8.metadata);
         storage_dead(_8);
-        storage_dead(new_len_7);
+        storage_dead(new_len);
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(offset);
+        storage_dead(slice);
+        storage_dead(self);
         return;
     }
 
@@ -987,31 +1129,42 @@ pub fn {impl SliceIndex<[T]> for RangeFrom::<usize>}::index::<bool>(self_1: Rang
     }
 
     bb4: {
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(offset);
+        storage_dead(slice);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: core::slice::index::{impl Index<I> for [T]}::index::<bool, RangeFrom::<usize>>
-pub fn impl_Index_for_slice::index::<bool, RangeFrom::<usize>>(self_1: &'_ [bool], index_2: RangeFrom::<usize>) -> &'_ [bool]
+pub fn impl_Index_for_slice::index::<bool, RangeFrom::<usize>>(self: &'_ [bool], index: RangeFrom::<usize>) -> &'_ [bool]
 {
     let _0: &'_ [bool]; // return
-    let self_1: &'_ [bool]; // arg #1
-    let index_2: RangeFrom::<usize>; // arg #2
+    let self: &'_ [bool]; // arg #1
+    let index: RangeFrom::<usize>; // arg #2
 
     bb0: {
-        _0 = {impl SliceIndex<[T]> for RangeFrom::<usize>}::index::<bool>(move index_2, move self_1) -> bb1 (unwind: bb2);
+        storage_live(_0);
+        _0 = {impl SliceIndex<[T]> for RangeFrom::<usize>}::index::<bool>(move index, move self) -> bb1 (unwind: bb2);
     }
 
     bb1: {
+        storage_dead(index);
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(index);
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: core::slice::index::SliceIndex
+#[diagnostic_item("SliceIndex")]
 trait SliceIndex
 
 // Full name: core::slice::index::{impl SliceIndex<[T]> for RangeFrom::<usize>}
@@ -1031,6 +1184,7 @@ fn bar()
     let _0: (); // return
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
         return;
@@ -1043,7 +1197,7 @@ fn foo()
     let _0: (); // return
     let _1: bool; // anonymous local
     let _2: &'_ Option::<i32>; // anonymous local
-    let slice_3: &'_ [bool]; // local
+    let slice: &'_ [bool]; // local
     let _4: &'_ [bool; 1usize]; // anonymous local
     let _5: &'_ [bool; 1usize]; // anonymous local
     let _6: &'_ [bool]; // anonymous local
@@ -1056,6 +1210,7 @@ fn foo()
     let _13: &'_ [bool; 1usize]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_10);
         storage_live(_11);
         _0 = ();
@@ -1071,7 +1226,7 @@ fn foo()
     bb1: {
         storage_dead(_2);
         storage_dead(_1);
-        storage_live(slice_3);
+        storage_live(slice);
         storage_live(_4);
         storage_live(_5);
         storage_live(_13);
@@ -1079,19 +1234,21 @@ fn foo()
         _10 = move _13;
         _5 = &(*_10);
         _4 = &(*_5);
-        slice_3 = unsize_cast<&'_ [bool; 1usize], &'_ [bool], 1usize>(move _4);
+        slice = unsize_cast<&'_ [bool; 1usize], &'_ [bool], 1usize>(move _4);
         storage_dead(_4);
         storage_dead(_5);
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
-        _8 = &(*slice_3) with_metadata(copy slice_3.metadata);
+        _8 = &(*slice) with_metadata(copy slice.metadata);
         storage_live(_9);
         _9 = RangeFrom::<usize> { start: const 1usize };
         _7 = impl_Index_for_slice::index::<bool, RangeFrom::<usize>>(move _8, move _9) -> bb3 (unwind: bb4);
     }
 
     bb2: {
+        storage_dead(_11);
+        storage_dead(_10);
         unwind_continue;
     }
 
@@ -1102,11 +1259,15 @@ fn foo()
         storage_dead(_6);
         _0 = ();
         storage_dead(_7);
-        storage_dead(slice_3);
+        storage_dead(slice);
+        storage_dead(_11);
+        storage_dead(_10);
         return;
     }
 
     bb4: {
+        storage_dead(_11);
+        storage_dead(_10);
         unwind_continue;
     }
 }
@@ -1116,6 +1277,7 @@ fn test_crate::funs_with_disambiguator::f#1() -> u32
     let _0: u32; // return
 
     bb0: {
+        storage_live(_0);
         _0 = const 1u32;
         return;
     }
@@ -1126,21 +1288,23 @@ fn test_crate::funs_with_disambiguator::f() -> u32
     let _0: u32; // return
 
     bb0: {
+        storage_live(_0);
         _0 = const 0u32;
         return;
     }
 }
 
 // Full name: test_crate::funs_with_disambiguator
-fn funs_with_disambiguator(b_1: bool) -> u32
+fn funs_with_disambiguator(b: bool) -> u32
 {
     let _0: u32; // return
-    let b_1: bool; // arg #1
+    let b: bool; // arg #1
     let _2: bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy b_1;
+        _2 = copy b;
         if move _2 -> bb1 else -> bb2;
     }
 
@@ -1154,14 +1318,17 @@ fn funs_with_disambiguator(b_1: bool) -> u32
 
     bb3: {
         storage_dead(_2);
+        storage_dead(b);
         return;
     }
 
     bb4: {
+        storage_dead(b);
         unwind_continue;
     }
 
     bb5: {
+        storage_dead(b);
         unwind_continue;
     }
 }
@@ -1177,33 +1344,37 @@ struct MonoContainer::<&'_ str> {
 }
 
 // Full name: test_crate::{MonoContainer::<_>}::create::<i32>
-fn create::<i32>(item_1: i32) -> MonoContainer::<i32>
+fn create::<i32>(item: i32) -> MonoContainer::<i32>
 {
     let _0: MonoContainer::<i32>; // return
-    let item_1: i32; // arg #1
+    let item: i32; // arg #1
     let _2: i32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = move item_1;
+        _2 = move item;
         _0 = MonoContainer::<i32> { item: move _2 };
         storage_dead(_2);
+        storage_dead(item);
         return;
     }
 }
 
 // Full name: test_crate::{MonoContainer::<_>}::create::<&'_ str>
-fn create::<&'_ str>(item_1: &'_ str) -> MonoContainer::<&'_ str>
+fn create::<&'_ str>(item: &'_ str) -> MonoContainer::<&'_ str>
 {
     let _0: MonoContainer::<&'_ str>; // return
-    let item_1: &'_ str; // arg #1
+    let item: &'_ str; // arg #1
     let _2: &'_ str; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = move item_1;
+        _2 = move item;
         _0 = MonoContainer::<&'_ str> { item: move _2 };
         storage_dead(_2);
+        storage_dead(item);
         return;
     }
 }
@@ -1212,18 +1383,19 @@ fn create::<&'_ str>(item_1: &'_ str) -> MonoContainer::<&'_ str>
 fn mono_usage()
 {
     let _0: (); // return
-    let _container1_1: MonoContainer::<i32>; // local
-    let _container2_2: MonoContainer::<&'_ str>; // local
+    let _container1: MonoContainer::<i32>; // local
+    let _container2: MonoContainer::<&'_ str>; // local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(_container1_1);
-        _container1_1 = create::<i32>(const 42i32) -> bb1 (unwind: bb2);
+        storage_live(_container1);
+        _container1 = create::<i32>(const 42i32) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_live(_container2_2);
-        _container2_2 = create::<&'_ str>(const "test") -> bb3 (unwind: bb4);
+        storage_live(_container2);
+        _container2 = create::<&'_ str>(const "test") -> bb3 (unwind: bb4);
     }
 
     bb2: {
@@ -1232,8 +1404,8 @@ fn mono_usage()
 
     bb3: {
         _0 = ();
-        storage_dead(_container2_2);
-        storage_dead(_container1_1);
+        storage_dead(_container2);
+        storage_dead(_container1);
         return;
     }
 

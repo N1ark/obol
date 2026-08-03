@@ -9,6 +9,7 @@ extern crate rustc_span;
 
 use super::translate_crate::TransItemSource;
 use super::translate_ctx::{ItemTransCtx, TranslateCtx};
+use super::translate_from_rustc;
 use charon_lib::{ast::*, register_error};
 use itertools::Itertools;
 use log::trace;
@@ -556,13 +557,19 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             None => false,
         };
 
-        let lang_item = if let Some(def_id) = item_src.as_def_id() {
+        let (lang_item, diagnostic_item) = if let Some(def_id) = item_src.as_def_id() {
             let internal_id = rustc_internal::internal(self.tcx, def_id);
-            self.tcx
+            let lang_item = self
+                .tcx
                 .as_lang_item(internal_id)
-                .map(|l| l.name().to_ident_string())
+                .map(translate_from_rustc::translate_lang_item);
+            let diagnostic_item = self
+                .tcx
+                .get_diagnostic_name(internal_id)
+                .map(|name| name.to_ident_string());
+            (lang_item, diagnostic_item)
         } else {
-            None
+            (None, None)
         };
 
         let name_opacity = self.options.opacity_for_name(&self.translated, &name);
@@ -581,6 +588,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             is_local,
             opacity,
             lang_item,
+            diagnostic_item,
         };
         self.cached_item_metas
             .insert(item_src.clone(), item_meta.clone());

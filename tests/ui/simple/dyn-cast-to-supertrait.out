@@ -5,14 +5,16 @@
 struct HouseCat {}
 
 // Full name: core::ptr::drop_glue::<HouseCat>
-#[lang_item("drop_glue")]
+#[lang_item(DropGlue)]
 fn drop_glue::<HouseCat>(_1: &'_ mut HouseCat)
 {
     let _0: (); // return
     let _1: &'_ mut HouseCat; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -26,42 +28,45 @@ trait Feline
 trait test_crate::Pettable
 
 // Full name: test_crate::{impl test_crate::Pettable for HouseCat}::pet
-fn pet(self_1: &'_ HouseCat)
+fn pet(self: &'_ HouseCat)
 {
     let _0: (); // return
-    let self_1: &'_ HouseCat; // arg #1
+    let self: &'_ HouseCat; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 fn {vtable}::test_crate::Pettable::<HouseCat>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <test_crate::HouseCat as test_crate::Pettable>::pet_4: *const (); // local
-    let entry_array_5: [*const (); 4usize]; // local
-    let entry_array_ref_6: *const [*const (); 4usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <test_crate::HouseCat as test_crate::Pettable>::pet: *const (); // local
+    let entry_array: [*const (); 4usize]; // local
+    let entry_array_ref: *const [*const (); 4usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<test_crate::HouseCat as test_crate::Pettable>::pet_4);
-        storage_live(entry_array_5);
-        storage_live(entry_array_ref_6);
-        drop_1 = cast<drop_glue::<HouseCat>, *const ()>(const drop_glue::<HouseCat>);
-        size_2 = transmute<usize, *const ()>(const 0usize);
-        align_3 = transmute<usize, *const ()>(const 1usize);
-        <test_crate::HouseCat as test_crate::Pettable>::pet_4 = cast<pet, *const ()>(const pet);
-        entry_array_5 = [move drop_1, move size_2, move align_3, move <test_crate::HouseCat as test_crate::Pettable>::pet_4];
-        entry_array_ref_6 = &raw const entry_array_5;
-        vtable_0 = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref_6);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<test_crate::HouseCat as test_crate::Pettable>::pet);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<HouseCat>, *const ()>(const drop_glue::<HouseCat>);
+        size = transmute<usize, *const ()>(const 0usize);
+        align = transmute<usize, *const ()>(const 1usize);
+        <test_crate::HouseCat as test_crate::Pettable>::pet = cast<pet, *const ()>(const pet);
+        entry_array = [move drop, move size, move align, move <test_crate::HouseCat as test_crate::Pettable>::pet];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
         return;
     }
 }
@@ -71,61 +76,66 @@ static {vtable}::test_crate::Pettable::<HouseCat>: *const () = {vtable}::test_cr
 trait test_crate::Cat
 
 // Full name: test_crate::{impl test_crate::Cat for HouseCat}::meow
-fn meow(self_1: &'_ HouseCat)
+fn meow(self: &'_ HouseCat)
 {
     let _0: (); // return
-    let self_1: &'_ HouseCat; // arg #1
+    let self: &'_ HouseCat; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::{impl Feline for HouseCat}::hunt
-fn hunt(self_1: &'_ HouseCat)
+fn hunt(self: &'_ HouseCat)
 {
     let _0: (); // return
-    let self_1: &'_ HouseCat; // arg #1
+    let self: &'_ HouseCat; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 fn {vtable}::test_crate::Cat::<HouseCat>() -> *const ()
 {
-    let vtable_0: *const (); // return
-    let drop_1: *const (); // local
-    let size_2: *const (); // local
-    let align_3: *const (); // local
-    let <test_crate::HouseCat as test_crate::Feline>::hunt_4: *const (); // local
-    let <test_crate::HouseCat as test_crate::Pettable>::pet_5: *const (); // local
-    let <test_crate::HouseCat as test_crate::Cat>::meow_6: *const (); // local
-    let entry_array_7: [*const (); 7usize]; // local
-    let entry_array_ref_8: *const [*const (); 7usize]; // local
+    let vtable: *const (); // return
+    let drop: *const (); // local
+    let size: *const (); // local
+    let align: *const (); // local
+    let <test_crate::HouseCat as test_crate::Feline>::hunt: *const (); // local
+    let <test_crate::HouseCat as test_crate::Pettable>::pet: *const (); // local
+    let <test_crate::HouseCat as test_crate::Cat>::meow: *const (); // local
+    let entry_array: [*const (); 7usize]; // local
+    let entry_array_ref: *const [*const (); 7usize]; // local
 
     bb0: {
-        storage_live(drop_1);
-        storage_live(size_2);
-        storage_live(align_3);
-        storage_live(<test_crate::HouseCat as test_crate::Feline>::hunt_4);
-        storage_live(<test_crate::HouseCat as test_crate::Pettable>::pet_5);
-        storage_live(<test_crate::HouseCat as test_crate::Cat>::meow_6);
-        storage_live(entry_array_7);
-        storage_live(entry_array_ref_8);
-        drop_1 = cast<drop_glue::<HouseCat>, *const ()>(const drop_glue::<HouseCat>);
-        size_2 = transmute<usize, *const ()>(const 0usize);
-        align_3 = transmute<usize, *const ()>(const 1usize);
-        <test_crate::HouseCat as test_crate::Feline>::hunt_4 = cast<hunt, *const ()>(const hunt);
-        <test_crate::HouseCat as test_crate::Pettable>::pet_5 = cast<pet, *const ()>(const pet);
-        <test_crate::HouseCat as test_crate::Cat>::meow_6 = cast<meow, *const ()>(const meow);
-        entry_array_7 = [move drop_1, move size_2, move align_3, move <test_crate::HouseCat as test_crate::Feline>::hunt_4, move <test_crate::HouseCat as test_crate::Pettable>::pet_5, copy {vtable}::test_crate::Pettable::<HouseCat>, move <test_crate::HouseCat as test_crate::Cat>::meow_6];
-        entry_array_ref_8 = &raw const entry_array_7;
-        vtable_0 = cast<*const [*const (); 7usize], *const ()>(move entry_array_ref_8);
+        storage_live(vtable);
+        storage_live(drop);
+        storage_live(size);
+        storage_live(align);
+        storage_live(<test_crate::HouseCat as test_crate::Feline>::hunt);
+        storage_live(<test_crate::HouseCat as test_crate::Pettable>::pet);
+        storage_live(<test_crate::HouseCat as test_crate::Cat>::meow);
+        storage_live(entry_array);
+        storage_live(entry_array_ref);
+        drop = cast<drop_glue::<HouseCat>, *const ()>(const drop_glue::<HouseCat>);
+        size = transmute<usize, *const ()>(const 0usize);
+        align = transmute<usize, *const ()>(const 1usize);
+        <test_crate::HouseCat as test_crate::Feline>::hunt = cast<hunt, *const ()>(const hunt);
+        <test_crate::HouseCat as test_crate::Pettable>::pet = cast<pet, *const ()>(const pet);
+        <test_crate::HouseCat as test_crate::Cat>::meow = cast<meow, *const ()>(const meow);
+        entry_array = [move drop, move size, move align, move <test_crate::HouseCat as test_crate::Feline>::hunt, move <test_crate::HouseCat as test_crate::Pettable>::pet, copy {vtable}::test_crate::Pettable::<HouseCat>, move <test_crate::HouseCat as test_crate::Cat>::meow];
+        entry_array_ref = &raw const entry_array;
+        vtable = cast<*const [*const (); 7usize], *const ()>(move entry_array_ref);
         return;
     }
 }
@@ -151,42 +161,43 @@ impl "impl_Cat_for_HouseCat" test_crate::Cat for HouseCat {
 fn main()
 {
     let _0: (); // return
-    let cat_1: HouseCat; // local
-    let dyn_cat_2: &'_ (dyn FakeTrait); // local
+    let cat: HouseCat; // local
+    let dyn_cat: &'_ (dyn FakeTrait); // local
     let _3: &'_ HouseCat; // anonymous local
     let _4: &'_ HouseCat; // anonymous local
-    let dyn_feline_5: &'_ (dyn FakeTrait); // local
+    let dyn_feline: &'_ (dyn FakeTrait); // local
     let _6: &'_ (dyn FakeTrait); // anonymous local
-    let dyn_pettable_7: &'_ (dyn FakeTrait); // local
+    let dyn_pettable: &'_ (dyn FakeTrait); // local
     let _8: &'_ (dyn FakeTrait); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(cat_1);
-        cat_1 = HouseCat {  };
-        storage_live(dyn_cat_2);
+        storage_live(cat);
+        cat = HouseCat {  };
+        storage_live(dyn_cat);
         storage_live(_3);
         storage_live(_4);
-        _4 = &cat_1;
+        _4 = &cat;
         _3 = &(*_4);
-        dyn_cat_2 = unsize_cast<&'_ HouseCat, &'_ (dyn FakeTrait), {vtable}::test_crate::Cat::<HouseCat>>(move _3);
+        dyn_cat = unsize_cast<&'_ HouseCat, &'_ (dyn FakeTrait), {vtable}::test_crate::Cat::<HouseCat>>(move _3);
         storage_dead(_3);
         storage_dead(_4);
-        storage_live(dyn_feline_5);
+        storage_live(dyn_feline);
         storage_live(_6);
-        _6 = &(*dyn_cat_2) with_metadata(copy dyn_cat_2.metadata);
-        dyn_feline_5 = unsize_cast<&'_ (dyn FakeTrait), &'_ (dyn FakeTrait),  at []>(move _6);
+        _6 = &(*dyn_cat) with_metadata(copy dyn_cat.metadata);
+        dyn_feline = unsize_cast<&'_ (dyn FakeTrait), &'_ (dyn FakeTrait),  at []>(move _6);
         storage_dead(_6);
-        storage_live(dyn_pettable_7);
+        storage_live(dyn_pettable);
         storage_live(_8);
-        _8 = &(*dyn_cat_2) with_metadata(copy dyn_cat_2.metadata);
-        dyn_pettable_7 = unsize_cast<&'_ (dyn FakeTrait), &'_ (dyn FakeTrait),  at [5]>(move _8);
+        _8 = &(*dyn_cat) with_metadata(copy dyn_cat.metadata);
+        dyn_pettable = unsize_cast<&'_ (dyn FakeTrait), &'_ (dyn FakeTrait),  at [5]>(move _8);
         storage_dead(_8);
         _0 = ();
-        storage_dead(dyn_pettable_7);
-        storage_dead(dyn_feline_5);
-        storage_dead(dyn_cat_2);
-        storage_dead(cat_1);
+        storage_dead(dyn_pettable);
+        storage_dead(dyn_feline);
+        storage_dead(dyn_cat);
+        storage_dead(cat);
         return;
     }
 }

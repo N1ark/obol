@@ -10,47 +10,54 @@ pub struct HashMap::<()> {
 }
 
 // Full name: test_crate::{HashMap::<_>}::get::<(), ()>
-pub fn get::<(), ()>(_x_1: HashMap::<()>, _k_2: ())
+pub fn get::<(), ()>(_x: HashMap::<()>, _k: ())
 {
     let _0: (); // return
-    let _x_1: HashMap::<()>; // arg #1
-    let _k_2: (); // arg #2
+    let _x: HashMap::<()>; // arg #1
+    let _k: (); // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_k);
+        storage_dead(_x);
         return;
     }
 }
 
 // Full name: test_crate::top_level_get::<(), ()>
-pub fn top_level_get::<(), ()>(_x_1: HashMap::<()>, _k_2: ())
+pub fn top_level_get::<(), ()>(_x: HashMap::<()>, _k: ())
 {
     let _0: (); // return
-    let _x_1: HashMap::<()>; // arg #1
-    let _k_2: (); // arg #2
+    let _x: HashMap::<()>; // arg #1
+    let _k: (); // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_k);
+        storage_dead(_x);
         return;
     }
 }
 
 // Full name: test_crate::test1
-pub fn test1(map_1: HashMap::<()>)
+pub fn test1(map: HashMap::<()>)
 {
     let _0: (); // return
-    let map_1: HashMap::<()>; // arg #1
+    let map: HashMap::<()>; // arg #1
     let _2: (); // anonymous local
     let _3: HashMap::<()>; // anonymous local
     let _4: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = move map_1;
+        _3 = move map;
         storage_live(_4);
         _4 = ();
         _2 = top_level_get::<(), ()>(move _3, move _4) -> bb1 (unwind: bb2);
@@ -61,28 +68,31 @@ pub fn test1(map_1: HashMap::<()>)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(map);
         return;
     }
 
     bb2: {
+        storage_dead(map);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::test2
-pub fn test2(map_1: HashMap::<()>)
+pub fn test2(map: HashMap::<()>)
 {
     let _0: (); // return
-    let map_1: HashMap::<()>; // arg #1
+    let map: HashMap::<()>; // arg #1
     let _2: (); // anonymous local
     let _3: HashMap::<()>; // anonymous local
     let _4: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = move map_1;
+        _3 = move map;
         storage_live(_4);
         _4 = ();
         _2 = get::<(), ()>(move _3, move _4) -> bb1 (unwind: bb2);
@@ -93,10 +103,12 @@ pub fn test2(map_1: HashMap::<()>)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
+        storage_dead(map);
         return;
     }
 
     bb2: {
+        storage_dead(map);
         unwind_continue;
     }
 }

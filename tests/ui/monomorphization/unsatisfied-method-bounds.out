@@ -17,27 +17,31 @@ struct B {}
 const anon_const_1: B = B {  }
 
 // Full name: test_crate::MyIterator::method::<A>
-fn method::<A>(self_1: &'_ A)
+fn method::<A>(self: &'_ A)
 {
     let _0: (); // return
-    let self_1: &'_ A; // arg #1
+    let self: &'_ A; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::MyIterator::method::<B>
-fn method::<B>(self_1: &'_ B)
+fn method::<B>(self: &'_ B)
 {
     let _0: (); // return
-    let self_1: &'_ B; // arg #1
+    let self: &'_ B; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(self);
         return;
     }
 }
@@ -56,6 +60,7 @@ fn main()
     let _8: &'_ B; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_5);
         storage_live(_6);
         _0 = ();
@@ -81,6 +86,8 @@ fn main()
     }
 
     bb2: {
+        storage_dead(_6);
+        storage_dead(_5);
         unwind_continue;
     }
 
@@ -88,10 +95,14 @@ fn main()
         storage_dead(_4);
         storage_dead(_3);
         _0 = ();
+        storage_dead(_6);
+        storage_dead(_5);
         return;
     }
 
     bb4: {
+        storage_dead(_6);
+        storage_dead(_5);
         unwind_continue;
     }
 }

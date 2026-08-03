@@ -2,7 +2,8 @@
 // Final ULLBC:
 
 // Full name: core::option::Option::<u8>
-#[lang_item("Option")]
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
 pub enum Option::<u8> {
   None,
   Some(0: u8),
@@ -15,26 +16,27 @@ trait FakeTrait
 fn init_option()
 {
     let _0: (); // return
-    let a_1: [Option::<u8>; 6usize]; // local
+    let a: [Option::<u8>; 6usize]; // local
     let _2: Option::<u8>; // anonymous local
-    let b_3: Option::<u8>; // local
+    let b: Option::<u8>; // local
     let _4: usize; // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(a_1);
+        storage_live(a);
         storage_live(_2);
         _2 = Option::<u8>::Some { 0: const 4u8 };
-        a_1 = [move _2; 6usize];
+        a = [move _2; 6usize];
         storage_dead(_2);
-        storage_live(b_3);
+        storage_live(b);
         storage_live(_4);
         _4 = const 0usize;
-        b_3 = copy a_1[copy _4];
+        b = copy a[copy _4];
         storage_dead(_4);
         _0 = ();
-        storage_dead(b_3);
-        storage_dead(a_1);
+        storage_dead(b);
+        storage_dead(a);
         return;
     }
 }

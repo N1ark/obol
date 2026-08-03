@@ -15,24 +15,33 @@ pub struct FormattingOptions {
 trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok(0: ()),
   Err(0: Error),
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
@@ -42,40 +51,36 @@ enum ArgumentType::<'_> {
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
-#[lang_item("format_argument")]
+#[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
   ty: ArgumentType::<'_>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::Arguments::<'_>
-#[lang_item("format_arguments")]
+#[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
     let _0: Arguments::<'_>; // return
-    let s_1: &'_ str; // arg #1
+    let s: &'_ str; // arg #1
     let _2: NonNull::<u8>; // anonymous local
     let _3: *const u8; // anonymous local
     let _4: NonNull::<Argument::<'_>>; // anonymous local
@@ -86,10 +91,11 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
     let _9: &'_ [u8]; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         storage_live(_8);
-        _8 = &raw const (*s_1) with_metadata(copy s_1.metadata);
+        _8 = &raw const (*s) with_metadata(copy s.metadata);
         _3 = cast<*const str, *const u8>(copy _8);
         storage_dead(_8);
         _2 = transmute<*const u8, NonNull::<u8>>(copy _3);
@@ -99,7 +105,7 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
         storage_live(_6);
         storage_live(_7);
         storage_live(_9);
-        _9 = transmute<&'_ str, &'_ [u8]>(copy s_1);
+        _9 = transmute<&'_ str, &'_ [u8]>(copy s);
         _7 = copy _9.metadata;
         storage_dead(_9);
         _6 = move _7 wrap.<< const 1i32;
@@ -111,6 +117,7 @@ pub fn from_str::<'_>(s_1: &'_ str) -> Arguments::<'_>
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
         storage_dead(_2);
+        storage_dead(s);
         return;
     }
 }
@@ -120,16 +127,17 @@ pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::ptr::non_null::NonNull::<str>
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
 
 // Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item("phantom_data")]
+#[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -142,7 +150,7 @@ pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
 // Full name: core::panic::location::Location::<'_>
-#[lang_item("panic_location")]
+#[lang_item(PanicLocation)]
 pub struct Location::<'_> {
   filename: NonNull::<str>,
   line: u32,
@@ -156,6 +164,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     let _0: &'_ Location::<'_>; // return
 
     bb0: {
+        storage_live(_0);
         _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
@@ -169,7 +178,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -178,7 +187,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item("panic_info")]
+#[lang_item(PanicInfo)]
 pub struct PanicInfo::<'_> {
   message: &'_ Arguments::<'_>,
   location: &'_ Location::<'_>,
@@ -187,16 +196,21 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message_1: &'_ Arguments::<'_>, location_2: &'_ Location::<'_>, can_unwind_3: bool, force_no_backtrace_4: bool) -> PanicInfo::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
     let _0: PanicInfo::<'_>; // return
-    let message_1: &'_ Arguments::<'_>; // arg #1
-    let location_2: &'_ Location::<'_>; // arg #2
-    let can_unwind_3: bool; // arg #3
-    let force_no_backtrace_4: bool; // arg #4
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
-        _0 = PanicInfo::<'_> { message: copy message_1, location: copy location_2, can_unwind: copy can_unwind_3, force_no_backtrace: copy force_no_backtrace_4 };
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        storage_dead(force_no_backtrace);
+        storage_dead(can_unwind);
+        storage_dead(location);
+        storage_dead(message);
         return;
     }
 }
@@ -206,14 +220,14 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
-#[lang_item("panic_fmt")]
-pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
-    let fmt_1: Arguments::<'_>; // arg #1
+    let fmt: Arguments::<'_>; // arg #1
     let _2: bool; // anonymous local
     let _3: !; // anonymous local
-    let pi_4: PanicInfo::<'_>; // local
+    let pi: PanicInfo::<'_>; // local
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
@@ -222,6 +236,7 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _2 = const false;
         if move _2 -> bb1 else -> bb2;
@@ -234,10 +249,10 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb2: {
         storage_dead(_2);
-        storage_live(pi_4);
+        storage_live(pi);
         storage_live(_5);
         storage_live(_6);
-        _6 = &fmt_1;
+        _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
         storage_live(_8);
@@ -254,10 +269,15 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
 
     bb5: {
         _7 = &(*_8);
-        pi_4 = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
     bb6: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -268,12 +288,17 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
         storage_dead(_6);
         storage_live(_9);
         storage_live(_10);
-        _10 = &pi_4;
+        _10 = &pi;
         _9 = &(*_10);
         _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
     }
 
     bb8: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -282,25 +307,31 @@ pub fn panic_fmt(fmt_1: Arguments::<'_>) -> !
     }
 
     bb10: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(pi);
+        storage_dead(_3);
+        storage_dead(fmt);
         unwind_continue;
     }
 }
 
 // Full name: core::panicking::panic
-#[lang_item("panic")]
-pub fn panic(expr_1: &'_ str) -> !
+#[lang_item(Panic)]
+pub fn panic(expr: &'_ str) -> !
 {
     let _0: !; // return
-    let expr_1: &'_ str; // arg #1
+    let expr: &'_ str; // arg #1
     let _2: !; // anonymous local
     let _3: Arguments::<'_>; // anonymous local
     let _4: &'_ str; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy expr_1;
+        _4 = copy expr;
         _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
     }
 
@@ -310,6 +341,9 @@ pub fn panic(expr_1: &'_ str) -> !
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(expr);
         unwind_continue;
     }
 
@@ -318,6 +352,9 @@ pub fn panic(expr_1: &'_ str) -> !
     }
 
     bb4: {
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(expr);
         unwind_continue;
     }
 }
@@ -326,13 +363,15 @@ pub fn panic(expr_1: &'_ str) -> !
 trait BoolTrait
 
 // Full name: test_crate::BoolTrait::ret_true::<bool>
-pub fn ret_true::<bool>(self_1: &'_ bool) -> bool
+pub fn ret_true::<bool>(self: &'_ bool) -> bool
 {
     let _0: bool; // return
-    let self_1: &'_ bool; // arg #1
+    let self: &'_ bool; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = const true;
+        storage_dead(self);
         return;
     }
 }
@@ -343,30 +382,33 @@ impl "impl_BoolTrait_for_bool" BoolTrait for bool {
 }
 
 // Full name: test_crate::{impl BoolTrait for bool}::get_bool
-pub fn get_bool(self_1: &'_ bool) -> bool
+pub fn get_bool(self: &'_ bool) -> bool
 {
     let _0: bool; // return
-    let self_1: &'_ bool; // arg #1
+    let self: &'_ bool; // arg #1
 
     bb0: {
-        _0 = copy (*self_1);
+        storage_live(_0);
+        _0 = copy (*self);
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::test_bool_trait_bool
-pub fn test_bool_trait_bool(x_1: bool) -> bool
+pub fn test_bool_trait_bool(x: bool) -> bool
 {
     let _0: bool; // return
-    let x_1: bool; // arg #1
+    let x: bool; // arg #1
     let _2: bool; // anonymous local
     let _3: &'_ bool; // anonymous local
     let _4: &'_ bool; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = &x_1;
+        _3 = &x;
         _2 = get_bool(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -375,13 +417,14 @@ pub fn test_bool_trait_bool(x_1: bool) -> bool
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 
     bb3: {
         storage_dead(_3);
         storage_live(_4);
-        _4 = &x_1;
+        _4 = &x;
         _0 = ret_true::<bool>(move _4) -> bb5 (unwind: bb6);
     }
 
@@ -397,11 +440,13 @@ pub fn test_bool_trait_bool(x_1: bool) -> bool
     }
 
     bb6: {
+        storage_dead(x);
         unwind_continue;
     }
 
     bb7: {
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 }
@@ -415,48 +460,53 @@ impl "impl_ToU64_for_u64" ToU64 for u64 {
 }
 
 // Full name: test_crate::{impl ToU64 for u64}::to_u64
-pub fn impl_ToU64_for_u64::to_u64(self_1: u64) -> u64
+pub fn impl_ToU64_for_u64::to_u64(self: u64) -> u64
 {
     let _0: u64; // return
-    let self_1: u64; // arg #1
+    let self: u64; // arg #1
 
     bb0: {
-        _0 = copy self_1;
+        storage_live(_0);
+        _0 = copy self;
+        storage_dead(self);
         return;
     }
 }
 
 // Full name: test_crate::h0
-pub fn h0(x_1: u64) -> u64
+pub fn h0(x: u64) -> u64
 {
     let _0: u64; // return
-    let x_1: u64; // arg #1
+    let x: u64; // arg #1
     let _2: u64; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy x_1;
+        _2 = copy x;
         _0 = impl_ToU64_for_u64::to_u64(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
-}
-
-// Full name: test_crate::Wrapper::<u64>
-pub struct Wrapper::<u64> {
-  x: u64,
 }
 
 // Full name: test_crate::Wrapper::<(bool, &'_ ())>
 pub struct Wrapper::<(bool, &'_ ())> {
   x: (bool, &'_ ()),
+}
+
+// Full name: test_crate::Wrapper::<u64>
+pub struct Wrapper::<u64> {
+  x: u64,
 }
 
 // Full name: test_crate::{impl ToU64 for Wrapper::<_>}
@@ -465,47 +515,53 @@ impl<T> ToU64 for Wrapper::<_> {
 }
 
 // Full name: test_crate::{impl ToU64 for Wrapper::<_>}::to_u64::<u64>
-pub fn {impl ToU64 for Wrapper::<_>}::to_u64::<u64>(self_1: Wrapper::<u64>) -> u64
+pub fn {impl ToU64 for Wrapper::<_>}::to_u64::<u64>(self: Wrapper::<u64>) -> u64
 {
     let _0: u64; // return
-    let self_1: Wrapper::<u64>; // arg #1
+    let self: Wrapper::<u64>; // arg #1
     let _2: u64; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = move (self_1).x;
+        _2 = move (self).x;
         _0 = impl_ToU64_for_u64::to_u64(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(self);
         return;
     }
 
     bb2: {
+        storage_dead(self);
         unwind_continue;
     }
 }
 
 // Full name: test_crate::h1
-pub fn h1(x_1: Wrapper::<u64>) -> u64
+pub fn h1(x: Wrapper::<u64>) -> u64
 {
     let _0: u64; // return
-    let x_1: Wrapper::<u64>; // arg #1
+    let x: Wrapper::<u64>; // arg #1
     let _2: Wrapper::<u64>; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = move x_1;
+        _2 = move x;
         _0 = {impl ToU64 for Wrapper::<_>}::to_u64::<u64>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
         storage_dead(_2);
+        storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(x);
         unwind_continue;
     }
 }
@@ -519,17 +575,19 @@ impl "impl_ToType_bool_for_u64" ToType<bool> for u64 {
 }
 
 // Full name: test_crate::{impl ToType<bool> for u64}::to_type
-pub fn to_type(self_1: u64) -> bool
+pub fn to_type(self: u64) -> bool
 {
     let _0: bool; // return
-    let self_1: u64; // arg #1
+    let self: u64; // arg #1
     let _2: u64; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy self_1;
+        _2 = copy self;
         _0 = move _2 > const 0u64;
         storage_dead(_2);
+        storage_dead(self);
         return;
     }
 }
@@ -548,17 +606,19 @@ impl "impl_TestTrait_for_TestType1" TestTrait for TestType1 {
 }
 
 // Full name: test_crate::{TestType::<_>}::test::{impl TestTrait for TestType1}::test
-fn test(self_1: &'_ TestType1) -> bool
+fn test(self: &'_ TestType1) -> bool
 {
     let _0: bool; // return
-    let self_1: &'_ TestType1; // arg #1
+    let self: &'_ TestType1; // arg #1
     let _2: u64; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
-        _2 = copy ((*self_1)).0;
+        _2 = copy ((*self)).0;
         _0 = move _2 > const 1u64;
         storage_dead(_2);
+        storage_dead(self);
         return;
     }
 }
@@ -579,8 +639,11 @@ pub fn f(_1: &'_ mut u64, _2: &'_ [u8; 32usize])
     let _2: &'_ [u8; 32usize]; // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_2);
+        storage_dead(_1);
         return;
     }
 }
@@ -594,25 +657,28 @@ impl "impl_ChildTrait2_for_u32" ChildTrait2 for u32 {
 }
 
 // Full name: test_crate::{impl ChildTrait2 for u32}::convert
-pub fn convert(x_1: u32) -> u32
+pub fn convert(x: u32) -> u32
 {
     let _0: u32; // return
-    let x_1: u32; // arg #1
+    let x: u32; // arg #1
 
     bb0: {
-        _0 = copy x_1;
+        storage_live(_0);
+        _0 = copy x;
+        storage_dead(x);
         return;
     }
 }
 
 // Full name: test_crate::flabada
-pub fn flabada(_x_1: &'_ ()) -> Wrapper::<(bool, &'_ ())>
+pub fn flabada(_x: &'_ ()) -> Wrapper::<(bool, &'_ ())>
 {
     let _0: Wrapper::<(bool, &'_ ())>; // return
-    let _x_1: &'_ (); // arg #1
+    let _x: &'_ (); // arg #1
     let _2: !; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_2);
         _2 = panic(const "not yet implemented") -> bb1 (unwind: bb2);
     }
@@ -622,6 +688,8 @@ pub fn flabada(_x_1: &'_ ()) -> Wrapper::<(bool, &'_ ())>
     }
 
     bb2: {
+        storage_dead(_2);
+        storage_dead(_x);
         unwind_continue;
     }
 }
@@ -633,8 +701,10 @@ pub fn call::<'_, flabada>(_1: flabada)
     let _1: flabada; // arg #1
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_1);
         return;
     }
 }
@@ -646,6 +716,7 @@ pub fn flibidi()
     let _1: (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         storage_live(_1);
         _1 = call::<'_, flabada>(const flabada) -> bb1 (unwind: bb2);

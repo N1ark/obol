@@ -192,6 +192,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             signature: Box::new(FunSig {
                 is_unsafe: false,
                 abi: Abi::rust(),
+                is_variadic: false,
                 inputs: vec![],
                 output: TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
             }),

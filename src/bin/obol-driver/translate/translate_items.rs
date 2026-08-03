@@ -220,6 +220,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 is_local: false,
                 opacity: ItemOpacity::Transparent,
                 lang_item: None,
+                diagnostic_item: None,
             },
             generics: GenericParams::empty(),
             implied_clauses: vec![].into(),
@@ -628,12 +629,14 @@ impl ItemTransCtx<'_, '_> {
                         params.regions.push(RegionParam {
                             index: i,
                             name: None,
+                            variance: Variance::Unknown,
                             mutability: LifetimeMutability::Unknown,
                         });
                     }
                     params.regions.push(RegionParam {
                         index: RegionId::from_raw(index),
                         name: Some(name),
+                        variance: Variance::Unknown,
                         mutability: LifetimeMutability::Unknown,
                     });
                 }
@@ -643,11 +646,13 @@ impl ItemTransCtx<'_, '_> {
                         params.types.push(TypeParam {
                             index: i,
                             name: "_".to_string(),
+                            variance: Variance::Unknown,
                         });
                     }
                     params.types.push(TypeParam {
                         index: TypeVarId::from_raw(index),
                         name,
+                        variance: Variance::Unknown,
                     });
                 }
                 GenericParamDefKind::Const { .. } => {

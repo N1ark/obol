@@ -19,15 +19,18 @@ impl "impl_Hash_for_u32" Hash for u32 {
 }
 
 // Full name: test_crate::{impl Hash for u32}::hash::<DefaultHasher>
-pub fn hash::<DefaultHasher>(self_1: &'_ u32, _state_2: &'_ mut DefaultHasher)
+pub fn hash::<DefaultHasher>(self: &'_ u32, _state: &'_ mut DefaultHasher)
 {
     let _0: (); // return
-    let self_1: &'_ u32; // arg #1
-    let _state_2: &'_ mut DefaultHasher; // arg #2
+    let self: &'_ u32; // arg #1
+    let _state: &'_ mut DefaultHasher; // arg #2
 
     bb0: {
+        storage_live(_0);
         _0 = ();
         _0 = ();
+        storage_dead(_state);
+        storage_dead(self);
         return;
     }
 }
@@ -36,7 +39,7 @@ pub fn hash::<DefaultHasher>(self_1: &'_ u32, _state_2: &'_ mut DefaultHasher)
 fn main()
 {
     let _0: (); // return
-    let hasher_1: DefaultHasher; // local
+    let hasher: DefaultHasher; // local
     let _2: (); // anonymous local
     let _3: &'_ u32; // anonymous local
     let _4: &'_ mut DefaultHasher; // anonymous local
@@ -45,10 +48,11 @@ fn main()
     let _7: &'_ u32; // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_6);
         _0 = ();
-        storage_live(hasher_1);
-        hasher_1 = DefaultHasher {  };
+        storage_live(hasher);
+        hasher = DefaultHasher {  };
         storage_live(_2);
         storage_live(_3);
         storage_live(_7);
@@ -57,7 +61,7 @@ fn main()
         _3 = &(*_6);
         storage_live(_4);
         storage_live(_5);
-        _5 = &mut hasher_1;
+        _5 = &mut hasher;
         _4 = &two-phase-mut (*_5);
         _2 = hash::<DefaultHasher>(move _3, move _4) -> bb1 (unwind: bb2);
     }
@@ -68,11 +72,13 @@ fn main()
         storage_dead(_5);
         storage_dead(_2);
         _0 = ();
-        storage_dead(hasher_1);
+        storage_dead(hasher);
+        storage_dead(_6);
         return;
     }
 
     bb2: {
+        storage_dead(_6);
         unwind_continue;
     }
 }

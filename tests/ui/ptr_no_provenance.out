@@ -2,12 +2,14 @@
 // Final ULLBC:
 
 // Full name: core::ptr::null::<()>
+#[diagnostic_item("ptr_null")]
 pub fn null::<()>() -> *const ()
 {
     let _0: *const (); // return
     let _1: *const (); // anonymous local
 
     bb0: {
+        storage_live(_0);
         storage_live(_1);
         _1 = cast<usize, *const ()>(const 0usize);
         _0 = move _1;
@@ -22,17 +24,18 @@ trait FakeTrait
 fn main()
 {
     let _0: (); // return
-    let ptr_1: *const (); // local
+    let ptr: *const (); // local
 
     bb0: {
+        storage_live(_0);
         _0 = ();
-        storage_live(ptr_1);
-        ptr_1 = null::<()>() -> bb1 (unwind: bb2);
+        storage_live(ptr);
+        ptr = null::<()>() -> bb1 (unwind: bb2);
     }
 
     bb1: {
         _0 = ();
-        storage_dead(ptr_1);
+        storage_dead(ptr);
         return;
     }
 

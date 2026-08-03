@@ -67,6 +67,7 @@ impl ItemTransCtx<'_, '_> {
         let signature = FunSig {
             is_unsafe: false,
             abi: Abi::rust(),
+            is_variadic: false,
             inputs: vec![],
             output: Ty::mk_unit(),
         };
