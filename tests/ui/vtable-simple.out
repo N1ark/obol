@@ -20,7 +20,6 @@ pub fn clone(self: &'_ i32) -> i32
     bb0: {
         storage_live(_0);
         _0 = copy (*self);
-        storage_dead(self);
         return;
     }
 }
@@ -35,7 +34,6 @@ fn drop_glue::<i32>(_1: &'_ mut i32)
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -69,16 +67,10 @@ fn impl_Modifiable_for_i32::modify::<i32>(self: &'_ mut i32, arg: &'_ i32) -> i3
 
     bb1: {
         storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(arg);
-        storage_dead(self);
         return;
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(arg);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -161,14 +153,10 @@ fn modify_trait_object::<i32>(arg: &'_ i32) -> i32
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(x);
-        storage_dead(_8);
-        storage_dead(arg);
         return;
     }
 
     bb2: {
-        storage_dead(_8);
-        storage_dead(arg);
         unwind_continue;
     }
 }
@@ -203,12 +191,10 @@ fn main()
         storage_dead(_3);
         storage_dead(_1);
         _0 = ();
-        storage_dead(_4);
         return;
     }
 
     bb2: {
-        storage_dead(_4);
         unwind_continue;
     }
 }

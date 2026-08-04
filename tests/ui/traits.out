@@ -117,7 +117,6 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
         storage_dead(_2);
-        storage_dead(s);
         return;
     }
 }
@@ -207,10 +206,6 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
     bb0: {
         storage_live(_0);
         _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        storage_dead(force_no_backtrace);
-        storage_dead(can_unwind);
-        storage_dead(location);
-        storage_dead(message);
         return;
     }
 }
@@ -273,11 +268,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb6: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -294,11 +284,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb8: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -307,11 +292,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb10: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -341,9 +321,6 @@ pub fn panic(expr: &'_ str) -> !
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(expr);
         unwind_continue;
     }
 
@@ -352,9 +329,6 @@ pub fn panic(expr: &'_ str) -> !
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(expr);
         unwind_continue;
     }
 }
@@ -371,7 +345,6 @@ pub fn ret_true::<bool>(self: &'_ bool) -> bool
     bb0: {
         storage_live(_0);
         _0 = const true;
-        storage_dead(self);
         return;
     }
 }
@@ -390,7 +363,6 @@ pub fn get_bool(self: &'_ bool) -> bool
     bb0: {
         storage_live(_0);
         _0 = copy (*self);
-        storage_dead(self);
         return;
     }
 }
@@ -417,7 +389,6 @@ pub fn test_bool_trait_bool(x: bool) -> bool
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 
@@ -440,13 +411,11 @@ pub fn test_bool_trait_bool(x: bool) -> bool
     }
 
     bb6: {
-        storage_dead(x);
         unwind_continue;
     }
 
     bb7: {
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 }
@@ -468,7 +437,6 @@ pub fn impl_ToU64_for_u64::to_u64(self: u64) -> u64
     bb0: {
         storage_live(_0);
         _0 = copy self;
-        storage_dead(self);
         return;
     }
 }
@@ -489,12 +457,10 @@ pub fn h0(x: u64) -> u64
 
     bb1: {
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 }
@@ -530,12 +496,10 @@ pub fn {impl ToU64 for Wrapper::<_>}::to_u64::<u64>(self: Wrapper::<u64>) -> u64
 
     bb1: {
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 
     bb2: {
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -556,12 +520,10 @@ pub fn h1(x: Wrapper::<u64>) -> u64
 
     bb1: {
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 }
@@ -587,7 +549,6 @@ pub fn to_type(self: u64) -> bool
         _2 = copy self;
         _0 = move _2 > const 0u64;
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 }
@@ -618,7 +579,6 @@ fn test(self: &'_ TestType1) -> bool
         _2 = copy ((*self)).0;
         _0 = move _2 > const 1u64;
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 }
@@ -642,8 +602,6 @@ pub fn f(_1: &'_ mut u64, _2: &'_ [u8; 32usize])
         storage_live(_0);
         _0 = ();
         _0 = ();
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 }
@@ -665,7 +623,6 @@ pub fn convert(x: u32) -> u32
     bb0: {
         storage_live(_0);
         _0 = copy x;
-        storage_dead(x);
         return;
     }
 }
@@ -688,8 +645,6 @@ pub fn flabada(_x: &'_ ()) -> Wrapper::<(bool, &'_ ())>
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_x);
         unwind_continue;
     }
 }
@@ -704,7 +659,6 @@ pub fn call::<'_, flabada>(_1: flabada)
         storage_live(_0);
         _0 = ();
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }

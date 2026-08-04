@@ -19,10 +19,6 @@ fn test_crate::gives_fn::closure::<i8, extern "rust-call" fn((&'_ mut u32,)) -> 
         _4 = copy (*counter) panic.+ const 1u32;
         (*counter) = move _4;
         _0 = const true;
-        storage_dead(_4);
-        storage_dead(counter);
-        storage_dead(spread_args);
-        storage_dead(_1);
         return;
     }
 }
@@ -37,7 +33,6 @@ fn drop_glue::<test_crate::gives_fn::closure::closure>(_1: &'_ mut test_crate::g
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -58,16 +53,10 @@ pub fn call_once::<test_crate::gives_fn::closure::closure, (&'_ mut u32,)>(_1: t
     }
 
     bb1: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -85,14 +74,10 @@ pub fn call_once::<test_crate::gives_fn::closure::closure, (&'_ mut u32,)>(_1: *
     }
 
     bb1: {
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -185,8 +170,6 @@ fn takes_fn(f: &'_ (dyn FakeTrait))
     }
 
     bb2: {
-        storage_dead(_8);
-        storage_dead(f);
         unwind_continue;
     }
 
@@ -211,8 +194,6 @@ fn takes_fn(f: &'_ (dyn FakeTrait))
     bb5: {
         storage_dead(_3);
         storage_dead(counter);
-        storage_dead(_8);
-        storage_dead(f);
         return;
     }
 }
@@ -247,12 +228,10 @@ fn gives_fn()
     bb1: {
         storage_dead(_1);
         storage_dead(_3);
-        storage_dead(_4);
         return;
     }
 
     bb2: {
-        storage_dead(_4);
         unwind_continue;
     }
 }

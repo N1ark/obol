@@ -20,7 +20,6 @@ pub fn clone(self: &'_ u32) -> u32
     bb0: {
         storage_live(_0);
         _0 = copy (*self);
-        storage_dead(self);
         return;
     }
 }
@@ -61,8 +60,6 @@ pub fn get_ty(self: &'_ ()) -> &'_ u32
         _2 = &(*_3);
         _0 = &(*_2);
         storage_dead(_2);
-        storage_dead(_3);
-        storage_dead(self);
         return;
     }
 }
@@ -191,9 +188,6 @@ fn test_crate::wrap::closure::<u32, i32, extern "rust-call" fn((&'_ u32,)) -> Wr
         _4 = &(*x);
         _0 = WrapClone::<&'_ u32> { 0: move _4 };
         storage_dead(_4);
-        storage_dead(x);
-        storage_dead(spread_args);
-        storage_dead(_1);
         return;
     }
 }
@@ -236,7 +230,6 @@ pub fn use_wrap()
     }
 
     bb2: {
-        storage_dead(_7);
         unwind_continue;
     }
 
@@ -248,12 +241,10 @@ pub fn use_wrap()
         storage_dead(_2);
         _0 = ();
         storage_dead(f);
-        storage_dead(_7);
         return;
     }
 
     bb4: {
-        storage_dead(_7);
         unwind_continue;
     }
 }

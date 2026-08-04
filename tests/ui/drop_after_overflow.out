@@ -117,7 +117,6 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
         storage_dead(_2);
-        storage_dead(s);
         return;
     }
 }
@@ -154,7 +153,6 @@ pub fn drop(self: &'_ mut Foo)
     }
 
     bb2: {
-        storage_dead(self);
         unwind_continue;
     }
 
@@ -162,12 +160,10 @@ pub fn drop(self: &'_ mut Foo)
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
-        storage_dead(self);
         return;
     }
 
     bb4: {
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -191,16 +187,10 @@ fn drop_glue::<Foo>(_1: &'_ mut Foo)
     }
 
     bb1: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -243,16 +233,10 @@ fn main()
 
     bb1: {
         storage_dead(f);
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_3);
         return;
     }
 
     bb2: {
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_3);
         unwind_continue;
     }
 }

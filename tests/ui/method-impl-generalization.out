@@ -34,8 +34,6 @@ fn method1(self: (), _other: &'_ u32) -> bool
     bb0: {
         storage_live(_0);
         _0 = const true;
-        storage_dead(_other);
-        storage_dead(self);
         return;
     }
 }
@@ -58,8 +56,6 @@ fn compare::<'_>(self: &'_ (), _other: &'_ ()) -> bool
     bb0: {
         storage_live(_0);
         _0 = const true;
-        storage_dead(_other);
-        storage_dead(self);
         return;
     }
 }
@@ -124,9 +120,6 @@ fn main()
     }
 
     bb2: {
-        storage_dead(_11);
-        storage_dead(_10);
-        storage_dead(_9);
         unwind_continue;
     }
 
@@ -136,16 +129,10 @@ fn main()
         storage_dead(_8);
         storage_dead(_5);
         _0 = ();
-        storage_dead(_11);
-        storage_dead(_10);
-        storage_dead(_9);
         return;
     }
 
     bb4: {
-        storage_dead(_11);
-        storage_dead(_10);
-        storage_dead(_9);
         unwind_continue;
     }
 }
@@ -168,8 +155,6 @@ fn foo(x: &'_ (), y: &'_ ()) -> &'_ ()
     bb0: {
         storage_live(_0);
         _0 = copy x;
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -208,14 +193,10 @@ fn call_foo(x: &'_ ()) -> &'_ ()
         storage_dead(_3);
         storage_dead(_5);
         storage_dead(_2);
-        storage_dead(_6);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(_6);
-        storage_dead(x);
         unwind_continue;
     }
 }

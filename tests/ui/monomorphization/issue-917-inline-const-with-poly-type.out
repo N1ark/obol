@@ -16,9 +16,6 @@ fn test_crate::foo::{const}::closure::<(), i8, extern "rust-call" fn(((),)), ()>
         _0 = ();
         x = move spread_args.0;
         _0 = ();
-        storage_dead(x);
-        storage_dead(spread_args);
-        storage_dead(_1);
         return;
     }
 }
@@ -40,16 +37,10 @@ pub fn call_once::<test_crate::foo::{const}::closure::closure, ((),)>(_1: test_c
     }
 
     bb1: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -76,16 +67,10 @@ fn closure_as_fn(arg1: ())
     }
 
     bb1: {
-        storage_dead(state);
-        storage_dead(args);
-        storage_dead(arg1);
         return;
     }
 
     bb2: {
-        storage_dead(state);
-        storage_dead(args);
-        storage_dead(arg1);
         unwind_continue;
     }
 }
@@ -118,12 +103,10 @@ fn foo::<()>(x: ())
         storage_dead(_4);
         storage_dead(_3);
         storage_dead(f);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 }

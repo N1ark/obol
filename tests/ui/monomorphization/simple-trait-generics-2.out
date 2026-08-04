@@ -11,7 +11,6 @@ fn drop_glue::<i32>(_1: &'_ mut i32)
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -26,7 +25,6 @@ fn drop_glue::<u32>(_1: &'_ mut u32)
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -51,7 +49,6 @@ fn impl_Trait_bool_for_i32::comsume(self: &'_ i32) -> bool
     bb0: {
         storage_live(_0);
         _0 = const true;
-        storage_dead(self);
         return;
     }
 }
@@ -96,7 +93,6 @@ fn impl_Trait_usize_for_u32::comsume(self: &'_ u32) -> usize
     bb0: {
         storage_live(_0);
         _0 = const 1usize;
-        storage_dead(self);
         return;
     }
 }
@@ -216,10 +212,6 @@ fn main()
     }
 
     bb2: {
-        storage_dead(_14);
-        storage_dead(_13);
-        storage_dead(_12);
-        storage_dead(_11);
         unwind_continue;
     }
 
@@ -229,18 +221,10 @@ fn main()
         _0 = ();
         storage_dead(b);
         storage_dead(a);
-        storage_dead(_14);
-        storage_dead(_13);
-        storage_dead(_12);
-        storage_dead(_11);
         return;
     }
 
     bb4: {
-        storage_dead(_14);
-        storage_dead(_13);
-        storage_dead(_12);
-        storage_dead(_11);
         unwind_continue;
     }
 }

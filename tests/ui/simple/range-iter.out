@@ -29,8 +29,6 @@ pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
         _0 = move _3 < move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(other);
-        storage_dead(self);
         return;
     }
 }
@@ -164,10 +162,6 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
     bb0: {
         storage_live(_0);
         _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        storage_dead(force_no_backtrace);
-        storage_dead(can_unwind);
-        storage_dead(location);
-        storage_dead(message);
         return;
     }
 }
@@ -245,11 +239,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb6: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -266,11 +255,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb8: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -279,11 +263,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb10: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -305,8 +284,6 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -339,9 +316,6 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_terminate;
     }
 }
@@ -419,12 +393,6 @@ fn precondition_check(lhs: usize, rhs: usize)
     }
 
     bb2: {
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(msg);
-        storage_dead(rhs);
-        storage_dead(lhs);
         return;
     }
 
@@ -460,10 +428,6 @@ pub fn forward_unchecked(start: usize, n: usize) -> usize
 
     bb2: {
         _0 = copy start ub.+ copy n;
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(n);
-        storage_dead(start);
         return;
     }
 
@@ -521,7 +485,6 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
     }
 
     bb2: {
-        storage_dead(self);
         unwind_continue;
     }
 
@@ -550,13 +513,11 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
     }
 
     bb6: {
-        storage_dead(self);
         unwind_continue;
     }
 
     bb7: {
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 }
@@ -583,12 +544,10 @@ pub fn next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
     }
 
     bb1: {
-        storage_dead(self);
         return;
     }
 
     bb2: {
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -611,7 +570,6 @@ pub fn into_iter::<Range::<usize>>(self: Range::<usize>) -> Range::<usize>
     bb0: {
         storage_live(_0);
         _0 = move self;
-        storage_dead(self);
         return;
     }
 }
@@ -670,8 +628,6 @@ fn iter(n: usize)
     }
 
     bb2: {
-        storage_dead(_9);
-        storage_dead(n);
         unwind_continue;
     }
 
@@ -691,8 +647,6 @@ fn iter(n: usize)
     }
 
     bb5: {
-        storage_dead(_9);
-        storage_dead(n);
         unwind_continue;
     }
 
@@ -702,8 +656,6 @@ fn iter(n: usize)
         storage_dead(_6);
         storage_dead(iter);
         storage_dead(_2);
-        storage_dead(_9);
-        storage_dead(n);
         return;
     }
 

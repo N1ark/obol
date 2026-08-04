@@ -40,7 +40,6 @@ fn new::<i32>(value: i32) -> Generic::<i32>
         _2 = move value;
         _0 = Generic::<i32> { value: move _2 };
         storage_dead(_2);
-        storage_dead(value);
         return;
     }
 }
@@ -58,7 +57,6 @@ fn new::<&'_ str>(value: &'_ str) -> Generic::<&'_ str>
         _2 = move value;
         _0 = Generic::<&'_ str> { value: move _2 };
         storage_dead(_2);
-        storage_dead(value);
         return;
     }
 }
@@ -76,7 +74,6 @@ fn get::<i32>(self: &'_ Generic::<i32>) -> &'_ i32
         _2 = &((*self)).value;
         _0 = &(*_2);
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 }

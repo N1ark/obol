@@ -157,10 +157,6 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
     bb0: {
         storage_live(_0);
         _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        storage_dead(force_no_backtrace);
-        storage_dead(can_unwind);
-        storage_dead(location);
-        storage_dead(message);
         return;
     }
 }
@@ -223,11 +219,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb6: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -244,11 +235,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb8: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -257,11 +243,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb10: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -283,8 +264,6 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -317,9 +296,6 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_terminate;
     }
 }
@@ -399,10 +375,6 @@ fn precondition_check(ptr: *mut ())
 
     bb2: {
         storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(msg);
-        storage_dead(ptr);
         return;
     }
 
@@ -440,9 +412,6 @@ pub fn new_unchecked::<usize>(ptr: *mut usize) -> NonNull::<usize>
 
     bb2: {
         _0 = transmute<*mut usize, NonNull::<usize>>(copy ptr);
-        storage_dead(_4);
-        storage_dead(_2);
-        storage_dead(ptr);
         return;
     }
 
@@ -509,12 +478,10 @@ fn main()
         storage_dead(z);
         storage_dead(y);
         storage_dead(x);
-        storage_dead(_6);
         return;
     }
 
     bb2: {
-        storage_dead(_6);
         unwind_continue;
     }
 }

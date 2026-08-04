@@ -11,7 +11,6 @@ pub fn cast::<u32, [u8; 4usize]>(self: *const u32) -> *const [u8; 4usize]
     bb0: {
         storage_live(_0);
         _0 = cast<*const u32, *const [u8; 4usize]>(copy self);
-        storage_dead(self);
         return;
     }
 }
@@ -51,12 +50,10 @@ fn method::<'_>(self: &'_ u32) -> &'_ [u8; 4usize]
         _0 = &(*_2);
         storage_dead(_3);
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 
     bb2: {
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -77,12 +74,10 @@ fn convert::<&'_ u32, &'_ [u8; 4usize]>(x: &'_ u32) -> &'_ [u8; 4usize]
 
     bb1: {
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 }
@@ -107,12 +102,10 @@ pub fn to_bytes_by_ref(s: &'_ u32) -> &'_ [u8; 4usize]
         _0 = &(*_2);
         storage_dead(_3);
         storage_dead(_2);
-        storage_dead(s);
         return;
     }
 
     bb2: {
-        storage_dead(s);
         unwind_continue;
     }
 }

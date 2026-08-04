@@ -17,7 +17,6 @@ pub fn neg_test(x: i32) -> i32
         _2 = copy x;
         _0 = panic.-(move _2);
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 }
@@ -43,9 +42,6 @@ pub fn add_u32(x: u32, y: u32) -> u32
         _0 = move _5;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(_5);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -64,8 +60,6 @@ pub fn incr(x: &'_ mut u32)
         _2 = copy (*x) panic.+ const 1u32;
         (*x) = move _2;
         _0 = ();
-        storage_dead(_2);
-        storage_dead(x);
         return;
     }
 }
@@ -91,9 +85,6 @@ pub fn subs_u32(x: u32, y: u32) -> u32
         _0 = move _5;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(_5);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -116,8 +107,6 @@ pub fn div_u32(x: u32, y: u32) -> u32
         _0 = move _3 panic./ move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -135,7 +124,6 @@ pub fn div_u32_const(x: u32) -> u32
         _2 = copy x;
         _0 = move _2 panic./ const 2u32;
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 }
@@ -158,8 +146,6 @@ pub fn rem_u32(x: u32, y: u32) -> u32
         _0 = move _3 panic.% move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -185,9 +171,6 @@ pub fn mul_u32(x: u32, y: u32) -> u32
         _0 = move _5;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(_5);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -213,9 +196,6 @@ pub fn add_i32(x: i32, y: i32) -> i32
         _0 = move _5;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(_5);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -241,9 +221,6 @@ pub fn subs_i32(x: i32, y: i32) -> i32
         _0 = move _5;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(_5);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -266,8 +243,6 @@ pub fn div_i32(x: i32, y: i32) -> i32
         _0 = move _3 panic./ move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -285,7 +260,6 @@ pub fn div_i32_const(x: i32) -> i32
         _2 = copy x;
         _0 = move _2 panic./ const 2i32;
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 }
@@ -308,8 +282,6 @@ pub fn rem_i32(x: i32, y: i32) -> i32
         _0 = move _3 panic.% move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -335,9 +307,6 @@ pub fn mul_i32(x: i32, y: i32) -> i32
         _0 = move _5;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(_5);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -443,15 +412,6 @@ pub fn mix_arith_u32(x: u32, y: u32, z: u32) -> u32
         _0 = move _4 panic.% move _21;
         storage_dead(_21);
         storage_dead(_4);
-        storage_dead(_27);
-        storage_dead(_25);
-        storage_dead(_20);
-        storage_dead(_19);
-        storage_dead(_13);
-        storage_dead(_9);
-        storage_dead(z);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -557,15 +517,6 @@ pub fn mix_arith_i32(x: i32, y: i32, z: i32) -> i32
         _0 = move _4 panic.% move _21;
         storage_dead(_21);
         storage_dead(_4);
-        storage_dead(_27);
-        storage_dead(_25);
-        storage_dead(_20);
-        storage_dead(_19);
-        storage_dead(_13);
-        storage_dead(_9);
-        storage_dead(z);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -588,8 +539,6 @@ fn shl_u32(x: u32, y: u32) -> u32
         _0 = move _3 panic.<< move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -612,8 +561,6 @@ fn shr_u32(x: u32, y: u32) -> u32
         _0 = move _3 panic.>> move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -643,9 +590,6 @@ fn shr_add_u32(x: u32, y: u32) -> u32
         _0 = move _3 panic.>> move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(_6);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -668,8 +612,6 @@ fn shl_i32(x: i32, y: i32) -> i32
         _0 = move _3 panic.<< move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -692,8 +634,6 @@ fn shr_i32(x: i32, y: i32) -> i32
         _0 = move _3 panic.>> move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -720,8 +660,6 @@ fn shr_i32_manual_cast(x: i32, y: i32) -> i32
         _0 = move _3 panic.>> move _4;
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 }
@@ -741,7 +679,6 @@ fn index_slice_ignore_value(x: &'_ [u32])
         _ = (*x)[copy _2];
         storage_dead(_2);
         _0 = ();
-        storage_dead(x);
         return;
     }
 }
@@ -781,8 +718,6 @@ fn div_unsigned_to_slice(result: &'_ mut [u32], x: u32)
         storage_dead(_3);
         storage_dead(_4);
         _0 = ();
-        storage_dead(x);
-        storage_dead(result);
         return;
     }
 }
@@ -807,8 +742,6 @@ fn div_signed_to_slice(result: &'_ mut [i32], x: i32)
         storage_dead(_3);
         storage_dead(_4);
         _0 = ();
-        storage_dead(x);
-        storage_dead(result);
         return;
     }
 }
@@ -836,9 +769,6 @@ fn add_to_slice(result: &'_ mut [u32], x: u32)
         storage_dead(_3);
         storage_dead(_5);
         _0 = ();
-        storage_dead(_4);
-        storage_dead(x);
-        storage_dead(result);
         return;
     }
 }
@@ -874,11 +804,6 @@ fn add_to_slice2(result: &'_ mut [u8], i: usize, x: u8)
         storage_dead(_4);
         storage_dead(_6);
         _0 = ();
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(x);
-        storage_dead(i);
-        storage_dead(result);
         return;
     }
 }

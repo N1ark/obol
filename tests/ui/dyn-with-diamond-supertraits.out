@@ -28,8 +28,6 @@ pub fn add::<'_>(self_1: &'_ i32, other: i32) -> i32
         _0 = move _4;
         storage_dead(_4);
         storage_dead(self_3);
-        storage_dead(other);
-        storage_dead(self_1);
         return;
     }
 }
@@ -44,7 +42,6 @@ fn drop_glue::<i32>(_1: &'_ mut i32)
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -78,14 +75,10 @@ fn super_method(self: &'_ i32, arg: i32) -> i32
     bb1: {
         storage_dead(_4);
         storage_dead(_3);
-        storage_dead(arg);
-        storage_dead(self);
         return;
     }
 
     bb2: {
-        storage_dead(arg);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -145,8 +138,6 @@ fn internal_method(self: &'_ i32) -> i32
         _3 = copy _2 panic.+ const 1i32;
         _0 = move _3;
         storage_dead(_2);
-        storage_dead(_3);
-        storage_dead(self);
         return;
     }
 }
@@ -198,10 +189,6 @@ fn right_method(self: &'_ i32) -> i32
     }
 
     bb2: {
-        storage_dead(_11);
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(self);
         unwind_continue;
     }
 
@@ -211,18 +198,10 @@ fn right_method(self: &'_ i32) -> i32
         _0 = move _11;
         storage_dead(_9);
         storage_dead(_2);
-        storage_dead(_11);
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(self);
         return;
     }
 
     bb4: {
-        storage_dead(_11);
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -282,8 +261,6 @@ fn left_method(self: &'_ i32) -> i32
         _3 = copy _2 panic.+ const 2i32;
         _0 = move _3;
         storage_dead(_2);
-        storage_dead(_3);
-        storage_dead(self);
         return;
     }
 }
@@ -315,7 +292,6 @@ fn impl_Join_i32_for_i32::join_method(self: &'_ i32) -> (i32, i32)
     }
 
     bb2: {
-        storage_dead(self);
         unwind_continue;
     }
 
@@ -324,12 +300,10 @@ fn impl_Join_i32_for_i32::join_method(self: &'_ i32) -> (i32, i32)
         _0 = (move _2, move _4);
         storage_dead(_4);
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 
     bb4: {
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -446,14 +420,10 @@ fn main()
         storage_dead(_4);
         _0 = ();
         storage_dead(v);
-        storage_dead(_7);
-        storage_dead(_6);
         return;
     }
 
     bb2: {
-        storage_dead(_7);
-        storage_dead(_6);
         unwind_continue;
     }
 }

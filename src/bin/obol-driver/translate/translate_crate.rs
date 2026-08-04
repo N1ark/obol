@@ -675,6 +675,7 @@ pub fn translate<'tcx, 'ctx>(
         reconstruct_asserts: true,
         raw_consts: false,
         reconstruct_fallible_operations: true,
+        no_insert_storage_deads: true,
         start_from: vec!["*".into()],
         ..CharonCliOpts::default()
     };

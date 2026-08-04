@@ -31,9 +31,6 @@ pub fn mul2_add1(x: u32) -> u32
         _6 = copy _2 panic.+ const 1u32;
         _0 = move _6;
         storage_dead(_2);
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(x);
         return;
     }
 }
@@ -66,16 +63,10 @@ pub fn use_mul2_add1(x: u32, y: u32) -> u32
         _0 = move _6;
         storage_dead(_5);
         storage_dead(_3);
-        storage_dead(_6);
-        storage_dead(y);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(_6);
-        storage_dead(y);
-        storage_dead(x);
         unwind_continue;
     }
 }
@@ -93,8 +84,6 @@ pub fn test_crate::incr(x: &'_ mut u32)
         _2 = copy (*x) panic.+ const 1u32;
         (*x) = move _2;
         _0 = ();
-        storage_dead(_2);
-        storage_dead(x);
         return;
     }
 }
@@ -217,9 +206,6 @@ pub fn i32_id(i: i32) -> i32
 
     bb3: {
         storage_dead(_2);
-        storage_dead(_8);
-        storage_dead(_7);
-        storage_dead(i);
         return;
     }
 
@@ -232,9 +218,6 @@ pub fn i32_id(i: i32) -> i32
     }
 
     bb5: {
-        storage_dead(_8);
-        storage_dead(_7);
-        storage_dead(i);
         unwind_continue;
     }
 }
@@ -264,8 +247,6 @@ pub fn impl_Counter_for_usize::incr(self: &'_ mut usize) -> usize
         (*self) = move _3;
         _0 = copy x;
         storage_dead(x);
-        storage_dead(_3);
-        storage_dead(self);
         return;
     }
 }

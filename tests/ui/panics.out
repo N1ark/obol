@@ -97,7 +97,6 @@ fn drop_glue::<&'_ str>(_1: &'_ mut &'_ str)
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -117,7 +116,6 @@ pub fn type_id::<&'_ str>(self: &'_ &'_ str) -> TypeId
     bb0: {
         storage_live(_0);
         _0 = const TypeId(&'_ str);
-        storage_dead(self);
         return;
     }
 }
@@ -294,7 +292,6 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
         storage_dead(_2);
-        storage_dead(s);
         return;
     }
 }
@@ -311,12 +308,10 @@ pub fn from_str_nonconst::<'_>(s: &'_ str) -> Arguments::<'_>
     }
 
     bb1: {
-        storage_dead(s);
         return;
     }
 
     bb2: {
-        storage_dead(s);
         unwind_continue;
     }
 }
@@ -457,10 +452,6 @@ fn core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(message: &'_ Arguments:
     bb0: {
         storage_live(_0);
         _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        storage_dead(force_no_backtrace);
-        storage_dead(can_unwind);
-        storage_dead(location);
-        storage_dead(message);
         return;
     }
 }
@@ -522,10 +513,6 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
     }
 
     bb5: {
-        storage_dead(_7);
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         unwind_continue;
     }
 
@@ -535,28 +522,16 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
     }
 
     bb7: {
-        storage_dead(_7);
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         unwind_continue;
     }
 
     bb8: {
         storage_dead(_5);
         storage_dead(a);
-        storage_dead(_7);
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         return;
     }
 
     bb9: {
-        storage_dead(_7);
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -587,9 +562,6 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
         a = &(((*self)).inner as variant Option::<&'_ str>::Some).0;
         _0 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), {vtable}::core::any::Any::<&'_ str>>(copy a);
         storage_dead(a);
-        storage_dead(_4);
-        storage_dead(_2);
-        storage_dead(self);
         return;
     }
 
@@ -602,9 +574,6 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
     }
 
     bb5: {
-        storage_dead(_4);
-        storage_dead(_2);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -667,11 +636,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb6: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -688,11 +652,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb8: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -701,11 +660,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb10: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -730,9 +684,6 @@ fn ct_error(_1: Layout) -> !
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 
@@ -741,9 +692,6 @@ fn ct_error(_1: Layout) -> !
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -771,8 +719,6 @@ pub fn handle_alloc_error(layout: Layout) -> !
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(layout);
         unwind_continue;
     }
 }
@@ -826,8 +772,6 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -860,9 +804,6 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_terminate;
     }
 }
@@ -936,10 +877,6 @@ fn precondition_check(ptr: *mut ())
 
     bb2: {
         storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(msg);
-        storage_dead(ptr);
         return;
     }
 
@@ -1095,21 +1032,6 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb14: {
-        storage_dead(_37);
-        storage_dead(_36);
-        storage_dead(_35);
-        storage_dead(_34);
-        storage_dead(_30);
-        storage_dead(_24);
-        storage_dead(_20);
-        storage_dead(_18);
-        storage_dead(_16);
-        storage_dead(_13);
-        storage_dead(ptr_11);
-        storage_dead(_10);
-        storage_dead(raw_ptr);
-        storage_dead(zeroed);
-        storage_dead(layout);
         return;
     }
 
@@ -1282,9 +1204,6 @@ fn box_new_uninit(layout: Layout) -> *mut u8
     }
 
     bb2: {
-        storage_dead(_5);
-        storage_dead(_3);
-        storage_dead(layout);
         unwind_continue;
     }
 
@@ -1303,9 +1222,6 @@ fn box_new_uninit(layout: Layout) -> *mut u8
         storage_dead(_6);
         storage_dead(ptr);
         storage_dead(_2);
-        storage_dead(_5);
-        storage_dead(_3);
-        storage_dead(layout);
         return;
     }
 
@@ -1322,9 +1238,6 @@ fn box_new_uninit(layout: Layout) -> *mut u8
     }
 
     bb7: {
-        storage_dead(_5);
-        storage_dead(_3);
-        storage_dead(layout);
         unwind_continue;
     }
 }
@@ -1371,16 +1284,10 @@ pub fn alloc::boxed::{Box::<_, Global>}::new::<&'_ str>(x: &'_ str) -> Box::<&'_
         ptr = cast<*mut u8, *mut &'_ str>(copy _3);
         (*ptr) = move x;
         _0 = transmute<*mut u8, Box::<&'_ str, Global>>(copy _3);
-        storage_dead(_3);
-        storage_dead(ptr);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(ptr);
-        storage_dead(x);
         unwind_continue;
     }
 }
@@ -1455,9 +1362,6 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> *mut (dyn FakeTr
     }
 
     bb5: {
-        storage_dead(_7);
-        storage_dead(_3);
-        storage_dead(self);
         unwind_continue;
     }
 
@@ -1473,16 +1377,10 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> *mut (dyn FakeTr
         _0 = &raw mut (*_9) with_metadata(copy _9.metadata);
         storage_dead(_9);
         storage_dead(data);
-        storage_dead(_7);
-        storage_dead(_3);
-        storage_dead(self);
         return;
     }
 
     bb7: {
-        storage_dead(_7);
-        storage_dead(_3);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -1497,7 +1395,6 @@ fn drop_glue::<Payload::<&'_ str>>(_1: &'_ mut Payload::<&'_ str>)
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -1514,7 +1411,6 @@ pub fn as_str::<Payload::<&'_ str>>(self: &'_ mut Payload::<&'_ str>) -> Option:
         storage_live(_2);
         _2 = Option::<&'_ str>::None {  };
         _0 = move _2;
-        storage_dead(self);
         return;
     }
 }
@@ -1584,9 +1480,6 @@ pub fn panic(expr: &'_ str) -> !
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(expr);
         unwind_continue;
     }
 
@@ -1595,9 +1488,6 @@ pub fn panic(expr: &'_ str) -> !
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(expr);
         unwind_continue;
     }
 }
@@ -1647,12 +1537,6 @@ fn std::panicking::begin_panic::closure::<&'_ str, i32, extern "rust-call" fn(()
     }
 
     bb2: {
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(spread_args);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -1675,14 +1559,10 @@ pub fn __rust_end_short_backtrace::<std::panicking::begin_panic::closure::closur
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(f);
         unwind_continue;
     }
 
     bb3: {
-        storage_dead(_2);
-        storage_dead(f);
         return;
     }
 
@@ -1721,9 +1601,6 @@ pub fn begin_panic::<&'_ str>(msg: &'_ str) -> !
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_dead(loc);
-        storage_dead(msg);
         unwind_continue;
     }
 }
@@ -1756,7 +1633,6 @@ fn panic1()
     }
 
     bb2: {
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -1781,8 +1657,6 @@ fn panic2()
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 
@@ -1791,8 +1665,6 @@ fn panic2()
     }
 
     bb4: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -1817,8 +1689,6 @@ fn panic3()
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 
@@ -1827,8 +1697,6 @@ fn panic3()
     }
 
     bb4: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -1851,7 +1719,6 @@ fn panic4()
     bb1: {
         storage_dead(_1);
         _0 = ();
-        storage_dead(_2);
         return;
     }
 
@@ -1865,7 +1732,6 @@ fn panic4()
     }
 
     bb4: {
-        storage_dead(_2);
         unwind_continue;
     }
 }
@@ -1889,8 +1755,6 @@ fn panic5()
     bb1: {
         storage_dead(_1);
         _0 = ();
-        storage_dead(_3);
-        storage_dead(_2);
         return;
     }
 
@@ -1905,8 +1769,6 @@ fn panic5()
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_dead(_2);
         unwind_continue;
     }
 
@@ -1915,8 +1777,6 @@ fn panic5()
     }
 
     bb6: {
-        storage_dead(_3);
-        storage_dead(_2);
         unwind_continue;
     }
 }
@@ -1939,7 +1799,6 @@ fn panic6()
     }
 
     bb2: {
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -1964,8 +1823,6 @@ fn panic7()
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 
@@ -1974,8 +1831,6 @@ fn panic7()
     }
 
     bb4: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -1998,7 +1853,6 @@ fn panic8()
     }
 
     bb2: {
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -2021,7 +1875,6 @@ fn panic9()
     }
 
     bb2: {
-        storage_dead(_1);
         unwind_continue;
     }
 }

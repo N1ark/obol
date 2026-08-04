@@ -11,7 +11,6 @@ fn foo::<u32>(x: &'_ u32)
         storage_live(_0);
         _0 = ();
         _0 = ();
-        storage_dead(x);
         return;
     }
 }
@@ -30,14 +29,10 @@ pub fn call::<foo::<u32>, (&'_ u32,)>(_1: &'_ foo::<u32>, _2: (&'_ u32,))
     }
 
     bb1: {
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -61,7 +56,6 @@ fn foo::<u8>(x: &'_ u8)
         storage_live(_0);
         _0 = ();
         _0 = ();
-        storage_dead(x);
         return;
     }
 }
@@ -76,7 +70,6 @@ fn foo::<char>(x: &'_ char)
         storage_live(_0);
         _0 = ();
         _0 = ();
-        storage_dead(x);
         return;
     }
 }
@@ -116,14 +109,10 @@ fn takes_closure::<foo::<u32>>(c: foo::<u32>)
         storage_dead(_3);
         storage_dead(_2);
         storage_dead(_5);
-        storage_dead(_6);
-        storage_dead(c);
         return;
     }
 
     bb2: {
-        storage_dead(_6);
-        storage_dead(c);
         unwind_continue;
     }
 }
@@ -201,7 +190,6 @@ fn main()
     }
 
     bb2: {
-        storage_dead(_27);
         unwind_continue;
     }
 
@@ -221,7 +209,6 @@ fn main()
     }
 
     bb4: {
-        storage_dead(_27);
         unwind_continue;
     }
 
@@ -241,7 +228,6 @@ fn main()
     }
 
     bb6: {
-        storage_dead(_27);
         unwind_continue;
     }
 
@@ -264,7 +250,6 @@ fn main()
     }
 
     bb8: {
-        storage_dead(_27);
         unwind_continue;
     }
 
@@ -278,7 +263,6 @@ fn main()
     }
 
     bb10: {
-        storage_dead(_27);
         unwind_continue;
     }
 
@@ -290,12 +274,10 @@ fn main()
         storage_dead(foochar);
         storage_dead(fooint2);
         storage_dead(fooint1);
-        storage_dead(_27);
         return;
     }
 
     bb12: {
-        storage_dead(_27);
         unwind_continue;
     }
 }

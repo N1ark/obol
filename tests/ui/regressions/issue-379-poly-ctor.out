@@ -18,7 +18,6 @@ pub fn Some::<u32>(_1: u32) -> Option::<u32>
     bb0: {
         storage_live(_0);
         _0 = Option::<u32>::Some { 0: move _1 };
-        storage_dead(_1);
         return;
     }
 }
@@ -36,14 +35,10 @@ pub fn call_once::<Some::<u32>, (u32,)>(_1: Some::<u32>, _2: (u32,)) -> Option::
     }
 
     bb1: {
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -64,7 +59,6 @@ pub fn Ok::<u32, u8>(_1: u32) -> Result::<u32, u8>
     bb0: {
         storage_live(_0);
         _0 = Result::<u32, u8>::Ok { 0: move _1 };
-        storage_dead(_1);
         return;
     }
 }
@@ -82,14 +76,10 @@ pub fn call_once::<Ok::<u32, u8>, (u32,)>(_1: Ok::<u32, u8>, _2: (u32,)) -> Resu
     }
 
     bb1: {
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -150,9 +140,6 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self: Option::<u32>, f: Some::<u32
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         return;
     }
 
@@ -166,9 +153,6 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self: Option::<u32>, f: Some::<u32
     }
 
     bb6: {
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -213,9 +197,6 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self: Option::<u32>, f: Ok::
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         return;
     }
 
@@ -229,9 +210,6 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self: Option::<u32>, f: Ok::
     }
 
     bb6: {
-        storage_dead(_3);
-        storage_dead(f);
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -255,12 +233,10 @@ pub fn wrap_some(x: Option::<u32>) -> Option::<Option::<u32>>
 
     bb1: {
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 }
@@ -281,12 +257,10 @@ pub fn wrap_ok(x: Option::<u32>) -> Option::<Result::<u32, u8>>
 
     bb1: {
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 }

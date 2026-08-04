@@ -28,7 +28,6 @@ fn foo(x: &'_ u32) -> Option::<&'_ u32>
         _2 = &(*x);
         _0 = Option::<&'_ u32>::Some { 0: move _2 };
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 }
@@ -63,12 +62,10 @@ fn main()
         storage_dead(_3);
         storage_dead(_1);
         _0 = ();
-        storage_dead(_4);
         return;
     }
 
     bb2: {
-        storage_dead(_4);
         unwind_continue;
     }
 }

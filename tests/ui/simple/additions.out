@@ -14,8 +14,6 @@ pub fn wrapping_add(self: u8, rhs: u8) -> u8
     bb0: {
         storage_live(_0);
         _0 = copy self wrap.+ copy rhs;
-        storage_dead(rhs);
-        storage_dead(self);
         return;
     }
 }
@@ -30,8 +28,6 @@ pub fn overflowing_add(self: u8, rhs: u8) -> (u8, bool)
     bb0: {
         storage_live(_0);
         _0 = copy self checked.+ copy rhs;
-        storage_dead(rhs);
-        storage_dead(self);
         return;
     }
 }
@@ -48,8 +44,6 @@ pub fn core::num::{u8}::saturating_add(self: u8, rhs: u8) -> u8
     }
 
     bb1: {
-        storage_dead(rhs);
-        storage_dead(self);
         return;
     }
 

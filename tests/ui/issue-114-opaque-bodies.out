@@ -193,10 +193,6 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
     bb0: {
         storage_live(_0);
         _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        storage_dead(force_no_backtrace);
-        storage_dead(can_unwind);
-        storage_dead(location);
-        storage_dead(message);
         return;
     }
 }
@@ -282,11 +278,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb6: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -303,11 +294,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb8: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 
@@ -316,11 +302,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb10: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(pi);
-        storage_dead(_3);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -342,8 +323,6 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_continue;
     }
 }
@@ -376,9 +355,6 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(force_no_backtrace);
-        storage_dead(fmt);
         unwind_terminate;
     }
 }
@@ -423,10 +399,6 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
 
     bb3: {
         storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(msg);
-        storage_dead(align);
         return;
     }
 
@@ -580,14 +552,6 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
 
     bb9: {
         storage_dead(_3);
-        storage_dead(_20);
-        storage_dead(_9);
-        storage_dead(alignment);
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(msg);
-        storage_dead(align);
-        storage_dead(size);
         return;
     }
 
@@ -638,8 +602,6 @@ pub fn then_some::<()>(self: bool, t: ()) -> Option::<()>
     }
 
     bb3: {
-        storage_dead(t);
-        storage_dead(self);
         return;
     }
 }
@@ -663,7 +625,6 @@ pub fn from(small: i32) -> i64
     bb0: {
         storage_live(_0);
         _0 = cast<i32, i64>(copy small);
-        storage_dead(small);
         return;
     }
 }
@@ -751,12 +712,6 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb2: {
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(msg);
-        storage_dead(rhs);
-        storage_dead(lhs);
         return;
     }
 
@@ -847,7 +802,6 @@ fn drop_glue::<[u32]>(_1: &'_ mut [u32])
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_dead(_1);
         return;
     }
 }
@@ -885,12 +839,10 @@ pub fn {impl Drop for Vec::<_, _>}::drop::<u32, Global>(self_1: &'_ mut Vec::<u3
     bb1: {
         storage_dead(_6);
         storage_dead(self_2);
-        storage_dead(self_1);
         return;
     }
 
     bb2: {
-        storage_dead(self_1);
         unwind_continue;
     }
 }
@@ -944,15 +896,6 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
     }
 
     bb3: {
-        storage_dead(_18);
-        storage_dead(_17);
-        storage_dead(self_15);
-        storage_dead(_14);
-        storage_dead(_13);
-        storage_dead(_12);
-        storage_dead(self_3);
-        storage_dead(elem_layout);
-        storage_dead(self_1);
         return;
     }
 
@@ -1043,9 +986,6 @@ pub fn impl_Allocator_for_Global::deallocate(self: &'_ Global, ptr: NonNull::<u8
 
     bb1: {
         storage_dead(_4);
-        storage_dead(layout);
-        storage_dead(ptr);
-        storage_dead(self);
         return;
     }
 
@@ -1096,10 +1036,6 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
     }
 
     bb2: {
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(elem_layout);
-        storage_dead(self);
         unwind_continue;
     }
 
@@ -1131,18 +1067,10 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
     }
 
     bb7: {
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(elem_layout);
-        storage_dead(self);
         unwind_continue;
     }
 
     bb8: {
-        storage_dead(_8);
-        storage_dead(_5);
-        storage_dead(elem_layout);
-        storage_dead(self);
         return;
     }
 }
@@ -1164,12 +1092,10 @@ pub fn {impl Drop for RawVec::<_, _>}::drop::<u32, Global>(self: &'_ mut RawVec:
 
     bb1: {
         storage_dead(_2);
-        storage_dead(self);
         return;
     }
 
     bb2: {
-        storage_dead(self);
         unwind_continue;
     }
 }
@@ -1193,16 +1119,10 @@ fn drop_glue::<RawVec::<u32, Global>>(_1: &'_ mut RawVec::<u32, Global>)
     }
 
     bb1: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 }
@@ -1244,46 +1164,18 @@ fn drop_glue::<Vec::<u32, Global>>(_1: &'_ mut Vec::<u32, Global>)
     }
 
     bb3: {
-        storage_dead(_7);
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         return;
     }
 
     bb4: {
-        storage_dead(_7);
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 
     bb5: {
-        storage_dead(_7);
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_continue;
     }
 
     bb6: {
-        storage_dead(_7);
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
         unwind_terminate;
     }
 }
@@ -1382,9 +1274,6 @@ fn use_inlines() -> u32
     }
 
     bb2: {
-        storage_dead(_9);
-        storage_dead(_7);
-        storage_dead(_5);
         unwind_continue;
     }
 
@@ -1398,9 +1287,6 @@ fn use_inlines() -> u32
     }
 
     bb4: {
-        storage_dead(_9);
-        storage_dead(_7);
-        storage_dead(_5);
         unwind_continue;
     }
 
@@ -1414,9 +1300,6 @@ fn use_inlines() -> u32
     }
 
     bb6: {
-        storage_dead(_9);
-        storage_dead(_7);
-        storage_dead(_5);
         unwind_continue;
     }
 
@@ -1425,16 +1308,10 @@ fn use_inlines() -> u32
         _0 = move _9;
         storage_dead(_8);
         storage_dead(_1);
-        storage_dead(_9);
-        storage_dead(_7);
-        storage_dead(_5);
         return;
     }
 
     bb8: {
-        storage_dead(_9);
-        storage_dead(_7);
-        storage_dead(_5);
         unwind_continue;
     }
 }
@@ -1459,12 +1336,10 @@ fn bool_to_opt(b: bool) -> Option::<()>
     bb1: {
         storage_dead(_3);
         storage_dead(_2);
-        storage_dead(b);
         return;
     }
 
     bb2: {
-        storage_dead(b);
         unwind_continue;
     }
 }
@@ -1485,12 +1360,10 @@ fn convert(x: i32) -> i64
 
     bb1: {
         storage_dead(_2);
-        storage_dead(x);
         return;
     }
 
     bb2: {
-        storage_dead(x);
         unwind_continue;
     }
 }
@@ -1514,16 +1387,10 @@ fn vec(_x: Vec::<u32, Global>)
     }
 
     bb1: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_x);
         return;
     }
 
     bb2: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_x);
         unwind_continue;
     }
 }
