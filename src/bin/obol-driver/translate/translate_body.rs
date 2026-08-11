@@ -462,29 +462,18 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             (ty::RigidTy::Ref(_, a, _), ty::RigidTy::Ref(_, b, _) | ty::RigidTy::RawPtr(b, _))
             | (ty::RigidTy::RawPtr(a, _), ty::RigidTy::RawPtr(b, _)) => Some((*a, *b)),
             (ty::RigidTy::Adt(def_a, args1), ty::RigidTy::Adt(def_b, args2)) => {
-                // find the only field that is not a ZST
-                let non_zst: Vec<_> = def_a.variants()[0]
-                    .fields()
-                    .into_iter()
-                    .enumerate()
-                    .filter_map(|(i, f)| {
-                        let ty = f.ty_with_args(&args1);
-                        if let Ok(layout) = ty.layout()
-                            && !layout.shape().is_1zst()
-                        {
-                            Some((i, ty))
-                        } else {
-                            None
-                        }
-                    })
-                    .rev()
-                    .collect();
-                if non_zst.len() == 0 {
-                    return None;
-                }
-                // the last field should be the DST for the right-hand side
-                let (idx, ty_l) = non_zst[0];
-                let ty_r = def_b.variants()[0].fields()[idx].ty_with_args(&args2);
+                // The coerced field is the one whose type differs between the source and
+                // the target, skipping 1-ZSTs
+                let fields_a = def_a.variants()[0].fields();
+                let fields_b = def_b.variants()[0].fields();
+                let (ty_l, ty_r) = fields_a.iter().enumerate().find_map(|(i, field)| {
+                    let ty_l = field.ty_with_args(&args1);
+                    if ty_l.layout().is_ok_and(|layout| layout.shape().is_1zst()) {
+                        return None;
+                    }
+                    let ty_r = fields_b.get(i)?.ty_with_args(&args2);
+                    (ty_l != ty_r).then_some((ty_l, ty_r))
+                })?;
                 self.deref_middle_tys(ty_l, ty_r)
             }
             // A pattern type (e.g. `*const T is !null` from NonNull) — unwrap to the
@@ -505,6 +494,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         tgt_ty: ty::Ty,
     ) -> Result<UnsizingMetadata, Error> {
         let tcx = self.t_ctx.tcx;
+
+        // A coercion between identical types leaves the metadata untouched
+        if src_ty == tgt_ty {
+            return Ok(UnsizingMetadata::VTableUpcast(vec![]));
+        }
 
         let Some((src_ty, tgt_ty)) = self.deref_middle_tys(src_ty, tgt_ty) else {
             trace!("Couldn't deref middle for {src_ty:?} => {tgt_ty:?}");
