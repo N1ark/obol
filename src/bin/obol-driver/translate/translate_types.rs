@@ -691,7 +691,36 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             };
                             children = vec![(start..=end, discriminator)];
                         }
-                        Discriminator::Known(self.translate_rvariant_id(*untagged_variant))
+                        let untagged =
+                            Discriminator::Known(self.translate_rvariant_id(*untagged_variant));
+                        // The untagged variant only accounts for the tag values that are valid for
+                        // it, i.e. the tag's valid range minus the niche values; any other tag is
+                        // not a valid value of the enum at all.
+                        let valid = tag.valid_range(&self.t_ctx.tcx);
+                        // Only for unsigned tags: a signed tag's valid range may wrap around, and
+                        // then can't be expressed as a range of `ScalarValue`s.
+                        let niche = match tag_ty {
+                            IntegerTy::Signed(_) => None,
+                            IntegerTy::Unsigned(_) => children
+                                .iter()
+                                .map(|(r, _)| (r.start().to_bits(), r.end().to_bits()))
+                                .reduce(|(lo, hi), (lo2, hi2)| (lo.min(lo2), hi.max(hi2))),
+                        };
+                        match niche {
+                            Some((lo, hi)) if lo == valid.start && hi < valid.end => {
+                                let range = ScalarValue::from_bits(tag_ty, hi + 1)
+                                    ..=ScalarValue::from_bits(tag_ty, valid.end);
+                                children.push((range, untagged));
+                                Discriminator::Invalid
+                            }
+                            Some((lo, hi)) if hi == valid.end && lo > valid.start => {
+                                let range = ScalarValue::from_bits(tag_ty, valid.start)
+                                    ..=ScalarValue::from_bits(tag_ty, lo - 1);
+                                children.insert(0, (range, untagged));
+                                Discriminator::Invalid
+                            }
+                            _ => untagged,
+                        }
                     }
                 };
 
