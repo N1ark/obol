@@ -1,0 +1,103 @@
+
+// Final ULLBC:
+
+// Full name: core::option::Option::<&'_ mut u32>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<&'_ mut u32> {
+  None,
+  Some(0: &'_ mut u32),
+}
+
+struct () {}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::get
+fn get(x: Option::<&'_ mut u32>) -> u32
+{
+    let _0: u32; // return
+    let x: Option::<&'_ mut u32>; // arg #1
+    let _2: isize; // anonymous local
+    let r: &'_ mut u32; // local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = @discriminant(x);
+        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+    }
+
+    bb1: {
+        _0 = const 0u32;
+        goto bb4;
+    }
+
+    bb2: {
+        storage_live(r);
+        r = move (x as variant Option::<&'_ mut u32>::Some).0;
+        _0 = copy (*r);
+        storage_dead(r);
+        goto bb4;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+// Full name: test_crate::main
+fn main()
+{
+    let _0: (); // return
+    let f: fn(Option::<&'_ mut u32>) -> u32; // local
+    let v: u32; // local
+    let _3: u32; // anonymous local
+    let _4: fn(Option::<&'_ mut u32>) -> u32; // anonymous local
+    let _5: Option::<&'_ mut u32>; // anonymous local
+    let _6: &'_ mut u32; // anonymous local
+    let _7: &'_ mut u32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(f);
+        f = cast<get, fn(Option::<&'_ mut u32>) -> u32>(const get);
+        storage_live(v);
+        v = const 1u32;
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy f;
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        _7 = &mut v;
+        _6 = &two-phase-mut (*_7);
+        _5 = Option::<&'_ mut u32>::Some { 0: move _6 };
+        storage_dead(_6);
+        _3 = (move _4)(move _5) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(_7);
+        storage_dead(_3);
+        _0 = ();
+        storage_dead(v);
+        storage_dead(f);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+
+

@@ -18,6 +18,15 @@ use rustc_public::{mir, ty};
 use rustc_public_bridge::IndexedVal;
 
 impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
+    /// The signature of a function pointer type, with its bound lifetimes erased. We drop the
+    /// binder when translating, and a type mentioning one of its lifetimes would otherwise differ
+    /// from the same type written outside the signature, and be declared a second time.
+    pub(crate) fn erased_fn_sig(&self, fn_ty: rustc_ty::Ty<'tcx>) -> ty::FnSig {
+        let tcx = self.t_ctx.tcx;
+        let sig = tcx.instantiate_bound_regions_with_erased(fn_ty.fn_sig(tcx));
+        rustc_public::rustc_internal::stable(sig)
+    }
+
     // Translate a region
     pub(crate) fn translate_region(
         &mut self,
@@ -326,7 +335,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             ty::RigidTy::FnPtr(bsig) => {
                 trace!("Arrow");
                 trace!("bound vars: {:?}", bsig.bound_vars);
-                let sig = &bsig.value;
+                let sig = self.erased_fn_sig(internal_ty);
                 let inputs = sig
                     .inputs()
                     .iter()

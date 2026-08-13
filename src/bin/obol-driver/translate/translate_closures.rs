@@ -95,10 +95,11 @@ impl ItemTransCtx<'_, '_> {
     /// `[parent args.., kind, fn(Args) -> Output, upvars]`, so this is the fn pointer's input.
     pub(crate) fn closure_tupled_args_ty(&self, args: &ty::GenericArgs) -> Option<ty::Ty> {
         let sig_ty = args.0.get(args.0.len().checked_sub(2)?)?.ty()?;
-        let ty::TyKind::RigidTy(ty::RigidTy::FnPtr(bsig)) = sig_ty.kind() else {
+        if !matches!(sig_ty.kind(), ty::TyKind::RigidTy(ty::RigidTy::FnPtr(_))) {
             return None;
-        };
-        bsig.value.inputs().first().copied()
+        }
+        let internal = rustc_public::rustc_internal::internal(self.t_ctx.tcx, sig_ty);
+        self.erased_fn_sig(internal).inputs().first().copied()
     }
 
     /// Given an item that is a non-capturing closure, generate the equivalent function,

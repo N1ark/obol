@@ -234,6 +234,27 @@ pub enum ControlFlow::<Result::<Infallible, AccessError>, &'_ u32> {
   Break(0: Result::<Infallible, AccessError>),
 }
 
+// Full name: std::sys::thread_local::native::lazy::Storage::<u32, !>
+pub struct Storage::<u32, !> {
+  value: UnsafeCell::<MaybeUninit::<u32>>,
+  state: Cell::<State::<!>>,
+}
+
+// Full name: test_crate::FOO::{const}::closure#1::__RUST_STD_INTERNAL_VAL
+thread_local __RUST_STD_INTERNAL_VAL: Storage::<u32, !> = Storage::<u32, !> { value: UnsafeCell::<MaybeUninit::<u32>> { value: RawMemory(--, --, --, --) }, state: Cell::<State::<!>> { value: UnsafeCell::<State::<!>> { value: State::<!>::Uninitialized {  } } } }
+
+// Full name: test_crate::FOO::__rust_std_internal_init_fn
+fn __rust_std_internal_init_fn() -> u32
+{
+    let _0: u32; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = const 0u32;
+        return;
+    }
+}
+
 struct test_crate::FOO::{const}::closure#1::closure {}
 
 // Full name: core::option::Option::<u32>
@@ -256,86 +277,46 @@ struct (_,)::<Option::<&'_ mut Option::<u32>>> {
   Option::<&'_ mut Option::<u32>>,
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<test_crate::FOO::{const}::closure#1::closure, (_,)::<Option::<&'_ mut Option::<u32>>>>
-pub fn call_once::<test_crate::FOO::{const}::closure#1::closure, (_,)::<Option::<&'_ mut Option::<u32>>>>(_1: test_crate::FOO::{const}::closure#1::closure, _2: (_,)::<Option::<&'_ mut Option::<u32>>>) -> *const u32
+// Full name: std::sys::thread_local::native::lazy::{impl DestroyedState for !}::register_dtor::<u32>
+pub fn register_dtor::<u32>(_1: &'_ Storage::<u32, !>)
 {
-    let _0: *const u32; // return
-    let _1: test_crate::FOO::{const}::closure#1::closure; // arg #1
-    let _2: (_,)::<Option::<&'_ mut Option::<u32>>>; // arg #2
-    let _3: &'_ mut test_crate::FOO::{const}::closure#1::closure; // anonymous local
+    let _0: (); // return
+    let _1: &'_ Storage::<u32, !>; // arg #1
 
     bb0: {
         storage_live(_0);
-        storage_live(_3);
-        _3 = &mut _1;
-        _0 = test_crate::FOO::{const}::closure#1(move _3, move _2) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: test_crate::FOO::__rust_std_internal_init_fn
-fn __rust_std_internal_init_fn() -> u32
-{
-    let _0: u32; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = const 0u32;
+        _0 = ();
         return;
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<__rust_std_internal_init_fn, ()>
-pub fn call_once::<__rust_std_internal_init_fn, ()>(_1: __rust_std_internal_init_fn, _2: ()) -> u32
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
+
+// Full name: core::panicking::panic_fmt::panic_impl
+fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
+= <extern:panic_impl>
+
+// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
-    let _0: u32; // return
-    let _1: __rust_std_internal_init_fn; // arg #1
-    let _2: (); // arg #2
+    let _0: PanicInfo::<'_>; // return
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
         storage_live(_0);
-        _0 = __rust_std_internal_init_fn() -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
         return;
     }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::option::Option::<&'_ mut Option::<u32>>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<&'_ mut Option::<u32>> {
-  None,
-  Some(0: &'_ mut Option::<u32>),
-}
-
-// Full name: core::option::Option::<&'_ u32>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<&'_ u32> {
-  None,
-  Some(0: &'_ u32),
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
 }
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
@@ -356,44 +337,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
         undefined_behavior;
     }
 }
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
-// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
-{
-    let _0: PanicInfo::<'_>; // return
-    let message: &'_ Arguments::<'_>; // arg #1
-    let location: &'_ Location::<'_>; // arg #2
-    let can_unwind: bool; // arg #3
-    let force_no_backtrace: bool; // arg #4
-
-    bb0: {
-        storage_live(_0);
-        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        return;
-    }
-}
-
-// Full name: core::panicking::panic_fmt::panic_impl
-fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
-= <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
 #[lang_item(PanicFmt)]
@@ -473,101 +416,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb10: {
-        unwind_continue;
-    }
-}
-
-struct (_, _)::<Arguments::<'_>, bool> {
-  Arguments::<'_>,
-  bool,
-}
-
-// Full name: core::panicking::panic_nounwind_fmt::compiletime
-fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
-{
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let force_no_backtrace: bool; // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::panicking::panic_nounwind_fmt
-pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
-{
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let force_no_backtrace: bool; // arg #2
-    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = copy fmt;
-        storage_live(_5);
-        _5 = copy force_no_backtrace;
-        _3 = (move _4, move _5);
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = compiletime(move _3.0, move _3.1) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_terminate;
-    }
-}
-
-// Full name: core::panicking::panic
-#[lang_item(Panic)]
-pub fn panic(expr: &'_ str) -> !
-{
-    let _0: !; // return
-    let expr: &'_ str; // arg #1
-    let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb3 (unwind: bb4);
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
         unwind_continue;
     }
 }
@@ -671,17 +519,61 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
     }
 }
 
-// Full name: core::ptr::drop_glue::<u32>
-#[lang_item(DropGlue)]
-fn drop_glue::<u32>(_1: &'_ mut u32)
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
+// Full name: core::panicking::panic_nounwind_fmt::compiletime
+fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
-    let _0: (); // return
-    let _1: &'_ mut u32; // arg #1
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
 
     bb0: {
         storage_live(_0);
-        _0 = ();
-        return;
+        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::panicking::panic_nounwind_fmt
+pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
+{
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
+    let _4: Arguments::<'_>; // anonymous local
+    let _5: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy fmt;
+        storage_live(_5);
+        _5 = copy force_no_backtrace;
+        _3 = (move _4, move _5);
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = compiletime(move _3.0, move _3.1) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
+        unwind_terminate;
     }
 }
 
@@ -804,44 +696,75 @@ fn precondition_check(addr: *const (), align: usize, is_zst: bool)
     }
 }
 
-// Full name: core::result::Result::<u32, AccessError>
-#[diagnostic_item("Result")]
-pub enum Result::<u32, AccessError> {
-  Ok(0: u32),
-  Err(0: AccessError),
-}
-
-// Full name: core::result::Result::<&'_ u32, AccessError>
-#[diagnostic_item("Result")]
-pub enum Result::<&'_ u32, AccessError> {
-  Ok(0: &'_ u32),
-  Err(0: AccessError),
-}
-
-// Full name: std::sys::thread_local::native::lazy::DestroyedState
-trait DestroyedState
-
-// Full name: std::sys::thread_local::native::lazy::{impl DestroyedState for !}
-impl DestroyedState for ! {
-    non-dyn-compatible
-}
-
-// Full name: std::sys::thread_local::native::lazy::Storage::<u32, !>
-pub struct Storage::<u32, !> {
-  value: UnsafeCell::<MaybeUninit::<u32>>,
-  state: Cell::<State::<!>>,
-}
-
-// Full name: std::sys::thread_local::native::lazy::{impl DestroyedState for !}::register_dtor::<u32>
-pub fn register_dtor::<u32>(_1: &'_ Storage::<u32, !>)
+// Full name: core::ptr::drop_glue::<u32>
+#[lang_item(DropGlue)]
+fn drop_glue::<u32>(_1: &'_ mut u32)
 {
     let _0: (); // return
-    let _1: &'_ Storage::<u32, !>; // arg #1
+    let _1: &'_ mut u32; // arg #1
 
     bb0: {
         storage_live(_0);
         _0 = ();
         return;
+    }
+}
+
+// Full name: core::panicking::panic
+#[lang_item(Panic)]
+pub fn panic(expr: &'_ str) -> !
+{
+    let _0: !; // return
+    let expr: &'_ str; // arg #1
+    let _2: !; // anonymous local
+    let _3: Arguments::<'_>; // anonymous local
+    let _4: &'_ str; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy expr;
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_4);
+        _2 = panic_fmt(move _3) -> bb3 (unwind: bb4);
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::ops::function::FnOnce::call_once::<__rust_std_internal_init_fn, ()>
+pub fn call_once::<__rust_std_internal_init_fn, ()>(_1: __rust_std_internal_init_fn, _2: ()) -> u32
+{
+    let _0: u32; // return
+    let _1: __rust_std_internal_init_fn; // arg #1
+    let _2: (); // arg #2
+
+    bb0: {
+        storage_live(_0);
+        _0 = __rust_std_internal_init_fn() -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -1187,6 +1110,113 @@ pub fn get_or_init::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::<
     }
 }
 
+fn test_crate::FOO::{const}::closure#1::<i8, extern "rust-call" fn((_,)::<Option::<&'_ mut Option::<u32>>>) -> *const u32, ()>(_1: &'_ test_crate::FOO::{const}::closure#1::closure, spread_args: (_,)::<Option::<&'_ mut Option::<u32>>>) -> *const u32
+{
+    let _0: *const u32; // return
+    let _1: &'_ test_crate::FOO::{const}::closure#1::closure; // arg #1
+    let spread_args: (_,)::<Option::<&'_ mut Option::<u32>>>; // arg #2
+    let __rust_std_internal_init: Option::<&'_ mut Option::<u32>>; // local
+    let _4: &'_ Storage::<u32, !>; // anonymous local
+    let _5: &'_ Storage::<u32, !>; // anonymous local
+    let _6: Option::<&'_ mut Option::<u32>>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(__rust_std_internal_init);
+        __rust_std_internal_init = move spread_args.0;
+        storage_live(_4);
+        storage_live(_5);
+        _5 = &__RUST_STD_INTERNAL_VAL;
+        _4 = &(*_5);
+        storage_live(_6);
+        _6 = move __rust_std_internal_init;
+        _0 = get_or_init::<u32, !, __rust_std_internal_init_fn>(move _4, move _6, const __rust_std_internal_init_fn) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::ops::function::FnOnce::call_once::<test_crate::FOO::{const}::closure#1::closure, (_,)::<Option::<&'_ mut Option::<u32>>>>
+pub fn call_once::<test_crate::FOO::{const}::closure#1::closure, (_,)::<Option::<&'_ mut Option::<u32>>>>(_1: test_crate::FOO::{const}::closure#1::closure, _2: (_,)::<Option::<&'_ mut Option::<u32>>>) -> *const u32
+{
+    let _0: *const u32; // return
+    let _1: test_crate::FOO::{const}::closure#1::closure; // arg #1
+    let _2: (_,)::<Option::<&'_ mut Option::<u32>>>; // arg #2
+    let _3: &'_ mut test_crate::FOO::{const}::closure#1::closure; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = &mut _1;
+        _0 = test_crate::FOO::{const}::closure#1::<i8, extern "rust-call" fn((_,)::<Option::<&'_ mut Option::<u32>>>) -> *const u32, ()>(move _3, move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::option::Option::<&'_ u32>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<&'_ u32> {
+  None,
+  Some(0: &'_ u32),
+}
+
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
+}
+
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
+
+// Full name: core::result::Result::<u32, AccessError>
+#[diagnostic_item("Result")]
+pub enum Result::<u32, AccessError> {
+  Ok(0: u32),
+  Err(0: AccessError),
+}
+
+// Full name: core::result::Result::<&'_ u32, AccessError>
+#[diagnostic_item("Result")]
+pub enum Result::<&'_ u32, AccessError> {
+  Ok(0: &'_ u32),
+  Err(0: AccessError),
+}
+
+// Full name: std::sys::thread_local::native::lazy::DestroyedState
+trait DestroyedState
+
+// Full name: std::sys::thread_local::native::lazy::{impl DestroyedState for !}
+impl DestroyedState for ! {
+    non-dyn-compatible
+}
+
 // Full name: std::thread::local::LocalKey::<u32>
 #[diagnostic_item("LocalKey")]
 pub struct LocalKey::<u32> {
@@ -1417,10 +1447,6 @@ pub fn with::<u32, test_crate::main::closure::closure, u32>(self: &'_ LocalKey::
     }
 }
 
-struct (_,)::<Option::<&'_ mut Option::<u32>>> {
-  Option::<&'_ mut Option::<u32>>,
-}
-
 // Full name: test_crate::FOO::{const}::closure#1::closure_as_fn
 fn closure_as_fn(arg1: Option::<&'_ mut Option::<u32>>) -> *const u32
 {
@@ -1449,9 +1475,6 @@ fn closure_as_fn(arg1: Option::<&'_ mut Option::<u32>>) -> *const u32
 
 // Full name: anon_const_0
 const anon_const_0: LocalKey::<u32> = LocalKey::<u32> { inner: fnptr(closure_as_fn<test_crate::FOO::{const}::closure#1::closure, (_,)::<Option::<&'_ mut Option::<u32>>>>) }
-
-// Full name: test_crate::FOO::{const}::closure#1::__RUST_STD_INTERNAL_VAL
-thread_local __RUST_STD_INTERNAL_VAL: Storage::<u32, !> = Storage::<u32, !> { value: UnsafeCell::<MaybeUninit::<u32>> { value: RawMemory(--, --, --, --) }, state: Cell::<State::<!>> { value: UnsafeCell::<State::<!>> { value: State::<!>::Uninitialized {  } } } }
 
 // Full name: test_crate::main
 fn main()
