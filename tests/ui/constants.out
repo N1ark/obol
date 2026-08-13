@@ -1,8 +1,25 @@
 
 // Final ULLBC:
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
+
+struct (_, _)::<i32, bool> {
+  i32,
+  bool,
+}
+
+struct (_, _)::<u32, u32> {
+  u32,
+  u32,
+}
+
+struct (_, _)::<u32, bool> {
+  u32,
+  bool,
+}
 
 // Full name: test_crate::incr
 pub fn incr(n: u32) -> u32
@@ -25,9 +42,9 @@ pub fn incr(n: u32) -> u32
 }
 
 // Full name: test_crate::mk_pair0
-pub fn mk_pair0(x: u32, y: u32) -> (u32, u32)
+pub fn mk_pair0(x: u32, y: u32) -> (_, _)::<u32, u32>
 {
-    let _0: (u32, u32); // return
+    let _0: (_, _)::<u32, u32>; // return
     let x: u32; // arg #1
     let y: u32; // arg #2
     let _3: u32; // anonymous local
@@ -92,7 +109,7 @@ pub fn unwrap_y() -> i32
         storage_live(_0);
         storage_live(_1);
         _1 = copy Y;
-        _0 = copy (_1).value;
+        _0 = copy _1.value;
         storage_dead(_1);
         return;
     }

@@ -87,6 +87,12 @@ pub struct AllocError {}
 #[diagnostic_item("Any")]
 trait core::any::Any
 
+struct () {}
+
+struct str {
+  [u8],
+}
+
 // Full name: core::ptr::drop_glue::<&'_ str>
 #[lang_item(DropGlue)]
 fn drop_glue::<&'_ str>(_1: &'_ mut &'_ str)
@@ -487,7 +493,7 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
         storage_live(_0);
         storage_live(_3);
         storage_live(_7);
-        _3 = @discriminant(((*self)).inner);
+        _3 = @discriminant((*self).inner);
         switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
     }
 
@@ -497,7 +503,7 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
 
     bb2: {
         storage_live(a);
-        a = &(((*self)).inner as variant Option::<&'_ str>::Some).0;
+        a = &((*self).inner as variant Option::<&'_ str>::Some).0;
         storage_live(_5);
         storage_live(_6);
         _6 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), {vtable}::core::any::Any::<&'_ str>>(copy a);
@@ -549,7 +555,7 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
         storage_live(_0);
         storage_live(_2);
         storage_live(_4);
-        _2 = @discriminant(((*self)).inner);
+        _2 = @discriminant((*self).inner);
         switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
     }
 
@@ -559,7 +565,7 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
 
     bb2: {
         storage_live(a);
-        a = &(((*self)).inner as variant Option::<&'_ str>::Some).0;
+        a = &((*self).inner as variant Option::<&'_ str>::Some).0;
         _0 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), {vtable}::core::any::Any::<&'_ str>>(copy a);
         storage_dead(a);
         return;
@@ -576,6 +582,10 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
     bb5: {
         unwind_continue;
     }
+}
+
+struct (_,)::<Layout> {
+  Layout,
 }
 
 // Full name: core::panicking::panic_fmt::panic_impl
@@ -701,7 +711,7 @@ pub fn handle_alloc_error(layout: Layout) -> !
 {
     let _0: !; // return
     let layout: Layout; // arg #1
-    let _2: (Layout,); // anonymous local
+    let _2: (_,)::<Layout>; // anonymous local
     let _3: Layout; // anonymous local
 
     bb0: {
@@ -755,6 +765,11 @@ pub enum Result::<NonNull::<u8>, AllocError> {
   Err(0: AllocError),
 }
 
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
@@ -782,7 +797,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -951,14 +966,14 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_30);
         storage_live(_35);
         storage_live(size);
-        size = copy (layout).size;
+        size = copy layout.size;
         switch copy size -> 0usize: bb1, otherwise: bb2;
     }
 
     bb1: {
         storage_live(_4);
         storage_live(self_5);
-        _13 = copy (layout).align;
+        _13 = copy layout.align;
         self_5 = transmute<Alignment, NonNull::<u8>>(copy _13);
         storage_live(ptr_14);
         storage_live(self_15);
@@ -1013,7 +1028,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 
     bb10: {
         storage_live(_19);
-        _19 = copy (layout).align;
+        _19 = copy layout.align;
         raw_ptr = __rust_alloc_zeroed(copy size, move _19) -> bb15 (unwind: bb16);
     }
 
@@ -1023,7 +1038,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 
     bb12: {
         storage_live(_21);
-        _21 = copy (layout).align;
+        _21 = copy layout.align;
         raw_ptr = __rust_alloc(copy size, move _21) -> bb17 (unwind: bb18);
     }
 
@@ -1334,8 +1349,8 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> *mut (dyn FakeTr
         storage_live(_2);
         storage_live(_8);
         _8 = Option::<&'_ str>::None {  };
-        _2 = copy ((*self)).inner;
-        ((*self)).inner = move _8;
+        _2 = copy (*self).inner;
+        (*self).inner = move _8;
         storage_dead(_8);
         _3 = @discriminant(_2);
         switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
@@ -1368,7 +1383,7 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> *mut (dyn FakeTr
     bb6: {
         _5 = unsize_cast<Box::<&'_ str, Global>, Box::<(dyn FakeTrait), Global>, {vtable}::core::any::Any::<&'_ str>>(move _6);
         storage_dead(_6);
-        data = move ((_5).0).pointer;
+        data = move _5.0.pointer;
         storage_dead(_5);
         storage_dead(a);
         storage_dead(_2);
@@ -1501,7 +1516,7 @@ struct std::panicking::begin_panic::closure::closure {
   upvar_1: &'_ Location::<'_>,
 }
 
-fn std::panicking::begin_panic::closure::<&'_ str, i32, extern "rust-call" fn(()) -> !, (&'_ str, &'_ Location::<'_>)>(_1: std::panicking::begin_panic::closure::closure, spread_args: ()) -> !
+fn std::panicking::begin_panic::closure::<&'_ str, i32, extern "rust-call" fn(()) -> !, (_, _)::<&'_ str, &'_ Location::<'_>>>(_1: std::panicking::begin_panic::closure::closure, spread_args: ()) -> !
 {
     let _0: !; // return
     let _1: std::panicking::begin_panic::closure::closure; // arg #1
@@ -1521,14 +1536,14 @@ fn std::panicking::begin_panic::closure::<&'_ str, i32, extern "rust-call" fn(()
         storage_live(_5);
         storage_live(_6);
         storage_live(_7);
-        _7 = move (_1).upvar_0;
+        _7 = move _1.upvar_0;
         _6 = Option::<&'_ str>::Some { 0: move _7 };
         storage_dead(_7);
         _5 = Payload::<&'_ str> { inner: move _6 };
         storage_dead(_6);
         _4 = &mut _5;
         _3 = unsize_cast<&'_ mut Payload::<&'_ str>, &'_ mut (dyn FakeTrait), {vtable}::core::panic::PanicPayload::<Payload::<&'_ str>>>(copy _4);
-        _8 = copy (_1).upvar_1;
+        _8 = copy _1.upvar_1;
         _0 = panic_with_hook(move _3, move _8, const true, const false) -> bb1 (unwind: bb2);
     }
 
@@ -1551,7 +1566,7 @@ pub fn __rust_end_short_backtrace::<std::panicking::begin_panic::closure::closur
     bb0: {
         storage_live(result);
         storage_live(_2);
-        result = std::panicking::begin_panic::closure::<&'_ str, i32, extern "rust-call" fn(()) -> !, (&'_ str, &'_ Location::<'_>)>(move f, const ()) -> bb1 (unwind: bb2);
+        result = std::panicking::begin_panic::closure::<&'_ str, i32, extern "rust-call" fn(()) -> !, (_, _)::<&'_ str, &'_ Location::<'_>>>(move f, const ()) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -1613,6 +1628,11 @@ impl<A> core::panic::PanicPayload for Payload::<_> {
 // Full name: std::panicking::begin_panic::{impl Display for Payload::<_>}
 impl<A> Display for Payload::<_> {
     non-dyn-compatible
+}
+
+struct (_, _)::<&'_ str, &'_ Location::<'_>> {
+  &'_ str,
+  &'_ Location::<'_>,
 }
 
 // Full name: test_crate::panic1

@@ -117,6 +117,7 @@ pub fn repr_name(crate_data: &TranslatedCrate, n: &Name) -> String {
             },
             PathElem::Instantiated(..) => "<mono>".to_string(),
             PathElem::Target(target) => target.clone(),
+            PathElem::Builtin(builtin) => builtin.ident().to_string(),
         })
         .join("::")
 }

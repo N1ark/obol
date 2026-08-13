@@ -6,12 +6,12 @@ extern crate rustc_span;
 use log::trace;
 use rustc_public::{CrateDef, mir, ty};
 
-use charon_lib::{ast::*, raise_error, register_error};
+use charon_lib::{ast::*, ids::IndexVec, raise_error, register_error};
 
 use crate::translate::{
     my_gen_args::MyGenericArgs,
     translate_body::BodyTransCtx,
-    translate_crate::TransItemSource,
+    translate_crate::{TransItemSource, TupleTy},
     translate_ctx::{ItemTransCtx, TranslateCtx},
 };
 
@@ -144,6 +144,20 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let ty = bt_ctx.translate_foreign_type_decl(id, item_meta, &def)?;
                 self.translated.type_decls.set_slot(id, ty);
             }
+            TransItemSource::Tuple(tuple) => {
+                let Some(ItemId::Type(id)) = trans_id else {
+                    unreachable!()
+                };
+                let ty = bt_ctx.translate_tuple_decl(id, item_meta, tuple)?;
+                self.translated.type_decls.set_slot(id, ty);
+            }
+            TransItemSource::Str => {
+                let Some(ItemId::Type(id)) = trans_id else {
+                    unreachable!()
+                };
+                let ty = bt_ctx.translate_str_decl(id, item_meta)?;
+                self.translated.type_decls.set_slot(id, ty);
+            }
             TransItemSource::VTable(ty, tref) => {
                 let Some(ItemId::Global(id)) = trans_id else {
                     unreachable!()
@@ -227,10 +241,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             consts: IndexMap::new(),
             types: IndexMap::new(),
             methods: IndexMap::new(),
-            vtable: Some(TypeDeclRef {
-                id: TypeId::Tuple,
-                generics: Box::new(GenericArgs::empty()),
-            }),
+            vtable: Some(TypeDeclRef::new(TypeDeclId::UNIT, GenericArgs::empty())),
         });
     }
 }
@@ -275,6 +286,7 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
+            builtin: None,
             kind,
             src: ItemSource::TopLevel,
             layout,
@@ -299,6 +311,7 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
+            builtin: None,
             kind,
             src: ItemSource::TopLevel,
             layout: Default::default(),
@@ -306,6 +319,91 @@ impl ItemTransCtx<'_, '_> {
         };
 
         Ok(type_def)
+    }
+
+    /// Translate the declaration of a tuple type. Tuples have no `DefId` of their own, so we
+    /// declare each one as a struct whose fields are the tuple's elements.
+    pub fn translate_tuple_decl(
+        mut self,
+        trans_id: TypeDeclId,
+        item_meta: ItemMeta,
+        tuple: &TupleTy,
+    ) -> Result<TypeDecl, Error> {
+        let span = item_meta.span;
+        let fields: IndexVec<FieldId, Field> = tuple
+            .fields
+            .iter()
+            .cloned()
+            .map(|ty| Field {
+                span,
+                attr_info: AttrInfo {
+                    public: true,
+                    ..AttrInfo::default()
+                },
+                name: None,
+                ty,
+            })
+            .collect();
+        // A tuple is unsized exactly when its last field is, in which case it has that field's
+        // metadata.
+        let ptr_metadata = match fields.iter().next_back() {
+            Some(last) => PtrMetadata::InheritFrom(last.ty.clone()),
+            None => PtrMetadata::None,
+        };
+        let layout = self
+            .translate_layout_of_ty(tuple.rty, ReprOptions::default())
+            .into_iter()
+            .map(|l| (self.t_ctx.get_target_triple(), l))
+            .collect();
+        Ok(TypeDecl {
+            def_id: trans_id,
+            item_meta,
+            generics: GenericParams::empty(),
+            builtin: Some(BuiltinTy::Tuple),
+            kind: TypeDeclKind::Struct(fields),
+            src: ItemSource::TopLevel,
+            layout,
+            ptr_metadata,
+        })
+    }
+
+    /// Translate the declaration of `str`, which we model as `struct str([u8])`.
+    pub fn translate_str_decl(
+        mut self,
+        trans_id: TypeDeclId,
+        item_meta: ItemMeta,
+    ) -> Result<TypeDecl, Error> {
+        let span = item_meta.span;
+        let u8_ty = TyKind::Literal(LiteralTy::UInt(UIntTy::U8)).into_ty();
+        let fields: IndexVec<FieldId, Field> = [Field {
+            span,
+            attr_info: AttrInfo {
+                public: true,
+                ..AttrInfo::default()
+            },
+            name: None,
+            ty: Ty::mk_slice(u8_ty),
+        }]
+        .into_iter()
+        .collect();
+        let layout = self
+            .translate_layout_of_ty(
+                ty::Ty::from_rigid_kind(ty::RigidTy::Str),
+                ReprOptions::default(),
+            )
+            .into_iter()
+            .map(|l| (self.t_ctx.get_target_triple(), l))
+            .collect();
+        Ok(TypeDecl {
+            def_id: trans_id,
+            item_meta,
+            generics: GenericParams::empty(),
+            builtin: Some(BuiltinTy::Str),
+            kind: TypeDeclKind::Struct(fields),
+            src: ItemSource::TopLevel,
+            layout,
+            ptr_metadata: PtrMetadata::Length,
+        })
     }
 
     /// Translate one function.
@@ -503,6 +601,7 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
+            builtin: None,
             kind,
             src,
             layout: Default::default(),

@@ -34,6 +34,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -143,7 +145,7 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f)).options).flags;
+        _4 = copy (*f).options.flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -153,7 +155,7 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f)).options).flags;
+        _6 = copy (*f).options.flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -340,6 +342,15 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
 // Full name: anon_const_0
 const anon_const_0: i32 = 42i32
 
+struct (_,)::<i32> {
+  i32,
+}
+
+struct (_, _)::<&'_ i32, &'_ i32> {
+  &'_ i32,
+  &'_ i32,
+}
+
 struct test_crate::foo::closure::closure::closure {
   upvar_0: i32,
 }
@@ -348,7 +359,7 @@ struct test_crate::foo::closure::closure {
   upvar_0: i32,
 }
 
-fn test_crate::foo::closure::<i32, i32, extern "rust-call" fn(()) -> test_crate::foo::closure::closure::closure, (i32,)>(_1: test_crate::foo::closure::closure, spread_args: ()) -> test_crate::foo::closure::closure::closure
+fn test_crate::foo::closure::<i32, i32, extern "rust-call" fn(()) -> test_crate::foo::closure::closure::closure, (_,)::<i32>>(_1: test_crate::foo::closure::closure, spread_args: ()) -> test_crate::foo::closure::closure::closure
 {
     let _0: test_crate::foo::closure::closure::closure; // return
     let _1: test_crate::foo::closure::closure; // arg #1
@@ -356,7 +367,7 @@ fn test_crate::foo::closure::<i32, i32, extern "rust-call" fn(()) -> test_crate:
 
     bb0: {
         storage_live(_0);
-        _0 = test_crate::foo::closure::closure::closure { upvar_0: move (_1).upvar_0 };
+        _0 = test_crate::foo::closure::closure::closure { upvar_0: move _1.upvar_0 };
         return;
     }
 }
@@ -378,7 +389,7 @@ fn foo::<i32>(x: i32) -> test_crate::foo::closure::closure::closure
         _3 = move f;
         storage_live(_4);
         _4 = ();
-        _0 = test_crate::foo::closure::<i32, i32, extern "rust-call" fn(()) -> test_crate::foo::closure::closure::closure, (i32,)>(move _3, move _4) -> bb1 (unwind: bb2);
+        _0 = test_crate::foo::closure::<i32, i32, extern "rust-call" fn(()) -> test_crate::foo::closure::closure::closure, (_,)::<i32>>(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -393,7 +404,7 @@ fn foo::<i32>(x: i32) -> test_crate::foo::closure::closure::closure
     }
 }
 
-fn test_crate::foo::closure::closure::<i32, i8, extern "rust-call" fn(()) -> i32, (i32,)>(_1: &'_ test_crate::foo::closure::closure::closure, spread_args: ()) -> i32
+fn test_crate::foo::closure::closure::<i32, i8, extern "rust-call" fn(()) -> i32, (_,)::<i32>>(_1: &'_ test_crate::foo::closure::closure::closure, spread_args: ()) -> i32
 {
     let _0: i32; // return
     let _1: &'_ test_crate::foo::closure::closure::closure; // arg #1
@@ -403,7 +414,7 @@ fn test_crate::foo::closure::closure::<i32, i8, extern "rust-call" fn(()) -> i32
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = &((*_1)).upvar_0;
+        _3 = &(*_1).upvar_0;
         _0 = clone(move _3) -> bb1 (unwind: bb2);
     }
 
@@ -424,7 +435,7 @@ fn main()
     let x: i32; // local
     let f: test_crate::foo::closure::closure::closure; // local
     let _3: i32; // anonymous local
-    let _4: (&'_ i32, &'_ i32); // anonymous local
+    let _4: (_, _)::<&'_ i32, &'_ i32>; // anonymous local
     let _5: &'_ i32; // anonymous local
     let _6: i32; // anonymous local
     let _7: &'_ test_crate::foo::closure::closure::closure; // anonymous local
@@ -467,7 +478,7 @@ fn main()
         _7 = &f;
         storage_live(_8);
         _8 = ();
-        _6 = test_crate::foo::closure::closure::<i32, i8, extern "rust-call" fn(()) -> i32, (i32,)>(move _7, move _8) -> bb3 (unwind: bb4);
+        _6 = test_crate::foo::closure::closure::<i32, i8, extern "rust-call" fn(()) -> i32, (_,)::<i32>>(move _7, move _8) -> bb3 (unwind: bb4);
     }
 
     bb2: {

@@ -81,6 +81,12 @@ pub struct Layout {
   align: Alignment,
 }
 
+struct str {
+  [u8],
+}
+
+struct () {}
+
 // Full name: core::ptr::non_null::NonNull::<u8>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
@@ -142,6 +148,18 @@ pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
@@ -159,13 +177,6 @@ pub struct Location::<'_> {
   line: u32,
   col: u32,
   _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -333,7 +344,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -578,6 +589,11 @@ pub struct PhantomData::<u32> {}
 // Full name: core::mem::SizedTypeProperties::LAYOUT::<u32>
 pub const LAYOUT::<u32>: Layout = Layout { size: 4usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl2 {  } } }
 
+struct (_, _)::<u64, bool> {
+  u64,
+  bool,
+}
+
 fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
 {
     let _0: (); // return
@@ -587,7 +603,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
+    let _7: (_, _)::<u64, bool>; // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -671,12 +687,17 @@ pub struct UsizeNoHighBit {
 #[lang_item(Drop)]
 trait Drop
 
-// Full name: core::option::Option::<(NonNull::<u8>, Layout)>
+struct (_, _)::<NonNull::<u8>, Layout> {
+  NonNull::<u8>,
+  Layout,
+}
+
+// Full name: core::option::Option::<(_, _)::<NonNull::<u8>, Layout>>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<(NonNull::<u8>, Layout)> {
+pub enum Option::<(_, _)::<NonNull::<u8>, Layout>> {
   None,
-  Some(0: (NonNull::<u8>, Layout)),
+  Some(0: (_, _)::<NonNull::<u8>, Layout>),
 }
 
 // Full name: core::panic::location::Location::<'_>
@@ -777,11 +798,11 @@ pub fn {impl Drop for Vec::<_, _>}::drop::<u32, Global>(self_1: &'_ mut Vec::<u3
         storage_live(self_2);
         storage_live(self_3);
         storage_live(_5);
-        _5 = copy (((((*self_1)).buf).inner).ptr).pointer;
+        _5 = copy (*self_1).buf.inner.ptr.pointer;
         self_3 = transmute<NonNull::<u8>, *mut u32>(copy _5);
         storage_dead(_5);
         storage_live(len);
-        len = copy ((*self_1)).len;
+        len = copy (*self_1).len;
         self_2 = *mut  (copy self_3, copy len);
         storage_dead(len);
         storage_dead(self_3);
@@ -802,9 +823,9 @@ pub fn {impl Drop for Vec::<_, _>}::drop::<u32, Global>(self_1: &'_ mut Vec::<u3
 }
 
 // Full name: alloc::raw_vec::{RawVecInner::<_>}::current_memory::<Global>
-fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layout) -> Option::<(NonNull::<u8>, Layout)>
+fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layout) -> Option::<(_, _)::<NonNull::<u8>, Layout>>
 {
-    let _0: Option::<(NonNull::<u8>, Layout)>; // return
+    let _0: Option::<(_, _)::<NonNull::<u8>, Layout>>; // return
     let self_1: &'_ RawVecInner::<Global>; // arg #1
     let elem_layout: Layout; // arg #2
     let self_3: usize; // local
@@ -815,7 +836,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
     let self_8: UsizeNoHighBit; // local
     let layout: Layout; // local
     let align: usize; // local
-    let _11: (NonNull::<u8>, Layout); // anonymous local
+    let _11: (_, _)::<NonNull::<u8>, Layout>; // anonymous local
     let _12: (); // anonymous local
     let _13: Alignment; // anonymous local
     let _14: (); // anonymous local
@@ -831,19 +852,19 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         storage_live(_13);
         storage_live(_14);
         storage_live(self_15);
-        self_3 = copy (elem_layout).size;
+        self_3 = copy elem_layout.size;
         switch copy self_3 -> 0usize: bb1, otherwise: bb2;
     }
 
     bb1: {
-        _0 = Option::<(NonNull::<u8>, Layout)>::None {  };
+        _0 = Option::<(_, _)::<NonNull::<u8>, Layout>>::None {  };
         goto bb3;
     }
 
     bb2: {
         storage_live(_4);
         storage_live(self_5);
-        self_5 = copy ((*self_1)).cap;
+        self_5 = copy (*self_1).cap;
         _4 = transmute<UsizeNoHighBit, usize>(copy self_5);
         storage_dead(self_5);
         switch copy _4 -> 0usize: bb4, otherwise: bb5;
@@ -863,7 +884,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         storage_live(alloc_size);
         storage_live(rhs);
         storage_live(self_8);
-        self_8 = copy ((*self_1)).cap;
+        self_8 = copy (*self_1).cap;
         rhs = transmute<UsizeNoHighBit, usize>(copy self_8);
         storage_dead(self_8);
         storage_live(_17);
@@ -880,7 +901,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         storage_dead(rhs);
         storage_live(layout);
         storage_live(align);
-        _13 = copy (elem_layout).align;
+        _13 = copy elem_layout.align;
         align = transmute<Alignment, usize>(copy _13);
         storage_live(_18);
         _18 = ub_checks<bool>;
@@ -900,11 +921,11 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         storage_dead(align);
         storage_live(_11);
         storage_live(self_16);
-        self_15 = copy (((*self_1)).ptr).pointer;
-        self_16 = copy (((*self_1)).ptr)._marker;
+        self_15 = copy (*self_1).ptr.pointer;
+        self_16 = copy (*self_1).ptr._marker;
         storage_dead(self_16);
         _11 = (copy self_15, copy layout);
-        _0 = Option::<(NonNull::<u8>, Layout)>::Some { 0: move _11 };
+        _0 = Option::<(_, _)::<NonNull::<u8>, Layout>>::Some { 0: move _11 };
         storage_dead(_11);
         storage_dead(layout);
         storage_dead(alloc_size);
@@ -934,7 +955,7 @@ pub fn impl_Allocator_for_Global::deallocate(self: &'_ Global, ptr: NonNull::<u8
         storage_live(_0);
         _0 = ();
         storage_live(_4);
-        _4 = copy (layout).size;
+        _4 = copy layout.size;
         switch copy _4 -> 0usize: bb1, otherwise: bb2;
     }
 
@@ -945,7 +966,7 @@ pub fn impl_Allocator_for_Global::deallocate(self: &'_ Global, ptr: NonNull::<u8
 
     bb2: {
         storage_live(_5);
-        _5 = copy (layout).align;
+        _5 = copy layout.align;
         _0 = __rust_dealloc(move ptr, move _4, move _5) -> bb3 (unwind: bb4);
     }
 
@@ -964,7 +985,7 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
     let _0: (); // return
     let self: &'_ mut RawVecInner::<Global>; // arg #1
     let elem_layout: Layout; // arg #2
-    let _3: Option::<(NonNull::<u8>, Layout)>; // anonymous local
+    let _3: Option::<(_, _)::<NonNull::<u8>, Layout>>; // anonymous local
     let _4: &'_ RawVecInner::<Global>; // anonymous local
     let _5: isize; // anonymous local
     let ptr: NonNull::<u8>; // local
@@ -995,11 +1016,11 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
 
     bb3: {
         storage_live(ptr);
-        ptr = copy (_3 as variant Option::<(NonNull::<u8>, Layout)>::Some).0.0;
+        ptr = copy (_3 as variant Option::<(_, _)::<NonNull::<u8>, Layout>>::Some).0.0;
         storage_live(layout);
-        layout = copy (_3 as variant Option::<(NonNull::<u8>, Layout)>::Some).0.1;
+        layout = copy (_3 as variant Option::<(_, _)::<NonNull::<u8>, Layout>>::Some).0.1;
         storage_live(_9);
-        _9 = &((*self)).alloc;
+        _9 = &(*self).alloc;
         _8 = impl_Allocator_for_Global::deallocate(move _9, move ptr, move layout) -> bb6 (unwind: bb7);
     }
 
@@ -1040,7 +1061,7 @@ pub fn {impl Drop for RawVec::<_, _>}::drop::<u32, Global>(self: &'_ mut RawVec:
         storage_live(_0);
         _0 = ();
         storage_live(_2);
-        _2 = &two-phase-mut ((*self)).inner;
+        _2 = &two-phase-mut (*self).inner;
         _0 = alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(move _2, copy LAYOUT::<u32>) -> bb1 (unwind: bb2);
     }
 
@@ -1108,12 +1129,12 @@ fn drop_glue::<Vec::<u32, Global>>(_1: &'_ mut Vec::<u32, Global>)
     }
 
     bb1: {
-        _4 = &raw mut ((*_1)).buf;
+        _4 = &raw mut (*_1).buf;
         _5 = drop_glue::<RawVec::<u32, Global>>(move _4) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        _6 = &raw mut ((*_1)).buf;
+        _6 = &raw mut (*_1).buf;
         _7 = drop_glue::<RawVec::<u32, Global>>(move _6) -> bb5 (unwind: bb6);
     }
 
@@ -1161,12 +1182,12 @@ fn drop_glue::<Foo::<u32>>(_1: &'_ mut Foo::<u32>)
     }
 
     bb1: {
-        _4 = &raw mut ((*_1)).vec;
+        _4 = &raw mut (*_1).vec;
         _5 = drop_glue::<Vec::<u32, Global>>(move _4) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        _6 = &raw mut ((*_1)).vec;
+        _6 = &raw mut (*_1).vec;
         _7 = drop_glue::<Vec::<u32, Global>>(move _6) -> bb5 (unwind: bb6);
     }
 

@@ -11,6 +11,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -74,6 +76,10 @@ pub struct Arguments::<'_> {
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
+}
+
+struct str {
+  [u8],
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -333,6 +339,11 @@ pub fn panic(expr: &'_ str) -> !
     }
 }
 
+struct (_, _)::<bool, &'_ ()> {
+  bool,
+  &'_ (),
+}
+
 // Full name: test_crate::BoolTrait
 trait BoolTrait
 
@@ -465,9 +476,9 @@ pub fn h0(x: u64) -> u64
     }
 }
 
-// Full name: test_crate::Wrapper::<(bool, &'_ ())>
-pub struct Wrapper::<(bool, &'_ ())> {
-  x: (bool, &'_ ()),
+// Full name: test_crate::Wrapper::<(_, _)::<bool, &'_ ()>>
+pub struct Wrapper::<(_, _)::<bool, &'_ ()>> {
+  x: (_, _)::<bool, &'_ ()>,
 }
 
 // Full name: test_crate::Wrapper::<u64>
@@ -490,7 +501,7 @@ pub fn {impl ToU64 for Wrapper::<_>}::to_u64::<u64>(self: Wrapper::<u64>) -> u64
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = move (self).x;
+        _2 = move self.x;
         _0 = impl_ToU64_for_u64::to_u64(move _2) -> bb1 (unwind: bb2);
     }
 
@@ -576,7 +587,7 @@ fn test(self: &'_ TestType1) -> bool
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = copy ((*self)).0;
+        _2 = copy (*self).0;
         _0 = move _2 > const 1u64;
         storage_dead(_2);
         return;
@@ -628,9 +639,9 @@ pub fn convert(x: u32) -> u32
 }
 
 // Full name: test_crate::flabada
-pub fn flabada(_x: &'_ ()) -> Wrapper::<(bool, &'_ ())>
+pub fn flabada(_x: &'_ ()) -> Wrapper::<(_, _)::<bool, &'_ ()>>
 {
-    let _0: Wrapper::<(bool, &'_ ())>; // return
+    let _0: Wrapper::<(_, _)::<bool, &'_ ()>>; // return
     let _x: &'_ (); // arg #1
     let _2: !; // anonymous local
 

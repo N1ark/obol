@@ -249,52 +249,68 @@ impl BodyTransCtx<'_, '_, '_> {
     // We also modify the signature, by adding the tupled argument.
     // The spread_arg is the local of the spread argument; it's None if one needs to be
     // added, for closures.
-    fn spread_argument(&mut self, spread_loc_opt: Option<usize>) -> Result<(), Error> {
-        let spread_loc = spread_loc_opt.unwrap_or_else(|| {
-            let spread_tys: Vec<_> = self.signature.inputs.iter().cloned().skip(1).collect();
-            let inputs_tupled = Ty::mk_tuple(spread_tys.clone());
-            let mut old_locals = mem::take(&mut self.locals.locals).into_iter();
+    fn spread_argument(
+        &mut self,
+        span: Span,
+        spread_loc_opt: Option<usize>,
+        instance: mir::mono::Instance,
+    ) -> Result<(), Error> {
+        let spread_loc = match spread_loc_opt {
+            Some(loc) => loc,
+            None => {
+                // The tuple type has a declaration of its own, so we take the closure's own
+                // tupled-arguments type rather than building one from the signature.
+                let Some(tupled_rty) = self.closure_tupled_args_ty(&instance.args()) else {
+                    raise_error!(self, span, "Could not find a closure's tupled arguments");
+                };
+                let inputs_tupled = self.translate_ty(span, tupled_rty)?;
+                let mut old_locals = mem::take(&mut self.locals.locals).into_iter();
 
-            // keep the return place and the first argument (the self place)
-            self.locals.locals.extend(old_locals.by_ref().take(2));
-            let spread_loc = self
-                .locals
-                .new_var(Some("spread_args".to_string()), inputs_tupled)
-                .as_local()
-                .unwrap()
-                .index();
-            self.locals
-                .locals
-                .extend(old_locals.update(|l| l.index += 1));
+                // keep the return place and the first argument (the self place)
+                self.locals.locals.extend(old_locals.by_ref().take(2));
+                let spread_loc = self
+                    .locals
+                    .new_var(Some("spread_args".to_string()), inputs_tupled)
+                    .as_local()
+                    .unwrap()
+                    .index();
+                self.locals
+                    .locals
+                    .extend(old_locals.update(|l| l.index += 1));
 
-            // update the rest of the locals
-            self.blocks.dyn_visit_mut(|local: &mut LocalId| {
-                let idx = local.index();
-                if idx >= spread_loc {
-                    *local = LocalId::new(idx + 1)
-                }
-            });
+                // update the rest of the locals
+                self.blocks.dyn_visit_mut(|local: &mut LocalId| {
+                    let idx = local.index();
+                    if idx >= spread_loc {
+                        *local = LocalId::new(idx + 1)
+                    }
+                });
 
-            spread_loc
-        });
+                spread_loc
+            }
+        };
 
-        let TyKind::Adt(TypeDeclRef {
-            id: TypeId::Tuple,
-            generics,
-        }) = self.locals.locals[spread_loc].ty.kind()
-        else {
+        let spread_ty = self.locals.locals[spread_loc].ty.clone();
+        let TyKind::Adt(tref, Some(BuiltinTy::Tuple)) = spread_ty.kind() else {
             raise_error!(
                 self,
                 Span::dummy(),
                 "Expected a tuple type for spread argument"
             );
         };
-        let inputs_untupled: Vec<_> = generics.types.clone().into_iter().collect();
+        let tuple_id = tref.id;
+        let Some(inputs_untupled) = self.t_ctx.tuple_fields(tuple_id).map(<[Ty]>::to_vec) else {
+            raise_error!(
+                self,
+                Span::dummy(),
+                "Missing the field types of tuple `{tuple_id}`"
+            );
+        };
 
         // Update the signature
         let inputs = &mut self.signature.inputs;
-        let inputs_spread = inputs.split_off(inputs.len() - inputs_untupled.len());
-        inputs.push(Ty::mk_tuple(inputs_spread));
+        inputs.truncate(inputs.len() - inputs_untupled.len());
+        inputs.push(spread_ty.clone());
         self.locals.arg_count = inputs.len();
 
         // we only need to re-add the projections when spread_arg is not provided
@@ -304,7 +320,6 @@ impl BodyTransCtx<'_, '_, '_> {
 
         // Add projections as prelude
         let tupled_arg = self.locals.place_for_var(LocalId::from_raw(spread_loc));
-        let spread_arg_count = inputs_untupled.len();
         let new_stts = inputs_untupled
             .iter()
             .cloned()
@@ -316,10 +331,9 @@ impl BodyTransCtx<'_, '_, '_> {
                 };
                 assert_eq!(local.ty, ty);
                 let place = Place::new(local.index, local.ty.clone());
-                let nth_field = tupled_arg.clone().project(
-                    ProjectionElem::Field(FieldProjKind::Tuple(spread_arg_count), FieldId::new(i)),
-                    ty,
-                );
+                let nth_field = tupled_arg
+                    .clone()
+                    .project(ProjectionElem::Field(tuple_id, None, FieldId::new(i)), ty);
                 Some(Statement::new(
                     Span::dummy(),
                     StatementKind::Assign(
@@ -388,9 +402,9 @@ impl BodyTransCtx<'_, '_, '_> {
 
         // We might need to tuple arguments, and possibly create a local too
         if let Some(spread_local) = body.spread_arg() {
-            self.spread_argument(Some(spread_local))?;
+            self.spread_argument(span, Some(spread_local), instance)?;
         } else if self.instance_is_closure(instance) {
-            self.spread_argument(None)?;
+            self.spread_argument(span, None, instance)?;
         }
 
         // Create the body
@@ -625,18 +639,13 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 return Ok((of_place, proj_ty, Some(self.translate_variant_id(*variant))));
             }
             mir::ProjectionElem::Field(field_idx, _) => {
-                let kind = match of_place.ty().kind() {
-                    TyKind::Adt(TypeDeclRef {
-                        id: TypeId::Tuple,
-                        generics,
-                    }) => FieldProjKind::Tuple(generics.types.len()),
-                    TyKind::Adt(TypeDeclRef {
-                        id: TypeId::Adt(id),
-                        ..
-                    }) => FieldProjKind::Adt(*id, variant_id),
-                    kind => unreachable!("Unexpected type in field projection: {kind:?}"),
+                let TyKind::Adt(tref, _) = of_place.ty().kind() else {
+                    unreachable!(
+                        "Unexpected type in field projection: {:?}",
+                        of_place.ty().kind()
+                    );
                 };
-                ProjectionElem::Field(kind, FieldId::from_usize(*field_idx))
+                ProjectionElem::Field(tref.id, variant_id, FieldId::from_usize(*field_idx))
             }
             mir::ProjectionElem::OpaqueCast(..) => {
                 raise_error!(self, span, "Unexpected ProjectionElem::OpaqueCast");
@@ -950,7 +959,18 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         ))
                     }
                     mir::AggregateKind::Tuple => {
-                        let tref = TypeDeclRef::new(TypeId::Tuple, GenericArgs::empty());
+                        // Tuples have a declaration of their own, so we need the tuple type the
+                        // operands build; recover it from their (rustc) types.
+                        let elem_tys: Vec<ty::Ty> = operands
+                            .iter()
+                            .map(|op| op.ty(self.local_decls))
+                            .try_collect()?;
+                        let tuple_ty = ty::Ty::new_tuple(&elem_tys);
+                        let TyKind::Adt(tref, _) =
+                            self.translate_ty(span, tuple_ty)?.kind().clone()
+                        else {
+                            unreachable!("Tuple type did not translate to an ADT");
+                        };
                         Ok(Rvalue::Aggregate(
                             AggregateKind::Adt(tref, None, None),
                             operands_t,
@@ -967,10 +987,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         trace!("{:?}", rvalue);
 
                         let id = self.register_type_decl_id(span, *item, generics.clone());
-                        let tref = TypeDeclRef {
-                            id: TypeId::Adt(id),
-                            generics: Box::new(GenericArgs::empty()),
-                        };
+                        let tref = TypeDeclRef::new(id, GenericArgs::empty());
                         let variant_id = match item.kind() {
                             AdtKind::Struct | AdtKind::Union => None,
                             AdtKind::Enum => Some(self.translate_variant_id(*variant_idx)),
@@ -985,10 +1002,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     }
                     mir::AggregateKind::Closure(def, args) => {
                         let id = self.register_closure_type_decl_id(span, *def, args.clone());
-                        let tref = TypeDeclRef {
-                            id: TypeId::Adt(id),
-                            generics: Box::new(GenericArgs::empty()),
-                        };
+                        let tref = TypeDeclRef::new(id, GenericArgs::empty());
                         let akind = AggregateKind::Adt(tref, None, None);
                         Ok(Rvalue::Aggregate(akind, operands_t))
                     }

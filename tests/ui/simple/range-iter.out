@@ -43,6 +43,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -105,6 +107,10 @@ pub struct Arguments::<'_> {
 pub fn abort() -> !
 = <intrinsic:abort>
 
+struct str {
+  [u8],
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
@@ -135,6 +141,16 @@ trait Step
 // Full name: core::iter::range::{impl Step for usize}
 impl "impl_Step_for_usize" Step for usize {
     non-dyn-compatible
+}
+
+struct (_, _)::<u64, bool> {
+  u64,
+  bool,
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -294,7 +310,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -330,7 +346,7 @@ fn precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
+    let _7: (_, _)::<u64, bool>; // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -474,9 +490,9 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = &((*self)).start;
+        _3 = &(*self).start;
         storage_live(_4);
-        _4 = &((*self)).end;
+        _4 = &(*self).end;
         _2 = lt(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
@@ -492,7 +508,7 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
         storage_dead(_4);
         storage_dead(_3);
         storage_live(old);
-        old = copy ((*self)).start;
+        old = copy (*self).start;
         storage_live(_6);
         _6 = forward_unchecked(copy old, const 1usize) -> bb5 (unwind: bb6);
     }
@@ -505,7 +521,7 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
     }
 
     bb5: {
-        ((*self)).start = move _6;
+        (*self).start = move _6;
         storage_dead(_6);
         _0 = Option::<usize>::Some { 0: copy old };
         storage_dead(old);

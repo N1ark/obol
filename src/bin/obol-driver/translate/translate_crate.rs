@@ -48,6 +48,29 @@ impl std::hash::Hash for GlobalTy {
     fn hash<H: std::hash::Hasher>(&self, _state: &mut H) {}
 }
 
+/// A tuple type, as identified by its (already translated) element types. We deliberately key on
+/// those rather than on the rustc type: we erase lifetimes, so two rustc tuples that differ only
+/// in their lifetimes are one and the same type to us, and must share a single declaration. The
+/// `ty::Ty` is only kept to compute the layout, so it is not part of the identity and the first
+/// registration's wins.
+#[derive(Clone, Debug)]
+pub struct TupleTy {
+    pub fields: Vec<Ty>,
+    pub rty: ty::Ty,
+}
+
+impl PartialEq for TupleTy {
+    fn eq(&self, other: &Self) -> bool {
+        self.fields == other.fields
+    }
+}
+impl Eq for TupleTy {}
+impl Hash for TupleTy {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.fields.hash(state);
+    }
+}
+
 /// The id of an untranslated item. Note that a given `DefId` may show up as multiple different
 /// item sources, e.g. a constant will have both a `Global` version (for the constant itself) and a
 /// `FunDecl` one (for its initializer function).
@@ -61,6 +84,11 @@ pub enum TransItemSource {
     Closure(ty::ClosureDef, MyGenericArgs),
     ClosureAsFn(ty::ClosureDef, MyGenericArgs),
     ForeignType(ty::ForeignDef),
+    /// A tuple type. Tuples have no `DefId`, but like `str` they get a type declaration of their
+    /// own, which we declare as a struct of its elements.
+    Tuple(TupleTy),
+    /// The `str` type, which we declare as a `struct str([u8])`.
+    Str,
     VTable(ty::Ty, Option<(ty::TraitDef, MyGenericArgs)>),
     VTableInit(ty::Ty, Option<(ty::TraitDef, MyGenericArgs)>),
     TraitDecl(DefId),
@@ -85,6 +113,7 @@ impl TransItemSource {
             TransItemSource::Closure(def, _) => Some(def.def_id()),
             TransItemSource::ClosureAsFn(def, _) => Some(def.def_id()),
             TransItemSource::ForeignType(def) => Some(def.def_id()),
+            TransItemSource::Tuple(..) | TransItemSource::Str => None,
             TransItemSource::VTable(_, Some((tr, _))) => Some(tr.0),
             TransItemSource::VTableInit(_, Some((tr, _))) => Some(tr.0),
             TransItemSource::VTable(_, None) => None,
@@ -129,6 +158,8 @@ impl TransItemSource {
             TransItemSource::NamedConst(def, gargs) => (11, def.0.to_index(), gargs.sort_key()),
             TransItemSource::TraitDecl(did) => (12, did.to_index(), 0),
             TransItemSource::TraitImpl(did) => (13, did.to_index(), 0),
+            TransItemSource::Tuple(tuple) => (14, tuple.fields.len(), 0),
+            TransItemSource::Str => (15, 0, 0),
         }
     }
 }
@@ -157,7 +188,9 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let trans_id = match id {
                     TransItemSource::Type(..)
                     | TransItemSource::Closure(..)
-                    | TransItemSource::ForeignType(..) => {
+                    | TransItemSource::ForeignType(..)
+                    | TransItemSource::Tuple(..)
+                    | TransItemSource::Str => {
                         ItemId::Type(self.translated.type_decls.reserve_slot())
                     }
                     TransItemSource::Global(..)
@@ -241,6 +274,42 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             .register_and_enqueue_id(src, TransItemSource::Type(id, genargs.into()))
             .as_type()
             .unwrap()
+    }
+
+    /// Register the type declaration of a tuple type; `fields` are its already-translated element
+    /// types.
+    pub(crate) fn register_tuple_decl_id(
+        &mut self,
+        src: &Option<DepSource>,
+        rty: ty::Ty,
+        fields: Vec<Ty>,
+    ) -> TypeDeclId {
+        *self
+            .register_and_enqueue_id(src, TransItemSource::Tuple(TupleTy { fields, rty }))
+            .as_type()
+            .unwrap()
+    }
+
+    /// The element types of the tuple declared by `id`, if it declares a tuple at all.
+    pub(crate) fn tuple_fields(&self, id: TypeDeclId) -> Option<&[Ty]> {
+        match self.reverse_id_map.get(&ItemId::Type(id))? {
+            TransItemSource::Tuple(tuple) => Some(&tuple.fields),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn register_str_decl_id(&mut self, src: &Option<DepSource>) -> TypeDeclId {
+        *self
+            .register_and_enqueue_id(src, TransItemSource::Str)
+            .as_type()
+            .unwrap()
+    }
+
+    /// Claim the first type id for the declaration of the unit type: charon's `Ty::mk_unit`
+    /// hardcodes `TypeDeclId::UNIT`, so that id must be the unit type's declaration.
+    pub(crate) fn reserve_unit_decl(&mut self) {
+        let id = self.register_tuple_decl_id(&None, ty::Ty::new_tuple(&[]), vec![]);
+        assert_eq!(id, TypeDeclId::UNIT, "the unit type must come first");
     }
 
     pub(crate) fn register_fun_decl_id(
@@ -366,6 +435,21 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     ) -> TypeDeclId {
         let src = self.make_dep_source(span);
         self.t_ctx.register_type_decl_id(&src, id, genargs)
+    }
+
+    pub(crate) fn register_tuple_decl_id(
+        &mut self,
+        span: Span,
+        ty: ty::Ty,
+        fields: Vec<Ty>,
+    ) -> TypeDeclId {
+        let src = self.make_dep_source(span);
+        self.t_ctx.register_tuple_decl_id(&src, ty, fields)
+    }
+
+    pub(crate) fn register_str_decl_id(&mut self, span: Span) -> TypeDeclId {
+        let src = self.make_dep_source(span);
+        self.t_ctx.register_str_decl_id(&src)
     }
 
     pub(crate) fn register_fun_decl_id(
@@ -717,6 +801,7 @@ pub fn translate<'tcx, 'ctx>(
         ctx.test_fn_paths = ctx.collect_test_marker_paths();
     }
 
+    ctx.reserve_unit_decl();
     ctx.translate_fake_dyn_trait();
 
     ctx.collect_entrypoints(options);

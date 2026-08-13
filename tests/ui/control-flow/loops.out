@@ -97,6 +97,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -162,6 +164,10 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
+struct str {
+  [u8],
+}
+
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
@@ -205,6 +211,11 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         storage_dead(_2);
         return;
     }
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -391,7 +402,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -503,6 +514,11 @@ impl "impl_Step_for_u32" Step for u32 {
     non-dyn-compatible
 }
 
+struct (_, _)::<i32, bool> {
+  i32,
+  bool,
+}
+
 // Full name: core::option::Option::<i32>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
@@ -522,7 +538,7 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
     let _5: i32; // anonymous local
     let a: i32; // local
     let _7: bool; // anonymous local
-    let _8: (i32, bool); // anonymous local
+    let _8: (_, _)::<i32, bool>; // anonymous local
     let b: bool; // local
     let _10: bool; // anonymous local
     let _11: (); // anonymous local
@@ -605,6 +621,11 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
     }
 }
 
+struct (_, _)::<u64, bool> {
+  u64,
+  bool,
+}
+
 fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
 {
     let _0: (); // return
@@ -614,7 +635,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
+    let _7: (_, _)::<u64, bool>; // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -720,13 +741,18 @@ pub fn impl_Step_for_usize::forward_unchecked(start: usize, n: usize) -> usize
     }
 }
 
+struct (_, _)::<u32, bool> {
+  u32,
+  bool,
+}
+
 fn core::num::{u32}::unchecked_add::precondition_check(lhs: u32, rhs: u32)
 {
     let _0: (); // return
     let lhs: u32; // arg #1
     let rhs: u32; // arg #2
     let _3: bool; // anonymous local
-    let _4: (u32, bool); // anonymous local
+    let _4: (_, _)::<u32, bool>; // anonymous local
     let msg: &'_ str; // local
     let _6: !; // anonymous local
     let _7: Arguments::<'_>; // anonymous local
@@ -863,9 +889,9 @@ fn spec_next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = &((*self)).start;
+        _3 = &(*self).start;
         storage_live(_4);
-        _4 = &((*self)).end;
+        _4 = &(*self).end;
         _2 = impl_PartialOrd_i32_for_i32::lt(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
@@ -881,7 +907,7 @@ fn spec_next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
         storage_dead(_4);
         storage_dead(_3);
         storage_live(old);
-        old = copy ((*self)).start;
+        old = copy (*self).start;
         storage_live(_6);
         _6 = impl_Step_for_i32::forward_unchecked(copy old, const 1usize) -> bb5 (unwind: bb6);
     }
@@ -894,7 +920,7 @@ fn spec_next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
     }
 
     bb5: {
-        ((*self)).start = move _6;
+        (*self).start = move _6;
         storage_dead(_6);
         _0 = Option::<i32>::Some { 0: copy old };
         storage_dead(old);
@@ -941,9 +967,9 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = &((*self)).start;
+        _3 = &(*self).start;
         storage_live(_4);
-        _4 = &((*self)).end;
+        _4 = &(*self).end;
         _2 = impl_PartialOrd_usize_for_usize::lt(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
@@ -959,7 +985,7 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
         storage_dead(_4);
         storage_dead(_3);
         storage_live(old);
-        old = copy ((*self)).start;
+        old = copy (*self).start;
         storage_live(_6);
         _6 = impl_Step_for_usize::forward_unchecked(copy old, const 1usize) -> bb5 (unwind: bb6);
     }
@@ -972,7 +998,7 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
     }
 
     bb5: {
-        ((*self)).start = move _6;
+        (*self).start = move _6;
         storage_dead(_6);
         _0 = Option::<usize>::Some { 0: copy old };
         storage_dead(old);
@@ -1019,9 +1045,9 @@ fn spec_next::<u32>(self: &'_ mut Range::<u32>) -> Option::<u32>
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = &((*self)).start;
+        _3 = &(*self).start;
         storage_live(_4);
-        _4 = &((*self)).end;
+        _4 = &(*self).end;
         _2 = impl_PartialOrd_u32_for_u32::lt(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
@@ -1037,7 +1063,7 @@ fn spec_next::<u32>(self: &'_ mut Range::<u32>) -> Option::<u32>
         storage_dead(_4);
         storage_dead(_3);
         storage_live(old);
-        old = copy ((*self)).start;
+        old = copy (*self).start;
         storage_live(_6);
         _6 = impl_Step_for_u32::forward_unchecked(copy old, const 1usize) -> bb5 (unwind: bb6);
     }
@@ -1050,7 +1076,7 @@ fn spec_next::<u32>(self: &'_ mut Range::<u32>) -> Option::<u32>
     }
 
     bb5: {
-        ((*self)).start = move _6;
+        (*self).start = move _6;
         storage_dead(_6);
         _0 = Option::<u32>::Some { 0: copy old };
         storage_dead(old);
@@ -1353,7 +1379,7 @@ pub fn len::<u32, Global>(self: &'_ Vec::<u32, Global>) -> usize
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _0 = copy ((*self)).len;
+        _0 = copy (*self).len;
         storage_live(_2);
         _2 = copy _0 <= copy MAX_SLICE_LEN::<u32>;
         _3 = assume(move _2) -> bb1 (unwind: bb2);
@@ -1392,11 +1418,11 @@ pub fn {impl IndexMut<I> for Vec::<_, missing(@Type2)>}::index_mut::<u32, usize,
         storage_live(_4);
         storage_live(_5);
         storage_live(_7);
-        _7 = copy (((((*self_1)).buf).inner).ptr).pointer;
+        _7 = copy (*self_1).buf.inner.ptr.pointer;
         _5 = transmute<NonNull::<u8>, *mut u32>(copy _7);
         storage_dead(_7);
         storage_live(_6);
-        _6 = copy ((*self_1)).len;
+        _6 = copy (*self_1).len;
         _4 = *mut  (copy _5, move _6);
         storage_dead(_6);
         storage_dead(_5);
@@ -1413,6 +1439,11 @@ pub fn {impl IndexMut<I> for Vec::<_, missing(@Type2)>}::index_mut::<u32, usize,
     bb2: {
         unwind_continue;
     }
+}
+
+struct (_, _)::<usize, bool> {
+  usize,
+  bool,
 }
 
 // Full name: test_crate::test_loop1
@@ -2902,7 +2933,7 @@ pub fn get_elem_mut(ls: &'_ mut List::<usize>, x: usize) -> &'_ mut usize
         storage_dead(_8);
         storage_live(_10);
         _11 = copy (*tl);
-        _12 = transmute<NonNull::<List::<usize>>, *const List::<usize>>(copy ((_11).0).pointer);
+        _12 = transmute<NonNull::<List::<usize>>, *const List::<usize>>(copy _11.0.pointer);
         _10 = &mut (*_12);
         ls = move _10;
         storage_dead(_10);

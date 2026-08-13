@@ -4,6 +4,8 @@
 // Full name: test_crate::NotCopy
 struct NotCopy {}
 
+struct () {}
+
 // Full name: core::mem::drop::<NotCopy>
 #[diagnostic_item("mem_drop")]
 pub fn drop::<NotCopy>(_x: NotCopy)
@@ -21,15 +23,28 @@ pub fn drop::<NotCopy>(_x: NotCopy)
 // Full name: FakeTrait
 trait FakeTrait
 
+struct (_,)::<NotCopy> {
+  NotCopy,
+}
+
+struct (_,)::<u8> {
+  u8,
+}
+
+struct (_, _)::<u8, bool> {
+  u8,
+  bool,
+}
+
 struct test_crate::main::closure::closure {
   upvar_0: NotCopy,
 }
 
-fn test_crate::main::closure::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(_1: test_crate::main::closure::closure, spread_args: (u8,)) -> u8
+fn test_crate::main::closure::<i32, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<NotCopy>>(_1: test_crate::main::closure::closure, spread_args: (_,)::<u8>) -> u8
 {
     let _0: u8; // return
     let _1: test_crate::main::closure::closure; // arg #1
-    let spread_args: (u8,); // arg #2
+    let spread_args: (_,)::<u8>; // arg #2
     let x: u8; // local
     let _4: (); // anonymous local
     let _5: NotCopy; // anonymous local
@@ -43,7 +58,7 @@ fn test_crate::main::closure::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy
         x = move spread_args.0;
         storage_live(_4);
         storage_live(_5);
-        _5 = move (_1).upvar_0;
+        _5 = move _1.upvar_0;
         _4 = drop::<NotCopy>(move _5) -> bb1 (unwind: bb2);
     }
 
@@ -69,7 +84,7 @@ fn apply_to_zero_once::<test_crate::main::closure::closure>(f: test_crate::main:
     let _0: u8; // return
     let f: test_crate::main::closure::closure; // arg #1
     let _2: test_crate::main::closure::closure; // anonymous local
-    let _3: (u8,); // anonymous local
+    let _3: (_,)::<u8>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -77,7 +92,7 @@ fn apply_to_zero_once::<test_crate::main::closure::closure>(f: test_crate::main:
         _2 = move f;
         storage_live(_3);
         _3 = (const 0u8,);
-        _0 = test_crate::main::closure::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(move _2, move _3) -> bb1 (unwind: bb2);
+        _0 = test_crate::main::closure::<i32, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<NotCopy>>(move _2, move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {

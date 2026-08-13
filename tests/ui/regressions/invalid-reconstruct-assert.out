@@ -50,6 +50,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -106,6 +108,15 @@ pub struct NonNull::<Argument::<'_>> {
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
+}
+
+struct str {
+  [u8],
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -292,7 +303,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -417,7 +428,7 @@ pub fn drop::<usize>(self_1: &'_ mut DropOnPanic::<usize>)
         storage_live(_0);
         _0 = ();
         storage_live(self_2);
-        self_2 = copy ((*self_1)).inner;
+        self_2 = copy (*self_1).inner;
         storage_live(_3);
         _3 = &mut (*self_2);
         _0 = drop_glue::<usize>(move _3) -> bb1 (unwind: bb2);
@@ -581,7 +592,7 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     bb5: {
         storage_dead(_21);
         storage_live(t);
-        t = move (guard_10).inner;
+        t = move guard_10.inner;
         storage_dead(t);
         storage_live(self_12);
         storage_live(_13);
@@ -617,7 +628,7 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     bb11: {
         storage_live(self_23);
         storage_live(self_24);
-        self_24 = &raw const (self_12).value;
+        self_24 = &raw const self_12.value;
         self_23 = cast<*const ManuallyDrop::<usize>, *const usize>(copy self_24);
         storage_dead(self_24);
         _0 = copy (*self_23);
@@ -760,14 +771,18 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(this: usiz
 
 struct test_crate::main::closure::closure {}
 
+struct (_,)::<&'_ u32> {
+  &'_ u32,
+}
+
 // Full name: anon_const_4
 const anon_const_4: u32 = 3u32
 
-fn test_crate::main::closure::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(_1: &'_ mut test_crate::main::closure::closure, spread_args: (&'_ u32,)) -> Ordering
+fn test_crate::main::closure::<i16, extern "rust-call" fn((_,)::<&'_ u32>) -> Ordering, ()>(_1: &'_ mut test_crate::main::closure::closure, spread_args: (_,)::<&'_ u32>) -> Ordering
 {
     let _0: Ordering; // return
     let _1: &'_ mut test_crate::main::closure::closure; // arg #1
-    let spread_args: (&'_ u32,); // arg #2
+    let spread_args: (_,)::<&'_ u32>; // arg #2
     let x: &'_ u32; // local
     let _4: &'_ u32; // anonymous local
     let _5: &'_ u32; // anonymous local
@@ -821,13 +836,13 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
     let _11: usize; // anonymous local
     let cmp_12: Ordering; // local
     let _13: &'_ mut test_crate::main::closure::closure; // anonymous local
-    let _14: (&'_ u32,); // anonymous local
+    let _14: (_,)::<&'_ u32>; // anonymous local
     let _15: &'_ u32; // anonymous local
     let _16: usize; // anonymous local
     let _17: bool; // anonymous local
     let cmp_18: Ordering; // local
     let _19: &'_ mut test_crate::main::closure::closure; // anonymous local
-    let _20: (&'_ u32,); // anonymous local
+    let _20: (_,)::<&'_ u32>; // anonymous local
     let _21: &'_ u32; // anonymous local
     let index: usize; // local
     let cond_23: bool; // local
@@ -989,7 +1004,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         _15 = &(*_29);
         storage_dead(_29);
         _14 = (copy _15,);
-        cmp_12 = test_crate::main::closure::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _13, move _14) -> bb15 (unwind: bb16);
+        cmp_12 = test_crate::main::closure::<i16, extern "rust-call" fn((_,)::<&'_ u32>) -> Ordering, ()>(move _13, move _14) -> bb15 (unwind: bb16);
     }
 
     bb14: {
@@ -1028,7 +1043,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         storage_dead(_35);
         storage_dead(index);
         _20 = (copy _21,);
-        cmp_18 = test_crate::main::closure::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _19, move _20) -> bb21 (unwind: bb16);
+        cmp_18 = test_crate::main::closure::<i16, extern "rust-call" fn((_,)::<&'_ u32>) -> Ordering, ()>(move _19, move _20) -> bb21 (unwind: bb16);
     }
 
     bb20: {

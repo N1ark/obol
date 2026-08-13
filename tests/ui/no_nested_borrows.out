@@ -81,6 +81,12 @@ pub struct Layout {
   align: Alignment,
 }
 
+struct str {
+  [u8],
+}
+
+struct () {}
+
 // Full name: core::ptr::non_null::NonNull::<u8>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
@@ -142,6 +148,18 @@ pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
@@ -159,13 +177,6 @@ pub struct Location::<'_> {
   line: u32,
   col: u32,
   _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -332,7 +343,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -756,7 +767,7 @@ pub fn deallocate(self: &'_ Global, ptr: NonNull::<u8>, layout: Layout)
         storage_live(_0);
         _0 = ();
         storage_live(_4);
-        _4 = copy (layout).size;
+        _4 = copy layout.size;
         switch copy _4 -> 0usize: bb1, otherwise: bb2;
     }
 
@@ -767,7 +778,7 @@ pub fn deallocate(self: &'_ Global, ptr: NonNull::<u8>, layout: Layout)
 
     bb2: {
         storage_live(_5);
-        _5 = copy (layout).align;
+        _5 = copy layout.align;
         _0 = __rust_dealloc(move ptr, move _4, move _5) -> bb3 (unwind: bb4);
     }
 
@@ -814,8 +825,8 @@ pub fn drop::<List::<i32>, Global>(self: &'_ mut Box::<List::<i32>, Global>)
         _0 = ();
         storage_live(ptr_14);
         storage_live(ptr_15);
-        ptr_14 = copy (((*self)).0).pointer;
-        ptr_15 = copy (((*self)).0)._marker;
+        ptr_14 = copy (*self).0.pointer;
+        ptr_15 = copy (*self).0._marker;
         storage_live(layout);
         storage_live(t);
         _4 = transmute<NonNull::<List::<i32>>, *mut List::<i32>>(copy ptr_14);
@@ -883,7 +894,7 @@ pub fn drop::<List::<i32>, Global>(self: &'_ mut Box::<List::<i32>, Global>)
 
     bb12: {
         storage_live(_6);
-        _6 = &((*self)).1;
+        _6 = &(*self).1;
         storage_live(_13);
         _13 = cast<*mut List::<i32>, *mut u8>(copy _4);
         unique = transmute<*mut u8, NonNull::<u8>>(copy _13);
@@ -959,7 +970,7 @@ fn drop_glue::<Box::<List::<i32>, Global>>(_1: &'_ mut Box::<List::<i32>, Global
         storage_live(_7);
         storage_live(_8);
         _0 = ();
-        _6 = transmute<NonNull::<List::<i32>>, *const List::<i32>>(copy (((*_1)).0).pointer);
+        _6 = transmute<NonNull::<List::<i32>>, *const List::<i32>>(copy (*_1).0.pointer);
         _7 = &raw mut (*_6);
         _8 = drop_glue::<List::<i32>>(move _7) -> bb1 (unwind: bb2);
     }
@@ -1043,8 +1054,8 @@ pub fn drop::<i32, Global>(self: &'_ mut Box::<i32, Global>)
         _0 = ();
         storage_live(ptr_14);
         storage_live(ptr_15);
-        ptr_14 = copy (((*self)).0).pointer;
-        ptr_15 = copy (((*self)).0)._marker;
+        ptr_14 = copy (*self).0.pointer;
+        ptr_15 = copy (*self).0._marker;
         storage_live(layout);
         storage_live(t);
         _4 = transmute<NonNull::<i32>, *mut i32>(copy ptr_14);
@@ -1112,7 +1123,7 @@ pub fn drop::<i32, Global>(self: &'_ mut Box::<i32, Global>)
 
     bb12: {
         storage_live(_6);
-        _6 = &((*self)).1;
+        _6 = &(*self).1;
         storage_live(_13);
         _13 = cast<*mut i32, *mut u8>(copy _4);
         unique = transmute<*mut u8, NonNull::<u8>>(copy _13);
@@ -1146,7 +1157,7 @@ fn drop_glue::<Box::<i32, Global>>(_1: &'_ mut Box::<i32, Global>)
         storage_live(_3);
         storage_live(_4);
         _0 = ();
-        _4 = transmute<NonNull::<i32>, *const i32>(copy (((*_1)).0).pointer);
+        _4 = transmute<NonNull::<i32>, *const i32>(copy (*_1).0.pointer);
         _2 = &mut (*_1);
         _3 = drop::<i32, Global>(move _2) -> bb1 (unwind: bb2);
     }
@@ -1334,14 +1345,14 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_30);
         storage_live(_35);
         storage_live(size);
-        size = copy (layout).size;
+        size = copy layout.size;
         switch copy size -> 0usize: bb1, otherwise: bb2;
     }
 
     bb1: {
         storage_live(_4);
         storage_live(self_5);
-        _13 = copy (layout).align;
+        _13 = copy layout.align;
         self_5 = transmute<Alignment, NonNull::<u8>>(copy _13);
         storage_live(ptr_14);
         storage_live(self_15);
@@ -1396,7 +1407,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 
     bb10: {
         storage_live(_19);
-        _19 = copy (layout).align;
+        _19 = copy layout.align;
         raw_ptr = __rust_alloc_zeroed(copy size, move _19) -> bb15 (unwind: bb16);
     }
 
@@ -1406,7 +1417,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 
     bb12: {
         storage_live(_21);
-        _21 = copy (layout).align;
+        _21 = copy layout.align;
         raw_ptr = __rust_alloc(copy size, move _21) -> bb17 (unwind: bb18);
     }
 
@@ -1565,6 +1576,10 @@ impl "impl_Allocator_for_Global" Allocator for Global {
     non-dyn-compatible
 }
 
+struct (_,)::<Layout> {
+  Layout,
+}
+
 // Full name: alloc::alloc::handle_alloc_error::ct_error
 fn ct_error(_1: Layout) -> !
 {
@@ -1602,7 +1617,7 @@ pub fn handle_alloc_error(layout: Layout) -> !
 {
     let _0: !; // return
     let layout: Layout; // arg #1
-    let _2: (Layout,); // anonymous local
+    let _2: (_,)::<Layout>; // anonymous local
     let _3: Layout; // anonymous local
 
     bb0: {
@@ -1778,7 +1793,7 @@ pub fn deref::<i32, Global>(self: &'_ Box::<i32, Global>) -> &'_ i32
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = copy (((*self)).0).pointer;
+        _3 = copy (*self).0.pointer;
         _2 = transmute<NonNull::<i32>, *const i32>(copy _3);
         _0 = &(*_2);
         return;
@@ -1802,11 +1817,31 @@ pub fn deref_mut::<i32, Global>(self: &'_ mut Box::<i32, Global>) -> &'_ mut i32
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = copy (((*self)).0).pointer;
+        _3 = copy (*self).0.pointer;
         _2 = transmute<NonNull::<i32>, *const i32>(copy _3);
         _0 = &mut (*_2);
         return;
     }
+}
+
+struct (_, _)::<i16, i16> {
+  i16,
+  i16,
+}
+
+struct (_, _)::<u32, u32> {
+  u32,
+  u32,
+}
+
+struct (_, _)::<u32, bool> {
+  u32,
+  bool,
+}
+
+struct (_, _)::<u64, i64> {
+  u64,
+  i64,
 }
 
 // Full name: test_crate::Pair::<u32, u32>
@@ -1864,7 +1899,7 @@ pub fn use_tuple_struct(x: &'_ mut Tuple::<u32, u32>)
     bb0: {
         storage_live(_0);
         _0 = ();
-        ((*x)).0 = const 1u32;
+        (*x).0 = const 1u32;
         _0 = ();
         return;
     }
@@ -2505,24 +2540,24 @@ pub fn test_even_odd()
 
 // Full name: test_crate::StructWithTuple::<i16, i16>
 pub struct StructWithTuple::<i16, i16> {
-  p: (i16, i16),
+  p: (_, _)::<i16, i16>,
 }
 
 // Full name: test_crate::StructWithTuple::<u32, u32>
 pub struct StructWithTuple::<u32, u32> {
-  p: (u32, u32),
+  p: (_, _)::<u32, u32>,
 }
 
 // Full name: test_crate::StructWithTuple::<u64, i64>
 pub struct StructWithTuple::<u64, i64> {
-  p: (u64, i64),
+  p: (_, _)::<u64, i64>,
 }
 
 // Full name: test_crate::new_tuple1
 pub fn new_tuple1() -> StructWithTuple::<u32, u32>
 {
     let _0: StructWithTuple::<u32, u32>; // return
-    let _1: (u32, u32); // anonymous local
+    let _1: (_, _)::<u32, u32>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2538,7 +2573,7 @@ pub fn new_tuple1() -> StructWithTuple::<u32, u32>
 pub fn new_tuple2() -> StructWithTuple::<i16, i16>
 {
     let _0: StructWithTuple::<i16, i16>; // return
-    let _1: (i16, i16); // anonymous local
+    let _1: (_, _)::<i16, i16>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2554,7 +2589,7 @@ pub fn new_tuple2() -> StructWithTuple::<i16, i16>
 pub fn new_tuple3() -> StructWithTuple::<u64, i64>
 {
     let _0: StructWithTuple::<u64, i64>; // return
-    let _1: (u64, i64); // anonymous local
+    let _1: (_, _)::<u64, i64>; // anonymous local
 
     bb0: {
         storage_live(_0);

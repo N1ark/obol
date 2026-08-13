@@ -51,6 +51,8 @@ pub fn core::cell::{RefCell::<_>}::new::<bool>(value: bool) -> RefCell::<bool>
     }
 }
 
+struct () {}
+
 // Full name: core::ptr::non_null::NonNull::<bool>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<bool> {
@@ -74,6 +76,10 @@ pub struct Ref::<'_, bool> {
 pub enum Result::<Ref::<'_, bool>, BorrowError> {
   Ok(0: Ref::<'_, bool>),
   Err(0: BorrowError),
+}
+
+struct str {
+  [u8],
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -137,6 +143,18 @@ pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
@@ -154,13 +172,6 @@ pub struct Location::<'_> {
   line: u32,
   col: u32,
   _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -327,7 +338,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -473,12 +484,12 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         storage_live(_17);
         storage_live(_2);
         storage_live(borrow);
-        borrow = &((*self_1)).borrow;
+        borrow = &(*self_1).borrow;
         storage_live(b_8);
         storage_live(self_9);
         storage_live(_12);
         storage_live(_13);
-        _13 = &raw const (((*self_1)).borrow).value;
+        _13 = &raw const (*self_1).borrow.value;
         _12 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _13);
         storage_dead(_13);
         self_9 = copy (*_12);
@@ -493,7 +504,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
     bb1: {
         storage_live(_14);
         storage_live(_15);
-        _15 = &raw const (((*self_1)).borrow).value;
+        _15 = &raw const (*self_1).borrow.value;
         _14 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _15);
         storage_dead(_15);
         (*_14) = copy b_8;
@@ -508,7 +519,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         b_4 = move (_2 as variant Option::<BorrowRef::<'_>>::Some).0;
         storage_live(value);
         storage_live(ptr);
-        _16 = &raw const ((*self_1)).value;
+        _16 = &raw const (*self_1).value;
         ptr = cast<*const UnsafeCell::<bool>, *mut bool>(copy _16);
         storage_live(_19);
         _19 = ub_checks<bool>;
@@ -592,20 +603,20 @@ pub fn drop::<'_>(self: &'_ mut BorrowRef::<'_>)
         storage_live(_5);
         _0 = ();
         storage_live(_2);
-        _4 = copy ((*self)).borrow;
+        _4 = copy (*self).borrow;
         storage_live(_6);
         storage_live(_7);
-        _7 = &raw const ((*_4)).value;
+        _7 = &raw const (*_4).value;
         _6 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _7);
         storage_dead(_7);
         _2 = copy (*_6);
         storage_dead(_6);
-        _5 = copy ((*self)).borrow;
+        _5 = copy (*self).borrow;
         storage_live(_3);
         _3 = copy _2 wrap.- const 1isize;
         storage_live(_8);
         storage_live(_9);
-        _9 = &raw const ((*_5)).value;
+        _9 = &raw const (*_5).value;
         _8 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _9);
         storage_dead(_9);
         (*_8) = copy _3;
@@ -683,7 +694,7 @@ fn drop_glue::<Ref::<'_, bool>>(_1: &'_ mut Ref::<'_, bool>)
         storage_live(_2);
         storage_live(_3);
         _0 = ();
-        _2 = &raw mut ((*_1)).borrow;
+        _2 = &raw mut (*_1).borrow;
         _3 = drop_glue::<BorrowRef::<'_>>(move _2) -> bb1 (unwind: bb2);
     }
 

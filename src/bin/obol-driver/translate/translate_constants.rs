@@ -353,10 +353,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     }
                 }
             }
-            TyKind::Adt(TypeDeclRef {
-                id: TypeId::Tuple,
-                generics,
-            }) => {
+            TyKind::Adt(_, Some(BuiltinTy::Tuple)) => {
                 let rtyk = rty.kind();
                 let ty::RigidTy::Tuple(rtys) = rtyk.rigid().unwrap() else {
                     unreachable!("Unexpected rigid type for tuple: {rty:?}");
@@ -365,14 +362,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let abi::FieldsShape::Arbitrary { offsets } = &layout.fields else {
                     unreachable!("Unexpected layout for tuple: {layout:?}");
                 };
-                let fields = (0..generics.types.len())
+                let fields = (0..rtys.len())
                     .map(|i| {
                         let field_offset = offsets[i].bytes() as usize;
                         let field_rty = rtys[i];
-                        let field_ty = generics.types.get(TypeVarId::from_usize(i)).unwrap();
+                        let field_ty = self.translate_ty(span, field_rty)?;
                         // Only the last field of an unsized tuple is itself unsized.
                         let field_len = unsized_len
-                            .filter(|_| i + 1 == generics.types.len())
+                            .filter(|_| i + 1 == rtys.len())
                             .map(|l| l - field_offset);
                         self.translate_allocation_at(
                             span,
@@ -386,10 +383,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .try_collect()?;
                 ConstantExprKind::Adt(None, fields)
             }
-            TyKind::Adt(TypeDeclRef {
-                id: TypeId::Adt(..),
-                ..
-            }) => {
+            TyKind::Adt(_, None) => {
                 let rtyk = rty.kind();
                 let ty::RigidTy::Adt(adt, generics) = rtyk.rigid().unwrap() else {
                     unreachable!("Unexpected rigid type for adt: {rty:?}");
@@ -610,17 +604,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .kind
             }
 
-            TyKind::Adt(TypeDeclRef {
-                id: TypeId::Builtin(BuiltinTy::Box),
-                ..
-            }) => {
+            TyKind::Adt(_, Some(BuiltinTy::Box)) => {
                 unreachable!("We never create builtin boxes");
             }
             // An unsized `str` held directly in a constant: its data is the raw UTF-8 bytes.
-            TyKind::Adt(TypeDeclRef {
-                id: TypeId::Builtin(BuiltinTy::Str),
-                ..
-            }) => {
+            TyKind::Adt(_, Some(BuiltinTy::Str)) => {
                 let len = unsized_len.expect("str constant without a length");
                 let data = &alloc.bytes.as_slice()[offset..offset + len];
                 let as_str = unsafe { String::from_utf8_unchecked(Self::as_init(data)?) };
@@ -688,10 +676,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     ConstantExprKind::Array(vec![cexpr; len as usize])
                 }
             }
-            TyKind::Adt(TypeDeclRef {
-                id: TypeId::Adt(..) | TypeId::Tuple,
-                ..
-            }) => {
+            TyKind::Adt(_, None | Some(BuiltinTy::Tuple)) => {
                 let rtyk = rty.kind();
                 let (variant, rtys) = match rtyk.rigid().unwrap() {
                     ty::RigidTy::Tuple(rtys) => (None, rtys.clone()),

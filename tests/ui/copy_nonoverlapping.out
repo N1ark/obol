@@ -11,6 +11,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -81,6 +83,10 @@ pub struct Arguments::<'_> {
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
+}
+
+struct str {
+  [u8],
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -172,7 +178,7 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f)).options).flags;
+        _4 = copy (*f).options.flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -182,7 +188,7 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f)).options).flags;
+        _6 = copy (*f).options.flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -522,6 +528,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 }
 
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
@@ -549,7 +560,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -757,6 +768,11 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
     }
 }
 
+struct (_, _)::<u64, bool> {
+  u64,
+  bool,
+}
+
 // Full name: core::ub_checks::maybe_is_nonoverlapping::runtime
 fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
 {
@@ -773,7 +789,7 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
     let diff: usize; // local
     let _11: u64; // anonymous local
     let b: bool; // local
-    let _13: (u64, bool); // anonymous local
+    let _13: (_, _)::<u64, bool>; // anonymous local
     let _14: u64; // anonymous local
     let _15: u64; // anonymous local
     let a: usize; // local
@@ -1146,6 +1162,11 @@ const anon_const_0: i32 = 42i32
 // Full name: anon_const_1
 const anon_const_1: i32 = 42i32
 
+struct (_, _)::<&'_ i32, &'_ i32> {
+  &'_ i32,
+  &'_ i32,
+}
+
 // Full name: test_crate::write::<i32>
 fn write::<i32>(x: &'_ mut i32, y: &'_ i32)
 {
@@ -1190,7 +1211,7 @@ fn main()
     let _4: &'_ mut i32; // anonymous local
     let _5: &'_ i32; // anonymous local
     let _6: &'_ i32; // anonymous local
-    let _7: (&'_ i32, &'_ i32); // anonymous local
+    let _7: (_, _)::<&'_ i32, &'_ i32>; // anonymous local
     let _8: &'_ i32; // anonymous local
     let _9: &'_ i32; // anonymous local
     let left_val: &'_ i32; // local

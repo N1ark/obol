@@ -1,6 +1,8 @@
 
 // Final ULLBC:
 
+struct () {}
+
 // Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
 pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
 {
@@ -163,6 +165,10 @@ pub struct Arguments::<'_> {
 pub fn abort() -> !
 = <intrinsic:abort>
 
+struct str {
+  [u8],
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
@@ -231,12 +237,17 @@ pub const SIZE::<u8>: usize = 1usize
 #[lang_item(AlignOf)]
 pub const ALIGN::<u8>: usize = 1usize
 
-// Full name: core::option::Option::<(&'_ [u8], &'_ [u8])>
+struct (_, _)::<&'_ [u8], &'_ [u8]> {
+  &'_ [u8],
+  &'_ [u8],
+}
+
+// Full name: core::option::Option::<(_, _)::<&'_ [u8], &'_ [u8]>>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<(&'_ [u8], &'_ [u8])> {
+pub enum Option::<(_, _)::<&'_ [u8], &'_ [u8]>> {
   None,
-  Some(0: (&'_ [u8], &'_ [u8])),
+  Some(0: (_, _)::<&'_ [u8], &'_ [u8]>),
 }
 
 // Full name: core::option::Option::<&'_ [u8]>
@@ -395,6 +406,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 }
 
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
@@ -422,7 +438,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -770,9 +786,9 @@ fn core::slice::{[T]}::split_at_unchecked::precondition_check(mid: usize, len: u
 }
 
 // Full name: core::slice::{[T]}::split_at_unchecked::<u8>
-pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u8])
+pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (_, _)::<&'_ [u8], &'_ [u8]>
 {
-    let _0: (&'_ [u8], &'_ [u8]); // return
+    let _0: (_, _)::<&'_ [u8], &'_ [u8]>; // return
     let self: &'_ [u8]; // arg #1
     let mid: usize; // arg #2
     let len_3: usize; // local
@@ -886,17 +902,17 @@ pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u
 }
 
 // Full name: core::slice::{[T]}::split_at::<u8>
-pub fn split_at::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u8])
+pub fn split_at::<u8>(self: &'_ [u8], mid: usize) -> (_, _)::<&'_ [u8], &'_ [u8]>
 {
-    let pair: (&'_ [u8], &'_ [u8]); // return
+    let pair: (_, _)::<&'_ [u8], &'_ [u8]>; // return
     let self: &'_ [u8]; // arg #1
     let mid: usize; // arg #2
-    let _3: Option::<(&'_ [u8], &'_ [u8])>; // anonymous local
+    let _3: Option::<(_, _)::<&'_ [u8], &'_ [u8]>>; // anonymous local
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
     let _7: usize; // anonymous local
-    let _8: (&'_ [u8], &'_ [u8]); // anonymous local
+    let _8: (_, _)::<&'_ [u8], &'_ [u8]>; // anonymous local
     let s: &'_ str; // local
     let _10: NonNull::<u8>; // anonymous local
     let _11: *const u8; // anonymous local
@@ -960,10 +976,10 @@ pub fn split_at::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u8])
     }
 
     bb3: {
-        _3 = Option::<(&'_ [u8], &'_ [u8])>::Some { 0: move _8 };
+        _3 = Option::<(_, _)::<&'_ [u8], &'_ [u8]>>::Some { 0: move _8 };
         storage_dead(_8);
         storage_dead(_6);
-        pair = copy (_3 as variant Option::<(&'_ [u8], &'_ [u8])>::Some).0;
+        pair = copy (_3 as variant Option::<(_, _)::<&'_ [u8], &'_ [u8]>>::Some).0;
         storage_dead(_3);
         return;
     }
@@ -991,7 +1007,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
     let v2: usize; // local
     let fst: &'_ [u8]; // local
     let snd: &'_ [u8]; // local
-    let _7: (&'_ [u8], &'_ [u8]); // anonymous local
+    let _7: (_, _)::<&'_ [u8], &'_ [u8]>; // anonymous local
     let self_8: &'_ [u8]; // local
     let _9: &'_ [u8]; // anonymous local
     let _10: &'_ [u8]; // anonymous local
@@ -1003,7 +1019,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         storage_live(self_8);
         storage_live(_9);
         storage_live(_10);
-        self_8 = copy ((*self_1)).v;
+        self_8 = copy (*self_1).v;
         storage_live(_11);
         _11 = copy self_8.metadata;
         switch copy _11 -> 0usize: bb1, otherwise: bb2;
@@ -1021,10 +1037,10 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         storage_dead(_11);
         storage_live(chunksz);
         storage_live(v1);
-        _9 = copy ((*self_1)).v;
+        _9 = copy (*self_1).v;
         v1 = copy _9.metadata;
         storage_live(v2);
-        v2 = copy ((*self_1)).chunk_size;
+        v2 = copy (*self_1).chunk_size;
         chunksz = min::<usize>(move v1, move v2) -> bb4 (unwind: bb5);
     }
 
@@ -1036,7 +1052,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         storage_dead(v2);
         storage_dead(v1);
         storage_live(_7);
-        _10 = copy ((*self_1)).v;
+        _10 = copy (*self_1).v;
         _7 = split_at::<u8>(move _10, move chunksz) -> bb6 (unwind: bb7);
     }
 
@@ -1050,7 +1066,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         storage_live(snd);
         snd = copy _7.1;
         storage_dead(_7);
-        ((*self_1)).v = copy snd;
+        (*self_1).v = copy snd;
         _0 = Option::<&'_ [u8]>::Some { 0: copy fst };
         storage_dead(snd);
         storage_dead(fst);
@@ -1132,6 +1148,11 @@ pub fn chunks::<u8>(self: &'_ [u8], chunk_size: usize) -> Chunks::<'_, u8>
     bb4: {
         unwind_continue;
     }
+}
+
+struct (_, _)::<usize, bool> {
+  usize,
+  bool,
 }
 
 // Full name: test_crate::f1

@@ -4,6 +4,8 @@
 // Full name: test_crate::Thing
 struct Thing {}
 
+struct () {}
+
 // Full name: core::mem::drop::<Thing>
 #[diagnostic_item("mem_drop")]
 pub fn drop::<Thing>(_x: Thing)
@@ -21,15 +23,36 @@ pub fn drop::<Thing>(_x: Thing)
 // Full name: FakeTrait
 trait FakeTrait
 
+struct (_,)::<Thing> {
+  Thing,
+}
+
+struct (_,)::<u8> {
+  u8,
+}
+
+struct (_, _)::<u8, bool> {
+  u8,
+  bool,
+}
+
+struct (_,)::<&'_ mut u8> {
+  &'_ mut u8,
+}
+
+struct (_,)::<&'_ u8> {
+  &'_ u8,
+}
+
 struct test_crate::main::closure::closure {
   upvar_0: &'_ u8,
 }
 
-fn test_crate::main::closure::<i8, extern "rust-call" fn((u8,)) -> u8, (&'_ u8,)>(_1: &'_ test_crate::main::closure::closure, spread_args: (u8,)) -> u8
+fn test_crate::main::closure::<i8, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<&'_ u8>>(_1: &'_ test_crate::main::closure::closure, spread_args: (_,)::<u8>) -> u8
 {
     let _0: u8; // return
     let _1: &'_ test_crate::main::closure::closure; // arg #1
-    let spread_args: (u8,); // arg #2
+    let spread_args: (_,)::<u8>; // arg #2
     let x: u8; // local
     let _4: u8; // anonymous local
     let _5: u8; // anonymous local
@@ -45,7 +68,7 @@ fn test_crate::main::closure::<i8, extern "rust-call" fn((u8,)) -> u8, (&'_ u8,)
         storage_live(_4);
         _4 = copy x;
         storage_live(_5);
-        _7 = copy ((*_1)).upvar_0;
+        _7 = copy (*_1).upvar_0;
         _5 = copy (*_7);
         _6 = copy _4 panic.+ copy _5;
         _0 = move _6;
@@ -61,7 +84,7 @@ fn apply_to_zero::<test_crate::main::closure::closure>(f: test_crate::main::clos
     let _0: u8; // return
     let f: test_crate::main::closure::closure; // arg #1
     let _2: &'_ test_crate::main::closure::closure; // anonymous local
-    let _3: (u8,); // anonymous local
+    let _3: (_,)::<u8>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -69,7 +92,7 @@ fn apply_to_zero::<test_crate::main::closure::closure>(f: test_crate::main::clos
         _2 = &f;
         storage_live(_3);
         _3 = (const 0u8,);
-        _0 = test_crate::main::closure::<i8, extern "rust-call" fn((u8,)) -> u8, (&'_ u8,)>(move _2, move _3) -> bb1 (unwind: bb2);
+        _0 = test_crate::main::closure::<i8, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<&'_ u8>>(move _2, move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -87,13 +110,13 @@ struct test_crate::main::closure#1::closure {
   upvar_0: &'_ mut u8,
 }
 
-fn test_crate::main::closure#1::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_ mut u8,)>(_1: &'_ mut test_crate::main::closure#1::closure, spread_args: (u8,)) -> u8
+fn test_crate::main::closure#1::<i16, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<&'_ mut u8>>(_1: &'_ mut test_crate::main::closure#1::closure, spread_args: (_,)::<u8>) -> u8
 {
     let _0: u8; // return
     let _1: &'_ mut test_crate::main::closure#1::closure; // arg #1
-    let spread_args: (u8,); // arg #2
+    let spread_args: (_,)::<u8>; // arg #2
     let x: u8; // local
-    let _4: (u8, bool); // anonymous local
+    let _4: (_, _)::<u8, bool>; // anonymous local
     let _5: u8; // anonymous local
     let _6: u8; // anonymous local
     let _7: u8; // anonymous local
@@ -112,16 +135,16 @@ fn test_crate::main::closure#1::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_ m
         storage_live(_10);
         storage_live(_11);
         x = move spread_args.0;
-        _8 = copy ((*_1)).upvar_0;
+        _8 = copy (*_1).upvar_0;
         _4 = copy (*_8) checked.+ const 1u8;
-        _9 = copy ((*_1)).upvar_0;
+        _9 = copy (*_1).upvar_0;
         assert(move _4.1 == false) (overflow) else panic;
-        _10 = copy ((*_1)).upvar_0;
+        _10 = copy (*_1).upvar_0;
         (*_10) = move _4.0;
         storage_live(_5);
         _5 = copy x;
         storage_live(_6);
-        _11 = copy ((*_1)).upvar_0;
+        _11 = copy (*_1).upvar_0;
         _6 = copy (*_11);
         _7 = copy _5 panic.+ copy _6;
         _0 = move _7;
@@ -137,7 +160,7 @@ fn apply_to_zero_mut::<test_crate::main::closure#1::closure>(f: test_crate::main
     let _0: u8; // return
     let f: test_crate::main::closure#1::closure; // arg #1
     let _2: &'_ mut test_crate::main::closure#1::closure; // anonymous local
-    let _3: (u8,); // anonymous local
+    let _3: (_,)::<u8>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -145,7 +168,7 @@ fn apply_to_zero_mut::<test_crate::main::closure#1::closure>(f: test_crate::main
         _2 = &mut f;
         storage_live(_3);
         _3 = (const 0u8,);
-        _0 = test_crate::main::closure#1::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_ mut u8,)>(move _2, move _3) -> bb1 (unwind: bb2);
+        _0 = test_crate::main::closure#1::<i16, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<&'_ mut u8>>(move _2, move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -163,11 +186,11 @@ struct test_crate::main::closure#2::closure {
   upvar_0: Thing,
 }
 
-fn test_crate::main::closure#2::<i32, extern "rust-call" fn((u8,)) -> u8, (Thing,)>(_1: test_crate::main::closure#2::closure, spread_args: (u8,)) -> u8
+fn test_crate::main::closure#2::<i32, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<Thing>>(_1: test_crate::main::closure#2::closure, spread_args: (_,)::<u8>) -> u8
 {
     let _0: u8; // return
     let _1: test_crate::main::closure#2::closure; // arg #1
-    let spread_args: (u8,); // arg #2
+    let spread_args: (_,)::<u8>; // arg #2
     let x: u8; // local
     let _4: (); // anonymous local
     let _5: Thing; // anonymous local
@@ -181,7 +204,7 @@ fn test_crate::main::closure#2::<i32, extern "rust-call" fn((u8,)) -> u8, (Thing
         x = move spread_args.0;
         storage_live(_4);
         storage_live(_5);
-        _5 = move (_1).upvar_0;
+        _5 = move _1.upvar_0;
         _4 = drop::<Thing>(move _5) -> bb1 (unwind: bb2);
     }
 
@@ -207,7 +230,7 @@ fn apply_to_zero_once::<test_crate::main::closure#2::closure>(f: test_crate::mai
     let _0: u8; // return
     let f: test_crate::main::closure#2::closure; // arg #1
     let _2: test_crate::main::closure#2::closure; // anonymous local
-    let _3: (u8,); // anonymous local
+    let _3: (_,)::<u8>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -215,7 +238,7 @@ fn apply_to_zero_once::<test_crate::main::closure#2::closure>(f: test_crate::mai
         _2 = move f;
         storage_live(_3);
         _3 = (const 0u8,);
-        _0 = test_crate::main::closure#2::<i32, extern "rust-call" fn((u8,)) -> u8, (Thing,)>(move _2, move _3) -> bb1 (unwind: bb2);
+        _0 = test_crate::main::closure#2::<i32, extern "rust-call" fn((_,)::<u8>) -> u8, (_,)::<Thing>>(move _2, move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {

@@ -32,6 +32,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -141,7 +143,7 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
         storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f)).options).flags;
+        _4 = copy (*f).options.flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -151,7 +153,7 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f)).options).flags;
+        _6 = copy (*f).options.flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -349,8 +351,27 @@ pub fn len::<u32>(self: &'_ [u32]) -> usize
     }
 }
 
+struct str {
+  [u8],
+}
+
 // Full name: anon_const_0
 const anon_const_0: u32 = 9u32
+
+struct (_, _)::<usize, bool> {
+  usize,
+  bool,
+}
+
+struct (_, _)::<u32, bool> {
+  u32,
+  bool,
+}
+
+struct (_, _)::<&'_ u32, &'_ u32> {
+  &'_ u32,
+  &'_ u32,
+}
 
 // Full name: test_crate::function_call
 fn function_call(_1: u32)
@@ -656,7 +677,7 @@ fn foo()
     let _13: u32; // anonymous local
     let _14: u32; // anonymous local
     let a: [u32; 10usize]; // local
-    let _16: (&'_ u32, &'_ u32); // anonymous local
+    let _16: (_, _)::<&'_ u32, &'_ u32>; // anonymous local
     let _17: &'_ u32; // anonymous local
     let _18: usize; // anonymous local
     let _19: &'_ u32; // anonymous local
@@ -686,9 +707,9 @@ fn foo()
 
     bb1: {
         storage_live(x_1);
-        x_1 = copy (_3).x;
+        x_1 = copy _3.x;
         storage_live(y);
-        y = copy (_3).y;
+        y = copy _3.y;
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
@@ -719,9 +740,9 @@ fn foo()
 
     bb5: {
         storage_live(x_8);
-        x_8 = copy (_10).x;
+        x_8 = copy _10.x;
         storage_live(super_long_field_name);
-        super_long_field_name = copy (_10).super_long_field_name;
+        super_long_field_name = copy _10.super_long_field_name;
         storage_dead(_10);
         storage_live(_11);
         storage_live(_12);

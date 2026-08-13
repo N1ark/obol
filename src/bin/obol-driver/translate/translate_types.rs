@@ -275,17 +275,15 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 trace!("Adt: {:?}", item.0);
                 let id = self.register_type_decl_id(span, *item, generics.clone());
                 // no generics since it's monomorphic
-                let tref = TypeDeclRef {
-                    id: TypeId::Adt(id),
-                    generics: Box::new(GenericArgs::empty()),
-                };
+                let tref = TypeDeclRef::new(id, GenericArgs::empty());
 
                 // Return the instantiated ADT
-                TyKind::Adt(tref)
+                TyKind::Adt(tref, None)
             }
             ty::RigidTy::Str => {
-                let tref = TypeDeclRef::new(TypeId::Builtin(BuiltinTy::Str), GenericArgs::empty());
-                TyKind::Adt(tref)
+                let id = self.register_str_decl_id(span);
+                let tref = TypeDeclRef::new(id, GenericArgs::empty());
+                TyKind::Adt(tref, Some(BuiltinTy::Str))
             }
             ty::RigidTy::Array(ty, const_param) => {
                 let c = self.translate_tyconst_to_const_expr(span, const_param)?;
@@ -311,20 +309,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 TyKind::RawPtr(ty, kind)
             }
             ty::RigidTy::Tuple(substs) => {
-                let params = substs
+                let params: Vec<Ty> = substs
                     .iter()
                     .map(|ty| self.translate_ty(span, *ty))
                     .try_collect()?;
-                let tref = TypeDeclRef::new(TypeId::Tuple, GenericArgs::new_types(params));
-                TyKind::Adt(tref)
+                let id = self.register_tuple_decl_id(span, mir_ty, params);
+                let tref = TypeDeclRef::new(id, GenericArgs::empty());
+                TyKind::Adt(tref, Some(BuiltinTy::Tuple))
             }
 
             ty::RigidTy::Foreign(fdef) => {
                 let type_id = self.register_foreign_type_decl_id(span, *fdef);
-                TyKind::Adt(TypeDeclRef {
-                    id: TypeId::Adt(type_id),
-                    generics: Box::new(GenericArgs::empty()),
-                })
+                TyKind::Adt(TypeDeclRef::new(type_id, GenericArgs::empty()), None)
             }
 
             ty::RigidTy::FnPtr(bsig) => {
@@ -368,13 +364,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             }
             ty::RigidTy::Closure(def, gargs) => {
                 let id = self.register_closure_type_decl_id(span, *def, gargs.clone());
-                let tref = TypeDeclRef {
-                    id: TypeId::Adt(id),
-                    generics: Box::new(GenericArgs::empty()),
-                };
+                let tref = TypeDeclRef::new(id, GenericArgs::empty());
 
                 // Return the instantiated ADT
-                TyKind::Adt(tref)
+                TyKind::Adt(tref, None)
             }
 
             ty::RigidTy::Dynamic(_existential_preds, _region) => {
@@ -512,6 +505,13 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         def: &ty::AdtDef,
         genargs: &ty::GenericArgs,
     ) -> Option<Layout> {
+        let repr = self.translate_repr_options(def.repr());
+        self.translate_layout_of_ty(def.ty_with_args(genargs), repr)
+    }
+
+    /// Translate the layout of an arbitrary (monomorphic) type. Used both for ADTs and for the
+    /// types we declare ourselves, like tuples and `str`.
+    pub fn translate_layout_of_ty(&mut self, ty: ty::Ty, repr: ReprOptions) -> Option<Layout> {
         use rustc_abi as r_abi;
 
         fn translate_variant_layout(
@@ -570,7 +570,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         }
 
         // If layout computation returns an error, we return `None`.
-        let ty = def.ty_with_args(genargs);
         let layout = match ty.layout() {
             Ok(layout) => layout,
             Err(e) => {
@@ -722,8 +721,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             }
             r_abi::Variants::Empty => (None, IndexVec::new()),
         };
-
-        let repr = self.translate_repr_options(def.repr());
 
         Some(Layout {
             size,

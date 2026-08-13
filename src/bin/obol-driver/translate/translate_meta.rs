@@ -305,6 +305,16 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                         Disambiguator::ZERO,
                     )],
                 },
+                // Builtins belong to no crate; they're named after themselves. The tuple's
+                // elements are appended below, as for any other monomorphized item.
+                TransItemSource::Tuple(tuple) => Name {
+                    name: vec![PathElem::Builtin(BuiltinPathElem::Tuple(
+                        tuple.fields.len(),
+                    ))],
+                },
+                TransItemSource::Str => Name {
+                    name: vec![PathElem::Builtin(BuiltinPathElem::Str)],
+                },
                 _ => unreachable!("Item source without def_id: {src:?}"),
             }
         };
@@ -349,6 +359,20 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     params,
                     skip_binder: generics,
                 })));
+            }
+            // Append the element types, as we do for any other monomorphized item: this is what
+            // marks the declaration as being one instantiation of the tuple of that arity.
+            TransItemSource::Tuple(tuple) if !tuple.fields.is_empty() => {
+                name.name
+                    .push(PathElem::Instantiated(Box::new(Binder::empty(
+                        BinderKind::Other,
+                        GenericArgs {
+                            const_generics: vec![].into(),
+                            types: tuple.fields.clone().into(),
+                            trait_refs: vec![].into(),
+                            regions: vec![].into(),
+                        },
+                    ))));
             }
             TransItemSource::VTable(ty, tref) | TransItemSource::VTableInit(ty, tref) => {
                 let mut item_ctx = ItemTransCtx::new(None, self);
@@ -536,12 +560,16 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 }
             }
             TransItemSource::Type(def, _) => Some(def.span()),
+            // Builtins have no source location.
+            TransItemSource::Tuple(..) | TransItemSource::Str => None,
             TransItemSource::VTable(_, tdef) | TransItemSource::VTableInit(_, tdef) => {
                 tdef.as_ref().map(|t| t.0.span())
             }
             TransItemSource::TraitDecl(did) | TransItemSource::TraitImpl(did) => {
                 let internal = rustc_public::rustc_internal::internal(self.tcx, *did);
-                Some(rustc_public::rustc_internal::stable(self.tcx.def_span(internal)))
+                Some(rustc_public::rustc_internal::stable(
+                    self.tcx.def_span(internal),
+                ))
             }
         };
         let span = match span {

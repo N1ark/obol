@@ -11,6 +11,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -72,6 +74,10 @@ pub struct Arguments::<'_> {
 // Full name: core::intrinsics::abort
 pub fn abort() -> !
 = <intrinsic:abort>
+
+struct str {
+  [u8],
+}
 
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
@@ -247,6 +253,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 }
 
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
@@ -274,7 +285,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -423,6 +434,11 @@ pub fn new_unchecked::<usize>(ptr: *mut usize) -> NonNull::<usize>
     bb4: {
         undefined_behavior;
     }
+}
+
+struct (_, _)::<usize, bool> {
+  usize,
+  bool,
 }
 
 // Full name: test_crate::HasPointerNiche

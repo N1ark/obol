@@ -32,6 +32,8 @@ pub fn add::<'_>(self_1: &'_ i32, other: i32) -> i32
     }
 }
 
+struct () {}
+
 // Full name: core::ptr::drop_glue::<i32>
 #[lang_item(DropGlue)]
 fn drop_glue::<i32>(_1: &'_ mut i32)
@@ -51,6 +53,16 @@ trait FakeTrait
 
 // Full name: anon_const_0
 const anon_const_0: i32 = 97i32
+
+struct (_, _)::<i32, i32> {
+  i32,
+  i32,
+}
+
+struct (_, _)::<i32, bool> {
+  i32,
+  bool,
+}
 
 trait test_crate::Super
 
@@ -266,9 +278,9 @@ fn left_method(self: &'_ i32) -> i32
 }
 
 // Full name: test_crate::{impl test_crate::Join<i32> for i32}::join_method
-fn impl_Join_i32_for_i32::join_method(self: &'_ i32) -> (i32, i32)
+fn impl_Join_i32_for_i32::join_method(self: &'_ i32) -> (_, _)::<i32, i32>
 {
-    let _0: (i32, i32); // return
+    let _0: (_, _)::<i32, i32>; // return
     let self: &'_ i32; // arg #1
     let _2: i32; // anonymous local
     let _3: &'_ i32; // anonymous local
@@ -351,7 +363,7 @@ fn {vtable}::test_crate::Join::<i32, i32>() -> *const ()
 
 static {vtable}::test_crate::Join::<i32, i32>: *const () = {vtable}::test_crate::Join::<i32, i32>()
 
-fn test_crate::Join::join_method::<(dyn FakeTrait), i32>(_1: &'_ (dyn FakeTrait)) -> (i32, i32)
+fn test_crate::Join::join_method::<(dyn FakeTrait), i32>(_1: &'_ (dyn FakeTrait)) -> (_, _)::<i32, i32>
 = <opaque>
 
 // Full name: test_crate::{impl test_crate::Super<i32> for i32}
@@ -386,7 +398,7 @@ fn main()
     let v: &'_ (dyn FakeTrait); // local
     let _2: &'_ i32; // anonymous local
     let _3: &'_ i32; // anonymous local
-    let _4: (i32, i32); // anonymous local
+    let _4: (_, _)::<i32, i32>; // anonymous local
     let _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: &'_ i32; // anonymous local
     let _7: *const *const (); // anonymous local

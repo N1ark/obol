@@ -91,6 +91,16 @@ impl ItemTransCtx<'_, '_> {
         })
     }
 
+    /// The type of a closure's arguments, tupled. Closures are generic over
+    /// `[parent args.., kind, fn(Args) -> Output, upvars]`, so this is the fn pointer's input.
+    pub(crate) fn closure_tupled_args_ty(&self, args: &ty::GenericArgs) -> Option<ty::Ty> {
+        let sig_ty = args.0.get(args.0.len().checked_sub(2)?)?.ty()?;
+        let ty::TyKind::RigidTy(ty::RigidTy::FnPtr(bsig)) = sig_ty.kind() else {
+            return None;
+        };
+        bsig.value.inputs().first().copied()
+    }
+
     /// Given an item that is a non-capturing closure, generate the equivalent function,
     /// by removing the state from the parameters and untupling the arguments.
     pub fn translate_stateless_closure_as_fn(
@@ -108,7 +118,7 @@ impl ItemTransCtx<'_, '_> {
         let tupled_upvars = self.translate_ty(span, *tupled_upvars)?;
 
         assert!(
-            tupled_upvars.as_tuple().is_some_and(|x| x.is_empty()),
+            tupled_upvars.is_unit(),
             "Only stateless closures can be translated as functions"
         );
 
@@ -118,7 +128,13 @@ impl ItemTransCtx<'_, '_> {
         let mut signature = self.translate_function_signature(instance, span)?;
 
         let state_ty = signature.inputs.remove(0);
-        let args_untupled = signature.inputs.clone();
+
+        // The arguments' tuple type has a declaration of its own, so take the closure's own
+        // tupled-arguments type rather than building one from the (untupled) signature.
+        let Some(args_tuple_rty) = self.closure_tupled_args_ty(args) else {
+            raise_error!(self, span, "Could not find a closure's tupled arguments");
+        };
+        let args_tuple_ty = self.translate_ty(span, args_tuple_rty)?;
 
         let body = if item_meta.opacity.with_private_contents().is_opaque() {
             Body::Opaque
@@ -156,19 +172,19 @@ impl ItemTransCtx<'_, '_> {
                 .enumerate()
                 .map(|(i, ty)| locals.new_var(Some(format!("arg{}", i + 1)), ty.clone()))
                 .collect();
-            let args_tuple_ty = Ty::mk_tuple(args_untupled);
             let args_tupled = locals.new_var(Some("args".to_string()), args_tuple_ty.clone());
             let state = locals.new_var(Some("state".to_string()), state_ty.clone());
 
+            let args_tuple_ref = args_tuple_ty.kind().as_adt_ref().unwrap().clone();
             statements.push(mk_stt(StatementKind::Assign(
                 args_tupled.clone(),
                 Rvalue::Aggregate(
-                    AggregateKind::Adt(args_tuple_ty.as_adt().unwrap().clone(), None, None),
+                    AggregateKind::Adt(args_tuple_ref, None, None),
                     args.into_iter().map(Operand::Move).collect(),
                 ),
             )));
 
-            let state_ty_adt = state_ty.as_adt().unwrap();
+            let state_ty_adt = state_ty.kind().as_adt_ref().unwrap();
             statements.push(mk_stt(StatementKind::Assign(
                 state.clone(),
                 Rvalue::Aggregate(AggregateKind::Adt(state_ty_adt.clone(), None, None), vec![]),

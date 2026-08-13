@@ -1,6 +1,8 @@
 
 // Final ULLBC:
 
+struct () {}
+
 pub fn core::intrinsics::assume(b_1: bool)
 = <intrinsic:assume>
 
@@ -35,6 +37,11 @@ pub fn null::<u32>() -> *const u32
 
 // Full name: FakeTrait
 trait FakeTrait
+
+struct (_, _)::<usize, bool> {
+  usize,
+  bool,
+}
 
 // Full name: test_crate::call_unsafe_fn
 fn call_unsafe_fn()
@@ -161,7 +168,7 @@ fn access_union_field()
         storage_live(one);
         one = Foo { one: const 42u64 };
         storage_live(_two);
-        _two = copy (one).two;
+        _two = copy one.two;
         _0 = ();
         storage_dead(_two);
         storage_dead(one);

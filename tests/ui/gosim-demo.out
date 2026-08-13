@@ -11,6 +11,8 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+struct () {}
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -157,7 +159,7 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f)).options).flags;
+        _4 = copy (*f).options.flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -167,7 +169,7 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f)).options).flags;
+        _6 = copy (*f).options.flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -294,6 +296,10 @@ pub fn new_debug::<'_, &'_ i32>(x: &'_ &'_ i32) -> Argument::<'_>
 pub fn abort() -> !
 = <intrinsic:abort>
 
+struct str {
+  [u8],
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
@@ -332,6 +338,16 @@ pub struct PhantomData::<&'_ i32> {}
 
 // Full name: core::mem::SizedTypeProperties::IS_ZST::<i32>
 pub const IS_ZST::<i32>: bool = false
+
+struct (_, _)::<u64, bool> {
+  u64,
+  bool,
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
 #[lang_item(PanicInfo)]
@@ -489,7 +505,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -525,7 +541,7 @@ fn precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
+    let _7: (_, _)::<u64, bool>; // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -749,9 +765,9 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         storage_live(_10);
         storage_live(_11);
         storage_live(ptr);
-        ptr = copy ((*self)).ptr;
+        ptr = copy (*self).ptr;
         storage_live(end_or_len);
-        end_or_len = copy ((*self)).end_or_len;
+        end_or_len = copy (*self).end_or_len;
         if copy IS_ZST::<i32> -> bb1 else -> bb2;
     }
 
@@ -804,7 +820,7 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         _13 = copy _11 offset const 1usize;
         _8 = transmute<*mut i32, NonNull::<i32>>(copy _13);
         storage_dead(_13);
-        ((*self)).ptr = move _8;
+        (*self).ptr = move _8;
         storage_dead(_8);
         goto bb10;
     }
@@ -821,7 +837,7 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
 
     bb9: {
         addr = copy len ub.- const 1usize;
-        ((*self)).end_or_len = transmute<usize, *const i32>(copy addr);
+        (*self).end_or_len = transmute<usize, *const i32>(copy addr);
         storage_dead(len);
         goto bb10;
     }
@@ -858,6 +874,10 @@ const anon_const_0: [i32; 3usize] = [0i32, 1i32, 2i32]
 // Full name: anon_const_1
 const anon_const_1: [u8; 7usize] = [2u8, 45u8, 32u8, 192u8, 1u8, 10u8, 0u8]
 
+struct (_,)::<&'_ &'_ i32> {
+  &'_ &'_ i32,
+}
+
 // Full name: test_crate::debug_slice::<i32>
 fn debug_slice::<i32>(slice: &'_ [i32])
 {
@@ -873,7 +893,7 @@ fn debug_slice::<i32>(slice: &'_ [i32])
     let x: &'_ i32; // local
     let _10: (); // anonymous local
     let _11: Arguments::<'_>; // anonymous local
-    let args_12: (&'_ &'_ i32,); // local
+    let args_12: (_,)::<&'_ &'_ i32>; // local
     let _13: &'_ &'_ i32; // anonymous local
     let args_14: [Argument::<'_>; 1usize]; // local
     let _15: Argument::<'_>; // anonymous local

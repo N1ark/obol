@@ -25,20 +25,30 @@ struct Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap
   l: PhantomData::<&'_ mut [i32]>,
 }
 
+struct (_,)::<usize> {
+  usize,
+}
+
 // Full name: core::ops::function::FnMut
 #[lang_item(FnMut)]
 trait FnMut
 
-// Full name: core::array::drain::{impl FnMut<(usize,)> for &'_ mut Drain::<'_, '_, _, missing(@Type5)>}
-impl<'_, '_, '_, _, _, _, T, U, F> FnMut<(usize,)> for &'_ mut Drain::<'_, '_, _, missing(@Type5)> {
+// Full name: core::array::drain::{impl FnMut<(_,)::<usize>> for &'_ mut Drain::<'_, '_, _, missing(@Type5)>}
+impl<'_, '_, '_, _, _, _, T, U, F> FnMut<(_,)::<usize>> for &'_ mut Drain::<'_, '_, _, missing(@Type5)> {
     non-dyn-compatible
 }
 
-fn test_crate::map::closure::<i16, extern "rust-call" fn((i32,)) -> i32, ()>(_1: &'_ mut test_crate::map::closure::closure, spread_args: (i32,)) -> i32
+struct (_,)::<i32> {
+  i32,
+}
+
+struct () {}
+
+fn test_crate::map::closure::<i16, extern "rust-call" fn((_,)::<i32>) -> i32, ()>(_1: &'_ mut test_crate::map::closure::closure, spread_args: (_,)::<i32>) -> i32
 {
     let _0: i32; // return
     let _1: &'_ mut test_crate::map::closure::closure; // arg #1
-    let spread_args: (i32,); // arg #2
+    let spread_args: (_,)::<i32>; // arg #2
     let v: i32; // local
 
     bb0: {
@@ -55,15 +65,15 @@ struct NeverShortCircuit::<i32> {
   0: i32,
 }
 
-fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i32, test_crate::map::closure::closure, i16, extern "rust-call" fn((i32,)) -> NeverShortCircuit::<i32>, (test_crate::map::closure::closure,)>(_1: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, spread_args: (i32,)) -> NeverShortCircuit::<i32>
+fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i32, test_crate::map::closure::closure, i16, extern "rust-call" fn((_,)::<i32>) -> NeverShortCircuit::<i32>, (_,)::<test_crate::map::closure::closure>>(_1: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure, spread_args: (_,)::<i32>) -> NeverShortCircuit::<i32>
 {
     let _0: NeverShortCircuit::<i32>; // return
     let _1: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure; // arg #1
-    let spread_args: (i32,); // arg #2
+    let spread_args: (_,)::<i32>; // arg #2
     let a: i32; // local
     let _4: i32; // anonymous local
     let _5: &'_ mut test_crate::map::closure::closure; // anonymous local
-    let _6: (i32,); // anonymous local
+    let _6: (_,)::<i32>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -71,10 +81,10 @@ fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i3
         a = move spread_args.0;
         storage_live(_4);
         storage_live(_5);
-        _5 = &mut ((*_1)).upvar_0;
+        _5 = &mut (*_1).upvar_0;
         storage_live(_6);
         _6 = (copy a,);
-        _4 = test_crate::map::closure::<i16, extern "rust-call" fn((i32,)) -> i32, ()>(move _5, move _6) -> bb1 (unwind: bb2);
+        _4 = test_crate::map::closure::<i16, extern "rust-call" fn((_,)::<i32>) -> i32, ()>(move _5, move _6) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -88,6 +98,15 @@ fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i3
     bb2: {
         unwind_continue;
     }
+}
+
+struct (_, _)::<u64, bool> {
+  u64,
+  bool,
+}
+
+struct str {
+  [u8],
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -151,6 +170,18 @@ pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  Arguments::<'_>,
+  bool,
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
 #[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
@@ -168,13 +199,6 @@ pub struct Location::<'_> {
   line: u32,
   col: u32,
   _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -342,7 +366,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -377,7 +401,7 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
+    let _7: (_, _)::<u64, bool>; // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -604,7 +628,7 @@ pub fn conjure_zst::<i32>() -> i32
     bb3: {
         storage_live(self_16);
         storage_live(self_17);
-        self_17 = &raw const (self_2).value;
+        self_17 = &raw const self_2.value;
         self_16 = cast<*const ManuallyDrop::<i32>, *const i32>(copy self_17);
         storage_dead(self_17);
         _0 = copy (*self_16);
@@ -626,22 +650,22 @@ pub fn conjure_zst::<i32>() -> i32
     }
 }
 
-// Full name: core::array::drain::{impl FnMut<(usize,)> for &'_ mut Drain::<'_, '_, _, missing(@Type5)>}::call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>
-pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>(self_1: &'_ mut &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>, _2: (usize,)) -> NeverShortCircuit::<i32>
+// Full name: core::array::drain::{impl FnMut<(_,)::<usize>> for &'_ mut Drain::<'_, '_, _, missing(@Type5)>}::call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>
+pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>(self_1: &'_ mut &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>, _2: (_,)::<usize>) -> NeverShortCircuit::<i32>
 {
     let _0: NeverShortCircuit::<i32>; // return
     let self_1: &'_ mut &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>; // arg #1
-    let _2: (usize,); // arg #2
+    let _2: (_,)::<usize>; // arg #2
     let len: usize; // local
     let _4: *mut i32; // anonymous local
     let _5: *mut i32; // anonymous local
     let addr: usize; // local
-    let _7: (i32,); // anonymous local
+    let _7: (_,)::<i32>; // anonymous local
     let _8: i32; // anonymous local
     let p: NonNull::<i32>; // local
     let _10: NonNull::<i32>; // anonymous local
     let self_11: NonNull::<i32>; // local
-    let _12: (i32,); // anonymous local
+    let _12: (_,)::<i32>; // anonymous local
     let _13: i32; // anonymous local
     let _14: &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>; // anonymous local
     let _15: &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>; // anonymous local
@@ -677,7 +701,7 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
         storage_live(len);
         storage_live(_4);
         _14 = copy (*self_1);
-        _4 = copy ((*_14)).end_or_len;
+        _4 = copy (*_14).end_or_len;
         len = transmute<*mut i32, usize>(copy _4);
         storage_dead(_4);
         storage_live(_5);
@@ -690,11 +714,11 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
     bb2: {
         storage_live(p);
         _18 = copy (*self_1);
-        p = copy ((*_18)).ptr;
+        p = copy (*_18).ptr;
         storage_live(_10);
         storage_live(self_11);
         _19 = copy (*self_1);
-        self_11 = copy ((*_19)).ptr;
+        self_11 = copy (*_19).ptr;
         storage_live(_24);
         storage_live(_25);
         _25 = transmute<NonNull::<i32>, *mut i32>(copy self_11);
@@ -704,10 +728,10 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
         storage_dead(_24);
         storage_dead(self_11);
         _20 = copy (*self_1);
-        ((*_20)).ptr = move _10;
+        (*_20).ptr = move _10;
         storage_dead(_10);
         _21 = copy (*self_1);
-        _22 = copy ((*_21)).f;
+        _22 = copy (*_21).f;
         storage_live(_12);
         storage_live(_13);
         storage_live(_26);
@@ -715,7 +739,7 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
         _13 = copy (*_26);
         storage_dead(_26);
         _12 = (move _13,);
-        _0 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i32, test_crate::map::closure::closure, i16, extern "rust-call" fn((i32,)) -> NeverShortCircuit::<i32>, (test_crate::map::closure::closure,)>(move _22, move _12) -> bb5 (unwind: bb6);
+        _0 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i32, test_crate::map::closure::closure, i16, extern "rust-call" fn((_,)::<i32>) -> NeverShortCircuit::<i32>, (_,)::<test_crate::map::closure::closure>>(move _22, move _12) -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -727,10 +751,10 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
         _5 = transmute<usize, *mut i32>(copy addr);
         storage_dead(addr);
         _15 = copy (*self_1);
-        ((*_15)).end_or_len = copy _5;
+        (*_15).end_or_len = copy _5;
         storage_dead(_5);
         _16 = copy (*self_1);
-        _17 = copy ((*_16)).f;
+        _17 = copy (*_16).f;
         storage_live(_7);
         storage_live(_8);
         _8 = conjure_zst::<i32>() -> bb8 (unwind: bb9);
@@ -753,7 +777,7 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
 
     bb8: {
         _7 = (move _8,);
-        _0 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i32, test_crate::map::closure::closure, i16, extern "rust-call" fn((i32,)) -> NeverShortCircuit::<i32>, (test_crate::map::closure::closure,)>(move _17, move _7) -> bb11 (unwind: bb12);
+        _0 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::<i32, i32, test_crate::map::closure::closure, i16, extern "rust-call" fn((_,)::<i32>) -> NeverShortCircuit::<i32>, (_,)::<test_crate::map::closure::closure>>(move _17, move _7) -> bb11 (unwind: bb12);
     }
 
     bb9: {
@@ -1001,12 +1025,12 @@ pub fn {impl Drop for Drain::<'_, '_, _, _>}::drop::<'_, '_, i32, core::ops::try
     bb1: {
         storage_live(data_pointer_3);
         storage_live(self_4);
-        self_4 = copy ((*self_1)).ptr;
+        self_4 = copy (*self_1).ptr;
         data_pointer_3 = transmute<NonNull::<i32>, *mut i32>(copy self_4);
         storage_dead(self_4);
         storage_live(metadata_5);
         storage_live(_6);
-        _6 = copy ((*self_1)).end_or_len;
+        _6 = copy (*self_1).end_or_len;
         metadata_5 = transmute<*mut i32, usize>(copy _6);
         storage_dead(_6);
         slice = *mut  (copy data_pointer_3, copy metadata_5);
@@ -1018,14 +1042,14 @@ pub fn {impl Drop for Drain::<'_, '_, _, _>}::drop::<'_, '_, i32, core::ops::try
     bb2: {
         storage_live(data_pointer_7);
         storage_live(self_8);
-        self_8 = copy ((*self_1)).ptr;
+        self_8 = copy (*self_1).ptr;
         data_pointer_7 = transmute<NonNull::<i32>, *mut i32>(copy self_8);
         storage_dead(self_8);
         storage_live(metadata_9);
         storage_live(self_10);
-        self_10 = copy ((*self_1)).end_or_len;
+        self_10 = copy (*self_1).end_or_len;
         storage_live(origin);
-        self_12 = copy ((*self_1)).ptr;
+        self_12 = copy (*self_1).ptr;
         origin = transmute<NonNull::<i32>, *const i32>(copy self_12);
         storage_live(self_13);
         self_13 = cast<*mut i32, *const i32>(copy self_10);
@@ -1347,8 +1371,8 @@ pub fn {impl Drop for Guard::<'_, _>}::drop::<'_, i32>(self_1: &'_ mut Guard::<'
         storage_live(_8);
         _0 = ();
         storage_live(self_3);
-        self_5 = copy ((*self_1)).array_mut;
-        index = copy ((*self_1)).initialized;
+        self_5 = copy (*self_1).array_mut;
+        index = copy (*self_1).initialized;
         storage_live(_6);
         storage_live(slice);
         slice = &raw mut (*self_5) with_metadata(copy self_5.metadata);
@@ -1454,7 +1478,7 @@ pub fn branch::<i32>(self: NeverShortCircuit::<i32>) -> ControlFlow::<NeverShort
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = move (self).0;
+        _2 = move self.0;
         _0 = ControlFlow::<NeverShortCircuitResidual, i32>::Continue { 0: move _2 };
         storage_dead(_2);
         return;
@@ -1488,7 +1512,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
+    let _7: (_, _)::<u64, bool>; // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -1581,7 +1605,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     let self_8: ControlFlow::<NeverShortCircuitResidual, i32>; // local
     let _9: NeverShortCircuit::<i32>; // anonymous local
     let _10: &'_ mut &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>; // anonymous local
-    let _11: (usize,); // anonymous local
+    let _11: (_,)::<usize>; // anonymous local
     let _12: usize; // anonymous local
     let residual: ControlFlow::<NeverShortCircuitResidual, Infallible>; // local
     let item: i32; // local
@@ -1636,9 +1660,9 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     bb1: {
         storage_live(_4);
         storage_live(_5);
-        _5 = copy (guard).initialized;
+        _5 = copy guard.initialized;
         storage_live(_6);
-        _15 = copy (guard).array_mut;
+        _15 = copy guard.array_mut;
         _6 = copy _15.metadata;
         _4 = move _5 < move _6;
         if move _4 -> bb2 else -> bb3;
@@ -1654,7 +1678,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         _10 = &mut generator;
         storage_live(_11);
         storage_live(_12);
-        _12 = copy (guard).initialized;
+        _12 = copy guard.initialized;
         _11 = (move _12,);
         _9 = call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::closure::closure>(move _10, move _11) -> bb4 (unwind: bb5);
     }
@@ -1665,8 +1689,8 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         storage_dead(_4);
         storage_live(t_35);
         storage_live(t_36);
-        t_35 = move (guard).array_mut;
-        t_36 = move (guard).initialized;
+        t_35 = move guard.array_mut;
+        t_36 = move guard.initialized;
         storage_dead(t_35);
         storage_dead(t_36);
         _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Continue { 0: const () };
@@ -1715,9 +1739,9 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         item = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32>::Continue).0;
         storage_dead(_7);
         storage_live(self_24);
-        self_23 = copy (guard).array_mut;
+        self_23 = copy guard.array_mut;
         storage_live(index);
-        index = copy (guard).initialized;
+        index = copy guard.initialized;
         storage_live(_39);
         _39 = ub_checks<bool>;
         if move _39 -> bb13 else -> bb14;
@@ -1803,7 +1827,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     bb20: {
         storage_live(_21);
         storage_live(self_22);
-        self_22 = copy (guard).initialized;
+        self_22 = copy guard.initialized;
         storage_live(_43);
         _43 = ub_checks<bool>;
         if move _43 -> bb22 else -> bb23;
@@ -1820,7 +1844,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     bb23: {
         _21 = copy self_22 ub.+ const 1usize;
         storage_dead(self_22);
-        (guard).initialized = move _21;
+        guard.initialized = move _21;
         storage_dead(_21);
         storage_dead(self_24);
         storage_dead(_4);
@@ -2086,7 +2110,7 @@ pub fn core::array::{[T; N]}::map::<i32, test_crate::map::closure::closure, i32,
 
     bb1: {
         storage_dead(_4);
-        _0 = move (_3).0;
+        _0 = move _3.0;
         storage_dead(_3);
         return;
     }
@@ -2184,7 +2208,7 @@ pub fn impl_Debug_for_usize::fmt(self: &'_ usize, f: &'_ mut Formatter::<'_>) ->
         storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = copy (((*f)).options).flags;
+        _4 = copy (*f).options.flags;
         _3 = move _4 & const 33554432u32;
         storage_dead(_4);
         switch copy _3 -> 0u32: bb1, otherwise: bb2;
@@ -2194,7 +2218,7 @@ pub fn impl_Debug_for_usize::fmt(self: &'_ usize, f: &'_ mut Formatter::<'_>) ->
         storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
-        _6 = copy (((*f)).options).flags;
+        _6 = copy (*f).options.flags;
         _5 = move _6 & const 67108864u32;
         storage_dead(_6);
         switch copy _5 -> 0u32: bb3, otherwise: bb4;
@@ -2343,13 +2367,18 @@ impl "impl_Step_for_u8" Step for u8 {
     non-dyn-compatible
 }
 
+struct (_, _)::<u8, bool> {
+  u8,
+  bool,
+}
+
 fn core::num::{u8}::unchecked_add::precondition_check(lhs: u8, rhs: u8)
 {
     let _0: (); // return
     let lhs: u8; // arg #1
     let rhs: u8; // arg #2
     let _3: bool; // anonymous local
-    let _4: (u8, bool); // anonymous local
+    let _4: (_, _)::<u8, bool>; // anonymous local
     let msg: &'_ str; // local
     let _6: !; // anonymous local
     let _7: Arguments::<'_>; // anonymous local
@@ -2494,9 +2523,9 @@ fn spec_next::<u8>(self: &'_ mut Range::<u8>) -> Option::<u8>
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = &((*self)).start;
+        _3 = &(*self).start;
         storage_live(_4);
-        _4 = &((*self)).end;
+        _4 = &(*self).end;
         _2 = lt(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
@@ -2512,7 +2541,7 @@ fn spec_next::<u8>(self: &'_ mut Range::<u8>) -> Option::<u8>
         storage_dead(_4);
         storage_dead(_3);
         storage_live(old);
-        old = copy ((*self)).start;
+        old = copy (*self).start;
         storage_live(_6);
         _6 = forward_unchecked(copy old, const 1usize) -> bb5 (unwind: bb6);
     }
@@ -2525,7 +2554,7 @@ fn spec_next::<u8>(self: &'_ mut Range::<u8>) -> Option::<u8>
     }
 
     bb5: {
-        ((*self)).start = move _6;
+        (*self).start = move _6;
         storage_dead(_6);
         _0 = Option::<u8>::Some { 0: copy old };
         storage_dead(old);
@@ -2719,6 +2748,15 @@ pub fn len::<u8>(self: &'_ [u8]) -> usize
     }
 }
 
+struct (_,)::<test_crate::map::closure::closure> {
+  test_crate::map::closure::closure,
+}
+
+struct (_, _)::<&'_ usize, &'_ usize> {
+  &'_ usize,
+  &'_ usize,
+}
+
 pub fn test_crate::map(x: [i32; 256usize]) -> [i32; 256usize]
 {
     let _0: [i32; 256usize]; // return
@@ -2839,7 +2877,7 @@ fn select(lhs: &'_ [u8], rhs: &'_ [u8])
     let lhs: &'_ [u8]; // arg #1
     let rhs: &'_ [u8]; // arg #2
     let _3: bool; // anonymous local
-    let _4: (&'_ usize, &'_ usize); // anonymous local
+    let _4: (_, _)::<&'_ usize, &'_ usize>; // anonymous local
     let _5: &'_ usize; // anonymous local
     let _6: usize; // anonymous local
     let _7: &'_ [u8]; // anonymous local
