@@ -32,8 +32,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -48,8 +48,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -136,59 +136,69 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
     let _0: Result::<(), Error>; // return
     let self: &'_ i32; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: u32; // anonymous local
-    let _4: u32; // anonymous local
+    let _3: bool; // anonymous local
+    let _4: bool; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
+    let _7: u32; // anonymous local
+    let _8: u32; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        storage_live(_4);
-        _4 = copy (*f).options.flags;
-        _3 = move _4 & const 33554432u32;
-        storage_dead(_4);
-        switch copy _3 -> 0u32: bb1, otherwise: bb2;
-    }
-
-    bb1: {
-        storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
         _6 = copy (*f).options.flags;
-        _5 = move _6 & const 67108864u32;
+        _5 = move _6 & const 33554432u32;
         storage_dead(_6);
-        switch copy _5 -> 0u32: bb3, otherwise: bb4;
+        _3 = move _5 != const 0u32;
+        storage_dead(_5);
+        if move _3 -> bb1 else -> bb2;
+    }
+
+    bb1: {
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        storage_dead(_3);
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb5 (unwind: bb6);
+        storage_live(_4);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = copy (*f).options.flags;
+        _7 = move _8 & const 67108864u32;
+        storage_dead(_8);
+        _4 = move _7 != const 0u32;
+        storage_dead(_7);
+        if move _4 -> bb5 else -> bb6;
     }
 
     bb3: {
-        storage_dead(_5);
-        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb5 (unwind: bb7);
-    }
-
-    bb4: {
-        storage_dead(_5);
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb5 (unwind: bb8);
-    }
-
-    bb5: {
+        storage_dead(_3);
         return;
     }
 
-    bb6: {
+    bb4: {
         unwind_continue;
+    }
+
+    bb5: {
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb8);
+    }
+
+    bb6: {
+        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb7 (unwind: bb9);
     }
 
     bb7: {
-        unwind_continue;
+        storage_dead(_4);
+        goto bb3;
     }
 
     bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
         unwind_continue;
     }
 }
@@ -279,11 +289,12 @@ pub fn new_debug::<'_, &'_ i32>(x: &'_ &'_ i32) -> Argument::<'_>
 }
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -306,6 +317,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
@@ -326,13 +338,13 @@ pub struct PhantomData::<&'_ i32> {}
 pub const IS_ZST::<i32>: bool = false
 
 struct (_, _)::<u64, bool> {
-  u64,
-  bool,
+  _0: u64,
+  _1: bool,
 }
 
 struct (_, _)::<Arguments::<'_>, bool> {
-  Arguments::<'_>,
-  bool,
+  _0: Arguments::<'_>,
+  _1: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -364,6 +376,7 @@ fn core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(message: &'_ Arguments:
 }
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -383,6 +396,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -394,9 +408,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -418,8 +431,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -431,7 +443,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -442,13 +453,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -465,6 +475,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
+#[track_caller]
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
@@ -486,12 +497,13 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
+#[track_caller]
 pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
+    let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -505,7 +517,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = compiletime(move _3.0, move _3.1) -> bb1 (unwind: bb2);
+        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -518,6 +530,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::num::{usize}::unchecked_sub::precondition_check
+#[track_caller]
 fn precondition_check(lhs: usize, rhs: usize)
 {
     let _0: (); // return
@@ -527,7 +540,7 @@ fn precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (_, _)::<u64, bool>; // anonymous local
+    let _7: (u64, bool); // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -553,7 +566,7 @@ fn precondition_check(lhs: usize, rhs: usize)
         _7 = move _8 checked.- move _9;
         storage_dead(_9);
         storage_dead(_8);
-        _6 = copy _7.1;
+        _6 = copy _7._1;
         storage_dead(_7);
         if copy _6 -> bb1 else -> bb2;
     }
@@ -607,7 +620,7 @@ fn precondition_check(lhs: usize, rhs: usize)
 #[diagnostic_item("Option")]
 pub enum Option::<&'_ i32> {
   None,
-  Some(0: &'_ i32),
+  Some { _0: &'_ i32 },
 }
 
 // Full name: core::panic::location::Location::<'_>
@@ -834,7 +847,7 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         _14 = transmute<NonNull::<i32>, *const i32>(copy ptr);
         _9 = &(*_14);
         storage_dead(_14);
-        _0 = Option::<&'_ i32>::Some { 0: copy _9 };
+        _0 = Option::<&'_ i32>::Some { _0: copy _9 };
         storage_dead(_9);
         storage_dead(end_or_len);
         storage_dead(ptr);
@@ -861,7 +874,7 @@ const anon_const_0: [i32; 3usize] = [0i32, 1i32, 2i32]
 const anon_const_1: [u8; 7usize] = [2u8, 45u8, 32u8, 192u8, 1u8, 10u8, 0u8]
 
 struct (_,)::<&'_ &'_ i32> {
-  &'_ &'_ i32,
+  _0: &'_ &'_ i32,
 }
 
 // Full name: test_crate::debug_slice::<i32>
@@ -879,7 +892,7 @@ fn debug_slice::<i32>(slice: &'_ [i32])
     let x: &'_ i32; // local
     let _10: (); // anonymous local
     let _11: Arguments::<'_>; // anonymous local
-    let args_12: (_,)::<&'_ &'_ i32>; // local
+    let args_12: (&'_ &'_ i32,); // local
     let _13: &'_ &'_ i32; // anonymous local
     let args_14: [Argument::<'_>; 1usize]; // local
     let _15: Argument::<'_>; // anonymous local
@@ -943,7 +956,7 @@ fn debug_slice::<i32>(slice: &'_ [i32])
 
     bb7: {
         storage_live(x);
-        x = copy (_5 as variant Option::<&'_ i32>::Some).0;
+        x = copy (_5 as variant Option::<&'_ i32>::Some)._0;
         storage_live(_10);
         storage_live(_11);
         storage_live(args_12);
@@ -954,7 +967,7 @@ fn debug_slice::<i32>(slice: &'_ [i32])
         storage_live(args_14);
         storage_live(_15);
         storage_live(_16);
-        _21 = copy args_12.0;
+        _21 = copy args_12._0;
         _16 = &(*_21);
         _15 = new_debug::<'_, &'_ i32>(move _16) -> bb9 (unwind: bb10);
     }

@@ -53,8 +53,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -69,8 +69,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -127,59 +127,69 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
     let _0: Result::<(), Error>; // return
     let self: &'_ u32; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: u32; // anonymous local
-    let _4: u32; // anonymous local
+    let _3: bool; // anonymous local
+    let _4: bool; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
+    let _7: u32; // anonymous local
+    let _8: u32; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        storage_live(_4);
-        _4 = copy (*f).options.flags;
-        _3 = move _4 & const 33554432u32;
-        storage_dead(_4);
-        switch copy _3 -> 0u32: bb1, otherwise: bb2;
-    }
-
-    bb1: {
-        storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
         _6 = copy (*f).options.flags;
-        _5 = move _6 & const 67108864u32;
+        _5 = move _6 & const 33554432u32;
         storage_dead(_6);
-        switch copy _5 -> 0u32: bb3, otherwise: bb4;
+        _3 = move _5 != const 0u32;
+        storage_dead(_5);
+        if move _3 -> bb1 else -> bb2;
+    }
+
+    bb1: {
+        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        storage_dead(_3);
-        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb5 (unwind: bb6);
+        storage_live(_4);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = copy (*f).options.flags;
+        _7 = move _8 & const 67108864u32;
+        storage_dead(_8);
+        _4 = move _7 != const 0u32;
+        storage_dead(_7);
+        if move _4 -> bb5 else -> bb6;
     }
 
     bb3: {
-        storage_dead(_5);
-        _0 = impl_Display_for_u32::fmt(move self, move f) -> bb5 (unwind: bb7);
-    }
-
-    bb4: {
-        storage_dead(_5);
-        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb5 (unwind: bb8);
-    }
-
-    bb5: {
+        storage_dead(_3);
         return;
     }
 
-    bb6: {
+    bb4: {
         unwind_continue;
+    }
+
+    bb5: {
+        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb7 (unwind: bb8);
+    }
+
+    bb6: {
+        _0 = impl_Display_for_u32::fmt(move self, move f) -> bb7 (unwind: bb9);
     }
 
     bb7: {
-        unwind_continue;
+        storage_dead(_4);
+        goto bb3;
     }
 
     bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
         unwind_continue;
     }
 }
@@ -281,7 +291,7 @@ impl "impl_Display_for_u32" Display for u32 {
 #[diagnostic_item("Option")]
 pub enum Option::<Arguments::<'_>> {
   None,
-  Some(0: Arguments::<'_>),
+  Some { _0: Arguments::<'_> },
 }
 
 // Full name: core::panicking::AssertKind
@@ -292,10 +302,12 @@ pub enum AssertKind {
 }
 
 // Full name: core::panicking::assert_failed_inner
+#[track_caller]
 fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
 = <missing>
 
 // Full name: core::panicking::assert_failed::<u32, u32>
+#[track_caller]
 pub fn assert_failed::<u32, u32>(kind: AssertKind, left: &'_ u32, right: &'_ u32, args: Option::<Arguments::<'_>>) -> !
 {
     let _0: !; // return
@@ -345,25 +357,25 @@ pub fn len::<u32>(self: &'_ [u32]) -> usize
 }
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: anon_const_0
 const anon_const_0: u32 = 9u32
 
 struct (_, _)::<usize, bool> {
-  usize,
-  bool,
+  _0: usize,
+  _1: bool,
 }
 
 struct (_, _)::<u32, bool> {
-  u32,
-  bool,
+  _0: u32,
+  _1: bool,
 }
 
 struct (_, _)::<&'_ u32, &'_ u32> {
-  &'_ u32,
-  &'_ u32,
+  _0: &'_ u32,
+  _1: &'_ u32,
 }
 
 // Full name: test_crate::function_call
@@ -545,6 +557,7 @@ impl "impl_Default_for_Foo" Default for Foo {
 }
 
 // Full name: test_crate::{impl Default for Foo}::default
+#[inline(hint)]
 pub fn impl_Default_for_Foo::default() -> Foo
 {
     let _0: Foo; // return
@@ -590,6 +603,7 @@ impl "impl_Default_for_Bar" Default for Bar {
 }
 
 // Full name: test_crate::{impl Default for Bar}::default
+#[inline(hint)]
 pub fn impl_Default_for_Bar::default() -> Bar
 {
     let _0: Bar; // return
@@ -670,7 +684,7 @@ fn foo()
     let _13: u32; // anonymous local
     let _14: u32; // anonymous local
     let a: [u32; 10usize]; // local
-    let _16: (_, _)::<&'_ u32, &'_ u32>; // anonymous local
+    let _16: (&'_ u32, &'_ u32); // anonymous local
     let _17: &'_ u32; // anonymous local
     let _18: usize; // anonymous local
     let _19: &'_ u32; // anonymous local
@@ -772,9 +786,9 @@ fn foo()
         storage_dead(_19);
         storage_dead(_17);
         storage_live(left_val);
-        left_val = copy _16.0;
+        left_val = copy _16._0;
         storage_live(right_val);
-        right_val = copy _16.1;
+        right_val = copy _16._1;
         storage_live(_22);
         storage_live(_23);
         _23 = copy (*left_val);

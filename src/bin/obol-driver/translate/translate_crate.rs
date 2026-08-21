@@ -131,7 +131,8 @@ impl TransItemSource {
                 mir::mono::InstanceKind::Intrinsic => 0,
                 mir::mono::InstanceKind::Item => 1,
                 mir::mono::InstanceKind::Shim => 2,
-                mir::mono::InstanceKind::Virtual { idx } => 3 + *idx,
+                mir::mono::InstanceKind::LlvmIntrinsic => 3,
+                mir::mono::InstanceKind::Virtual { idx } => 4 + *idx,
             }
         }
         fn key_trait(t: &Option<(ty::TraitDef, MyGenericArgs)>) -> usize {
@@ -759,7 +760,6 @@ pub fn translate<'tcx, 'ctx>(
         reconstruct_asserts: true,
         raw_consts: false,
         reconstruct_fallible_operations: true,
-        no_insert_storage_deads: true,
         start_from: vec!["*".into()],
         ..CharonCliOpts::default()
     };

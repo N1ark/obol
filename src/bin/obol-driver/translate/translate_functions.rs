@@ -195,7 +195,7 @@ impl ItemTransCtx<'_, '_> {
             let mut b = instance.instantiate_mir_and_normalize_erasing_regions(
                 tcx,
                 typing_env,
-                rustc_middle::ty::EarlyBinder::bind(b),
+                rustc_middle::ty::EarlyBinder::bind(tcx, b),
             );
             use rustc_middle::mir::visit::MutVisitor;
             NamedConstPreservingEvaluator { tcx, typing_env }.visit_body(&mut b);

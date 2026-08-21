@@ -7,7 +7,7 @@ extern crate rustc_span;
 
 use itertools::Itertools;
 use log::trace;
-use rustc_public::{mir, rustc_internal, ty};
+use rustc_public::{CrateDefType, mir, rustc_internal, ty};
 use rustc_public_bridge::IndexedVal;
 use rustc_span::{Symbol, sym};
 use std::{
@@ -291,7 +291,7 @@ impl BodyTransCtx<'_, '_, '_> {
         };
 
         let spread_ty = self.locals.locals[spread_loc].ty.clone();
-        let TyKind::Adt(tref, Some(BuiltinTy::Tuple)) = spread_ty.kind() else {
+        let Some(tref) = spread_ty.as_adt().filter(|tref| tref.is_tuple()) else {
             raise_error!(
                 self,
                 Span::dummy(),
@@ -333,7 +333,7 @@ impl BodyTransCtx<'_, '_, '_> {
                 let place = Place::new(local.index, local.ty.clone());
                 let nth_field = tupled_arg
                     .clone()
-                    .project(ProjectionElem::Field(tuple_id, None, FieldId::new(i)), ty);
+                    .project(ProjectionElem::Field(None, FieldId::new(i)), ty);
                 Some(Statement::new(
                     Span::dummy(),
                     StatementKind::Assign(
@@ -639,13 +639,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 return Ok((of_place, proj_ty, Some(self.translate_variant_id(*variant))));
             }
             mir::ProjectionElem::Field(field_idx, _) => {
-                let TyKind::Adt(tref, _) = of_place.ty().kind() else {
-                    unreachable!(
-                        "Unexpected type in field projection: {:?}",
-                        of_place.ty().kind()
-                    );
-                };
-                ProjectionElem::Field(tref.id, variant_id, FieldId::from_usize(*field_idx))
+                ProjectionElem::Field(variant_id, FieldId::from_usize(*field_idx))
             }
             mir::ProjectionElem::OpaqueCast(..) => {
                 raise_error!(self, span, "Unexpected ProjectionElem::OpaqueCast");
@@ -881,9 +875,9 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         | mir::PointerCoercion::ReifyFnPointer(_),
                         ..,
                     ) => CastKind::FnPtr(src_ty, tgt_ty),
-                    mir::CastKind::Subtype | mir::CastKind::Transmute => {
-                        CastKind::Transmute(src_ty, tgt_ty)
-                    }
+                    mir::CastKind::Subtype
+                    | mir::CastKind::Transmute
+                    | mir::CastKind::BoxDerefTransmute => CastKind::Transmute(src_ty, tgt_ty),
                     mir::CastKind::PointerCoercion(mir::PointerCoercion::Unsize) => {
                         let mir_src_ty = mir_operand.ty(self.local_decls)?;
                         let unsizing_meta =
@@ -966,8 +960,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                             .map(|op| op.ty(self.local_decls))
                             .try_collect()?;
                         let tuple_ty = ty::Ty::new_tuple(&elem_tys);
-                        let TyKind::Adt(tref, _) =
-                            self.translate_ty(span, tuple_ty)?.kind().clone()
+                        let TyKind::Adt(tref) = self.translate_ty(span, tuple_ty)?.kind().clone()
                         else {
                             unreachable!("Tuple type did not translate to an ADT");
                         };
@@ -987,7 +980,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         trace!("{:?}", rvalue);
 
                         let id = self.register_type_decl_id(span, *item, generics.clone());
-                        let tref = TypeDeclRef::new(id, GenericArgs::empty());
+                        let tref = TypeDeclRef::new(id, GenericArgs::empty(), None);
                         let variant_id = match item.kind() {
                             AdtKind::Struct | AdtKind::Union => None,
                             AdtKind::Enum => Some(self.translate_variant_id(*variant_idx)),
@@ -1002,7 +995,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     }
                     mir::AggregateKind::Closure(def, args) => {
                         let id = self.register_closure_type_decl_id(span, *def, args.clone());
-                        let tref = TypeDeclRef::new(id, GenericArgs::empty());
+                        let tref = TypeDeclRef::new(id, GenericArgs::empty(), None);
                         let akind = AggregateKind::Adt(tref, None, None);
                         Ok(Rvalue::Aggregate(akind, operands_t))
                     }
@@ -1071,7 +1064,9 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
     /// We return an option, because we ignore some statements (`Nop`, `StorageLive`...)
     fn translate_statement(&mut self, statement: &mir::Statement) -> Result<(), Error> {
         trace!("About to translate statement (MIR) {:?}", statement);
-        let span = self.t_ctx.translate_span_from_smir(&statement.span);
+        let span = self
+            .t_ctx
+            .translate_span_from_smir(&statement.source_info.span);
 
         let t_statement: Option<StatementKind> = match &statement.kind {
             mir::StatementKind::Assign(place, rvalue) => {
@@ -1188,7 +1183,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         trace!("About to translate terminator (MIR) {:?}", terminator);
         // Compute the span information beforehand (we might need it to introduce
         // intermediate statements - we desugar some terminators)
-        let span = self.translate_span_from_smir(&terminator.span);
+        let span = self.translate_span_from_smir(&terminator.source_info.span);
 
         // Translate the terminator
         let t_terminator: TerminatorKind = match &terminator.kind {
@@ -1427,6 +1422,9 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             }
             mir::AssertMessage::NullPointerDereference => {
                 Ok(BuiltinAssertKind::NullPointerDereference)
+            }
+            mir::AssertMessage::NullReferenceConstructed => {
+                Ok(BuiltinAssertKind::NullReferenceCreated)
             }
             mir::AssertMessage::InvalidEnumConstruction(operand) => {
                 let operand = self.translate_operand(span, operand)?;

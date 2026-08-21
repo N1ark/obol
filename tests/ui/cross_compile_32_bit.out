@@ -32,8 +32,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -48,8 +48,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -72,11 +72,12 @@ pub struct Arguments::<'_> {
 }
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -99,6 +100,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
@@ -115,6 +117,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -172,6 +175,7 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -183,9 +187,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -207,8 +210,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -220,7 +222,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -231,13 +232,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -254,11 +254,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 }
 
 struct (_, _)::<Arguments::<'_>, bool> {
-  Arguments::<'_>,
-  bool,
+  _0: Arguments::<'_>,
+  _1: bool,
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
+#[track_caller]
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
@@ -280,12 +281,13 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
+#[track_caller]
 pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
+    let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -299,7 +301,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = compiletime(move _3.0, move _3.1) -> bb1 (unwind: bb2);
+        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -318,74 +320,78 @@ pub struct NonNull::<usize> {
 }
 
 // Full name: core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check
+#[track_caller]
 fn precondition_check(ptr: *mut ())
 {
     let _0: (); // return
     let ptr: *mut (); // arg #1
+    let _2: bool; // anonymous local
     let msg: &'_ str; // local
-    let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: NonNull::<u8>; // anonymous local
-    let _7: *const u8; // anonymous local
-    let _8: NonNull::<Argument::<'_>>; // anonymous local
-    let _9: usize; // anonymous local
+    let _4: !; // anonymous local
+    let _5: Arguments::<'_>; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: NonNull::<u8>; // anonymous local
+    let _8: *const u8; // anonymous local
+    let _9: NonNull::<Argument::<'_>>; // anonymous local
     let _10: usize; // anonymous local
     let _11: usize; // anonymous local
-    let _12: *const str; // anonymous local
-    let _13: &'_ [u8]; // anonymous local
-    let _14: bool; // anonymous local
-    let _15: *mut (); // anonymous local
+    let _12: usize; // anonymous local
+    let _13: *const str; // anonymous local
+    let _14: &'_ [u8]; // anonymous local
+    let _15: bool; // anonymous local
+    let _16: *mut (); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(msg);
-        storage_live(_3);
+        storage_live(_4);
         _0 = ();
-        storage_live(_5);
-        storage_live(_14);
+        storage_live(_2);
+        storage_live(_6);
         storage_live(_15);
-        _15 = cast<usize, *mut ()>(const 0usize);
-        _14 = copy ptr != move _15;
-        _5 = cast<bool, usize>(move _14);
-        storage_dead(_14);
-        switch copy _5 -> 0usize: bb1, otherwise: bb2;
+        storage_live(_16);
+        _16 = cast<usize, *mut ()>(const 0usize);
+        _15 = copy ptr != move _16;
+        _6 = cast<bool, usize>(move _15);
+        storage_dead(_15);
+        _2 = move _6 == const 0usize;
+        storage_dead(_6);
+        if move _2 -> bb1 else -> bb2;
     }
 
     bb1: {
-        storage_dead(_5);
         msg = const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
-        storage_live(_4);
-        storage_live(_6);
+        storage_live(_5);
         storage_live(_7);
-        storage_live(_12);
-        _12 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _7 = cast<*const str, *const u8>(copy _12);
-        storage_dead(_12);
-        _6 = transmute<*const u8, NonNull::<u8>>(copy _7);
-        storage_dead(_7);
         storage_live(_8);
+        storage_live(_13);
+        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _8 = cast<*const str, *const u8>(copy _13);
+        storage_dead(_13);
+        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
-        storage_live(_13);
-        _13 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _11 = copy _13.metadata;
-        storage_dead(_13);
-        _10 = move _11 wrap.<< const 1i32;
+        storage_live(_12);
+        storage_live(_14);
+        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = copy _14.metadata;
+        storage_dead(_14);
+        _11 = move _12 wrap.<< const 1i32;
+        storage_dead(_12);
+        _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = move _10 | const 1usize;
+        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
-        _8 = transmute<usize, NonNull::<Argument::<'_>>>(move _9);
+        _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
-        _4 = Arguments::<'_> { template: move _6, args: move _8 };
-        storage_dead(_8);
-        storage_dead(_6);
-        _3 = panic_nounwind_fmt(move _4, const false) -> bb3 (unwind: bb4);
+        storage_dead(_7);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        storage_dead(_5);
+        storage_dead(_2);
         return;
     }
 
@@ -399,6 +405,7 @@ fn precondition_check(ptr: *mut ())
 }
 
 // Full name: core::ptr::non_null::{NonNull::<_>}::new_unchecked::<usize>
+#[track_caller]
 pub fn new_unchecked::<usize>(ptr: *mut usize) -> NonNull::<usize>
 {
     let _0: NonNull::<usize>; // return
@@ -437,14 +444,14 @@ pub fn new_unchecked::<usize>(ptr: *mut usize) -> NonNull::<usize>
 }
 
 struct (_, _)::<usize, bool> {
-  usize,
-  bool,
+  _0: usize,
+  _1: bool,
 }
 
 // Full name: test_crate::HasPointerNiche
 enum HasPointerNiche {
   First,
-  Second(0: NonNull::<usize>),
+  Second { _0: NonNull::<usize> },
 }
 
 // Full name: test_crate::main
@@ -487,7 +494,7 @@ fn main()
 
     bb1: {
         storage_dead(_9);
-        a = HasPointerNiche::Second { 0: move _8 };
+        a = HasPointerNiche::Second { _0: move _8 };
         storage_dead(_8);
         _0 = ();
         storage_dead(a);

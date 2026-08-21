@@ -18,20 +18,20 @@ fn foo::<u32>(x: &'_ u32)
 }
 
 struct (_,)::<&'_ u32> {
-  &'_ u32,
+  _0: &'_ u32,
 }
 
-// Full name: core::ops::function::Fn::call::<foo::<u32>, (_,)::<&'_ u32>>
-pub fn call::<foo::<u32>, (_,)::<&'_ u32>>(_1: &'_ foo::<u32>, _2: (_,)::<&'_ u32>)
+// Full name: core::ops::function::Fn::call::<foo::<u32>, (&'_ u32,)>
+pub fn call::<foo::<u32>, (&'_ u32,)>(_1: &'_ foo::<u32>, _2: (&'_ u32,))
 {
     let _0: (); // return
     let _1: &'_ foo::<u32>; // arg #1
-    let _2: (_,)::<&'_ u32>; // arg #2
+    let _2: (&'_ u32,); // arg #2
 
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = foo::<u32>(move _2.0) -> bb1 (unwind: bb2);
+        _0 = foo::<u32>(move _2._0) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -86,7 +86,7 @@ fn takes_closure::<foo::<u32>>(c: foo::<u32>)
     let _0: (); // return
     let c: foo::<u32>; // arg #1
     let _2: &'_ foo::<u32>; // anonymous local
-    let _3: (_,)::<&'_ u32>; // anonymous local
+    let _3: (&'_ u32,); // anonymous local
     let _4: &'_ u32; // anonymous local
     let _5: &'_ u32; // anonymous local
     let _6: &'_ u32; // anonymous local
@@ -107,7 +107,7 @@ fn takes_closure::<foo::<u32>>(c: foo::<u32>)
         _5 = &(*_6);
         _4 = &(*_5);
         _3 = (move _4,);
-        _0 = call::<foo::<u32>, (_,)::<&'_ u32>>(move _2, move _3) -> bb1 (unwind: bb2);
+        _0 = call::<foo::<u32>, (&'_ u32,)>(move _2, move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {

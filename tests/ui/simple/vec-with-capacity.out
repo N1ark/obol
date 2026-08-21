@@ -82,7 +82,7 @@ pub struct Layout {
 }
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 struct () {}
@@ -99,8 +99,8 @@ pub struct Error {}
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -132,8 +132,8 @@ pub struct Formatter::<'_> {
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -156,8 +156,8 @@ pub struct Arguments::<'_> {
 }
 
 struct (_, _)::<Arguments::<'_>, bool> {
-  Arguments::<'_>,
-  bool,
+  _0: Arguments::<'_>,
+  _1: bool,
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -209,10 +209,12 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -232,10 +234,12 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -247,9 +251,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -271,8 +274,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -284,7 +286,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -295,13 +296,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -318,6 +318,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
+#[track_caller]
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
@@ -339,12 +340,13 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
+#[track_caller]
 pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
+    let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -358,7 +360,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = compiletime(move _3.0, move _3.1) -> bb1 (unwind: bb2);
+        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -371,37 +373,43 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::intrinsics::ctpop::<usize>
+#[rustc_intrinsic]
 pub fn ctpop::<usize>(x_1: usize) -> u32
 = <intrinsic:ctpop>
 
+#[track_caller]
 fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: usize)
 {
     let _0: (); // return
     let align: usize; // arg #1
+    let _2: bool; // anonymous local
     let msg: &'_ str; // local
-    let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: u32; // anonymous local
-    let _6: NonNull::<u8>; // anonymous local
-    let _7: *const u8; // anonymous local
-    let _8: NonNull::<Argument::<'_>>; // anonymous local
-    let _9: usize; // anonymous local
+    let _4: !; // anonymous local
+    let _5: Arguments::<'_>; // anonymous local
+    let _6: u32; // anonymous local
+    let _7: NonNull::<u8>; // anonymous local
+    let _8: *const u8; // anonymous local
+    let _9: NonNull::<Argument::<'_>>; // anonymous local
     let _10: usize; // anonymous local
     let _11: usize; // anonymous local
-    let _12: *const str; // anonymous local
-    let _13: &'_ [u8]; // anonymous local
+    let _12: usize; // anonymous local
+    let _13: *const str; // anonymous local
+    let _14: &'_ [u8]; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(msg);
-        storage_live(_3);
+        storage_live(_4);
         _0 = ();
-        storage_live(_5);
-        _5 = ctpop::<usize>(move align) -> bb1 (unwind: bb2);
+        storage_live(_2);
+        storage_live(_6);
+        _6 = ctpop::<usize>(move align) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        switch copy _5 -> 1u32: bb3, otherwise: bb4;
+        _2 = move _6 == const 1u32;
+        storage_dead(_6);
+        if move _2 -> bb3 else -> bb4;
     }
 
     bb2: {
@@ -409,40 +417,39 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
     }
 
     bb3: {
-        storage_dead(_5);
+        storage_dead(_2);
         return;
     }
 
     bb4: {
-        storage_dead(_5);
         msg = const "unsafe precondition(s) violated: Alignment::new_unchecked requires a power of two\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
-        storage_live(_4);
-        storage_live(_6);
+        storage_live(_5);
         storage_live(_7);
-        storage_live(_12);
-        _12 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _7 = cast<*const str, *const u8>(copy _12);
-        storage_dead(_12);
-        _6 = transmute<*const u8, NonNull::<u8>>(copy _7);
-        storage_dead(_7);
         storage_live(_8);
+        storage_live(_13);
+        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _8 = cast<*const str, *const u8>(copy _13);
+        storage_dead(_13);
+        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
-        storage_live(_13);
-        _13 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: Alignment::new_unchecked requires a power of two\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _11 = copy _13.metadata;
-        storage_dead(_13);
-        _10 = move _11 wrap.<< const 1i32;
+        storage_live(_12);
+        storage_live(_14);
+        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: Alignment::new_unchecked requires a power of two\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = copy _14.metadata;
+        storage_dead(_14);
+        _11 = move _12 wrap.<< const 1i32;
+        storage_dead(_12);
+        _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = move _10 | const 1usize;
+        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
-        _8 = transmute<usize, NonNull::<Argument::<'_>>>(move _9);
+        _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
-        _4 = Arguments::<'_> { template: move _6, args: move _8 };
-        storage_dead(_8);
-        storage_dead(_6);
-        _3 = panic_nounwind_fmt(move _4, const false) -> bb5 (unwind: bb6);
+        storage_dead(_7);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -454,6 +461,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
     }
 }
 
+#[track_caller]
 fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(size: usize, align: usize)
 {
     let _0: (); // return
@@ -463,35 +471,39 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
     let msg: &'_ str; // local
     let _5: !; // anonymous local
     let _6: Arguments::<'_>; // anonymous local
+    let _7: bool; // anonymous local
     let alignment: Alignment; // local
-    let _8: u32; // anonymous local
-    let _9: (); // anonymous local
-    let _10: usize; // anonymous local
+    let _9: u32; // anonymous local
+    let _10: (); // anonymous local
     let _11: usize; // anonymous local
-    let _12: NonNull::<u8>; // anonymous local
-    let _13: *const u8; // anonymous local
-    let _14: NonNull::<Argument::<'_>>; // anonymous local
-    let _15: usize; // anonymous local
+    let _12: usize; // anonymous local
+    let _13: NonNull::<u8>; // anonymous local
+    let _14: *const u8; // anonymous local
+    let _15: NonNull::<Argument::<'_>>; // anonymous local
     let _16: usize; // anonymous local
     let _17: usize; // anonymous local
-    let _18: *const str; // anonymous local
-    let _19: &'_ [u8]; // anonymous local
-    let _20: bool; // anonymous local
+    let _18: usize; // anonymous local
+    let _19: *const str; // anonymous local
+    let _20: &'_ [u8]; // anonymous local
+    let _21: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(msg);
         storage_live(_5);
         storage_live(alignment);
-        storage_live(_9);
+        storage_live(_10);
         _0 = ();
         storage_live(_3);
-        storage_live(_8);
-        _8 = ctpop::<usize>(copy align) -> bb1 (unwind: bb2);
+        storage_live(_7);
+        storage_live(_9);
+        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        switch copy _8 -> 1u32: bb3, otherwise: bb4;
+        _7 = move _9 == const 1u32;
+        storage_dead(_9);
+        if move _7 -> bb3 else -> bb4;
     }
 
     bb2: {
@@ -499,61 +511,61 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
     }
 
     bb3: {
-        storage_dead(_8);
-        storage_live(_20);
-        _20 = ub_checks<bool>;
-        if move _20 -> bb5 else -> bb6;
+        storage_live(_21);
+        _21 = ub_checks<bool>;
+        if move _21 -> bb5 else -> bb6;
     }
 
     bb4: {
-        storage_dead(_8);
+        storage_dead(_7);
         goto bb7;
     }
 
     bb5: {
-        _9 = core::mem::alignment::{Alignment}::new_unchecked::precondition_check(copy align) -> bb6 (unwind: bb8);
+        _10 = core::mem::alignment::{Alignment}::new_unchecked::precondition_check(copy align) -> bb6 (unwind: bb8);
     }
 
     bb6: {
         alignment = transmute<usize, Alignment>(copy align);
-        storage_live(_10);
+        storage_dead(_7);
         storage_live(_11);
-        _11 = transmute<Alignment, usize>(copy alignment);
-        _10 = const 9223372036854775808usize ub.- move _11;
+        storage_live(_12);
+        _12 = transmute<Alignment, usize>(copy alignment);
+        _11 = const 9223372036854775808usize ub.- move _12;
+        storage_dead(_12);
+        _3 = copy size <= move _11;
         storage_dead(_11);
-        _3 = copy size <= move _10;
-        storage_dead(_10);
         if move _3 -> bb9 else -> bb7;
     }
 
     bb7: {
         msg = const "unsafe precondition(s) violated: Layout::from_size_align_unchecked requires that align is a power of 2 and the rounded-up allocation size does not exceed isize::MAX\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_6);
-        storage_live(_12);
         storage_live(_13);
-        storage_live(_18);
-        _18 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _13 = cast<*const str, *const u8>(copy _18);
-        storage_dead(_18);
-        _12 = transmute<*const u8, NonNull::<u8>>(copy _13);
-        storage_dead(_13);
         storage_live(_14);
+        storage_live(_19);
+        _19 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _14 = cast<*const str, *const u8>(copy _19);
+        storage_dead(_19);
+        _13 = transmute<*const u8, NonNull::<u8>>(copy _14);
+        storage_dead(_14);
         storage_live(_15);
         storage_live(_16);
         storage_live(_17);
-        storage_live(_19);
-        _19 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: Layout::from_size_align_unchecked requires that align is a power of 2 and the rounded-up allocation size does not exceed isize::MAX\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _17 = copy _19.metadata;
-        storage_dead(_19);
-        _16 = move _17 wrap.<< const 1i32;
+        storage_live(_18);
+        storage_live(_20);
+        _20 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: Layout::from_size_align_unchecked requires that align is a power of 2 and the rounded-up allocation size does not exceed isize::MAX\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _18 = copy _20.metadata;
+        storage_dead(_20);
+        _17 = move _18 wrap.<< const 1i32;
+        storage_dead(_18);
+        _16 = move _17 | const 1usize;
         storage_dead(_17);
-        _15 = move _16 | const 1usize;
+        _15 = transmute<usize, NonNull::<Argument::<'_>>>(move _16);
         storage_dead(_16);
-        _14 = transmute<usize, NonNull::<Argument::<'_>>>(move _15);
+        _6 = Arguments::<'_> { template: move _13, args: move _15 };
         storage_dead(_15);
-        _6 = Arguments::<'_> { template: move _12, args: move _14 };
-        storage_dead(_14);
-        storage_dead(_12);
+        storage_dead(_13);
         _5 = panic_nounwind_fmt(move _6, const false) -> bb10 (unwind: bb11);
     }
 
@@ -576,6 +588,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
 }
 
 // Full name: core::alloc::layout::LayoutError
+#[non_exhaustive]
 pub struct LayoutError {}
 
 // Full name: core::alloc::AllocError
@@ -640,6 +653,7 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
     }
 }
 
+#[track_caller]
 fn core::hint::assert_unchecked::precondition_check(cond: bool)
 {
     let _0: (); // return
@@ -709,10 +723,13 @@ fn core::hint::assert_unchecked::precondition_check(cond: bool)
 }
 
 // Full name: core::intrinsics::assume
+#[rustc_intrinsic]
 pub fn assume(b_1: bool)
 = <intrinsic:assume>
 
 // Full name: core::intrinsics::cold_path
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
 pub fn cold_path()
 = <intrinsic:cold_path>
 
@@ -728,10 +745,11 @@ pub struct PhantomData::<u32> {}
 pub const LAYOUT::<u32>: Layout = Layout { size: 4usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl2 {  } } }
 
 struct (_, _)::<u64, bool> {
-  u64,
-  bool,
+  _0: u64,
+  _1: bool,
 }
 
+#[track_caller]
 fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
 {
     let _0: (); // return
@@ -741,7 +759,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (_, _)::<u64, bool>; // anonymous local
+    let _7: (u64, bool); // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -767,7 +785,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         _7 = move _8 checked.* move _9;
         storage_dead(_9);
         storage_dead(_8);
-        _6 = copy _7.1;
+        _6 = copy _7._1;
         storage_dead(_7);
         if copy _6 -> bb1 else -> bb2;
     }
@@ -818,21 +836,21 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
 
 // Full name: core::num::niche_types::UsizeNoHighBit
 pub struct UsizeNoHighBit {
-  0: usize is 0usize..=9223372036854775807usize,
+  _0: usize is 0usize..=9223372036854775807usize,
 }
 
 // Full name: core::result::Result::<Infallible, AllocError>
 #[diagnostic_item("Result")]
 pub enum Result::<Infallible, AllocError> {
-  Ok(0: Infallible),
-  Err(0: AllocError),
+  Ok { _0: Infallible },
+  Err { _0: AllocError },
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
 pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
-  Continue(0: NonNull::<u8>),
-  Break(0: Result::<Infallible, AllocError>),
+  Continue { _0: NonNull::<u8> },
+  Break { _0: Result::<Infallible, AllocError> },
 }
 
 // Full name: core::ops::drop::Drop
@@ -844,20 +862,20 @@ trait Drop
 #[diagnostic_item("Option")]
 pub enum Option::<NonNull::<u8>> {
   None,
-  Some(0: NonNull::<u8>),
+  Some { _0: NonNull::<u8> },
 }
 
 struct (_, _)::<NonNull::<u8>, Layout> {
-  NonNull::<u8>,
-  Layout,
+  _0: NonNull::<u8>,
+  _1: Layout,
 }
 
-// Full name: core::option::Option::<(_, _)::<NonNull::<u8>, Layout>>
+// Full name: core::option::Option::<(NonNull::<u8>, Layout)>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<(_, _)::<NonNull::<u8>, Layout>> {
+pub enum Option::<(NonNull::<u8>, Layout)> {
   None,
-  Some(0: (_, _)::<NonNull::<u8>, Layout>),
+  Some { _0: (NonNull::<u8>, Layout) },
 }
 
 // Full name: core::panic::location::Location::<'_>
@@ -964,9 +982,9 @@ pub fn {impl Drop for Vec::<_, _>}::drop::<u32, Global>(self_1: &'_ mut Vec::<u3
 }
 
 // Full name: alloc::raw_vec::{RawVecInner::<_>}::current_memory::<Global>
-fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layout) -> Option::<(_, _)::<NonNull::<u8>, Layout>>
+fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layout) -> Option::<(NonNull::<u8>, Layout)>
 {
-    let _0: Option::<(_, _)::<NonNull::<u8>, Layout>>; // return
+    let _0: Option::<(NonNull::<u8>, Layout)>; // return
     let self_1: &'_ RawVecInner::<Global>; // arg #1
     let elem_layout: Layout; // arg #2
     let self_3: usize; // local
@@ -977,7 +995,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
     let self_8: UsizeNoHighBit; // local
     let layout: Layout; // local
     let align: usize; // local
-    let _11: (_, _)::<NonNull::<u8>, Layout>; // anonymous local
+    let _11: (NonNull::<u8>, Layout); // anonymous local
     let _12: (); // anonymous local
     let _13: Alignment; // anonymous local
     let _14: (); // anonymous local
@@ -998,7 +1016,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
     }
 
     bb1: {
-        _0 = Option::<(_, _)::<NonNull::<u8>, Layout>>::None {  };
+        _0 = Option::<(NonNull::<u8>, Layout)>::None {  };
         goto bb3;
     }
 
@@ -1066,7 +1084,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         self_16 = copy (*self_1).ptr._marker;
         storage_dead(self_16);
         _11 = (copy self_15, copy layout);
-        _0 = Option::<(_, _)::<NonNull::<u8>, Layout>>::Some { 0: move _11 };
+        _0 = Option::<(NonNull::<u8>, Layout)>::Some { _0: move _11 };
         storage_dead(_11);
         storage_dead(layout);
         storage_dead(alloc_size);
@@ -1126,7 +1144,7 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
     let _0: (); // return
     let self: &'_ mut RawVecInner::<Global>; // arg #1
     let elem_layout: Layout; // arg #2
-    let _3: Option::<(_, _)::<NonNull::<u8>, Layout>>; // anonymous local
+    let _3: Option::<(NonNull::<u8>, Layout)>; // anonymous local
     let _4: &'_ RawVecInner::<Global>; // anonymous local
     let _5: isize; // anonymous local
     let ptr: NonNull::<u8>; // local
@@ -1157,9 +1175,9 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
 
     bb3: {
         storage_live(ptr);
-        ptr = copy (_3 as variant Option::<(_, _)::<NonNull::<u8>, Layout>>::Some).0.0;
+        ptr = copy (_3 as variant Option::<(NonNull::<u8>, Layout)>::Some)._0._0;
         storage_live(layout);
-        layout = copy (_3 as variant Option::<(_, _)::<NonNull::<u8>, Layout>>::Some).0.1;
+        layout = copy (_3 as variant Option::<(NonNull::<u8>, Layout)>::Some)._0._1;
         storage_live(_9);
         _9 = &(*self).alloc;
         _8 = impl_Allocator_for_Global::deallocate(move _9, move ptr, move layout) -> bb6 (unwind: bb7);
@@ -1302,74 +1320,78 @@ pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
 
+#[track_caller]
 fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *mut ())
 {
     let _0: (); // return
     let ptr: *mut (); // arg #1
+    let _2: bool; // anonymous local
     let msg: &'_ str; // local
-    let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: NonNull::<u8>; // anonymous local
-    let _7: *const u8; // anonymous local
-    let _8: NonNull::<Argument::<'_>>; // anonymous local
-    let _9: usize; // anonymous local
+    let _4: !; // anonymous local
+    let _5: Arguments::<'_>; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: NonNull::<u8>; // anonymous local
+    let _8: *const u8; // anonymous local
+    let _9: NonNull::<Argument::<'_>>; // anonymous local
     let _10: usize; // anonymous local
     let _11: usize; // anonymous local
-    let _12: *const str; // anonymous local
-    let _13: &'_ [u8]; // anonymous local
-    let _14: bool; // anonymous local
-    let _15: *mut (); // anonymous local
+    let _12: usize; // anonymous local
+    let _13: *const str; // anonymous local
+    let _14: &'_ [u8]; // anonymous local
+    let _15: bool; // anonymous local
+    let _16: *mut (); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(msg);
-        storage_live(_3);
+        storage_live(_4);
         _0 = ();
-        storage_live(_5);
-        storage_live(_14);
+        storage_live(_2);
+        storage_live(_6);
         storage_live(_15);
-        _15 = cast<usize, *mut ()>(const 0usize);
-        _14 = copy ptr != move _15;
-        _5 = cast<bool, usize>(move _14);
-        storage_dead(_14);
-        switch copy _5 -> 0usize: bb1, otherwise: bb2;
+        storage_live(_16);
+        _16 = cast<usize, *mut ()>(const 0usize);
+        _15 = copy ptr != move _16;
+        _6 = cast<bool, usize>(move _15);
+        storage_dead(_15);
+        _2 = move _6 == const 0usize;
+        storage_dead(_6);
+        if move _2 -> bb1 else -> bb2;
     }
 
     bb1: {
-        storage_dead(_5);
         msg = const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
-        storage_live(_4);
-        storage_live(_6);
+        storage_live(_5);
         storage_live(_7);
-        storage_live(_12);
-        _12 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _7 = cast<*const str, *const u8>(copy _12);
-        storage_dead(_12);
-        _6 = transmute<*const u8, NonNull::<u8>>(copy _7);
-        storage_dead(_7);
         storage_live(_8);
+        storage_live(_13);
+        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _8 = cast<*const str, *const u8>(copy _13);
+        storage_dead(_13);
+        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
-        storage_live(_13);
-        _13 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _11 = copy _13.metadata;
-        storage_dead(_13);
-        _10 = move _11 wrap.<< const 1i32;
+        storage_live(_12);
+        storage_live(_14);
+        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = copy _14.metadata;
+        storage_dead(_14);
+        _11 = move _12 wrap.<< const 1i32;
+        storage_dead(_12);
+        _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = move _10 | const 1usize;
+        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
-        _8 = transmute<usize, NonNull::<Argument::<'_>>>(move _9);
+        _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
-        _4 = Arguments::<'_> { template: move _6, args: move _8 };
-        storage_dead(_8);
-        storage_dead(_6);
-        _3 = panic_nounwind_fmt(move _4, const false) -> bb3 (unwind: bb4);
+        storage_dead(_7);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        storage_dead(_5);
+        storage_dead(_2);
         return;
     }
 
@@ -1385,7 +1407,7 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
 // Full name: alloc::collections::TryReserveErrorKind
 pub enum TryReserveErrorKind {
   CapacityOverflow,
-  AllocError(layout: Layout, non_exhaustive: ()),
+  AllocError { layout: Layout, non_exhaustive: () },
 }
 
 // Full name: alloc::collections::TryReserveError
@@ -1396,36 +1418,36 @@ pub struct TryReserveError {
 // Full name: core::result::Result::<RawVecInner::<Global>, TryReserveError>
 #[diagnostic_item("Result")]
 pub enum Result::<RawVecInner::<Global>, TryReserveError> {
-  Ok(0: RawVecInner::<Global>),
-  Err(0: TryReserveError),
+  Ok { _0: RawVecInner::<Global> },
+  Err { _0: TryReserveError },
 }
 
 // Full name: core::result::Result::<Layout, TryReserveError>
 #[diagnostic_item("Result")]
 pub enum Result::<Layout, TryReserveError> {
-  Ok(0: Layout),
-  Err(0: TryReserveError),
+  Ok { _0: Layout },
+  Err { _0: TryReserveError },
 }
 
 // Full name: core::result::Result::<Layout, LayoutError>
 #[diagnostic_item("Result")]
 pub enum Result::<Layout, LayoutError> {
-  Ok(0: Layout),
-  Err(0: LayoutError),
+  Ok { _0: Layout },
+  Err { _0: LayoutError },
 }
 
 // Full name: core::result::Result::<NonNull::<u8>, AllocError>
 #[diagnostic_item("Result")]
 pub enum Result::<NonNull::<u8>, AllocError> {
-  Ok(0: NonNull::<u8>),
-  Err(0: AllocError),
+  Ok { _0: NonNull::<u8> },
+  Err { _0: AllocError },
 }
 
 // Full name: core::result::Result::<NonNull::<[u8]>, AllocError>
 #[diagnostic_item("Result")]
 pub enum Result::<NonNull::<[u8]>, AllocError> {
-  Ok(0: NonNull::<[u8]>),
-  Err(0: AllocError),
+  Ok { _0: NonNull::<[u8]> },
+  Err { _0: AllocError },
 }
 
 // Full name: alloc::alloc::__rust_alloc
@@ -1465,29 +1487,30 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _19: Alignment; // anonymous local
     let _20: (); // anonymous local
     let _21: Alignment; // anonymous local
-    let _22: NonNull::<u8>; // anonymous local
-    let _23: usize; // anonymous local
-    let _24: (); // anonymous local
-    let _25: *mut (); // anonymous local
-    let v_26: NonNull::<u8>; // local
+    let _22: bool; // anonymous local
+    let _23: NonNull::<u8>; // anonymous local
+    let _24: usize; // anonymous local
+    let _25: (); // anonymous local
+    let _26: *mut (); // anonymous local
     let v_27: NonNull::<u8>; // local
-    let ptr_28: *mut [u8]; // local
-    let self_29: *mut u8; // local
-    let _30: (); // anonymous local
-    let _31: *mut (); // anonymous local
-    let _32: isize; // anonymous local
-    let _33: bool; // anonymous local
+    let v_28: NonNull::<u8>; // local
+    let ptr_29: *mut [u8]; // local
+    let self_30: *mut u8; // local
+    let _31: (); // anonymous local
+    let _32: *mut (); // anonymous local
+    let _33: isize; // anonymous local
     let _34: bool; // anonymous local
-    let _35: (); // anonymous local
-    let _36: bool; // anonymous local
+    let _35: bool; // anonymous local
+    let _36: (); // anonymous local
     let _37: bool; // anonymous local
     let _38: bool; // anonymous local
-    let _39: *mut u8; // anonymous local
-    let _40: Option::<NonNull::<u8>>; // anonymous local
-    let _41: AllocError; // anonymous local
-    let _42: Result::<NonNull::<u8>, AllocError>; // anonymous local
-    let _43: AllocError; // anonymous local
-    let _44: Result::<NonNull::<[u8]>, AllocError>; // anonymous local
+    let _39: bool; // anonymous local
+    let _40: *mut u8; // anonymous local
+    let _41: Option::<NonNull::<u8>>; // anonymous local
+    let _42: AllocError; // anonymous local
+    let _43: Result::<NonNull::<u8>, AllocError>; // anonymous local
+    let _44: AllocError; // anonymous local
+    let _45: Result::<NonNull::<[u8]>, AllocError>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1498,9 +1521,9 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_16);
         storage_live(_18);
         storage_live(_20);
-        storage_live(_24);
-        storage_live(_30);
-        storage_live(_35);
+        storage_live(_25);
+        storage_live(_31);
+        storage_live(_36);
         storage_live(size);
         size = copy layout.size;
         switch copy size -> 0usize: bb1, otherwise: bb2;
@@ -1516,9 +1539,9 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         self_15 = transmute<Alignment, *mut u8>(copy _13);
         ptr_14 = *mut  (copy self_15, const 0usize);
         storage_dead(self_15);
-        storage_live(_34);
-        _34 = ub_checks<bool>;
-        if move _34 -> bb3 else -> bb4;
+        storage_live(_35);
+        _35 = ub_checks<bool>;
+        if move _35 -> bb3 else -> bb4;
     }
 
     bb2: {
@@ -1535,7 +1558,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         _4 = transmute<*mut [u8], NonNull::<[u8]>>(copy ptr_14);
         storage_dead(ptr_14);
         storage_dead(self_5);
-        _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { 0: move _4 };
+        _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { _0: move _4 };
         storage_dead(_4);
         goto bb9;
     }
@@ -1608,51 +1631,53 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_7);
         storage_live(self_8);
         storage_live(self_9);
-        storage_live(_23);
-        storage_live(_38);
+        storage_live(_22);
+        storage_live(_24);
         storage_live(_39);
-        _39 = cast<usize, *mut u8>(const 0usize);
-        _38 = copy raw_ptr != move _39;
-        _23 = cast<bool, usize>(move _38);
-        storage_dead(_38);
-        switch copy _23 -> 0usize: bb20, otherwise: bb21;
+        storage_live(_40);
+        _40 = cast<usize, *mut u8>(const 0usize);
+        _39 = copy raw_ptr != move _40;
+        _24 = cast<bool, usize>(move _39);
+        storage_dead(_39);
+        _22 = move _24 == const 0usize;
+        storage_dead(_24);
+        if move _22 -> bb20 else -> bb21;
     }
 
     bb20: {
-        storage_dead(_23);
-        storage_live(_40);
-        _40 = Option::<NonNull::<u8>>::None {  };
-        self_9 = move _40;
         storage_live(_41);
-        _41 = AllocError {  };
+        _41 = Option::<NonNull::<u8>>::None {  };
+        self_9 = move _41;
+        storage_dead(_22);
         storage_live(_42);
-        _42 = Result::<NonNull::<u8>, AllocError>::Err { 0: move _41 };
-        self_8 = move _42;
+        _42 = AllocError {  };
+        storage_live(_43);
+        _43 = Result::<NonNull::<u8>, AllocError>::Err { _0: move _42 };
+        self_8 = move _43;
         storage_dead(self_9);
         storage_dead(self_8);
-        storage_live(_32);
         storage_live(_33);
-        _32 = @discriminant(_10);
-        _33 = copy _32 == const 1isize;
-        _35 = assume(move _33) -> bb22 (unwind: bb23);
+        storage_live(_34);
+        _33 = @discriminant(_10);
+        _34 = copy _33 == const 1isize;
+        _36 = assume(move _34) -> bb22 (unwind: bb23);
     }
 
     bb21: {
-        storage_dead(_23);
-        storage_live(_22);
-        storage_live(_36);
-        _36 = ub_checks<bool>;
-        if move _36 -> bb24 else -> bb25;
+        storage_live(_23);
+        storage_live(_37);
+        _37 = ub_checks<bool>;
+        if move _37 -> bb24 else -> bb25;
     }
 
     bb22: {
-        storage_live(_43);
-        _43 = AllocError {  };
         storage_live(_44);
-        _44 = Result::<NonNull::<[u8]>, AllocError>::Err { 0: move _43 };
-        _0 = move _44;
+        _44 = AllocError {  };
+        storage_live(_45);
+        _45 = Result::<NonNull::<[u8]>, AllocError>::Err { _0: move _44 };
+        _0 = move _45;
+        storage_dead(_34);
         storage_dead(_33);
-        storage_dead(_32);
         storage_dead(_7);
         storage_dead(size);
         goto bb14;
@@ -1663,40 +1688,41 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb24: {
-        storage_live(_25);
-        _25 = cast<*mut u8, *mut ()>(copy raw_ptr);
-        _24 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _25) -> bb26 (unwind: bb27);
+        storage_live(_26);
+        _26 = cast<*mut u8, *mut ()>(copy raw_ptr);
+        _25 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _26) -> bb26 (unwind: bb27);
     }
 
     bb25: {
-        _22 = transmute<*mut u8, NonNull::<u8>>(copy raw_ptr);
-        self_9 = Option::<NonNull::<u8>>::Some { 0: move _22 };
+        _23 = transmute<*mut u8, NonNull::<u8>>(copy raw_ptr);
+        self_9 = Option::<NonNull::<u8>>::Some { _0: move _23 };
+        storage_dead(_23);
         storage_dead(_22);
-        storage_live(v_26);
-        v_26 = move (self_9 as variant Option::<NonNull::<u8>>::Some).0;
-        self_8 = Result::<NonNull::<u8>, AllocError>::Ok { 0: copy v_26 };
-        storage_dead(v_26);
-        storage_dead(self_9);
         storage_live(v_27);
-        v_27 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok).0;
-        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { 0: copy v_27 };
+        v_27 = move (self_9 as variant Option::<NonNull::<u8>>::Some)._0;
+        self_8 = Result::<NonNull::<u8>, AllocError>::Ok { _0: copy v_27 };
         storage_dead(v_27);
+        storage_dead(self_9);
+        storage_live(v_28);
+        v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
+        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue).0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
-        storage_live(ptr_28);
-        storage_live(self_29);
-        self_29 = transmute<NonNull::<u8>, *mut u8>(copy ptr_11);
-        ptr_28 = *mut  (copy self_29, copy size);
-        storage_dead(self_29);
-        storage_live(_37);
-        _37 = ub_checks<bool>;
-        if move _37 -> bb28 else -> bb29;
+        storage_live(ptr_29);
+        storage_live(self_30);
+        self_30 = transmute<NonNull::<u8>, *mut u8>(copy ptr_11);
+        ptr_29 = *mut  (copy self_30, copy size);
+        storage_dead(self_30);
+        storage_live(_38);
+        _38 = ub_checks<bool>;
+        if move _38 -> bb28 else -> bb29;
     }
 
     bb26: {
-        storage_dead(_25);
+        storage_dead(_26);
         goto bb25;
     }
 
@@ -1705,21 +1731,21 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb28: {
-        storage_live(_31);
-        _31 = transmute<NonNull::<u8>, *mut ()>(copy ptr_11);
-        _30 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _31) -> bb30 (unwind: bb31);
+        storage_live(_32);
+        _32 = transmute<NonNull::<u8>, *mut ()>(copy ptr_11);
+        _31 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _32) -> bb30 (unwind: bb31);
     }
 
     bb29: {
-        _12 = transmute<*mut [u8], NonNull::<[u8]>>(copy ptr_28);
-        storage_dead(ptr_28);
-        _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { 0: move _12 };
+        _12 = transmute<*mut [u8], NonNull::<[u8]>>(copy ptr_29);
+        storage_dead(ptr_29);
+        _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { _0: move _12 };
         storage_dead(_12);
         goto bb9;
     }
 
     bb30: {
-        storage_dead(_31);
+        storage_dead(_32);
         goto bb29;
     }
 
@@ -1776,7 +1802,7 @@ pub fn allocate_zeroed(self: &'_ Global, layout: Layout) -> Result::<NonNull::<[
 }
 
 struct (_,)::<Layout> {
-  Layout,
+  _0: Layout,
 }
 
 // Full name: alloc::alloc::handle_alloc_error::ct_error
@@ -1816,7 +1842,7 @@ pub fn handle_alloc_error(layout: Layout) -> !
 {
     let _0: !; // return
     let layout: Layout; // arg #1
-    let _2: (_,)::<Layout>; // anonymous local
+    let _2: (Layout,); // anonymous local
     let _3: Layout; // anonymous local
 
     bb0: {
@@ -1826,7 +1852,7 @@ pub fn handle_alloc_error(layout: Layout) -> !
         _3 = copy layout;
         _2 = (move _3,);
         storage_dead(_3);
-        _0 = ct_error(move _2.0) -> bb1 (unwind: bb2);
+        _0 = ct_error(move _2._0) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -2014,7 +2040,7 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
     let self_24: Result::<Layout, LayoutError>; // local
     let _25: u64; // anonymous local
     let b: bool; // local
-    let _27: (_, _)::<u64, bool>; // anonymous local
+    let _27: (u64, bool); // anonymous local
     let _28: u64; // anonymous local
     let _29: u64; // anonymous local
     let size: usize; // local
@@ -2066,8 +2092,8 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_dead(_29);
         storage_dead(_28);
         storage_live(_25);
-        _25 = copy _27.0;
-        b = copy _27.1;
+        _25 = copy _27._0;
+        b = copy _27._1;
         storage_dead(_27);
         size = cast<u64, usize>(copy _25);
         storage_dead(_25);
@@ -2096,7 +2122,7 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_live(_43);
         _43 = LayoutError {  };
         storage_live(_44);
-        _44 = Result::<Layout, LayoutError>::Err { 0: move _43 };
+        _44 = Result::<Layout, LayoutError>::Err { _0: move _43 };
         self_24 = move _44;
         goto bb7;
     }
@@ -2108,17 +2134,17 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
     bb5: {
         storage_live(_33);
         _33 = Layout { size: copy size, align: copy elem_layout_42 };
-        self_24 = Result::<Layout, LayoutError>::Ok { 0: move _33 };
+        self_24 = Result::<Layout, LayoutError>::Ok { _0: move _33 };
         storage_dead(_33);
         storage_dead(_32);
         storage_live(t);
-        t = move (self_24 as variant Result::<Layout, LayoutError>::Ok).0;
-        _5 = Result::<Layout, TryReserveError>::Ok { 0: copy t };
+        t = move (self_24 as variant Result::<Layout, LayoutError>::Ok)._0;
+        _5 = Result::<Layout, TryReserveError>::Ok { _0: copy t };
         storage_dead(t);
         storage_dead(self_24);
         storage_dead(size);
         storage_dead(elem_layout_41);
-        layout = copy (_5 as variant Result::<Layout, TryReserveError>::Ok).0;
+        layout = copy (_5 as variant Result::<Layout, TryReserveError>::Ok)._0;
         storage_dead(_5);
         storage_live(_7);
         _7 = copy layout.size;
@@ -2129,7 +2155,7 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_live(_45);
         _45 = LayoutError {  };
         storage_live(_46);
-        _46 = Result::<Layout, LayoutError>::Err { 0: move _45 };
+        _46 = Result::<Layout, LayoutError>::Err { _0: move _45 };
         self_24 = move _46;
         storage_dead(_32);
         goto bb7;
@@ -2143,7 +2169,7 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         _47 = TryReserveErrorKind::CapacityOverflow {  };
         storage_live(_48);
         _48 = TryReserveError { kind: move _47 };
-        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Err { 0: move _48 };
+        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Err { _0: move _48 };
         storage_dead(_5);
         goto bb10;
     }
@@ -2161,11 +2187,11 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         _37 = Unique::<u8> { pointer: copy _38, _marker: move _49 };
         storage_dead(_38);
         storage_live(_50);
-        _50 = UsizeNoHighBit { 0: const 0usize };
+        _50 = UsizeNoHighBit { _0: const 0usize };
         _8 = RawVecInner::<Global> { ptr: copy _37, cap: move _50, alloc: copy alloc_9 };
         storage_dead(_37);
         storage_dead(alloc_9);
-        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Ok { 0: move _8 };
+        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Ok { _0: move _8 };
         storage_dead(_8);
         goto bb10;
     }
@@ -2221,7 +2247,7 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
     }
 
     bb19: {
-        ptr = copy (result as variant Result::<NonNull::<[u8]>, AllocError>::Ok).0;
+        ptr = copy (result as variant Result::<NonNull::<[u8]>, AllocError>::Ok)._0;
         storage_live(_18);
         storage_live(_19);
         storage_live(pointer);
@@ -2244,7 +2270,7 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_dead(_22);
         storage_dead(_21);
         storage_dead(_19);
-        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Ok { 0: move _18 };
+        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Ok { _0: move _18 };
         storage_dead(_18);
         storage_dead(result);
         goto bb10;
@@ -2256,7 +2282,7 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         self_17 = TryReserveErrorKind::AllocError { layout: copy layout, non_exhaustive: const () };
         _16 = TryReserveError { kind: copy self_17 };
         storage_dead(self_17);
-        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Err { 0: move _16 };
+        _0 = Result::<RawVecInner::<Global>, TryReserveError>::Err { _0: move _16 };
         storage_dead(_16);
         storage_dead(result);
         goto bb10;
@@ -2307,7 +2333,7 @@ fn with_capacity_in::<Global>(capacity: usize, alloc: Global, elem_layout: Layou
     }
 
     bb3: {
-        this = move (_4 as variant Result::<RawVecInner::<Global>, TryReserveError>::Ok).0;
+        this = move (_4 as variant Result::<RawVecInner::<Global>, TryReserveError>::Ok)._0;
         storage_live(cond);
         storage_live(_7);
         storage_live(_10);
@@ -2319,7 +2345,7 @@ fn with_capacity_in::<Global>(capacity: usize, alloc: Global, elem_layout: Layou
 
     bb4: {
         storage_live(err);
-        err = move (_4 as variant Result::<RawVecInner::<Global>, TryReserveError>::Err).0;
+        err = move (_4 as variant Result::<RawVecInner::<Global>, TryReserveError>::Err)._0;
         _9 = handle_error(move err) -> bb8 (unwind: bb9);
     }
 

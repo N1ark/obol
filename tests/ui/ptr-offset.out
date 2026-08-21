@@ -32,8 +32,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -48,8 +48,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -79,7 +79,7 @@ pub struct Arguments::<'_> {
 }
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -128,10 +128,13 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 }
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::intrinsics::cold_path
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
 pub fn cold_path()
 = <intrinsic:cold_path>
 
@@ -155,6 +158,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
@@ -172,6 +176,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -229,6 +234,7 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -240,9 +246,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -264,8 +269,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -277,7 +281,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -288,13 +291,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -311,11 +313,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 }
 
 struct (_, _)::<Arguments::<'_>, bool> {
-  Arguments::<'_>,
-  bool,
+  _0: Arguments::<'_>,
+  _1: bool,
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
+#[track_caller]
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
@@ -337,12 +340,13 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
+#[track_caller]
 pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
+    let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -356,7 +360,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = compiletime(move _3.0, move _3.1) -> bb1 (unwind: bb2);
+        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -369,6 +373,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::panicking::panic
+#[track_caller]
 #[lang_item(Panic)]
 pub fn panic(expr: &'_ str) -> !
 {
@@ -406,16 +411,17 @@ pub fn panic(expr: &'_ str) -> !
 }
 
 struct (_, _)::<u64, bool> {
-  u64,
-  bool,
+  _0: u64,
+  _1: bool,
 }
 
 struct (_, _)::<i64, bool> {
-  i64,
-  bool,
+  _0: i64,
+  _1: bool,
 }
 
 // Full name: core::ptr::const_ptr::{*const T}::offset::precondition_check
+#[track_caller]
 fn precondition_check(this: *const (), count: isize, size: usize)
 {
     let _0: (); // return
@@ -430,7 +436,7 @@ fn precondition_check(this: *const (), count: isize, size: usize)
     let self: usize; // local
     let _10: i64; // anonymous local
     let b: bool; // local
-    let _12: (_, _)::<i64, bool>; // anonymous local
+    let _12: (i64, bool); // anonymous local
     let _13: i64; // anonymous local
     let _14: i64; // anonymous local
     let byte_offset: isize; // local
@@ -439,7 +445,7 @@ fn precondition_check(this: *const (), count: isize, size: usize)
     let overflow: bool; // local
     let _19: bool; // anonymous local
     let _20: bool; // anonymous local
-    let _21: (_, _)::<u64, bool>; // anonymous local
+    let _21: (u64, bool); // anonymous local
     let _22: u64; // anonymous local
     let _23: u64; // anonymous local
     let _24: NonNull::<u8>; // anonymous local
@@ -472,8 +478,8 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_dead(_14);
         storage_dead(_13);
         storage_live(_10);
-        _10 = copy _12.0;
-        b = copy _12.1;
+        _10 = copy _12._0;
+        b = copy _12._1;
         storage_dead(_12);
         byte_offset = cast<i64, isize>(copy _10);
         storage_dead(_10);
@@ -500,7 +506,7 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         _21 = move _22 checked.+ move _23;
         storage_dead(_23);
         storage_dead(_22);
-        _20 = copy _21.1;
+        _20 = copy _21._1;
         storage_dead(_21);
         storage_dead(_17);
         storage_live(_19);
@@ -571,6 +577,7 @@ fn precondition_check(this: *const (), count: isize, size: usize)
 }
 
 // Full name: core::ptr::const_ptr::{*const T}::offset::<i32>
+#[track_caller]
 pub fn offset::<i32>(self: *const i32, count: isize) -> *const i32
 {
     let _0: *const i32; // return

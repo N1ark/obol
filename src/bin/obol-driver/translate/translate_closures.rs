@@ -46,7 +46,8 @@ impl ItemTransCtx<'_, '_> {
             let field = Field {
                 span: def_span,
                 attr_info: AttrInfo::default(),
-                name: Some(field_name),
+                name: field_name,
+                is_positional: false,
                 ty,
             };
             fields.push(field);
@@ -63,7 +64,7 @@ impl ItemTransCtx<'_, '_> {
         _span: Span,
         _closure: &ty::ClosureDef,
         args: &ty::GenericArgs,
-    ) -> Result<ItemSource, Error> {
+    ) -> Result<TypeSource, Error> {
         let signature = FunSig {
             is_unsafe: false,
             abi: Abi::rust(),
@@ -79,7 +80,7 @@ impl ItemTransCtx<'_, '_> {
             rustc_middle::ty::ClosureKind::Fn => ClosureKind::Fn,
         };
 
-        Ok(ItemSource::Closure {
+        Ok(TypeSource::Closure {
             info: ClosureInfo {
                 kind,
                 // HACK: put whatever ^-^'
@@ -176,7 +177,7 @@ impl ItemTransCtx<'_, '_> {
             let args_tupled = locals.new_var(Some("args".to_string()), args_tuple_ty.clone());
             let state = locals.new_var(Some("state".to_string()), state_ty.clone());
 
-            let args_tuple_ref = args_tuple_ty.kind().as_adt_ref().unwrap().clone();
+            let args_tuple_ref = args_tuple_ty.kind().as_adt().unwrap().clone();
             statements.push(mk_stt(StatementKind::Assign(
                 args_tupled.clone(),
                 Rvalue::Aggregate(
@@ -185,7 +186,7 @@ impl ItemTransCtx<'_, '_> {
                 ),
             )));
 
-            let state_ty_adt = state_ty.kind().as_adt_ref().unwrap();
+            let state_ty_adt = state_ty.kind().as_adt().unwrap();
             statements.push(mk_stt(StatementKind::Assign(
                 state.clone(),
                 Rvalue::Aggregate(AggregateKind::Adt(state_ty_adt.clone(), None, None), vec![]),
@@ -216,15 +217,12 @@ impl ItemTransCtx<'_, '_> {
             Body::Unstructured(body)
         };
 
-        let src = self.translate_closure_src_info(span, closure, args)?;
-
         Ok(FunDecl {
             def_id,
             item_meta,
             signature: Box::new(signature),
-            src,
+            src: FunSource::Normal,
             generics: GenericParams::empty(),
-            is_global_initializer: None,
             body,
         })
     }

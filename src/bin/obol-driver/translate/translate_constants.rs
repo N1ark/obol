@@ -9,7 +9,7 @@ use itertools::Itertools;
 use log::trace;
 use rustc_apfloat::{Float, ieee};
 use rustc_middle::mir::interpret::PointerArithmetic;
-use rustc_public::{abi, mir, ty};
+use rustc_public::{CrateDefType, abi, mir, ty};
 use rustc_public_bridge::IndexedVal;
 use std::io::Read;
 
@@ -353,7 +353,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     }
                 }
             }
-            TyKind::Adt(_, Some(BuiltinTy::Tuple)) => {
+            TyKind::Adt(tref) if tref.is_tuple() => {
                 let rtyk = rty.kind();
                 let ty::RigidTy::Tuple(rtys) = rtyk.rigid().unwrap() else {
                     unreachable!("Unexpected rigid type for tuple: {rty:?}");
@@ -383,7 +383,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .try_collect()?;
                 ConstantExprKind::Adt(None, fields)
             }
-            TyKind::Adt(_, None) => {
+            TyKind::Adt(tref) if tref.builtin.is_none() => {
                 let rtyk = rty.kind();
                 let ty::RigidTy::Adt(adt, generics) = rtyk.rigid().unwrap() else {
                     unreachable!("Unexpected rigid type for adt: {rty:?}");
@@ -604,11 +604,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .kind
             }
 
-            TyKind::Adt(_, Some(BuiltinTy::Box)) => {
+            TyKind::Adt(tref) if tref.is_box() => {
                 unreachable!("We never create builtin boxes");
             }
             // An unsized `str` held directly in a constant: its data is the raw UTF-8 bytes.
-            TyKind::Adt(_, Some(BuiltinTy::Str)) => {
+            TyKind::Adt(tref) if tref.is_str() => {
                 let len = unsized_len.expect("str constant without a length");
                 let data = &alloc.bytes.as_slice()[offset..offset + len];
                 let as_str = unsafe { String::from_utf8_unchecked(Self::as_init(data)?) };
@@ -644,6 +644,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 trace!("Gave up for raw memory of type {ty:?} with alloc {alloc:?}");
                 ConstantExprKind::RawMemory(self.as_charon_bytes(span, alloc, offset, size))
             }
+            TyKind::Adt(tref) => {
+                unreachable!("Unhandled builtin type in constant: {:?}", tref.builtin);
+            }
         };
         Ok(ConstantExpr {
             kind,
@@ -676,7 +679,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     ConstantExprKind::Array(vec![cexpr; len as usize])
                 }
             }
-            TyKind::Adt(_, None | Some(BuiltinTy::Tuple)) => {
+            TyKind::Adt(tref) if tref.builtin.is_none() || tref.is_tuple() => {
                 let rtyk = rty.kind();
                 let (variant, rtys) = match rtyk.rigid().unwrap() {
                     ty::RigidTy::Tuple(rtys) => (None, rtys.clone()),

@@ -55,8 +55,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -71,8 +71,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -129,59 +129,69 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
     let _0: Result::<(), Error>; // return
     let self: &'_ i32; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: u32; // anonymous local
-    let _4: u32; // anonymous local
+    let _3: bool; // anonymous local
+    let _4: bool; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
+    let _7: u32; // anonymous local
+    let _8: u32; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        storage_live(_4);
-        _4 = copy (*f).options.flags;
-        _3 = move _4 & const 33554432u32;
-        storage_dead(_4);
-        switch copy _3 -> 0u32: bb1, otherwise: bb2;
-    }
-
-    bb1: {
-        storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
         _6 = copy (*f).options.flags;
-        _5 = move _6 & const 67108864u32;
+        _5 = move _6 & const 33554432u32;
         storage_dead(_6);
-        switch copy _5 -> 0u32: bb3, otherwise: bb4;
+        _3 = move _5 != const 0u32;
+        storage_dead(_5);
+        if move _3 -> bb1 else -> bb2;
+    }
+
+    bb1: {
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        storage_dead(_3);
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb5 (unwind: bb6);
+        storage_live(_4);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = copy (*f).options.flags;
+        _7 = move _8 & const 67108864u32;
+        storage_dead(_8);
+        _4 = move _7 != const 0u32;
+        storage_dead(_7);
+        if move _4 -> bb5 else -> bb6;
     }
 
     bb3: {
-        storage_dead(_5);
-        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb5 (unwind: bb7);
-    }
-
-    bb4: {
-        storage_dead(_5);
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb5 (unwind: bb8);
-    }
-
-    bb5: {
+        storage_dead(_3);
         return;
     }
 
-    bb6: {
+    bb4: {
         unwind_continue;
+    }
+
+    bb5: {
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb8);
+    }
+
+    bb6: {
+        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb7 (unwind: bb9);
     }
 
     bb7: {
-        unwind_continue;
+        storage_dead(_4);
+        goto bb3;
     }
 
     bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
         unwind_continue;
     }
 }
@@ -283,7 +293,7 @@ impl "impl_Display_for_i32" Display for i32 {
 #[diagnostic_item("Option")]
 pub enum Option::<Arguments::<'_>> {
   None,
-  Some(0: Arguments::<'_>),
+  Some { _0: Arguments::<'_> },
 }
 
 // Full name: core::panicking::AssertKind
@@ -294,10 +304,12 @@ pub enum AssertKind {
 }
 
 // Full name: core::panicking::assert_failed_inner
+#[track_caller]
 fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
 = <missing>
 
 // Full name: core::panicking::assert_failed::<i32, i32>
+#[track_caller]
 pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32, args: Option::<Arguments::<'_>>) -> !
 {
     let _0: !; // return
@@ -342,32 +354,32 @@ const anon_const_1: u32 = 0u32
 const anon_const_2: u32 = 1u32
 
 struct (_,)::<&'_ i32> {
-  &'_ i32,
+  _0: &'_ i32,
 }
 
 struct (_, _)::<&'_ i32, &'_ i32> {
-  &'_ i32,
-  &'_ i32,
+  _0: &'_ i32,
+  _1: &'_ i32,
 }
 
 struct (_,)::<&'_ u32> {
-  &'_ u32,
+  _0: &'_ u32,
 }
 
 // Full name: test_crate::Foo::<'_, i32>
 struct Foo::<'_, i32> {
-  0: &'_ i32,
+  _0: &'_ i32,
 }
 
 struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure {
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((_,)::<&'_ u32>) -> i32, (_,)::<&'_ i32>>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, spread_args: (_,)::<&'_ u32>) -> i32
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, spread_args: (&'_ u32,)) -> i32
 {
     let _0: i32; // return
     let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // arg #1
-    let spread_args: (_,)::<&'_ u32>; // arg #2
+    let spread_args: (&'_ u32,); // arg #2
     let _z: &'_ u32; // local
     let _4: &'_ i32; // anonymous local
     let _5: &'_ i32; // anonymous local
@@ -376,7 +388,7 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::
         storage_live(_0);
         storage_live(_z);
         storage_live(_5);
-        _z = move spread_args.0;
+        _z = move spread_args._0;
         storage_live(_4);
         _5 = copy (*_1).upvar_0;
         _4 = &(*_5);
@@ -397,11 +409,11 @@ struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closu
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((_,)::<&'_ u32>) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (_,)::<&'_ i32>>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, spread_args: (_,)::<&'_ u32>) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, spread_args: (&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure
 {
     let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // return
     let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // arg #1
-    let spread_args: (_,)::<&'_ u32>; // arg #2
+    let spread_args: (&'_ u32,); // arg #2
     let _y: &'_ u32; // local
     let _4: &'_ i32; // anonymous local
     let _5: &'_ i32; // anonymous local
@@ -410,7 +422,7 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32,
         storage_live(_0);
         storage_live(_y);
         storage_live(_5);
-        _y = move spread_args.0;
+        _y = move spread_args._0;
         storage_live(_4);
         _5 = copy (*_1).upvar_0;
         _4 = &(*_5);
@@ -424,7 +436,7 @@ struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure {
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (_,)::<&'_ i32>>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure, spread_args: ()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure, spread_args: ()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure
 {
     let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // return
     let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // arg #1
@@ -457,10 +469,10 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
     let _7: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // anonymous local
     let _8: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // anonymous local
     let _9: (); // anonymous local
-    let _10: (_,)::<&'_ u32>; // anonymous local
+    let _10: (&'_ u32,); // anonymous local
     let _11: &'_ u32; // anonymous local
     let _12: &'_ u32; // anonymous local
-    let _13: (_,)::<&'_ u32>; // anonymous local
+    let _13: (&'_ u32,); // anonymous local
     let _14: &'_ u32; // anonymous local
     let _15: &'_ u32; // anonymous local
     let _16: &'_ u32; // anonymous local
@@ -488,7 +500,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         _8 = &clo;
         storage_live(_9);
         _9 = ();
-        _7 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (_,)::<&'_ i32>>(move _8, move _9) -> bb1 (unwind: bb2);
+        _7 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (&'_ i32,)>(move _8, move _9) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -504,7 +516,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         _12 = &(*_17);
         _11 = &(*_12);
         _10 = (move _11,);
-        _5 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((_,)::<&'_ u32>) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (_,)::<&'_ i32>>(move _6, move _10) -> bb3 (unwind: bb4);
+        _5 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (&'_ i32,)>(move _6, move _10) -> bb3 (unwind: bb4);
     }
 
     bb2: {
@@ -525,7 +537,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         _15 = &(*_16);
         _14 = &(*_15);
         _13 = (move _14,);
-        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((_,)::<&'_ u32>) -> i32, (_,)::<&'_ i32>>(move _4, move _13) -> bb5 (unwind: bb6);
+        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(move _4, move _13) -> bb5 (unwind: bb6);
     }
 
     bb4: {
@@ -557,7 +569,7 @@ fn main()
     let foo: Foo::<'_, i32>; // local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
-    let _5: (_, _)::<&'_ i32, &'_ i32>; // anonymous local
+    let _5: (&'_ i32, &'_ i32); // anonymous local
     let _6: &'_ i32; // anonymous local
     let _7: i32; // anonymous local
     let _8: &'_ &'_ i32; // anonymous local
@@ -591,7 +603,7 @@ fn main()
         storage_live(_4);
         _4 = &x;
         _3 = &(*_4);
-        foo = Foo::<'_, i32> { 0: move _3 };
+        foo = Foo::<'_, i32> { _0: move _3 };
         storage_dead(_3);
         storage_dead(_4);
         storage_live(_5);
@@ -618,9 +630,9 @@ fn main()
         storage_dead(_11);
         storage_dead(_6);
         storage_live(left_val);
-        left_val = copy _5.0;
+        left_val = copy _5._0;
         storage_live(right_val);
-        right_val = copy _5.1;
+        right_val = copy _5._1;
         storage_live(_14);
         storage_live(_15);
         _15 = copy (*left_val);

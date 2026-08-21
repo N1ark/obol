@@ -32,8 +32,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -48,8 +48,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -79,7 +79,7 @@ pub struct Arguments::<'_> {
 }
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -202,8 +202,8 @@ fn drop_glue::<Foo>(_1: &'_ mut Foo)
 }
 
 struct (_, _)::<u8, bool> {
-  u8,
-  bool,
+  _0: u8,
+  _1: bool,
 }
 
 // Full name: test_crate::{impl Drop for Foo}
@@ -212,6 +212,7 @@ impl "impl_Drop_for_Foo" Drop for Foo {
 }
 
 // Full name: test_crate::main
+#[allow(arithmetic_overflow)]
 fn main()
 {
     let _0: (); // return

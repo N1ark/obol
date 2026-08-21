@@ -6,7 +6,7 @@
 #[diagnostic_item("Option")]
 pub enum Option::<u32> {
   None,
-  Some(0: u32),
+  Some { _0: u32 },
 }
 
 struct () {}
@@ -76,7 +76,7 @@ fn foo(opt: Option::<u32>)
 
     bb1: {
         storage_live(x_5);
-        x_5 = &(opt as variant Option::<u32>::Some).0;
+        x_5 = &(opt as variant Option::<u32>::Some)._0;
         storage_live(_6);
         storage_live(_7);
         _7 = copy (*x_5);
@@ -92,7 +92,7 @@ fn foo(opt: Option::<u32>)
         storage_dead(_7);
         storage_dead(_6);
         storage_live(x_4);
-        x_4 = copy (opt as variant Option::<u32>::Some).0;
+        x_4 = copy (opt as variant Option::<u32>::Some)._0;
         _2 = do_something() -> bb7 (unwind: bb8);
     }
 

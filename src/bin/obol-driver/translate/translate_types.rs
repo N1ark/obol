@@ -1,4 +1,5 @@
 extern crate rustc_abi;
+extern crate rustc_attr_ir;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
@@ -14,7 +15,7 @@ use charon_lib::{raise_error, register_error};
 use core::convert::*;
 use log::trace;
 use rustc_middle::ty as rustc_ty;
-use rustc_public::{mir, ty};
+use rustc_public::{CrateDefType, mir, ty};
 use rustc_public_bridge::IndexedVal;
 
 impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
@@ -126,10 +127,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     }
 
     pub fn maybe_uninit_bytes(&mut self, span: Span, len: usize) -> Result<Ty, Error> {
-        let maybe_uninit = self
-            .t_ctx
-            .tcx
-            .require_lang_item(rustc_hir::LangItem::MaybeUninit, rustc_span::DUMMY_SP);
+        let maybe_uninit = self.t_ctx.tcx.require_lang_item(
+            rustc_attr_ir::lang_items::LangItem::MaybeUninit,
+            rustc_span::DUMMY_SP,
+        );
         let u8_ty = ty::Ty::from_rigid_kind(ty::RigidTy::Uint(ty::UintTy::U8));
         let len_cg = ty::TyConst::try_from_target_usize(len as u64)?;
         let array_ty = ty::Ty::new_array_with_const_len(u8_ty, len_cg);
@@ -284,15 +285,15 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 trace!("Adt: {:?}", item.0);
                 let id = self.register_type_decl_id(span, *item, generics.clone());
                 // no generics since it's monomorphic
-                let tref = TypeDeclRef::new(id, GenericArgs::empty());
+                let tref = TypeDeclRef::new(id, GenericArgs::empty(), None);
 
                 // Return the instantiated ADT
-                TyKind::Adt(tref, None)
+                TyKind::Adt(tref)
             }
             ty::RigidTy::Str => {
                 let id = self.register_str_decl_id(span);
-                let tref = TypeDeclRef::new(id, GenericArgs::empty());
-                TyKind::Adt(tref, Some(BuiltinTy::Str))
+                let tref = TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinTy::Str));
+                TyKind::Adt(tref)
             }
             ty::RigidTy::Array(ty, const_param) => {
                 let c = self.translate_tyconst_to_const_expr(span, const_param)?;
@@ -323,13 +324,13 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .map(|ty| self.translate_ty(span, *ty))
                     .try_collect()?;
                 let id = self.register_tuple_decl_id(span, mir_ty, params);
-                let tref = TypeDeclRef::new(id, GenericArgs::empty());
-                TyKind::Adt(tref, Some(BuiltinTy::Tuple))
+                let tref = TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinTy::Tuple));
+                TyKind::Adt(tref)
             }
 
             ty::RigidTy::Foreign(fdef) => {
                 let type_id = self.register_foreign_type_decl_id(span, *fdef);
-                TyKind::Adt(TypeDeclRef::new(type_id, GenericArgs::empty()), None)
+                TyKind::Adt(TypeDeclRef::new(type_id, GenericArgs::empty(), None))
             }
 
             ty::RigidTy::FnPtr(bsig) => {
@@ -373,10 +374,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             }
             ty::RigidTy::Closure(def, gargs) => {
                 let id = self.register_closure_type_decl_id(span, *def, gargs.clone());
-                let tref = TypeDeclRef::new(id, GenericArgs::empty());
+                let tref = TypeDeclRef::new(id, GenericArgs::empty(), None);
 
                 // Return the instantiated ADT
-                TyKind::Adt(tref, None)
+                TyKind::Adt(tref)
             }
 
             ty::RigidTy::Dynamic(_existential_preds, _region) => {
@@ -855,12 +856,19 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 
                 // Retrieve the field name.
                 let field_name = field_def.name.clone();
+                let is_positional = field_name.parse::<usize>().is_ok();
+                let field_name = if is_positional {
+                    format!("_{j}")
+                } else {
+                    field_name
+                };
 
                 // Store the field
                 let field = Field {
                     span: def_span,
                     attr_info: AttrInfo::default(),
-                    name: Some(field_name),
+                    name: field_name,
+                    is_positional,
                     ty,
                 };
                 fields.push(field);

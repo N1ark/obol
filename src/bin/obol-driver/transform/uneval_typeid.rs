@@ -50,8 +50,8 @@ impl UllbcPass for Transform {
             ctx.translated.global_decls.remove(*gid);
             // Also remove the init function for this global.
             // We have to find it through the global decl, but the global decl has already been
-            // removed above. We instead remove all fun_decls whose is_global_initializer points
-            // to one of our removed globals.
+            // removed above. We instead remove all fun_decls whose `FunSource::GlobalInitializer`
+            // points to one of our removed globals.
         }
         // Remove all init functions that initialised a now-deleted TypeId marker global.
         let init_ids_to_remove: Vec<FunDeclId> = ctx
@@ -59,8 +59,8 @@ impl UllbcPass for Transform {
             .fun_decls
             .iter()
             .filter(|f| {
-                f.is_global_initializer
-                    .is_some_and(|gid| self.typeid_globals.contains_key(&gid))
+                matches!(&f.src, FunSource::GlobalInitializer(gref)
+                    if self.typeid_globals.contains_key(&gref.id))
             })
             .map(|f| f.def_id)
             .collect();

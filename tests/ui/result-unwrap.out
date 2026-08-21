@@ -43,8 +43,8 @@ fn drop_glue::<u32>(_1: &'_ mut u32)
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::fmt::num::imp::{impl Display for u32}::fmt
@@ -65,59 +65,69 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
     let _0: Result::<(), Error>; // return
     let self: &'_ u32; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: u32; // anonymous local
-    let _4: u32; // anonymous local
+    let _3: bool; // anonymous local
+    let _4: bool; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
+    let _7: u32; // anonymous local
+    let _8: u32; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        storage_live(_4);
-        _4 = copy (*f).options.flags;
-        _3 = move _4 & const 33554432u32;
-        storage_dead(_4);
-        switch copy _3 -> 0u32: bb1, otherwise: bb2;
-    }
-
-    bb1: {
-        storage_dead(_3);
         storage_live(_5);
         storage_live(_6);
         _6 = copy (*f).options.flags;
-        _5 = move _6 & const 67108864u32;
+        _5 = move _6 & const 33554432u32;
         storage_dead(_6);
-        switch copy _5 -> 0u32: bb3, otherwise: bb4;
+        _3 = move _5 != const 0u32;
+        storage_dead(_5);
+        if move _3 -> bb1 else -> bb2;
+    }
+
+    bb1: {
+        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb3 (unwind: bb4);
     }
 
     bb2: {
-        storage_dead(_3);
-        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb5 (unwind: bb6);
+        storage_live(_4);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = copy (*f).options.flags;
+        _7 = move _8 & const 67108864u32;
+        storage_dead(_8);
+        _4 = move _7 != const 0u32;
+        storage_dead(_7);
+        if move _4 -> bb5 else -> bb6;
     }
 
     bb3: {
-        storage_dead(_5);
-        _0 = impl_Display_for_u32::fmt(move self, move f) -> bb5 (unwind: bb7);
-    }
-
-    bb4: {
-        storage_dead(_5);
-        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb5 (unwind: bb8);
-    }
-
-    bb5: {
+        storage_dead(_3);
         return;
     }
 
-    bb6: {
+    bb4: {
         unwind_continue;
+    }
+
+    bb5: {
+        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb7 (unwind: bb8);
+    }
+
+    bb6: {
+        _0 = impl_Display_for_u32::fmt(move self, move f) -> bb7 (unwind: bb9);
     }
 
     bb7: {
-        unwind_continue;
+        storage_dead(_4);
+        goto bb3;
     }
 
     bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
         unwind_continue;
     }
 }
@@ -188,18 +198,20 @@ impl "impl_Display_for_u32" Display for u32 {
 // Full name: core::result::Result::<u32, u32>
 #[diagnostic_item("Result")]
 pub enum Result::<u32, u32> {
-  Ok(0: u32),
-  Err(0: u32),
+  Ok { _0: u32 },
+  Err { _0: u32 },
 }
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::result::unwrap_failed
+#[track_caller]
 fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
 = <missing>
 
+#[track_caller]
 pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u32>) -> u32
 {
     let t: u32; // return
@@ -219,13 +231,13 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
     }
 
     bb1: {
-        t = move (self as variant Result::<u32, u32>::Ok).0;
+        t = move (self as variant Result::<u32, u32>::Ok)._0;
         return;
     }
 
     bb2: {
         storage_live(e);
-        e = move (self as variant Result::<u32, u32>::Err).0;
+        e = move (self as variant Result::<u32, u32>::Err)._0;
         storage_live(_5);
         storage_live(_6);
         _6 = &e;

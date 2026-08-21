@@ -7,15 +7,15 @@ struct () {}
 trait FakeTrait
 
 struct (_, _)::<i32, i32> {
-  i32,
-  i32,
+  _0: i32,
+  _1: i32,
 }
 
-// Full name: test_crate::drop::<(_, _)::<i32, i32>>
-fn drop::<(_, _)::<i32, i32>>(_1: (_, _)::<i32, i32>)
+// Full name: test_crate::drop::<(i32, i32)>
+fn drop::<(i32, i32)>(_1: (i32, i32))
 {
     let _0: (); // return
-    let _1: (_, _)::<i32, i32>; // arg #1
+    let _1: (i32, i32); // arg #1
 
     bb0: {
         storage_live(_0);
@@ -29,9 +29,9 @@ fn drop::<(_, _)::<i32, i32>>(_1: (_, _)::<i32, i32>)
 fn main()
 {
     let _0: (); // return
-    let x: (_, _)::<i32, i32>; // local
+    let x: (i32, i32); // local
     let _2: (); // anonymous local
-    let _3: (_, _)::<i32, i32>; // anonymous local
+    let _3: (i32, i32); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -41,7 +41,7 @@ fn main()
         storage_live(_2);
         storage_live(_3);
         _3 = copy x;
-        _2 = drop::<(_, _)::<i32, i32>>(move _3) -> bb1 (unwind: bb2);
+        _2 = drop::<(i32, i32)>(move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {

@@ -226,6 +226,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
         });
         self.translated.trait_decls.push(TraitDecl {
             def_id: TraitDeclId::ZERO,
+            src: TraitDeclSource::Normal,
             item_meta: ItemMeta {
                 name: fake_name,
                 span: Span::dummy(),
@@ -241,7 +242,11 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             consts: IndexMap::new(),
             types: IndexMap::new(),
             methods: IndexMap::new(),
-            vtable: Some(TypeDeclRef::new(TypeDeclId::UNIT, GenericArgs::empty())),
+            vtable: Some(TypeDeclRef::new(
+                TypeDeclId::UNIT,
+                GenericArgs::empty(),
+                Some(BuiltinTy::Tuple),
+            )),
         });
     }
 }
@@ -286,9 +291,8 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
-            builtin: None,
             kind,
-            src: ItemSource::TopLevel,
+            src: TypeSource::Normal,
             layout,
             ptr_metadata,
         };
@@ -311,9 +315,8 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
-            builtin: None,
             kind,
-            src: ItemSource::TopLevel,
+            src: TypeSource::Normal,
             layout: Default::default(),
             ptr_metadata: PtrMetadata::None,
         };
@@ -334,13 +337,15 @@ impl ItemTransCtx<'_, '_> {
             .fields
             .iter()
             .cloned()
-            .map(|ty| Field {
+            .enumerate()
+            .map(|(i, ty)| Field {
                 span,
                 attr_info: AttrInfo {
                     public: true,
                     ..AttrInfo::default()
                 },
-                name: None,
+                name: format!("_{i}"),
+                is_positional: true,
                 ty,
             })
             .collect();
@@ -359,9 +364,8 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
-            builtin: Some(BuiltinTy::Tuple),
             kind: TypeDeclKind::Struct(fields),
-            src: ItemSource::TopLevel,
+            src: TypeSource::Builtin(BuiltinTy::Tuple),
             layout,
             ptr_metadata,
         })
@@ -381,7 +385,8 @@ impl ItemTransCtx<'_, '_> {
                 public: true,
                 ..AttrInfo::default()
             },
-            name: None,
+            name: "_0".to_string(),
+            is_positional: true,
             ty: Ty::mk_slice(u8_ty),
         }]
         .into_iter()
@@ -398,9 +403,8 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
-            builtin: Some(BuiltinTy::Str),
             kind: TypeDeclKind::Struct(fields),
-            src: ItemSource::TopLevel,
+            src: TypeSource::Builtin(BuiltinTy::Str),
             layout,
             ptr_metadata: PtrMetadata::Length,
         })
@@ -438,30 +442,14 @@ impl ItemTransCtx<'_, '_> {
             Body::Missing
         };
 
-        let internal = rustc_public::rustc_internal::internal(self.t_ctx.tcx, def.def.def_id());
-        let src = if self.t_ctx.tcx.is_closure_like(internal) {
-            let closure_ty = self
-                .t_ctx
-                .tcx
-                .type_of(internal)
-                .instantiate_identity()
-                .skip_normalization();
-            let closure_ty = rustc_public::rustc_internal::stable(closure_ty).kind();
-            let Some(ty::RigidTy::Closure(def, args)) = closure_ty.rigid() else {
-                panic!("Closure-like instance has non-closure type: {closure_ty:?}")
-            };
-            self.translate_closure_src_info(span, def, args)?
-        } else {
-            ItemSource::TopLevel
-        };
-
         Ok(FunDecl {
             def_id,
             item_meta,
             signature: Box::new(signature),
             generics: GenericParams::empty(),
-            src,
-            is_global_initializer: None,
+            // A closure's body is a plain function; the closure's own info lives on the struct
+            // that carries its captures (see `TypeSource::Closure`).
+            src: FunSource::Normal,
             body,
         })
     }
@@ -529,7 +517,7 @@ impl ItemTransCtx<'_, '_> {
         let span = item_meta.span;
 
         // Retrieve the kind
-        let item_kind = ItemSource::TopLevel;
+        let item_kind = GlobalSource::Normal;
         trace!("Translating global type");
         let translated_ty = match ty {
             Some(ty) => self.translate_ty(span, ty)?,
@@ -601,7 +589,6 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
-            builtin: None,
             kind,
             src,
             layout: Default::default(),
@@ -618,7 +605,7 @@ impl ItemTransCtx<'_, '_> {
         def: mir::mono::StaticDef,
     ) -> Result<GlobalDecl, Error> {
         trace!("About to translate global from static:\n{:?}", def);
-        let item_kind = ItemSource::TopLevel;
+        let item_kind = GlobalSource::Normal;
         trace!("Translating global type");
 
         let span = self.translate_span_from_smir(&def.span());
@@ -694,7 +681,7 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics: GenericParams::empty(),
             ty,
-            src: ItemSource::TopLevel,
+            src: GlobalSource::Normal,
             global_kind: GlobalKind::NamedConst,
             value,
         })
@@ -784,6 +771,7 @@ impl ItemTransCtx<'_, '_> {
         Ok(TraitDecl {
             def_id: trans_id,
             item_meta,
+            src: TraitDeclSource::Normal,
             generics: GenericParams::empty(),
             implied_clauses: vec![].into(),
             consts: IndexMap::new(),
@@ -816,6 +804,7 @@ impl ItemTransCtx<'_, '_> {
         Ok(TraitImpl {
             def_id: trans_id,
             item_meta,
+            src: TraitImplSource::Normal,
             impl_trait: TraitDeclRef {
                 id: trait_decl_id,
                 generics: Box::new(generics),

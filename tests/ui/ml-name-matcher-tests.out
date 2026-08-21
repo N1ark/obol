@@ -32,8 +32,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -48,8 +48,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -85,11 +85,12 @@ pub fn fmt(_1: &'_ usize, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 = <missing>
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -112,6 +113,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
@@ -130,7 +132,7 @@ pub struct RangeFrom::<usize> {
 #[diagnostic_item("Option")]
 pub enum Option::<i32> {
   None,
-  Some(0: i32),
+  Some { _0: i32 },
 }
 
 // Full name: core::option::{Option::<_>}::is_some::<i32>
@@ -159,6 +161,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -216,6 +219,7 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -227,9 +231,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -251,8 +254,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -264,7 +266,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -275,13 +276,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -305,6 +305,7 @@ impl<T, I> "impl_Index_for_slice" Index<I> for [T] {
 // Full name: anon_const_4
 const anon_const_4: [u8; 55usize] = [16u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 101u8, 110u8, 100u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 192u8, 34u8, 32u8, 111u8, 117u8, 116u8, 32u8, 111u8, 102u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 111u8, 102u8, 32u8, 108u8, 101u8, 110u8, 103u8, 116u8, 104u8, 32u8, 192u8, 0u8]
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#3::runtime(end: usize, len: usize) -> !
 {
     let _0: !; // return
@@ -408,6 +409,7 @@ fn core::slice::index::slice_index_fail::do_panic#3::runtime(end: usize, len: us
     }
 }
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#3(end: usize, len: usize) -> !
 {
     let _0: !; // return
@@ -431,6 +433,7 @@ fn core::slice::index::slice_index_fail::do_panic#3(end: usize, len: usize) -> !
 // Full name: anon_const_5
 const anon_const_5: [u8; 40usize] = [22u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 115u8, 116u8, 97u8, 114u8, 116u8, 115u8, 32u8, 97u8, 116u8, 32u8, 192u8, 13u8, 32u8, 98u8, 117u8, 116u8, 32u8, 101u8, 110u8, 100u8, 115u8, 32u8, 97u8, 116u8, 32u8, 192u8, 0u8]
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#2::runtime(start: usize, end: usize) -> !
 {
     let _0: !; // return
@@ -534,6 +537,7 @@ fn core::slice::index::slice_index_fail::do_panic#2::runtime(start: usize, end: 
     }
 }
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#2(start: usize, end: usize) -> !
 {
     let _0: !; // return
@@ -554,6 +558,7 @@ fn core::slice::index::slice_index_fail::do_panic#2(start: usize, end: usize) ->
     }
 }
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#1::runtime(end: usize, len: usize) -> !
 {
     let _0: !; // return
@@ -657,6 +662,7 @@ fn core::slice::index::slice_index_fail::do_panic#1::runtime(end: usize, len: us
     }
 }
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#1(end: usize, len: usize) -> !
 {
     let _0: !; // return
@@ -680,6 +686,7 @@ fn core::slice::index::slice_index_fail::do_panic#1(end: usize, len: usize) -> !
 // Full name: anon_const_3
 const anon_const_3: [u8; 57usize] = [18u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 115u8, 116u8, 97u8, 114u8, 116u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 192u8, 34u8, 32u8, 111u8, 117u8, 116u8, 32u8, 111u8, 102u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 111u8, 102u8, 32u8, 108u8, 101u8, 110u8, 103u8, 116u8, 104u8, 32u8, 192u8, 0u8]
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic::runtime(start: usize, len: usize) -> !
 {
     let _0: !; // return
@@ -783,6 +790,7 @@ fn core::slice::index::slice_index_fail::do_panic::runtime(start: usize, len: us
     }
 }
 
+#[track_caller]
 fn core::slice::index::slice_index_fail::do_panic(start: usize, len: usize) -> !
 {
     let _0: !; // return
@@ -804,6 +812,7 @@ fn core::slice::index::slice_index_fail::do_panic(start: usize, len: usize) -> !
 }
 
 // Full name: core::slice::index::slice_index_fail
+#[track_caller]
 fn slice_index_fail(start: usize, end: usize, len: usize) -> !
 {
     let _0: !; // return
@@ -1038,12 +1047,15 @@ impl<T> SliceIndex<[T]> for RangeFrom::<usize> {
 }
 
 // Full name: anon_const_0
-const anon_const_0: Option::<i32> = Option::<i32>::Some { 0: 0i32 }
+const anon_const_0: Option::<i32> = Option::<i32>::Some { _0: 0i32 }
 
 // Full name: anon_const_1
 const anon_const_1: [bool; 1usize] = [false]
 
 // Full name: test_crate::foo::bar
+#[pattern::pass("test_crate::foo::bar")]
+#[pattern::fail("crate::foo::bar")]
+#[pattern::fail("foo::bar")]
 fn bar()
 {
     let _0: (); // return
@@ -1057,6 +1069,16 @@ fn bar()
 }
 
 // Full name: test_crate::foo
+#[pattern::pass(call[0], "core::option::{core::option::Option<@T>}::is_some<'_, i32>")]
+#[pattern::fail(call[0], "core::option::{core::option::Option<@T>}::is_some<_, @T>")]
+#[pattern::pass(call[0], "core::option::{core::option::Option<@T>}::is_some<'_, @U>")]
+#[pattern::fail(call[0], "core::option::{core::option::Option<i32>}::is_some<_, i32>")]
+#[pattern::pass(call[1], "ArrayToSliceShared<'_, bool, 1>")]
+#[pattern::pass(call[2],
+"core::ops::index::Index<[bool], core::ops::range::RangeFrom<usize>>::index")]
+#[pattern::pass(call[2], "core::ops::index::Index<[@T], @I>::index")]
+#[pattern::fail(call[2],
+"core::slice::index::{core::ops::index::Index<[@T], @I>}::index<bool, core::ops::range::RangeFrom<usize>>")]
 fn foo()
 {
     let _0: (); // return
@@ -1154,6 +1176,12 @@ fn test_crate::funs_with_disambiguator::f() -> u32
 }
 
 // Full name: test_crate::funs_with_disambiguator
+#[pattern::pass(call[0], "test_crate::funs_with_disambiguator::f")]
+#[pattern::pass(call[0], "test_crate::funs_with_disambiguator::f#0")]
+#[pattern::fail(call[0], "test_crate::funs_with_disambiguator::f#1")]
+#[pattern::pass(call[1], "test_crate::funs_with_disambiguator::f#1")]
+#[pattern::fail(call[1], "test_crate::funs_with_disambiguator::f#0")]
+#[pattern::fail(call[1], "test_crate::funs_with_disambiguator::f")]
 fn funs_with_disambiguator(b: bool) -> u32
 {
     let _0: u32; // return
@@ -1200,6 +1228,8 @@ struct MonoContainer::<&'_ str> {
 }
 
 // Full name: test_crate::{MonoContainer::<_>}::create::<i32>
+#[pattern::pass("test_crate::{test_crate::MonoContainer<@T>}::create<@T>")]
+#[pattern::pass("test_crate::_::create<@T>")]
 fn create::<i32>(item: i32) -> MonoContainer::<i32>
 {
     let _0: MonoContainer::<i32>; // return
@@ -1217,6 +1247,8 @@ fn create::<i32>(item: i32) -> MonoContainer::<i32>
 }
 
 // Full name: test_crate::{MonoContainer::<_>}::create::<&'_ str>
+#[pattern::pass("test_crate::{test_crate::MonoContainer<@T>}::create<@T>")]
+#[pattern::pass("test_crate::_::create<@T>")]
 fn create::<&'_ str>(item: &'_ str) -> MonoContainer::<&'_ str>
 {
     let _0: MonoContainer::<&'_ str>; // return
@@ -1234,6 +1266,7 @@ fn create::<&'_ str>(item: &'_ str) -> MonoContainer::<&'_ str>
 }
 
 // Full name: test_crate::mono_usage
+#[pattern::pass("test_crate::mono_usage")]
 fn mono_usage()
 {
     let _0: (); // return

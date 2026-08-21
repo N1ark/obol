@@ -197,8 +197,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 output: TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
             }),
             generics: GenericParams::empty(),
-            src: ItemSource::TopLevel,
-            is_global_initializer: Some(global),
+            src: FunSource::GlobalInitializer(GlobalDeclRef {
+                id: global,
+                generics: Box::new(GenericArgs::empty()),
+            }),
             body,
         })
     }
@@ -218,7 +220,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             item_meta,
             generics: GenericParams::empty(),
             global_kind: GlobalKind::Static,
-            src: ItemSource::TopLevel,
+            src: GlobalSource::VTableInstance { impl_ref: None },
             ty,
             value,
         })

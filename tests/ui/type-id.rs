@@ -11,10 +11,11 @@ pub fn type_id_generic<T: 'static>() -> TypeId {
     TypeId::of::<T>()
 }
 
+// `type_id` is a comptime fn, so it can only be called from a const context.
 pub fn type_id_intrinsic_u32() -> TypeId {
-    intrinsics::type_id::<u32>()
+    const { intrinsics::type_id::<u32>() }
 }
 
 pub fn type_id_intrinsic_generic<T: 'static>() -> TypeId {
-    intrinsics::type_id::<T>()
+    const { intrinsics::type_id::<T>() }
 }

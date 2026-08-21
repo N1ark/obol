@@ -118,8 +118,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -134,8 +134,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -165,7 +165,7 @@ pub struct Arguments::<'_> {
 }
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -214,8 +214,8 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 }
 
 struct (_, _)::<Arguments::<'_>, bool> {
-  Arguments::<'_>,
-  bool,
+  _0: Arguments::<'_>,
+  _1: bool,
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -267,10 +267,12 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -290,10 +292,12 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -305,9 +309,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -329,8 +332,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -342,7 +344,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -353,13 +354,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -376,6 +376,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
+#[track_caller]
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
@@ -397,12 +398,13 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 }
 
 // Full name: core::panicking::panic_nounwind_fmt
+#[track_caller]
 pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (_, _)::<Arguments::<'_>, bool>; // anonymous local
+    let _3: (Arguments::<'_>, bool); // anonymous local
     let _4: Arguments::<'_>; // anonymous local
     let _5: bool; // anonymous local
 
@@ -416,7 +418,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         _3 = (move _4, move _5);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = compiletime(move _3.0, move _3.1) -> bb1 (unwind: bb2);
+        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -428,6 +430,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 }
 
+#[track_caller]
 fn core::hint::unreachable_unchecked::precondition_check()
 {
     let _0: (); // return
@@ -488,10 +491,13 @@ fn core::hint::unreachable_unchecked::precondition_check()
 }
 
 // Full name: core::intrinsics::assume
+#[rustc_intrinsic]
 pub fn assume(b_1: bool)
 = <intrinsic:assume>
 
 // Full name: core::intrinsics::cold_path
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
 pub fn cold_path()
 = <intrinsic:cold_path>
 
@@ -515,8 +521,8 @@ impl "impl_Step_for_u32" Step for u32 {
 }
 
 struct (_, _)::<i32, bool> {
-  i32,
-  bool,
+  _0: i32,
+  _1: bool,
 }
 
 // Full name: core::option::Option::<i32>
@@ -524,7 +530,7 @@ struct (_, _)::<i32, bool> {
 #[diagnostic_item("Option")]
 pub enum Option::<i32> {
   None,
-  Some(0: i32),
+  Some { _0: i32 },
 }
 
 // Full name: core::iter::range::{impl Step for i32}::forward_unchecked
@@ -538,7 +544,7 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
     let _5: i32; // anonymous local
     let a: i32; // local
     let _7: bool; // anonymous local
-    let _8: (_, _)::<i32, bool>; // anonymous local
+    let _8: (i32, bool); // anonymous local
     let b: bool; // local
     let _10: bool; // anonymous local
     let _11: (); // anonymous local
@@ -561,9 +567,9 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         _5 = cast<u32, i32>(copy rhs);
         storage_live(_8);
         _8 = copy start checked.+ copy _5;
-        a = copy _8.0;
+        a = copy _8._0;
         storage_live(_7);
-        _7 = copy _8.1;
+        _7 = copy _8._1;
         storage_dead(_8);
         storage_live(_10);
         _10 = copy _5 < const 0i32;
@@ -579,11 +585,11 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
     }
 
     bb2: {
-        self = Option::<i32>::Some { 0: copy a };
+        self = Option::<i32>::Some { _0: copy a };
         storage_dead(b);
         storage_dead(a);
         storage_dead(rhs);
-        val = move (self as variant Option::<i32>::Some).0;
+        val = move (self as variant Option::<i32>::Some)._0;
         storage_dead(self);
         return;
     }
@@ -622,10 +628,11 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
 }
 
 struct (_, _)::<u64, bool> {
-  u64,
-  bool,
+  _0: u64,
+  _1: bool,
 }
 
+#[track_caller]
 fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
 {
     let _0: (); // return
@@ -635,7 +642,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     let _4: !; // anonymous local
     let _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (_, _)::<u64, bool>; // anonymous local
+    let _7: (u64, bool); // anonymous local
     let _8: u64; // anonymous local
     let _9: u64; // anonymous local
     let _10: NonNull::<u8>; // anonymous local
@@ -661,7 +668,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _7 = move _8 checked.+ move _9;
         storage_dead(_9);
         storage_dead(_8);
-        _6 = copy _7.1;
+        _6 = copy _7._1;
         storage_dead(_7);
         if copy _6 -> bb1 else -> bb2;
     }
@@ -742,17 +749,18 @@ pub fn impl_Step_for_usize::forward_unchecked(start: usize, n: usize) -> usize
 }
 
 struct (_, _)::<u32, bool> {
-  u32,
-  bool,
+  _0: u32,
+  _1: bool,
 }
 
+#[track_caller]
 fn core::num::{u32}::unchecked_add::precondition_check(lhs: u32, rhs: u32)
 {
     let _0: (); // return
     let lhs: u32; // arg #1
     let rhs: u32; // arg #2
     let _3: bool; // anonymous local
-    let _4: (_, _)::<u32, bool>; // anonymous local
+    let _4: (u32, bool); // anonymous local
     let msg: &'_ str; // local
     let _6: !; // anonymous local
     let _7: Arguments::<'_>; // anonymous local
@@ -773,7 +781,7 @@ fn core::num::{u32}::unchecked_add::precondition_check(lhs: u32, rhs: u32)
         storage_live(_3);
         storage_live(_4);
         _4 = copy lhs checked.+ copy rhs;
-        _3 = copy _4.1;
+        _3 = copy _4._1;
         if move _3 -> bb1 else -> bb2;
     }
 
@@ -922,7 +930,7 @@ fn spec_next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
     bb5: {
         (*self).start = move _6;
         storage_dead(_6);
-        _0 = Option::<i32>::Some { 0: copy old };
+        _0 = Option::<i32>::Some { _0: copy old };
         storage_dead(old);
         goto bb7;
     }
@@ -942,7 +950,7 @@ fn spec_next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
 #[diagnostic_item("Option")]
 pub enum Option::<usize> {
   None,
-  Some(0: usize),
+  Some { _0: usize },
 }
 
 // Full name: core::ops::range::Range::<usize>
@@ -1000,7 +1008,7 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
     bb5: {
         (*self).start = move _6;
         storage_dead(_6);
-        _0 = Option::<usize>::Some { 0: copy old };
+        _0 = Option::<usize>::Some { _0: copy old };
         storage_dead(old);
         goto bb7;
     }
@@ -1020,7 +1028,7 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
 #[diagnostic_item("Option")]
 pub enum Option::<u32> {
   None,
-  Some(0: u32),
+  Some { _0: u32 },
 }
 
 // Full name: core::ops::range::Range::<u32>
@@ -1078,7 +1086,7 @@ fn spec_next::<u32>(self: &'_ mut Range::<u32>) -> Option::<u32>
     bb5: {
         (*self).start = move _6;
         storage_dead(_6);
-        _0 = Option::<u32>::Some { 0: copy old };
+        _0 = Option::<u32>::Some { _0: copy old };
         storage_dead(old);
         goto bb7;
     }
@@ -1228,7 +1236,7 @@ pub const MAX_SLICE_LEN::<u32>: usize = 2305843009213693951usize
 
 // Full name: core::num::niche_types::UsizeNoHighBit
 pub struct UsizeNoHighBit {
-  0: usize is 0usize..=9223372036854775807usize,
+  _0: usize is 0usize..=9223372036854775807usize,
 }
 
 // Full name: core::ops::index::IndexMut
@@ -1254,6 +1262,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panicking::panic
+#[track_caller]
 #[lang_item(Panic)]
 pub fn panic(expr: &'_ str) -> !
 {
@@ -1307,15 +1316,16 @@ pub struct Unique::<List::<usize>> {
 }
 
 // Full name: alloc::boxed::Box::<List::<usize>, Global>
+#[fundamental]
 #[lang_item(OwnedBox)]
 pub struct Box::<List::<usize>, Global> {
-  0: Unique::<List::<usize>>,
-  1: Global,
+  _0: Unique::<List::<usize>>,
+  _1: Global,
 }
 
 // Full name: test_crate::List::<usize>
 pub enum List::<usize> {
-  Cons(0: usize, 1: Box::<List::<usize>, Global>),
+  Cons { _0: usize, _1: Box::<List::<usize>, Global> },
   Nil,
 }
 
@@ -1442,8 +1452,8 @@ pub fn {impl IndexMut<I> for Vec::<_, missing(@Type2)>}::index_mut::<u32, usize,
 }
 
 struct (_, _)::<usize, bool> {
-  usize,
-  bool,
+  _0: usize,
+  _1: bool,
 }
 
 // Full name: test_crate::test_loop1
@@ -1728,6 +1738,7 @@ pub fn test_loop3(max: u32) -> u32
 }
 
 // Full name: test_crate::test_loop4
+#[allow(unused_assignments)]
 pub fn test_loop4(max: u32) -> u32
 {
     let _0: u32; // return
@@ -2704,7 +2715,7 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
 
     bb10: {
         storage_live(i);
-        i = copy (_9 as variant Option::<u32>::Some).0;
+        i = copy (_9 as variant Option::<u32>::Some)._0;
         storage_live(_14);
         _14 = copy i;
         _15 = copy s panic.+ copy _14;
@@ -2897,9 +2908,9 @@ pub fn get_elem_mut(ls: &'_ mut List::<usize>, x: usize) -> &'_ mut usize
 
     bb2: {
         storage_live(y);
-        y = &mut ((*ls) as variant List::<usize>::Cons).0;
+        y = &mut ((*ls) as variant List::<usize>::Cons)._0;
         storage_live(tl);
-        tl = &mut ((*ls) as variant List::<usize>::Cons).1;
+        tl = &mut ((*ls) as variant List::<usize>::Cons)._1;
         storage_live(_7);
         storage_live(_8);
         _8 = copy (*y);
@@ -2933,7 +2944,7 @@ pub fn get_elem_mut(ls: &'_ mut List::<usize>, x: usize) -> &'_ mut usize
         storage_dead(_8);
         storage_live(_10);
         _11 = copy (*tl);
-        _12 = transmute<NonNull::<List::<usize>>, *const List::<usize>>(copy _11.0.pointer);
+        _12 = transmute<Unique::<List::<usize>>, *const List::<usize>>(copy _11._0);
         _10 = &mut (*_12);
         ls = move _10;
         storage_dead(_10);

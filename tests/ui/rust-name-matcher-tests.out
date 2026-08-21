@@ -4,13 +4,23 @@
 struct () {}
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: FakeTrait
 trait FakeTrait
 
 // Full name: test_crate::foo::bar
+#[pattern::fail("test_crate::foo::bar::_")]
+#[pattern::pass("test_crate::foo::bar")]
+#[pattern::pass("test_crate::foo::_")]
+#[pattern::pass("test_crate::foo")]
+#[pattern::pass("test_crate")]
+#[pattern::pass("test_crate::_")]
+#[pattern::pass("test_crate::_::bar")]
+#[pattern::fail("test_crate::_::lsdkfjs")]
+#[pattern::pass("crate::foo::bar")]
+#[pattern::fail("foo::bar")]
 fn bar()
 {
     let _0: (); // return
@@ -34,6 +44,8 @@ struct Generic::<&'_ str> {
 }
 
 // Full name: test_crate::{Generic::<_>}::new::<i32>
+#[pattern::pass("test_crate::_::new")]
+#[pattern::pass("_::_::new")]
 fn new::<i32>(value: i32) -> Generic::<i32>
 {
     let _0: Generic::<i32>; // return
@@ -51,6 +63,8 @@ fn new::<i32>(value: i32) -> Generic::<i32>
 }
 
 // Full name: test_crate::{Generic::<_>}::new::<&'_ str>
+#[pattern::pass("test_crate::_::new")]
+#[pattern::pass("_::_::new")]
 fn new::<&'_ str>(value: &'_ str) -> Generic::<&'_ str>
 {
     let _0: Generic::<&'_ str>; // return
@@ -68,6 +82,7 @@ fn new::<&'_ str>(value: &'_ str) -> Generic::<&'_ str>
 }
 
 // Full name: test_crate::{Generic::<_>}::get::<i32>
+#[pattern::pass("test_crate::_::get")]
 fn get::<i32>(self: &'_ Generic::<i32>) -> &'_ i32
 {
     let _0: &'_ i32; // return
@@ -85,6 +100,7 @@ fn get::<i32>(self: &'_ Generic::<i32>) -> &'_ i32
 }
 
 // Full name: test_crate::use_generic
+#[pattern::pass("test_crate::use_generic")]
 fn use_generic()
 {
     let _0: (); // return

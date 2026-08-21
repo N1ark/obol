@@ -3,7 +3,7 @@
 
 // Full name: core::sync::atomic::private::Align8::<u64>
 pub struct Align8::<u64> {
-  0: u64,
+  _0: u64,
 }
 
 // Full name: core::cell::UnsafeCell::<Align8::<u64>>
@@ -43,8 +43,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -59,8 +59,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -91,21 +91,25 @@ pub enum AtomicOrdering {
   SeqCst,
 }
 
-pub fn core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }>(src_1: *const u64) -> u64
+#[rustc_intrinsic]
+pub fn core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }, false>(src_1: *const u64) -> u64
 = <intrinsic:atomic_load>
 
-pub fn core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }>(src_1: *const u64) -> u64
+#[rustc_intrinsic]
+pub fn core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }, false>(src_1: *const u64) -> u64
 = <intrinsic:atomic_load>
 
-pub fn core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }>(src_1: *const u64) -> u64
+#[rustc_intrinsic]
+pub fn core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }, false>(src_1: *const u64) -> u64
 = <intrinsic:atomic_load>
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -128,6 +132,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
@@ -141,6 +146,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -198,6 +204,7 @@ fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -209,9 +216,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -233,8 +239,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -246,7 +251,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -257,13 +261,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -286,6 +289,7 @@ pub struct Atomic::<u64> {
 }
 
 // Full name: core::sync::atomic::Ordering
+#[non_exhaustive]
 #[diagnostic_item("Ordering")]
 pub enum Ordering {
   Relaxed,
@@ -295,7 +299,7 @@ pub enum Ordering {
   SeqCst,
 }
 
-fn core::sync::atomic::atomic_load::<u64>(dst: *const u64, order: Ordering) -> u64
+fn core::sync::atomic::atomic_load::<u64, false>(dst: *const u64, order: Ordering) -> u64
 {
     let _0: u64; // return
     let dst: *const u64; // arg #1
@@ -334,7 +338,7 @@ fn core::sync::atomic::atomic_load::<u64>(dst: *const u64, order: Ordering) -> u
     }
 
     bb1: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }>(move dst) -> bb7 (unwind: bb8);
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }, false>(move dst) -> bb7 (unwind: bb8);
     }
 
     bb2: {
@@ -371,7 +375,7 @@ fn core::sync::atomic::atomic_load::<u64>(dst: *const u64, order: Ordering) -> u
     }
 
     bb3: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }>(move dst) -> bb7 (unwind: bb11);
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }, false>(move dst) -> bb7 (unwind: bb11);
     }
 
     bb4: {
@@ -408,7 +412,7 @@ fn core::sync::atomic::atomic_load::<u64>(dst: *const u64, order: Ordering) -> u
     }
 
     bb5: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }>(move dst) -> bb7 (unwind: bb14);
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }, false>(move dst) -> bb7 (unwind: bb14);
     }
 
     bb6: {
@@ -463,7 +467,7 @@ pub fn load(self: &'_ Atomic::<u64>, order: Ordering) -> u64
         storage_live(_3);
         _4 = &raw const (*self).v;
         _3 = cast<*const UnsafeCell::<Align8::<u64>>, *const u64>(copy _4);
-        _0 = core::sync::atomic::atomic_load::<u64>(move _3, move order) -> bb1 (unwind: bb2);
+        _0 = core::sync::atomic::atomic_load::<u64, false>(move _3, move order) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -477,7 +481,7 @@ pub fn load(self: &'_ Atomic::<u64>, order: Ordering) -> u64
 }
 
 // Full name: test_crate::INITIAL_STATE
-const INITIAL_STATE: Atomic::<u64> = Atomic::<u64> { v: UnsafeCell::<Align8::<u64>> { value: Align8::<u64> { 0: 0u64 } } }
+const INITIAL_STATE: Atomic::<u64> = Atomic::<u64> { v: UnsafeCell::<Align8::<u64>> { value: Align8::<u64> { _0: 0u64 } } }
 
 // Full name: test_crate::HART_STATES
 fn HART_STATES() -> [Atomic::<u64>; 2usize]

@@ -28,7 +28,7 @@ pub struct PhantomData::<u8> {}
 
 // Full name: core::num::niche_types::UsizeNoHighBit
 pub struct UsizeNoHighBit {
-  0: usize is 0usize..=9223372036854775807usize,
+  _0: usize is 0usize..=9223372036854775807usize,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -79,8 +79,8 @@ struct () {}
 trait FakeTrait
 
 struct (_, _)::<u8, bool> {
-  u8,
-  bool,
+  _0: u8,
+  _1: bool,
 }
 
 // Full name: test_crate::{impl Default for Struct::<_>}
@@ -90,10 +90,11 @@ impl<A> Default for Struct::<_> {
 
 // Full name: test_crate::Struct::<bool>
 struct Struct::<bool> {
-  0: bool,
+  _0: bool,
 }
 
 // Full name: test_crate::{impl Default for Struct::<_>}::default::<bool>
+#[inline(hint)]
 pub fn {impl Default for Struct::<_>}::default::<bool>() -> Struct::<bool>
 {
     let _0: Struct::<bool>; // return
@@ -106,7 +107,7 @@ pub fn {impl Default for Struct::<_>}::default::<bool>() -> Struct::<bool>
     }
 
     bb1: {
-        _0 = Struct::<bool> { 0: move _1 };
+        _0 = Struct::<bool> { _0: move _1 };
         storage_dead(_1);
         return;
     }
@@ -141,7 +142,7 @@ fn method::<u8, bool, String>()
 fn main()
 {
     let _0: (); // return
-    let _x: (_, _)::<u8, bool>; // local
+    let _x: (u8, bool); // local
     let _y: Struct::<bool>; // local
     let _3: (); // anonymous local
 

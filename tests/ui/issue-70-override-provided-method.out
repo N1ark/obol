@@ -56,7 +56,7 @@ impl "impl_PartialOrd_u32_for_u32" PartialOrd<u32> for u32 {
 #[diagnostic_item("Option")]
 pub enum Option::<Ordering> {
   None,
-  Some(0: Ordering),
+  Some { _0: Ordering },
 }
 
 // Full name: core::cmp::impls::{impl PartialOrd<u32> for u32}::partial_cmp
@@ -79,7 +79,7 @@ pub fn impl_PartialOrd_u32_for_u32::partial_cmp(self: &'_ u32, other: &'_ u32) -
         _3 = move _4 cmp move _5;
         storage_dead(_5);
         storage_dead(_4);
-        _0 = Option::<Ordering>::Some { 0: move _3 };
+        _0 = Option::<Ordering>::Some { _0: move _3 };
         storage_dead(_3);
         return;
     }
@@ -90,7 +90,7 @@ pub fn impl_PartialOrd_u32_for_u32::partial_cmp(self: &'_ u32, other: &'_ u32) -
 #[diagnostic_item("Option")]
 pub enum Option::<i32> {
   None,
-  Some(0: i32),
+  Some { _0: i32 },
 }
 
 // Full name: core::option::{impl PartialEq<Option::<_>> for Option::<_>}
@@ -147,9 +147,9 @@ pub fn {impl PartialEq<Option::<_>> for Option::<_>}::eq::<i32>(self: &'_ Option
 
     bb6: {
         storage_live(l);
-        l = &((*self) as variant Option::<i32>::Some).0;
+        l = &((*self) as variant Option::<i32>::Some)._0;
         storage_live(r);
-        r = &((*other) as variant Option::<i32>::Some).0;
+        r = &((*other) as variant Option::<i32>::Some)._0;
         _0 = impl_PartialEq_i32_for_i32::eq(move l, move r) -> bb7 (unwind: bb8);
     }
 
@@ -168,10 +168,10 @@ pub fn {impl PartialEq<Option::<_>> for Option::<_>}::eq::<i32>(self: &'_ Option
 trait FakeTrait
 
 // Full name: anon_const_0
-const anon_const_0: Option::<i32> = Option::<i32>::Some { 0: 1i32 }
+const anon_const_0: Option::<i32> = Option::<i32>::Some { _0: 1i32 }
 
 // Full name: anon_const_1
-const anon_const_1: Option::<i32> = Option::<i32>::Some { 0: 1i32 }
+const anon_const_1: Option::<i32> = Option::<i32>::Some { _0: 1i32 }
 
 // Full name: test_crate::main
 fn main()
@@ -219,7 +219,7 @@ fn main()
 
 // Full name: test_crate::Foo
 struct Foo {
-  0: u32,
+  _0: u32,
 }
 
 // Full name: test_crate::{impl PartialEq<Foo> for Foo}
@@ -228,6 +228,7 @@ impl "impl_PartialEq_Foo_for_Foo" PartialEq<Foo> for Foo {
 }
 
 // Full name: test_crate::{impl PartialEq<Foo> for Foo}::eq
+#[inline(hint)]
 pub fn impl_PartialEq_Foo_for_Foo::eq(self: &'_ Foo, other: &'_ Foo) -> bool
 {
     let _0: bool; // return
@@ -239,9 +240,9 @@ pub fn impl_PartialEq_Foo_for_Foo::eq(self: &'_ Foo, other: &'_ Foo) -> bool
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self).0;
+        _3 = copy (*self)._0;
         storage_live(_4);
-        _4 = copy (*other).0;
+        _4 = copy (*other)._0;
         _0 = move _3 == move _4;
         storage_dead(_4);
         storage_dead(_3);
@@ -255,6 +256,7 @@ impl "impl_PartialOrd_Foo_for_Foo" PartialOrd<Foo> for Foo {
 }
 
 // Full name: test_crate::{impl PartialOrd<Foo> for Foo}::partial_cmp
+#[inline(hint)]
 pub fn impl_PartialOrd_Foo_for_Foo::partial_cmp(self: &'_ Foo, other: &'_ Foo) -> Option::<Ordering>
 {
     let _0: Option::<Ordering>; // return
@@ -269,11 +271,11 @@ pub fn impl_PartialOrd_Foo_for_Foo::partial_cmp(self: &'_ Foo, other: &'_ Foo) -
         storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = &(*self).0;
+        _4 = &(*self)._0;
         _3 = &(*_4);
         storage_live(_5);
         storage_live(_6);
-        _6 = &(*other).0;
+        _6 = &(*other)._0;
         _5 = &(*_6);
         _0 = impl_PartialOrd_u32_for_u32::partial_cmp(move _3, move _5) -> bb1 (unwind: bb2);
     }

@@ -24,7 +24,7 @@ impl "impl_PartialOrd_i32_for_i32" PartialOrd<i32> for i32 {
 #[diagnostic_item("Option")]
 pub enum Option::<Ordering> {
   None,
-  Some(0: Ordering),
+  Some { _0: Ordering },
 }
 
 // Full name: core::cmp::impls::{impl PartialOrd<i32> for i32}::partial_cmp
@@ -47,7 +47,7 @@ pub fn partial_cmp(self: &'_ i32, other: &'_ i32) -> Option::<Ordering>
         _3 = move _4 cmp move _5;
         storage_dead(_5);
         storage_dead(_4);
-        _0 = Option::<Ordering>::Some { 0: move _3 };
+        _0 = Option::<Ordering>::Some { _0: move _3 };
         storage_dead(_3);
         return;
     }
@@ -84,8 +84,8 @@ pub struct NonNull::<u8> {
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
-  Ok(0: ()),
-  Err(0: Error),
+  Ok { _0: () },
+  Err { _0: Error },
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
@@ -100,8 +100,8 @@ pub struct PhantomData::<&'_ ()> {}
 
 // Full name: core::fmt::rt::ArgumentType::<'_>
 enum ArgumentType::<'_> {
-  Placeholder(value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()>),
-  Count(0: u16),
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
 }
 
 // Full name: core::fmt::rt::Argument::<'_>
@@ -131,7 +131,7 @@ pub struct Arguments::<'_> {
 }
 
 struct str {
-  [u8],
+  _0: [u8],
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -180,6 +180,7 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 }
 
 // Full name: core::intrinsics::abort
+#[rustc_intrinsic]
 pub fn abort() -> !
 = <intrinsic:abort>
 
@@ -203,6 +204,7 @@ pub struct Location::<'_> {
 }
 
 // Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
@@ -236,6 +238,7 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
 }
 
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
     let _0: &'_ Location::<'_>; // return
@@ -255,6 +258,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 }
 
 // Full name: core::panicking::panic_fmt
+#[track_caller]
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
@@ -266,9 +270,8 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -290,8 +293,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb6);
+        _7 = caller::<'_>() -> bb5 (unwind: bb6);
     }
 
     bb3: {
@@ -303,7 +305,6 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb5: {
-        _7 = &(*_8);
         pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
     }
 
@@ -314,13 +315,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     bb7: {
         storage_dead(_7);
         storage_dead(_5);
-        storage_dead(_8);
         storage_dead(_6);
+        storage_live(_8);
         storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb9 (unwind: bb10);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
     }
 
     bb8: {
@@ -337,6 +337,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 }
 
 // Full name: core::panicking::panic
+#[track_caller]
 #[lang_item(Panic)]
 pub fn panic(expr: &'_ str) -> !
 {
@@ -374,6 +375,7 @@ pub fn panic(expr: &'_ str) -> !
 }
 
 // Full name: core::option::unwrap_failed
+#[track_caller]
 fn unwrap_failed() -> !
 {
     let _0: !; // return
@@ -393,6 +395,7 @@ fn unwrap_failed() -> !
 }
 
 // Full name: core::option::{Option::<_>}::unwrap::<Ordering>
+#[track_caller]
 #[diagnostic_item("option_unwrap")]
 pub fn unwrap::<Ordering>(self: Option::<Ordering>) -> Ordering
 {
@@ -414,7 +417,7 @@ pub fn unwrap::<Ordering>(self: Option::<Ordering>) -> Ordering
     }
 
     bb2: {
-        val = move (self as variant Option::<Ordering>::Some).0;
+        val = move (self as variant Option::<Ordering>::Some)._0;
         return;
     }
 

@@ -7,24 +7,24 @@ struct () {}
 trait FakeTrait
 
 struct (_, _)::<i32, bool> {
-  i32,
-  bool,
+  _0: i32,
+  _1: bool,
 }
 
 struct (_,)::<&'_ mut i32> {
-  &'_ mut i32,
+  _0: &'_ mut i32,
 }
 
 struct test_crate::foo::closure::closure {
   upvar_0: &'_ mut i32,
 }
 
-fn test_crate::foo::closure::<i16, extern "rust-call" fn(()), (_,)::<&'_ mut i32>>(_1: &'_ mut test_crate::foo::closure::closure, spread_args: ())
+fn test_crate::foo::closure::<i16, extern "rust-call" fn(()), (&'_ mut i32,)>(_1: &'_ mut test_crate::foo::closure::closure, spread_args: ())
 {
     let _0: (); // return
     let _1: &'_ mut test_crate::foo::closure::closure; // arg #1
     let spread_args: (); // arg #2
-    let _3: (_, _)::<i32, bool>; // anonymous local
+    let _3: (i32, bool); // anonymous local
     let _4: &'_ mut i32; // anonymous local
     let _5: &'_ mut i32; // anonymous local
     let _6: &'_ mut i32; // anonymous local
@@ -39,9 +39,9 @@ fn test_crate::foo::closure::<i16, extern "rust-call" fn(()), (_,)::<&'_ mut i32
         _4 = copy (*_1).upvar_0;
         _3 = copy (*_4) checked.+ const 1i32;
         _5 = copy (*_1).upvar_0;
-        assert(move _3.1 == false) (overflow) else panic;
+        assert(move _3._1 == false) (overflow) else panic;
         _6 = copy (*_1).upvar_0;
-        (*_6) = move _3.0;
+        (*_6) = move _3._0;
         _0 = ();
         return;
     }
@@ -72,7 +72,7 @@ fn foo()
         _5 = &mut closure;
         storage_live(_6);
         _6 = ();
-        _4 = test_crate::foo::closure::<i16, extern "rust-call" fn(()), (_,)::<&'_ mut i32>>(move _5, move _6) -> bb1 (unwind: bb2);
+        _4 = test_crate::foo::closure::<i16, extern "rust-call" fn(()), (&'_ mut i32,)>(move _5, move _6) -> bb1 (unwind: bb2);
     }
 
     bb1: {

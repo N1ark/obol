@@ -161,6 +161,11 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             generated_from_span: None,
         }
     }
+
+    pub(crate) fn translate_span_from_rustc(&mut self, span: &rustc_span::Span) -> Span {
+        let span = rustc_internal::stable(*span);
+        self.translate_span_from_smir(&span)
+    }
 }
 
 // Names
@@ -438,12 +443,14 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 };
                 Some(Attribute::Unknown(RawAttribute { path, args }))
             }
-            rustc_hir::Attribute::Parsed(kind) => match kind {
-                rustc_hir::attrs::AttributeKind::DocComment { comment, .. } => {
-                    Some(Attribute::DocComment(comment.to_string()))
-                }
-                _ => None,
-            },
+            rustc_hir::Attribute::Parsed(rustc_hir::attrs::AttributeKind::DocComment {
+                comment,
+                ..
+            }) => Some(Attribute::DocComment(comment.to_string())),
+            rustc_hir::Attribute::Parsed(kind) => self
+                .translate_rustc_attribute_kind(kind)
+                .ok()
+                .map(Attribute::Builtin),
         }
     }
 
