@@ -59,6 +59,20 @@ pub struct TupleTy {
     pub rty: ty::Ty,
 }
 
+impl TupleTy {
+    /// The generic element types of the generic tuple declaration of the given arity.
+    pub fn generic_fields(arity: usize) -> Vec<Ty> {
+        (0..arity)
+            .map(|i| TyKind::TypeVar(TypeDbVar::Free(TypeVarId::from_raw(i))).into_ty())
+            .collect()
+    }
+
+    /// Whether this is the generic tuple declaration of its arity, rather than an instantiation.
+    pub fn is_generic(&self) -> bool {
+        !self.fields.is_empty() && self.fields == Self::generic_fields(self.fields.len())
+    }
+}
+
 impl PartialEq for TupleTy {
     fn eq(&self, other: &Self) -> bool {
         self.fields == other.fields
@@ -253,6 +267,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             _ => return false,
         };
         self.generic_args_have_params(&gargs.clone().into())
+    }
+
+    /// Whether this type (recursively) mentions any free type or const parameter.
+    pub(crate) fn ty_has_params(&self, ty: ty::Ty) -> bool {
+        use rustc_middle::ty::TypeVisitableExt;
+        rustc_internal::internal(self.tcx, ty).has_param()
     }
 
     /// Whether these generic arguments (recursively) mention any free type or const parameter.

@@ -6,7 +6,7 @@ extern crate rustc_public;
 extern crate rustc_public_bridge;
 extern crate rustc_span;
 
-use crate::translate::translate_crate::FAKE_DYN_TRAIT;
+use crate::translate::translate_crate::{FAKE_DYN_TRAIT, TupleTy};
 
 use super::translate_ctx::*;
 use charon_lib::ast::*;
@@ -323,8 +323,16 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .iter()
                     .map(|ty| self.translate_ty(span, *ty))
                     .try_collect()?;
-                let id = self.register_tuple_decl_id(span, mir_ty, params);
-                let tref = TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinTy::Tuple));
+                // A tuple that mentions type parameters, which we translate to name a polymorphic item.
+                let tref = if self.t_ctx.ty_has_params(mir_ty) {
+                    let fields = TupleTy::generic_fields(params.len());
+                    let id = self.register_tuple_decl_id(span, mir_ty, fields);
+                    let generics = GenericArgs::new_types(params.into());
+                    TypeDeclRef::new(id, generics, Some(BuiltinTy::Tuple))
+                } else {
+                    let id = self.register_tuple_decl_id(span, mir_ty, params);
+                    TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinTy::Tuple))
+                };
                 TyKind::Adt(tref)
             }
 

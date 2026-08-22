@@ -360,10 +360,20 @@ impl ItemTransCtx<'_, '_> {
             .into_iter()
             .map(|l| (self.t_ctx.get_target_triple(), l))
             .collect();
+        let mut generics = GenericParams::empty();
+        if tuple.is_generic() {
+            generics.types = (0..fields.len())
+                .map(|i| TypeParam {
+                    index: TypeVarId::from_raw(i),
+                    name: format!("T{i}"),
+                    variance: Variance::Unknown,
+                })
+                .collect();
+        }
         Ok(TypeDecl {
             def_id: trans_id,
             item_meta,
-            generics: GenericParams::empty(),
+            generics,
             kind: TypeDeclKind::Struct(fields),
             src: TypeSource::Builtin(BuiltinTy::Tuple),
             layout,

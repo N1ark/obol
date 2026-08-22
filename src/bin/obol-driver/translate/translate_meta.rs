@@ -365,9 +365,8 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     skip_binder: generics,
                 })));
             }
-            // Append the element types, as we do for any other monomorphized item: this is what
-            // marks the declaration as being one instantiation of the tuple of that arity.
-            TransItemSource::Tuple(tuple) if !tuple.fields.is_empty() => {
+            // Append the element types, as we do for any other monomorphized item
+            TransItemSource::Tuple(tuple) if !tuple.fields.is_empty() && !tuple.is_generic() => {
                 name.name
                     .push(PathElem::Instantiated(Box::new(Binder::empty(
                         BinderKind::Other,
