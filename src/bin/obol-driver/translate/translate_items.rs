@@ -340,10 +340,7 @@ impl ItemTransCtx<'_, '_> {
             .enumerate()
             .map(|(i, ty)| Field {
                 span,
-                attr_info: AttrInfo {
-                    public: true,
-                    ..AttrInfo::default()
-                },
+                attr_info: AttrInfo::dummy_public(),
                 name: format!("_{i}"),
                 is_positional: true,
                 ty,
@@ -391,10 +388,7 @@ impl ItemTransCtx<'_, '_> {
         let u8_ty = TyKind::Literal(LiteralTy::UInt(UIntTy::U8)).into_ty();
         let fields: IndexVec<FieldId, Field> = [Field {
             span,
-            attr_info: AttrInfo {
-                public: true,
-                ..AttrInfo::default()
-            },
+            attr_info: AttrInfo::dummy_public(),
             name: "_0".to_string(),
             is_positional: true,
             ty: Ty::mk_slice(u8_ty),
@@ -467,8 +461,8 @@ impl ItemTransCtx<'_, '_> {
     /// Build a global's `value` as a call to its (separately-translated) initializer function.
     /// Used for globals whose value we don't compute directly (statics with a body, vtables).
     pub(crate) fn call_initializer(&self, init: FunDeclId, ty: Ty) -> ConstantExpr {
-        ConstantExpr {
-            kind: ConstantExprKind::Call(
+        ConstantExpr::new(
+            ConstantExprKind::Call(
                 FnPtr {
                     kind: Box::new(FnPtrKind::Fun(FunId::Regular(init))),
                     generics: Box::new(GenericArgs::empty()),
@@ -476,7 +470,7 @@ impl ItemTransCtx<'_, '_> {
                 vec![],
             ),
             ty,
-        }
+        )
     }
 
     /// Evaluate the value of a global identified by its allocation id.
@@ -502,10 +496,8 @@ impl ItemTransCtx<'_, '_> {
                 };
                 let output = self.translate_ty(span, output_ty)?;
                 let translated_ty = self.translate_ty(span, type_id_ty)?;
-                let const_val = ConstantExpr {
-                    kind: ConstantExprKind::TypeId(translated_ty),
-                    ty: output.clone(),
-                };
+                let const_val =
+                    ConstantExpr::new(ConstantExprKind::TypeId(translated_ty), output.clone());
                 (const_val, output)
             }
             _ => {

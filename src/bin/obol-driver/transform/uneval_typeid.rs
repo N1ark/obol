@@ -27,7 +27,7 @@ impl Transform {
             .global_decls
             .iter()
             .filter(|g| matches!(g.global_kind, GlobalKind::AnonConst))
-            .filter_map(|g| match &g.value.kind {
+            .filter_map(|g| match g.value.kind() {
                 ConstantExprKind::TypeId(t) => Some((g.def_id, t.clone())),
                 _ => None,
             })
@@ -40,7 +40,7 @@ impl UllbcPass for Transform {
     fn transform_body(&self, _ctx: &mut TransformCtx, body: &mut ExprBody) {
         body.dyn_visit_in_body_mut(|cexpr: &mut ConstantExpr| {
             if let Some(t) = extract_typeid_ty(cexpr, &self.typeid_globals) {
-                cexpr.kind = ConstantExprKind::TypeId(t);
+                cexpr.with_contents_mut(|kind, _ty| *kind = ConstantExprKind::TypeId(t));
             }
         });
     }
@@ -73,14 +73,14 @@ impl UllbcPass for Transform {
 /// If `cexpr` has the shape `TypeId { data: [&raw const g, &raw const g] }` where `g` is a
 /// known TypeId marker global, returns the corresponding type T.
 fn extract_typeid_ty(cexpr: &ConstantExpr, map: &HashMap<GlobalDeclId, Ty>) -> Option<Ty> {
-    if let ConstantExprKind::Adt(None, fields) = &cexpr.kind
+    if let ConstantExprKind::Adt(None, fields) = cexpr.kind()
         && let [data_field] = fields.as_slice()
-        && let ConstantExprKind::Array(ptrs) = &data_field.kind
+        && let ConstantExprKind::Array(ptrs) = data_field.kind()
         && let [ptr0, ptr1] = ptrs.as_slice()
-        && let ConstantExprKind::Ptr(RefKind::Shared, inner0, None) = &ptr0.kind
-        && let ConstantExprKind::Global(gref0) = &inner0.kind
-        && let ConstantExprKind::Ptr(RefKind::Shared, inner1, None) = &ptr1.kind
-        && let ConstantExprKind::Global(gref1) = &inner1.kind
+        && let ConstantExprKind::Ptr(RefKind::Shared, inner0, None) = ptr0.kind()
+        && let ConstantExprKind::Global(gref0) = inner0.kind()
+        && let ConstantExprKind::Ptr(RefKind::Shared, inner1, None) = ptr1.kind()
+        && let ConstantExprKind::Global(gref1) = inner1.kind()
         && gref0.id == gref1.id
     {
         map.get(&gref0.id).cloned()

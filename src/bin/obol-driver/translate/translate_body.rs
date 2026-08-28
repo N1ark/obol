@@ -528,7 +528,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             (ty::Array(_, len), ty::Slice(_) | ty::Str) => {
                 let len = rustc_internal::stable(len);
                 let len = self.translate_tyconst_to_const_expr(span, &len)?;
-                Ok(UnsizingMetadata::Length(Box::new(len)))
+                Ok(UnsizingMetadata::Length(len))
             }
             (ty::Dynamic(from_preds, ..), ty::Dynamic(to_preds, ..)) => {
                 // see
@@ -562,14 +562,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     id: vtable_global,
                     generics: Box::new(GenericArgs::empty()),
                 };
-                let meta = ConstantExpr {
-                    kind: ConstantExprKind::Global(vtable_ref),
-                    ty: TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
-                };
-                Ok(UnsizingMetadata::VTable(
-                    self.dummy_trait_ref(),
-                    Box::new(meta),
-                ))
+                let meta = ConstantExpr::new(
+                    ConstantExprKind::Global(vtable_ref),
+                    TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
+                );
+                Ok(UnsizingMetadata::VTable(self.dummy_trait_ref(), meta))
             }
             _ => {
                 trace!("Unknown unsize for ({src_ty:?}) => ({tgt_ty:?})");
@@ -602,36 +599,36 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             mir::ProjectionElem::ConstantIndex {
                 offset, from_end, ..
             } => {
-                let idx = ConstantExpr {
-                    kind: ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                let idx = ConstantExpr::new(
+                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
                         UIntTy::Usize,
                         *offset as u128,
                     ))),
-                    ty: TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
-                };
+                    TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
+                );
                 ProjectionElem::Index {
-                    offset: Box::new(Operand::Const(Box::new(idx))),
+                    offset: Box::new(Operand::Const(idx)),
                     from_end: *from_end,
                 }
             }
             mir::ProjectionElem::Subslice { from, to, from_end } => {
-                let from = ConstantExpr {
-                    kind: ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                let from = ConstantExpr::new(
+                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
                         UIntTy::Usize,
                         *from as u128,
                     ))),
-                    ty: TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
-                };
-                let to = ConstantExpr {
-                    kind: ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                    TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
+                );
+                let to = ConstantExpr::new(
+                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
                         UIntTy::Usize,
                         *to as u128,
                     ))),
-                    ty: TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
-                };
+                    TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
+                );
                 ProjectionElem::Subslice {
-                    from: Box::new(Operand::Const(Box::new(from))),
-                    to: Box::new(Operand::Const(Box::new(to))),
+                    from: Box::new(Operand::Const(from)),
+                    to: Box::new(Operand::Const(to)),
                     from_end: *from_end,
                 }
             }
@@ -694,27 +691,27 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     ty::ConstantKind::ZeroSized => {
                         self.translate_zst_constant(span, ty.kind(), const_op.ty())?
                     }
-                    ty::ConstantKind::Param(_) => ConstantExpr {
-                        kind: ConstantExprKind::Opaque("Unhandled: Param".into()),
-                        ty: ty.clone(),
-                    },
-                    ty::ConstantKind::Ty(_) => ConstantExpr {
-                        kind: ConstantExprKind::Opaque("Unhandled: ty".into()),
-                        ty: ty.clone(),
-                    },
+                    ty::ConstantKind::Param(_) => ConstantExpr::new(
+                        ConstantExprKind::Opaque("Unhandled: Param".into()),
+                        ty.clone(),
+                    ),
+                    ty::ConstantKind::Ty(_) => ConstantExpr::new(
+                        ConstantExprKind::Opaque("Unhandled: ty".into()),
+                        ty.clone(),
+                    ),
                     ty::ConstantKind::Unevaluated(uneval) => {
                         let id =
                             self.register_named_const(span, uneval.def, uneval.args.clone().into());
-                        ConstantExpr {
-                            kind: ConstantExprKind::Global(GlobalDeclRef {
+                        ConstantExpr::new(
+                            ConstantExprKind::Global(GlobalDeclRef {
                                 id,
                                 generics: Box::new(GenericArgs::empty()),
                             }),
-                            ty: ty.clone(),
-                        }
+                            ty.clone(),
+                        )
                     }
                 };
-                Ok((Operand::Const(Box::new(cexpr)), ty))
+                Ok((Operand::Const(cexpr), ty))
             }
             mir::Operand::RuntimeChecks(check) => {
                 let op = match check {
@@ -789,7 +786,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let c = self.translate_tyconst_to_const_expr(span, cnst)?;
                 let (operand, t) = self.translate_operand_with_type(span, operand)?;
                 // Remark: we could desugar this into a function call later.
-                Ok(Rvalue::Repeat(operand, t, Box::new(c)))
+                Ok(Rvalue::Repeat(operand, t, c))
             }
             mir::Rvalue::Ref(_region, borrow_kind, place) => {
                 let place = self.translate_place(span, place)?;
@@ -855,10 +852,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                             generics: Box::new(GenericArgs::empty()),
                         };
                         let src_ty = TyKind::FnDef(RegionBinder::empty(fn_ptr.clone())).into_ty();
-                        operand = Operand::Const(Box::new(ConstantExpr {
-                            kind: ConstantExprKind::FnDef(fn_ptr),
-                            ty: src_ty.clone(),
-                        }));
+                        operand = Operand::Const(ConstantExpr::new(
+                            ConstantExprKind::FnDef(fn_ptr),
+                            src_ty.clone(),
+                        ));
                         CastKind::FnPtr(src_ty, tgt_ty)
                     }
                     mir::CastKind::PtrToPtr
@@ -943,12 +940,9 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 match aggregate_kind {
                     mir::AggregateKind::Array(ty) => {
                         let t_ty = self.translate_ty(span, *ty)?;
-                        let cg = ConstantExpr::mk_usize(ScalarValue::Unsigned(
-                            UIntTy::Usize,
-                            operands_t.len() as u128,
-                        ));
+                        let cg = ConstantExpr::mk_usize(operands_t.len() as u128);
                         Ok(Rvalue::Aggregate(
-                            AggregateKind::Array(t_ty, Box::new(cg)),
+                            AggregateKind::Array(t_ty, cg),
                             operands_t,
                         ))
                     }
@@ -1196,10 +1190,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let (discr, discr_ty) = self.translate_operand_with_type(span, discr)?;
 
                 // Translate the switch targets
-                // let targets = targets.
-                let targets = self.translate_switch_targets(span, &discr_ty, targets)?;
+                let (data, branches) =
+                    self.translate_switch_targets(span, discr, &discr_ty, targets)?;
 
-                TerminatorKind::Switch { discr, targets }
+                TerminatorKind::Switch { data, branches }
             }
             mir::TerminatorKind::Resume => TerminatorKind::UnwindResume,
             mir::TerminatorKind::Abort => TerminatorKind::Abort(AbortKind::UnwindTerminate),
@@ -1308,82 +1302,60 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         Ok(())
     }
 
-    /// Translate switch targets
+    /// Translate switch targets.
+    ///
+    /// Returns the switch data (the scrutinee and the value -> branch mapping) along with the
+    /// block each branch jumps to. Several values may select the same branch, so we deduplicate
+    /// targets into `BranchId`s as we go.
     fn translate_switch_targets(
         &mut self,
         span: Span,
+        discr: Operand,
         switch_ty: &Ty,
         targets: &mir::SwitchTargets,
-    ) -> Result<SwitchTargets, Error> {
+    ) -> Result<(SwitchData, IndexVec<BranchId, BlockId>), Error> {
         trace!("targets: {:?}", targets);
-        let switch_ty = *switch_ty.kind().as_literal().unwrap();
-        match switch_ty {
-            LiteralTy::Bool => {
-                assert_eq!(targets.len(), 2);
-                let (val, target) = targets.branches().next().unwrap();
-                // It seems the block targets are inverted
-                assert_eq!(val, 0u128);
-                let if_block = self.translate_basic_block_id(targets.otherwise());
-                let else_block = self.translate_basic_block_id(target);
-                Ok(SwitchTargets::If(if_block, else_block))
-            }
-            LiteralTy::Int(int_ty) => {
-                let targets_ullbc: Vec<(Literal, BlockId)> = targets
-                    .branches()
-                    .map(|(v, tgt)| {
-                        let v = Literal::Scalar(ScalarValue::from_le_bytes(
-                            IntegerTy::Signed(int_ty),
-                            v.to_le_bytes(),
-                        ));
-                        let tgt = self.translate_basic_block_id(tgt);
-                        (v, tgt)
-                    })
-                    .collect();
-                let otherwise = self.translate_basic_block_id(targets.otherwise());
-                Ok(SwitchTargets::SwitchInt(
-                    LiteralTy::Int(int_ty),
-                    targets_ullbc,
-                    otherwise,
-                ))
-            }
-            LiteralTy::UInt(uint_ty) => {
-                let targets_ullbc: Vec<(Literal, BlockId)> = targets
-                    .branches()
-                    .map(|(v, tgt)| {
-                        let v = Literal::Scalar(ScalarValue::from_le_bytes(
-                            IntegerTy::Unsigned(uint_ty),
-                            v.to_le_bytes(),
-                        ));
-                        let tgt = self.translate_basic_block_id(tgt);
-                        (v, tgt)
-                    })
-                    .collect();
-                let otherwise = self.translate_basic_block_id(targets.otherwise());
-                Ok(SwitchTargets::SwitchInt(
-                    LiteralTy::UInt(uint_ty),
-                    targets_ullbc,
-                    otherwise,
-                ))
-            }
-            LiteralTy::Char => {
-                let targets_ullbc: Vec<(Literal, BlockId)> = targets
-                    .branches()
-                    .map(|(v, tgt)| {
-                        let b: u128 = u128::from_le_bytes(v.to_le_bytes());
-                        let v = Literal::char_from_le_bytes(b);
-                        let tgt = self.translate_basic_block_id(tgt);
-                        (v, tgt)
-                    })
-                    .collect();
-                let otherwise = self.translate_basic_block_id(targets.otherwise());
-                Ok(SwitchTargets::SwitchInt(
-                    LiteralTy::Char,
-                    targets_ullbc,
-                    otherwise,
-                ))
-            }
-            _ => raise_error!(self, span, "Can't match on type {switch_ty}"),
+        let switch_literal_ty = *switch_ty.kind().as_literal().unwrap();
+        let otherwise = targets.otherwise();
+
+        let mut branch_targets: IndexVec<BranchId, BlockId> = IndexVec::new();
+        // Only used for lookups, never iterated, so a plain `HashMap` keeps this deterministic.
+        let mut target_to_branch: HashMap<BlockId, BranchId> = HashMap::new();
+        let mut branches = Vec::new();
+
+        // Keep the historical true-then-false traversal order for boolean switches.
+        let bool_fallback = (switch_literal_ty == LiteralTy::Bool).then(|| {
+            let target = self.translate_basic_block_id(otherwise);
+            *target_to_branch
+                .entry(target)
+                .or_insert_with(|| branch_targets.push(target))
+        });
+
+        for (bits, target) in targets.branches() {
+            let Some(literal) = Literal::from_bits(&switch_literal_ty, bits) else {
+                raise_error!(self, span, "Can't match on type {switch_literal_ty}")
+            };
+            let target = self.translate_basic_block_id(target);
+            let branch_id = *target_to_branch
+                .entry(target)
+                .or_insert_with(|| branch_targets.push(target));
+            let value = ConstantExpr::new(ConstantExprKind::Literal(literal), switch_ty.clone());
+            branches.push((value, branch_id));
         }
+
+        let fallback = bool_fallback.unwrap_or_else(|| {
+            let target = self.translate_basic_block_id(otherwise);
+            *target_to_branch
+                .entry(target)
+                .or_insert_with(|| branch_targets.push(target))
+        });
+
+        let data = SwitchData {
+            scrutinee: SwitchScrutinee::Value(discr),
+            branches,
+            fallback: Some(fallback),
+        };
+        Ok((data, branch_targets))
     }
 
     fn translate_assert_kind(
@@ -1512,13 +1484,13 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         TyKind::RawPtr(unit_ptr_ty.clone(), RefKind::Shared).into_ty();
                     let unit_ptr_ptr_ptr_ty =
                         TyKind::RawPtr(unit_ptr_ptr_ty.clone(), RefKind::Shared).into_ty();
-                    let offset = Operand::Const(Box::new(ConstantExpr {
-                        kind: ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                    let offset = Operand::Const(ConstantExpr::new(
+                        ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
                             UIntTy::Usize,
                             idx as u128,
                         ))),
-                        ty: Ty::mk_usize(),
-                    }));
+                        Ty::mk_usize(),
+                    ));
                     let vtable_ptr =
                         dyn_element_place.project(ProjectionElem::PtrMetadata, unit_ptr_ptr_ptr_ty);
                     let fn_pointer =

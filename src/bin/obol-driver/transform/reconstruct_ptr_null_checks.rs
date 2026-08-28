@@ -55,7 +55,7 @@ fn literal_is_zero(lit: &Literal) -> bool {
 fn operand_is_zero(op: &Operand) -> bool {
     matches!(
         op,
-        Operand::Const(c) if matches!(&c.kind, ConstantExprKind::Literal(lit) if literal_is_zero(lit))
+        Operand::Const(c) if matches!(c.kind(), ConstantExprKind::Literal(lit) if literal_is_zero(lit))
     )
 }
 
@@ -96,12 +96,12 @@ fn count_local_usages(b: &ExprBody) -> IndexVec<LocalId, usize> {
 /// non-defining use.
 fn feeds_null_check(block: &BlockData, local: LocalId) -> bool {
     // The result feeds a `switch [0, otherwise]` terminator.
-    if let TerminatorKind::Switch {
-        discr,
-        targets: SwitchTargets::SwitchInt(_, cases, _),
-    } = &block.terminator.kind
-        && let [(case, _)] = cases.as_slice()
-        && literal_is_zero(case)
+    if let TerminatorKind::Switch { data, .. } = &block.terminator.kind
+        && let SwitchScrutinee::Value(discr) = &data.scrutinee
+        && data.fallback.is_some()
+        && let [(case, _)] = data.branches.as_slice()
+        && let ConstantExprKind::Literal(lit) = case.kind()
+        && literal_is_zero(lit)
         && operand_as_local(discr) == Some(local)
     {
         return true;
@@ -206,10 +206,10 @@ impl UllbcPass for Transform {
             // downstream null-check is left untouched. `fresh_var` inserts the temp's `StorageLive`;
             // we reuse the transmute statement's own slot for the matching `StorageDead`.
             let tmp = ctx.fresh_var(None, Ty::mk_bool());
-            let null_ptr = Operand::Const(Box::new(ConstantExpr {
-                kind: ConstantExprKind::PtrNoProvenance(0),
-                ty: src_ty,
-            }));
+            let null_ptr = Operand::Const(ConstantExpr::new(
+                ConstantExprKind::PtrNoProvenance(0),
+                src_ty,
+            ));
             ctx.insert_assn_stmt(tmp.clone(), Rvalue::BinaryOp(BinOp::Ne, operand, null_ptr));
             ctx.insert_assn_stmt(
                 dest,

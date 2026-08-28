@@ -15,7 +15,7 @@ use charon_lib::{raise_error, register_error};
 use core::convert::*;
 use log::trace;
 use rustc_middle::ty as rustc_ty;
-use rustc_public::{CrateDefType, mir, ty};
+use rustc_public::{CrateDef, CrateDefType, mir, ty};
 use rustc_public_bridge::IndexedVal;
 
 impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
@@ -284,8 +284,12 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 // FIXME: generics?
                 trace!("Adt: {:?}", item.0);
                 let id = self.register_type_decl_id(span, *item, generics.clone());
+                let def_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, item.def_id());
+                let builtin = (self.t_ctx.tcx.as_lang_item(def_id)
+                    == Some(rustc_attr_ir::LangItem::OwnedBox))
+                .then_some(BuiltinTy::Box);
                 // no generics since it's monomorphic
-                let tref = TypeDeclRef::new(id, GenericArgs::empty(), None);
+                let tref = TypeDeclRef::new(id, GenericArgs::empty(), builtin);
 
                 // Return the instantiated ADT
                 TyKind::Adt(tref)
@@ -298,7 +302,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             ty::RigidTy::Array(ty, const_param) => {
                 let c = self.translate_tyconst_to_const_expr(span, const_param)?;
                 let ty = self.translate_ty(span, *ty)?;
-                TyKind::Array(ty, Box::new(c))
+                TyKind::Array(ty, c)
             }
             ty::RigidTy::Slice(ty) => {
                 let ty = self.translate_ty(span, *ty)?;
@@ -425,8 +429,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 end,
                 include_end: _, // always true
             } => TypePattern::Range(
-                Box::new(self.translate_tyconst_to_const_expr(span, start)?),
-                Box::new(self.translate_tyconst_to_const_expr(span, end)?),
+                self.translate_tyconst_to_const_expr(span, start)?,
+                self.translate_tyconst_to_const_expr(span, end)?,
             ),
             ty::Pattern::Or(patterns) => TypePattern::OrPattern(
                 patterns
@@ -539,7 +543,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             let field_offsets = variant_layout
                 .field_offsets
                 .iter()
-                .map(|o| o.bytes())
+                .map(|o| OffsetExpr::new(o.bytes()))
                 .collect();
             Some(VariantLayout {
                 field_offsets,
@@ -554,9 +558,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         ) -> Option<VariantLayout> {
             let field_offsets = match &variant_layout.fields {
                 r_abi::FieldsShape::Arbitrary { offsets, .. } => {
-                    offsets.iter().map(|o| o.bytes()).collect()
+                    offsets.iter().map(|o| OffsetExpr::new(o.bytes())).collect()
                 }
-                r_abi::FieldsShape::Union(x) => vec![0].repeat(x.get()).into(),
+                r_abi::FieldsShape::Union(x) => vec![OffsetExpr::new(0); x.get()].into(),
                 r_abi::FieldsShape::Primitive => IndexVec::new(),
                 r_abi::FieldsShape::Array { .. } => panic!("Unexpected layout shape"),
             };
@@ -603,8 +607,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         let ty = rustc_public::rustc_internal::internal(self.t_ctx.tcx, ty);
 
         let (size, align) = (
-            Some(layout.size().bytes()),
-            Some(layout.align().abi.bytes()),
+            SizeExpr::new(layout.size().bytes()),
+            SizeExpr::new(layout.align().abi.bytes()),
         );
         let ptr_size = self
             .t_ctx
@@ -693,7 +697,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             // happens if we encounter a discriminant that would have been the
                             // niched variant.
                             let discriminator = Discriminator::Branch {
-                                offset: tag_offset,
+                                offset: OffsetExpr::new(tag_offset),
                                 int_ty: tag_ty,
                                 fallback: Box::new(Discriminator::Invalid),
                                 children,
@@ -734,7 +738,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 };
 
                 let discriminator = Discriminator::Branch {
-                    offset: tag_offset,
+                    offset: OffsetExpr::new(tag_offset),
                     int_ty: tag_ty,
                     fallback: Box::new(fallback),
                     children,
@@ -794,9 +798,38 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             None
         };
 
+        // `repr(uN)`/`repr(iN)` on an enum: record the type itself, not just its presence.
+        let explicit_discr_type = repr.int.map(|int_ty| {
+            use rustc_public::abi::{IntegerLength, IntegerType};
+            match int_ty {
+                IntegerType::Pointer { is_signed: true } => LiteralTy::Int(IntTy::Isize),
+                IntegerType::Pointer { is_signed: false } => LiteralTy::UInt(UIntTy::Usize),
+                IntegerType::Fixed {
+                    length,
+                    is_signed: true,
+                } => LiteralTy::Int(match length {
+                    IntegerLength::I8 => IntTy::I8,
+                    IntegerLength::I16 => IntTy::I16,
+                    IntegerLength::I32 => IntTy::I32,
+                    IntegerLength::I64 => IntTy::I64,
+                    IntegerLength::I128 => IntTy::I128,
+                }),
+                IntegerType::Fixed {
+                    length,
+                    is_signed: false,
+                } => LiteralTy::UInt(match length {
+                    IntegerLength::I8 => UIntTy::U8,
+                    IntegerLength::I16 => UIntTy::U16,
+                    IntegerLength::I32 => UIntTy::U32,
+                    IntegerLength::I64 => UIntTy::U64,
+                    IntegerLength::I128 => UIntTy::U128,
+                }),
+            }
+        });
+
         ReprOptions {
             transparent: repr.flags.is_transparent,
-            explicit_discr_type: repr.int.is_some(),
+            explicit_discr_type,
             repr_algo,
             align_modif: align_mod,
         }

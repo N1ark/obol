@@ -63,83 +63,82 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 
         use ty::VtblEntry::*;
         let layout = ty.layout()?.shape();
-        let entries: Vec<Operand> =
-            entries
-                .into_iter()
-                .filter_map(|vtable_entry| match vtable_entry {
-                    MetadataDropInPlace => {
-                        let drop = Instance::resolve_drop_in_place(ty.clone());
-                        let drop_fn = self.register_fun_decl_id(Span::dummy(), drop);
-                        let fn_ptr = FnPtr {
-                            kind: Box::new(FnPtrKind::Fun(FunId::Regular(drop_fn))),
-                            generics: Box::new(GenericArgs::empty()),
-                        };
-                        Some(cast_to_unit_ptr(
-                            "drop".into(),
-                            Operand::Const(Box::new(ConstantExpr {
-                                ty: TyKind::FnDef(RegionBinder::empty(fn_ptr.clone())).into_ty(),
-                                kind: ConstantExprKind::FnDef(fn_ptr),
-                            })),
-                        ))
-                    }
-                    MetadataSize => Some(cast_to_unit_ptr(
-                        "size".into(),
-                        Operand::Const(Box::new(ConstantExpr {
-                            ty: Ty::mk_usize(),
-                            kind: ConstantExprKind::Literal(Literal::Scalar(
-                                ScalarValue::Unsigned(UIntTy::Usize, layout.size.bytes() as u128),
-                            )),
-                        })),
+        let entries: Vec<Operand> = entries
+            .into_iter()
+            .filter_map(|vtable_entry| match vtable_entry {
+                MetadataDropInPlace => {
+                    let drop = Instance::resolve_drop_in_place(ty.clone());
+                    let drop_fn = self.register_fun_decl_id(Span::dummy(), drop);
+                    let fn_ptr = FnPtr {
+                        kind: Box::new(FnPtrKind::Fun(FunId::Regular(drop_fn))),
+                        generics: Box::new(GenericArgs::empty()),
+                    };
+                    Some(cast_to_unit_ptr(
+                        "drop".into(),
+                        Operand::Const(ConstantExpr::new(
+                            ConstantExprKind::FnDef(fn_ptr.clone()),
+                            TyKind::FnDef(RegionBinder::empty(fn_ptr)).into_ty(),
+                        )),
+                    ))
+                }
+                MetadataSize => Some(cast_to_unit_ptr(
+                    "size".into(),
+                    Operand::Const(ConstantExpr::new(
+                        ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                            UIntTy::Usize,
+                            layout.size.bytes() as u128,
+                        ))),
+                        Ty::mk_usize(),
                     )),
-                    MetadataAlign => Some(cast_to_unit_ptr(
-                        "align".into(),
-                        Operand::Const(Box::new(ConstantExpr {
-                            ty: Ty::mk_usize(),
-                            kind: ConstantExprKind::Literal(Literal::Scalar(
-                                ScalarValue::Unsigned(UIntTy::Usize, layout.abi_align as u128),
-                            )),
-                        })),
+                )),
+                MetadataAlign => Some(cast_to_unit_ptr(
+                    "align".into(),
+                    Operand::Const(ConstantExpr::new(
+                        ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                            UIntTy::Usize,
+                            layout.abi_align as u128,
+                        ))),
+                        Ty::mk_usize(),
                     )),
-                    Method(instance) => {
-                        // Use the non-trimmed name: `trimmed_name` forces rustc's
-                        // `trimmed_def_paths` query which can cause ICEs
-                        let name = instance.name();
-                        let fun = self.register_fun_decl_id(Span::dummy(), instance);
-                        let fn_ptr = FnPtr {
-                            kind: Box::new(FnPtrKind::Fun(FunId::Regular(fun))),
+                )),
+                Method(instance) => {
+                    // Use the non-trimmed name: `trimmed_name` forces rustc's
+                    // `trimmed_def_paths` query which can cause ICEs
+                    let name = instance.name();
+                    let fun = self.register_fun_decl_id(Span::dummy(), instance);
+                    let fn_ptr = FnPtr {
+                        kind: Box::new(FnPtrKind::Fun(FunId::Regular(fun))),
+                        generics: Box::new(GenericArgs::empty()),
+                    };
+                    Some(cast_to_unit_ptr(
+                        name,
+                        Operand::Const(ConstantExpr::new(
+                            ConstantExprKind::FnDef(fn_ptr.clone()),
+                            TyKind::FnDef(RegionBinder::empty(fn_ptr)).into_ty(),
+                        )),
+                    ))
+                }
+                TraitVPtr(super_trait) => {
+                    let vtable = self.register_vtable(Span::dummy(), ty, Some(super_trait));
+                    Some(Operand::Copy(Place {
+                        kind: PlaceKind::Global(GlobalDeclRef {
+                            id: vtable,
                             generics: Box::new(GenericArgs::empty()),
-                        };
-                        Some(cast_to_unit_ptr(
-                            name,
-                            Operand::Const(Box::new(ConstantExpr {
-                                ty: TyKind::FnDef(RegionBinder::empty(fn_ptr.clone())).into_ty(),
-                                kind: ConstantExprKind::FnDef(fn_ptr),
-                            })),
-                        ))
-                    }
-                    TraitVPtr(super_trait) => {
-                        let vtable = self.register_vtable(Span::dummy(), ty, Some(super_trait));
-                        Some(Operand::Copy(Place {
-                            kind: PlaceKind::Global(GlobalDeclRef {
-                                id: vtable,
-                                generics: Box::new(GenericArgs::empty()),
-                            }),
-                            ty: inner_ty.clone(),
-                        }))
-                    }
-                    Vacant => None,
-                })
-                .collect();
+                        }),
+                        ty: inner_ty.clone(),
+                    }))
+                }
+                Vacant => None,
+            })
+            .collect();
 
-        let entry_count =
-            ConstantExpr::mk_usize(ScalarValue::Unsigned(UIntTy::Usize, entries.len() as u128));
-        let entry_array_ty =
-            TyKind::Array(inner_ty.clone(), Box::new(entry_count.clone())).into_ty();
+        let entry_count = ConstantExpr::mk_usize(entries.len() as u128);
+        let entry_array_ty = TyKind::Array(inner_ty.clone(), entry_count.clone()).into_ty();
         let entry_array = locals.new_var(Some("entry_array".into()), entry_array_ty.clone());
         statements.push(StatementKind::Assign(
             entry_array.clone(),
             Rvalue::Aggregate(
-                AggregateKind::Array(inner_ty.clone(), Box::new(entry_count.clone())),
+                AggregateKind::Array(inner_ty.clone(), entry_count.clone()),
                 entries,
             ),
         ));

@@ -236,17 +236,17 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                 )
                             })
                             .try_collect()?;
-                        let len = ConstantExpr::mk_usize(ScalarValue::Unsigned(UIntTy::Usize, len));
-                        let sub_constant = ConstantExpr {
-                            kind: ConstantExprKind::Array(sub_constants),
-                            ty: Ty::mk_array(subty.clone(), len.clone()),
-                        };
-                        let metadata = Some(UnsizingMetadata::Length(Box::new(len)));
+                        let len = ConstantExpr::mk_usize(len);
+                        let sub_constant = ConstantExpr::new(
+                            ConstantExprKind::Array(sub_constants),
+                            Ty::mk_array(subty.clone(), len.clone()),
+                        );
+                        let metadata = Some(UnsizingMetadata::Length(len));
 
                         if let TyKind::RawPtr(_, rk) = ty {
-                            ConstantExprKind::Ptr(*rk, Box::new(sub_constant), metadata)
+                            ConstantExprKind::Ptr(*rk, sub_constant, metadata)
                         } else {
-                            ConstantExprKind::Ref(Box::new(sub_constant), metadata)
+                            ConstantExprKind::Ref(sub_constant, metadata)
                         }
                     }
                     // The pointer points directly at a function (e.g. `f as *mut ()`
@@ -265,9 +265,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     &alloc.bytes.as_slice()[offset + size / 2..offset + size];
                                 let len =
                                     self.read_target_uint(Self::as_init(meta_bytes)?.as_slice())?;
-                                let meta = UnsizingMetadata::Length(Box::new(
+                                let meta = UnsizingMetadata::Length(
                                     ScalarValue::Unsigned(UIntTy::Usize, len).to_constant(),
-                                ));
+                                );
                                 (Some(meta), None)
                             }
                             TyKind::DynTrait(_) => {
@@ -294,14 +294,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     id: vtable_global,
                                     generics: Box::new(GenericArgs::empty()),
                                 };
-                                let meta = ConstantExpr {
-                                    kind: ConstantExprKind::Global(global_ref),
-                                    ty: TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
-                                };
-                                let meta = UnsizingMetadata::VTable(
-                                    self.dummy_trait_ref(),
-                                    Box::new(meta),
+                                let meta = ConstantExpr::new(
+                                    ConstantExprKind::Global(global_ref),
+                                    TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
                                 );
+                                let meta = UnsizingMetadata::VTable(self.dummy_trait_ref(), meta);
                                 (Some(meta), Some(self_ty))
                             }
                             _ => (None, None),
@@ -337,18 +334,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             }
                             _ => GenericArgs::empty(),
                         };
-                        let sub_constant = ConstantExpr {
-                            kind: ConstantExprKind::Global(GlobalDeclRef {
+                        let sub_constant = ConstantExpr::new(
+                            ConstantExprKind::Global(GlobalDeclRef {
                                 id,
                                 generics: Box::new(generics),
                             }),
-                            ty: glob_ty,
-                        };
+                            glob_ty,
+                        );
 
                         if let TyKind::RawPtr(_, rk) = ty {
-                            ConstantExprKind::Ptr(*rk, Box::new(sub_constant), metadata)
+                            ConstantExprKind::Ptr(*rk, sub_constant, metadata)
                         } else {
-                            ConstantExprKind::Ref(Box::new(sub_constant), metadata)
+                            ConstantExprKind::Ref(sub_constant, metadata)
                         }
                     }
                 }
@@ -506,12 +503,12 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         )
                     }
                     ty::AdtKind::Union => {
-                        return Ok(ConstantExpr {
-                            kind: ConstantExprKind::RawMemory(
+                        return Ok(ConstantExpr::new(
+                            ConstantExprKind::RawMemory(
                                 self.as_charon_bytes(span, alloc, offset, size),
                             ),
-                            ty: ty.clone().into_ty(),
-                        });
+                            ty.clone().into_ty(),
+                        ));
                     }
                 };
 
@@ -601,7 +598,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     unreachable!("Pattern type should be a rigid pattern type");
                 };
                 self.translate_allocation_at(span, alloc, inner, *rty, offset, unsized_len)?
-                    .kind
+                    .kind()
+                    .clone()
             }
 
             TyKind::Adt(tref) if tref.is_box() => {
@@ -648,10 +646,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 unreachable!("Unhandled builtin type in constant: {:?}", tref.builtin);
             }
         };
-        Ok(ConstantExpr {
-            kind,
-            ty: ty.clone().into_ty(),
-        })
+        Ok(ConstantExpr::new(kind, ty.clone().into_ty()))
     }
 
     pub fn translate_zst_constant(
@@ -699,18 +694,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     trace!(
                                         "Unexpected layout for ZST enum\n- Layout: {layout:?}\n- Ty: {rty:?}"
                                     );
-                                    return Ok(ConstantExpr {
-                                        kind: ConstantExprKind::RawMemory(vec![]),
-                                        ty: ty.clone().into_ty(),
-                                    });
+                                    return Ok(ConstantExpr::new(
+                                        ConstantExprKind::RawMemory(vec![]),
+                                        ty.clone().into_ty(),
+                                    ));
                                 };
                                 Some(index)
                             }
                             ty::AdtKind::Union => {
-                                return Ok(ConstantExpr {
-                                    kind: ConstantExprKind::RawMemory(vec![]),
-                                    ty: ty.clone().into_ty(),
-                                });
+                                return Ok(ConstantExpr::new(
+                                    ConstantExprKind::RawMemory(vec![]),
+                                    ty.clone().into_ty(),
+                                ));
                             }
                         };
                         let variant = variant_r.map(|v| self.translate_variant_id(v));
@@ -739,10 +734,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 raise_error!(self, span, "Unsupported ZST constant type: {:?}", ty)
             }
         };
-        Ok(ConstantExpr {
-            kind,
-            ty: ty.clone().into_ty(),
-        })
+        Ok(ConstantExpr::new(kind, ty.clone().into_ty()))
     }
 
     pub fn translate_tyconst_to_const_expr(
@@ -794,10 +786,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     "translate const: got a const parameter: {:?}",
                     param
                 );
-                Ok(ConstantExpr {
-                    kind: ConstantExprKind::Var(ConstGenericDbVar::Free(id)),
+                Ok(ConstantExpr::new(
+                    ConstantExprKind::Var(ConstGenericDbVar::Free(id)),
                     ty,
-                })
+                ))
             }
             _ => {
                 raise_error!(
@@ -826,10 +818,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let size = alloc.bytes.len();
                 let maybe_uninit = self.maybe_uninit_bytes(span, size)?;
                 let bytes = self.as_charon_bytes(span, &alloc, 0, size);
-                let const_val = ConstantExpr {
-                    kind: ConstantExprKind::RawMemory(bytes),
-                    ty: maybe_uninit.clone(),
-                };
+                let const_val =
+                    ConstantExpr::new(ConstantExprKind::RawMemory(bytes), maybe_uninit.clone());
                 Ok((const_val, maybe_uninit))
             }
         }
