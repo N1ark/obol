@@ -242,11 +242,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             consts: IndexMap::new(),
             types: IndexMap::new(),
             methods: IndexMap::new(),
-            vtable: Some(TypeDeclRef::new(
-                TypeDeclId::UNIT,
-                GenericArgs::empty(),
-                Some(BuiltinTy::Tuple),
-            )),
+            vtable: None,
         });
     }
 }
