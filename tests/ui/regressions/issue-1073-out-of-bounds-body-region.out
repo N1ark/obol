@@ -18,8 +18,6 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
-struct () {}
-
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -30,11 +28,7 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
+struct () {}
 
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
@@ -44,7 +38,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -66,9 +60,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -101,7 +101,7 @@ struct str {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -592,7 +592,7 @@ fn precondition_check(data: *mut (), size: usize, align: usize, len: usize)
 }
 
 // Full name: core::ptr::non_null::NonNull::<core::io::io_slice::IoSlice::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<core::io::io_slice::IoSlice::<'_>> {
   pointer: *const core::io::io_slice::IoSlice::<'_> is !null,
 }
@@ -1262,7 +1262,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
 }
 
 // Full name: core::ptr::non_null::NonNull::<[core::io::io_slice::IoSlice::<'_>]>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<[core::io::io_slice::IoSlice::<'_>]> {
   pointer: *const [core::io::io_slice::IoSlice::<'_>] is !null,
 }
@@ -1477,7 +1477,7 @@ pub fn advance_slices::<'_>(bufs: &'_ mut &'_ mut [core::io::io_slice::IoSlice::
         data = cast<*mut c_void, *const u8>(copy _39);
         len_40 = copy (*buf)._0.vec.iov_len;
         storage_live(_79);
-        _79 = ub_checks<bool>;
+        _79 = ub_checks;
         if move _79 -> bb5 else -> bb6;
     }
 

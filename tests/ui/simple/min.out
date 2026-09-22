@@ -1,97 +1,43 @@
 
 // Final ULLBC:
 
-struct () {}
+// Full name: core::cmp::Ord
+#[diagnostic_item("Ord")]
+trait Ord
 
-// Full name: core::cmp::impls::{impl PartialOrd<u64> for u64}::lt
-pub fn lt(self: &'_ u64, other: &'_ u64) -> bool
-{
-    let _0: bool; // return
-    let self: &'_ u64; // arg #1
-    let other: &'_ u64; // arg #2
-    let _3: u64; // anonymous local
-    let _4: u64; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _3 = copy (*self);
-        storage_live(_4);
-        _4 = copy (*other);
-        _0 = move _3 < move _4;
-        storage_dead(_4);
-        storage_dead(_3);
-        return;
-    }
+// Full name: core::cmp::impls::{impl Ord for u64}
+impl "impl_Ord_for_u64" Ord for u64 {
+    non-dyn-compatible
 }
 
-// Full name: core::cmp::Ord::min::<u64>
-#[diagnostic_item("cmp_ord_min")]
-pub fn min::<u64>(self: u64, other: u64) -> u64
+// Full name: core::intrinsics::integer_min::<u64>
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn integer_min::<u64>(a_1: u64, b_2: u64) -> u64
+= <intrinsic:integer_min>
+
+// Full name: core::cmp::impls::{impl Ord for u64}::min
+pub fn min(self: u64, other: u64) -> u64
 {
     let _0: u64; // return
     let self: u64; // arg #1
     let other: u64; // arg #2
-    let _3: bool; // anonymous local
-    let _4: &'_ u64; // anonymous local
-    let _5: &'_ u64; // anonymous local
-    let _6: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_6);
-        _6 = const true;
-        storage_live(_3);
-        storage_live(_4);
-        _4 = &other;
-        storage_live(_5);
-        _5 = &self;
-        _3 = lt(move _4, move _5) -> bb1 (unwind: bb2);
+        _0 = integer_min::<u64>(move self, move other) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        if move _3 -> bb3 else -> bb4;
-    }
-
-    bb2: {
-        if copy _6 -> bb6 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = move other;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb4: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _6 = const false;
-        _0 = move self;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb5: {
         return;
     }
 
-    bb6: {
-        unwind_continue;
+    bb2: {
+        undefined_behavior;
     }
 }
 
-// Full name: core::cmp::PartialOrd
-#[lang_item(PartialOrd)]
-#[diagnostic_item("PartialOrd")]
-trait PartialOrd
-
-// Full name: core::cmp::impls::{impl PartialOrd<u64> for u64}
-impl "impl_PartialOrd_u64_for_u64" PartialOrd<u64> for u64 {
-    non-dyn-compatible
-}
+struct () {}
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -106,7 +52,7 @@ fn main()
         storage_live(_0);
         _0 = ();
         storage_live(_1);
-        _1 = min::<u64>(const 1u64, const 2u64) -> bb1 (unwind: bb2);
+        _1 = min(const 1u64, const 2u64) -> bb1 (unwind: bb2);
     }
 
     bb1: {

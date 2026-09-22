@@ -1,98 +1,6 @@
 
 // Final ULLBC:
 
-struct () {}
-
-// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
-pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
-{
-    let _0: bool; // return
-    let self: &'_ usize; // arg #1
-    let other: &'_ usize; // arg #2
-    let _3: usize; // anonymous local
-    let _4: usize; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _3 = copy (*self);
-        storage_live(_4);
-        _4 = copy (*other);
-        _0 = move _3 < move _4;
-        storage_dead(_4);
-        storage_dead(_3);
-        return;
-    }
-}
-
-// Full name: core::cmp::Ord::min::<usize>
-#[diagnostic_item("cmp_ord_min")]
-pub fn min::<usize>(self: usize, other: usize) -> usize
-{
-    let _0: usize; // return
-    let self: usize; // arg #1
-    let other: usize; // arg #2
-    let _3: bool; // anonymous local
-    let _4: &'_ usize; // anonymous local
-    let _5: &'_ usize; // anonymous local
-    let _6: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_6);
-        _6 = const true;
-        storage_live(_3);
-        storage_live(_4);
-        _4 = &other;
-        storage_live(_5);
-        _5 = &self;
-        _3 = lt(move _4, move _5) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        if move _3 -> bb3 else -> bb4;
-    }
-
-    bb2: {
-        if copy _6 -> bb6 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = move other;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb4: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _6 = const false;
-        _0 = move self;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb5: {
-        return;
-    }
-
-    bb6: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::cmp::PartialOrd
-#[lang_item(PartialOrd)]
-#[diagnostic_item("PartialOrd")]
-trait PartialOrd
-
-// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}
-impl "impl_PartialOrd_usize_for_usize" PartialOrd<usize> for usize {
-    non-dyn-compatible
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -113,11 +21,7 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
+struct () {}
 
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
@@ -127,7 +31,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -149,9 +53,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -171,7 +81,7 @@ struct str {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -193,6 +103,12 @@ pub struct Location::<'_> {
 #[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
+
+// Full name: core::intrinsics::integer_min::<usize>
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn integer_min::<usize>(a_1: usize, b_2: usize) -> usize
+= <intrinsic:integer_min>
 
 // Full name: core::intrinsics::ctpop::<usize>
 #[rustc_intrinsic]
@@ -830,7 +746,7 @@ pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u
         _10 = &raw const (*self) with_metadata(copy self.metadata);
         ptr = cast<*const [u8], *const u8>(copy _10);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb1 else -> bb2;
     }
 
@@ -841,7 +757,7 @@ pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u
     bb2: {
         storage_live(_6);
         storage_live(_18);
-        _18 = ub_checks<bool>;
+        _18 = ub_checks;
         if move _18 -> bb4 else -> bb5;
     }
 
@@ -866,7 +782,7 @@ pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u
         storage_live(len_9);
         len_9 = copy len_3 ub.- copy mid;
         storage_live(_19);
-        _19 = ub_checks<bool>;
+        _19 = ub_checks;
         if move _19 -> bb8 else -> bb9;
     }
 
@@ -1053,7 +969,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         v1 = copy _10.metadata;
         storage_live(v2);
         v2 = copy (*self_1).chunk_size;
-        chunksz = min::<usize>(move v1, move v2) -> bb4 (unwind: bb5);
+        chunksz = integer_min::<usize>(move v1, move v2) -> bb4 (unwind: bb5);
     }
 
     bb3: {
@@ -1070,7 +986,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
     }
 
     bb5: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb6: {

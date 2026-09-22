@@ -70,7 +70,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     let drop = Instance::resolve_drop_in_place(ty.clone());
                     let drop_fn = self.register_fun_decl_id(Span::dummy(), drop);
                     let fn_ptr = FnPtr {
-                        kind: Box::new(FnPtrKind::Fun(FunId::Regular(drop_fn))),
+                        kind: Box::new(FnPtrKind::Fun(drop_fn)),
                         generics: Box::new(GenericArgs::empty()),
                     };
                     Some(cast_to_unit_ptr(
@@ -84,20 +84,20 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 MetadataSize => Some(cast_to_unit_ptr(
                     "size".into(),
                     Operand::Const(ConstantExpr::new(
-                        ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                        ConstantExprKind::Integer(IntegerValue::Unsigned(
                             UIntTy::Usize,
                             layout.size.bytes() as u128,
-                        ))),
+                        )),
                         Ty::mk_usize(),
                     )),
                 )),
                 MetadataAlign => Some(cast_to_unit_ptr(
                     "align".into(),
                     Operand::Const(ConstantExpr::new(
-                        ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                        ConstantExprKind::Integer(IntegerValue::Unsigned(
                             UIntTy::Usize,
                             layout.abi_align as u128,
-                        ))),
+                        )),
                         Ty::mk_usize(),
                     )),
                 )),
@@ -107,7 +107,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     let name = instance.name();
                     let fun = self.register_fun_decl_id(Span::dummy(), instance);
                     let fn_ptr = FnPtr {
-                        kind: Box::new(FnPtrKind::Fun(FunId::Regular(fun))),
+                        kind: Box::new(FnPtrKind::Fun(fun)),
                         generics: Box::new(GenericArgs::empty()),
                     };
                     Some(cast_to_unit_ptr(
@@ -133,12 +133,12 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             .collect();
 
         let entry_count = ConstantExpr::mk_usize(entries.len() as u128);
-        let entry_array_ty = TyKind::Array(inner_ty.clone(), entry_count.clone()).into_ty();
+        let entry_array_ty = TyKind::Array(inner_ty.clone(), entry_count.clone(), None).into_ty();
         let entry_array = locals.new_var(Some("entry_array".into()), entry_array_ty.clone());
         statements.push(StatementKind::Assign(
             entry_array.clone(),
             Rvalue::Aggregate(
-                AggregateKind::Array(inner_ty.clone(), entry_count.clone()),
+                AggregateKind::Array(inner_ty.clone(), entry_count.clone(), None),
                 entries,
             ),
         ));

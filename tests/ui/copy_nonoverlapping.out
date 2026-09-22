@@ -11,8 +11,6 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
-struct () {}
-
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -23,11 +21,7 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
+struct () {}
 
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
@@ -37,7 +31,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -59,9 +53,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -333,7 +333,7 @@ pub fn cold_path()
 = <intrinsic:cold_path>
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -373,20 +373,20 @@ pub const SIZE::<i32>: usize = 4usize
 #[lang_item(AlignOf)]
 pub const ALIGN::<i32>: usize = 4usize
 
-// Full name: core::option::Option::<Arguments::<'_>>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<Arguments::<'_>> {
-  None,
-  Some { _0: Arguments::<'_> },
-}
-
 // Full name: core::option::Option::<usize>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
 pub enum Option::<usize> {
   None,
   Some { _0: usize },
+}
+
+// Full name: core::option::Option::<Arguments::<'_>>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<Arguments::<'_>> {
+  None,
+  Some { _0: Arguments::<'_> },
 }
 
 // Full name: core::panic::location::Location::<'_>
@@ -1136,7 +1136,7 @@ pub fn core::ptr::copy_nonoverlapping::<i32>(src: *const i32, dst: *mut i32, cou
         storage_live(_8);
         _0 = ();
         storage_live(_7);
-        _7 = ub_checks<bool>;
+        _7 = ub_checks;
         if move _7 -> bb1 else -> bb2;
     }
 

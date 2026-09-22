@@ -117,13 +117,13 @@ pub fn repr_name(crate_data: &TranslatedCrate, n: &Name) -> String {
             },
             PathElem::Instantiated(..) => "<mono>".to_string(),
             PathElem::Target(target) => target.clone(),
-            PathElem::Builtin(builtin) => builtin.ident().to_string(),
+            PathElem::Builtin(builtin, _) => builtin.ident().to_string(),
         })
         .join("::")
 }
 
 pub fn repr_span(span: Span) -> String {
-    let span_data = span.data;
+    let span_data = span.data();
     format!("{}-{}", span_data.beg, span_data.end)
 }
 

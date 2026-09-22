@@ -319,7 +319,7 @@ impl BodyTransCtx<'_, '_, '_> {
         }
 
         // Add projections as prelude
-        let tupled_arg = self.locals.place_for_var(LocalId::from_raw(spread_loc));
+        let tupled_arg = self.locals.place_for_var(LocalId::from_usize(spread_loc));
         let new_stts = inputs_untupled
             .iter()
             .cloned()
@@ -600,11 +600,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 offset, from_end, ..
             } => {
                 let idx = ConstantExpr::new(
-                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                    ConstantExprKind::Integer(IntegerValue::Unsigned(
                         UIntTy::Usize,
                         *offset as u128,
-                    ))),
-                    TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
+                    )),
+                    Ty::mk_usize(),
                 );
                 ProjectionElem::Index {
                     offset: Box::new(Operand::Const(idx)),
@@ -613,18 +613,12 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             }
             mir::ProjectionElem::Subslice { from, to, from_end } => {
                 let from = ConstantExpr::new(
-                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
-                        UIntTy::Usize,
-                        *from as u128,
-                    ))),
-                    TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
+                    ConstantExprKind::Integer(IntegerValue::Unsigned(UIntTy::Usize, *from as u128)),
+                    Ty::mk_usize(),
                 );
                 let to = ConstantExpr::new(
-                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
-                        UIntTy::Usize,
-                        *to as u128,
-                    ))),
-                    TyKind::Literal(LiteralTy::UInt(UIntTy::Usize)).into_ty(),
+                    ConstantExprKind::Integer(IntegerValue::Unsigned(UIntTy::Usize, *to as u128)),
+                    Ty::mk_usize(),
                 );
                 ProjectionElem::Subslice {
                     from: Box::new(Operand::Const(from)),
@@ -727,10 +721,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 });
                 self.statements.push(Statement {
                     span,
-                    kind: StatementKind::Assign(
-                        local.clone(),
-                        Rvalue::NullaryOp(op, Ty::mk_bool()),
-                    ),
+                    kind: StatementKind::Assign(local.clone(), Rvalue::NullaryOp(op)),
                     comments_before: vec![],
                 });
                 Ok((Operand::Move(local), Ty::mk_bool()))
@@ -786,7 +777,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let c = self.translate_tyconst_to_const_expr(span, cnst)?;
                 let (operand, t) = self.translate_operand_with_type(span, operand)?;
                 // Remark: we could desugar this into a function call later.
-                Ok(Rvalue::Repeat(operand, t, c))
+                Ok(Rvalue::Repeat(operand, t, c, None))
             }
             mir::Rvalue::Ref(_region, borrow_kind, place) => {
                 let place = self.translate_place(span, place)?;
@@ -814,8 +805,8 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let place = self.translate_place(span, place)?;
                 let ty = place.ty().clone();
                 let cg = match ty.kind() {
-                    TyKind::Array(_, len) => Some(len.clone()),
-                    TyKind::Slice(_) => None,
+                    TyKind::Array(_, len, _) => Some(len.clone()),
+                    TyKind::Slice(..) => None,
                     _ => unreachable!(),
                 };
                 Ok(Rvalue::Len(place, ty, cg))
@@ -833,8 +824,8 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     | mir::CastKind::IntToFloat
                     | mir::CastKind::FloatToInt
                     | mir::CastKind::FloatToFloat => {
-                        let tgt_ty = *tgt_ty.kind().as_literal().unwrap();
-                        let src_ty = *src_ty.kind().as_literal().unwrap();
+                        let tgt_ty = *tgt_ty.kind().as_scalar().unwrap();
+                        let src_ty = *src_ty.kind().as_scalar().unwrap();
                         CastKind::Scalar(src_ty, tgt_ty)
                     }
                     mir::CastKind::PointerCoercion(
@@ -848,7 +839,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         };
                         let fn_id = self.register_closure_as_fn_id(span, *def, args.clone());
                         let fn_ptr = FnPtr {
-                            kind: Box::new(FnPtrKind::Fun(FunId::Regular(fn_id))),
+                            kind: Box::new(FnPtrKind::Fun(fn_id)),
                             generics: Box::new(GenericArgs::empty()),
                         };
                         let src_ty = TyKind::FnDef(RegionBinder::empty(fn_ptr.clone())).into_ty();
@@ -942,7 +933,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         let t_ty = self.translate_ty(span, *ty)?;
                         let cg = ConstantExpr::mk_usize(operands_t.len() as u128);
                         Ok(Rvalue::Aggregate(
-                            AggregateKind::Array(t_ty, cg),
+                            AggregateKind::Array(t_ty, cg, None),
                             operands_t,
                         ))
                     }
@@ -1163,7 +1154,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
 
         let fn_id = self.register_fun_decl_id(span, instance);
         let func = FnOperand::Regular(FnPtr {
-            kind: Box::new(FnPtrKind::Fun(FunId::Regular(fn_id))),
+            kind: Box::new(FnPtrKind::Fun(fn_id)),
             generics: Box::new(GenericArgs::empty()),
         });
         let dest = self.locals.new_var(None, Ty::mk_unit());
@@ -1239,7 +1230,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let drop_fn_id = self.register_fun_decl_id(span, drop_shim);
                 let on_unwind = self.translate_unwind(span, unwind);
                 let fn_ptr = FnPtr {
-                    kind: Box::new(FnPtrKind::Fun(FunId::Regular(drop_fn_id))),
+                    kind: Box::new(FnPtrKind::Fun(drop_fn_id)),
                     generics: Box::new(GenericArgs::empty()),
                 };
                 let func = if matches!(place.ty().kind(), TyKind::DynTrait(_)) {
@@ -1315,7 +1306,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         targets: &mir::SwitchTargets,
     ) -> Result<(SwitchData, IndexVec<BranchId, BlockId>), Error> {
         trace!("targets: {:?}", targets);
-        let switch_literal_ty = *switch_ty.kind().as_literal().unwrap();
+        let switch_literal_ty = *switch_ty.kind().as_scalar().unwrap();
         let otherwise = targets.otherwise();
 
         let mut branch_targets: IndexVec<BranchId, BlockId> = IndexVec::new();
@@ -1324,7 +1315,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         let mut branches = Vec::new();
 
         // Keep the historical true-then-false traversal order for boolean switches.
-        let bool_fallback = (switch_literal_ty == LiteralTy::Bool).then(|| {
+        let bool_fallback = (switch_literal_ty == ScalarTy::Bool).then(|| {
             let target = self.translate_basic_block_id(otherwise);
             *target_to_branch
                 .entry(target)
@@ -1332,14 +1323,14 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         });
 
         for (bits, target) in targets.branches() {
-            let Some(literal) = Literal::from_bits(&switch_literal_ty, bits) else {
+            let Some(literal) = ConstantExprKind::from_bits(&switch_literal_ty, bits) else {
                 raise_error!(self, span, "Can't match on type {switch_literal_ty}")
             };
             let target = self.translate_basic_block_id(target);
             let branch_id = *target_to_branch
                 .entry(target)
                 .or_insert_with(|| branch_targets.push(target));
-            let value = ConstantExpr::new(ConstantExprKind::Literal(literal), switch_ty.clone());
+            let value = ConstantExpr::new(literal, switch_ty.clone());
             branches.push((value, branch_id));
         }
 
@@ -1458,7 +1449,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
 
                 let fn_id = self.register_fun_decl_id(span, instance);
                 let fn_ptr = FnPtr {
-                    kind: Box::new(FnPtrKind::Fun(FunId::Regular(fn_id))),
+                    kind: Box::new(FnPtrKind::Fun(fn_id)),
                     generics: Box::new(GenericArgs::empty()),
                 };
                 // If this is a VTable call, do something else
@@ -1485,10 +1476,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     let unit_ptr_ptr_ptr_ty =
                         TyKind::RawPtr(unit_ptr_ptr_ty.clone(), RefKind::Shared).into_ty();
                     let offset = Operand::Const(ConstantExpr::new(
-                        ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                        ConstantExprKind::Integer(IntegerValue::Unsigned(
                             UIntTy::Usize,
                             idx as u128,
-                        ))),
+                        )),
                         Ty::mk_usize(),
                     ));
                     let vtable_ptr =

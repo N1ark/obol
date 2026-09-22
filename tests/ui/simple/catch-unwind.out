@@ -87,12 +87,6 @@ struct str {
 
 struct () {}
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -104,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -143,9 +137,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -467,7 +467,7 @@ pub fn ctpop::<usize>(x_1: usize) -> u32
 pub struct Global {}
 
 // Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<(dyn FakeTrait)> {
   pointer: *const (dyn FakeTrait) is !null,
 }
@@ -490,53 +490,35 @@ pub struct Box::<(dyn FakeTrait), Global> {
   _1: Global,
 }
 
-// Full name: core::mem::maybe_dangling::MaybeDangling::<Box::<(dyn FakeTrait), Global>>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<Box::<(dyn FakeTrait), Global>> {
-  _0: Box::<(dyn FakeTrait), Global>,
-}
-
 // Full name: core::mem::manually_drop::ManuallyDrop::<Box::<(dyn FakeTrait), Global>>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<Box::<(dyn FakeTrait), Global>> {
-  value: MaybeDangling::<Box::<(dyn FakeTrait), Global>>,
+  value: Box::<(dyn FakeTrait), Global>,
 }
 
-struct test_crate::main::closure::closure {}
+struct test_crate::main::{closure}::{closure} {}
 
-// Full name: core::mem::maybe_dangling::MaybeDangling::<test_crate::main::closure::closure>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<test_crate::main::closure::closure> {
-  _0: test_crate::main::closure::closure,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<test_crate::main::closure::closure>
+// Full name: core::mem::manually_drop::ManuallyDrop::<test_crate::main::{closure}::{closure}>
 #[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<test_crate::main::closure::closure> {
-  value: MaybeDangling::<test_crate::main::closure::closure>,
-}
-
-// Full name: core::mem::maybe_dangling::MaybeDangling::<()>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<()> {
-  _0: (),
+pub struct ManuallyDrop::<test_crate::main::{closure}::{closure}> {
+  value: test_crate::main::{closure}::{closure},
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<()>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<()> {
-  value: MaybeDangling::<()>,
+  value: (),
 }
 
-// Full name: std::panicking::catch_unwind::Data::<test_crate::main::closure::closure, ()>
-union Data::<test_crate::main::closure::closure, ()> {
-  f: ManuallyDrop::<test_crate::main::closure::closure>,
+// Full name: std::panicking::catch_unwind::Data::<test_crate::main::{closure}::{closure}, ()>
+union Data::<test_crate::main::{closure}::{closure}, ()> {
+  f: ManuallyDrop::<test_crate::main::{closure}::{closure}>,
   r: ManuallyDrop::<()>,
   p: ManuallyDrop::<Box::<(dyn FakeTrait), Global>>,
 }
 
 #[rustc_intrinsic]
-pub fn core::intrinsics::catch_unwind::<Data::<test_crate::main::closure::closure, ()>>(_try_fn_1: unsafe fn(*mut Data::<test_crate::main::closure::closure, ()>), _data_2: *mut Data::<test_crate::main::closure::closure, ()>, _catch_fn_3: unsafe fn(*mut Data::<test_crate::main::closure::closure, ()>, *mut u8)) -> bool
+pub fn core::intrinsics::catch_unwind::<Data::<test_crate::main::{closure}::{closure}, ()>>(_try_fn_1: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>), _data_2: *mut Data::<test_crate::main::{closure}::{closure}, ()>, _catch_fn_3: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>, *mut u8)) -> bool
 = <intrinsic:catch_unwind>
 
 // Full name: core::intrinsics::size_of_val::<(dyn FakeTrait)>
@@ -759,7 +741,7 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
 
     bb3: {
         storage_live(_16);
-        _16 = ub_checks<bool>;
+        _16 = ub_checks;
         if move _16 -> bb5 else -> bb6;
     }
 
@@ -775,7 +757,7 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
         alignment = transmute<usize, Alignment>(copy align);
         storage_dead(align);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb8 else -> bb9;
     }
 
@@ -946,15 +928,14 @@ fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
 fn cleanup(_1: *mut u8) -> Box::<(dyn FakeTrait), Global>
 = <missing>
 
-// Full name: std::panicking::catch_unwind::do_catch::<test_crate::main::closure::closure, ()>
-fn do_catch::<test_crate::main::closure::closure, ()>(data: *mut Data::<test_crate::main::closure::closure, ()>, payload: *mut u8)
+// Full name: std::panicking::catch_unwind::do_catch::<test_crate::main::{closure}::{closure}, ()>
+fn do_catch::<test_crate::main::{closure}::{closure}, ()>(data: *mut Data::<test_crate::main::{closure}::{closure}, ()>, payload: *mut u8)
 {
     let _0: (); // return
-    let data: *mut Data::<test_crate::main::closure::closure, ()>; // arg #1
+    let data: *mut Data::<test_crate::main::{closure}::{closure}, ()>; // arg #1
     let payload: *mut u8; // arg #2
     let obj: Box::<(dyn FakeTrait), Global>; // local
     let _4: ManuallyDrop::<Box::<(dyn FakeTrait), Global>>; // anonymous local
-    let _5: MaybeDangling::<Box::<(dyn FakeTrait), Global>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -965,10 +946,7 @@ fn do_catch::<test_crate::main::closure::closure, ()>(data: *mut Data::<test_cra
 
     bb1: {
         storage_live(_4);
-        storage_live(_5);
-        _5 = MaybeDangling::<Box::<(dyn FakeTrait), Global>> { _0: copy obj };
-        _4 = ManuallyDrop::<Box::<(dyn FakeTrait), Global>> { value: move _5 };
-        storage_dead(_5);
+        _4 = ManuallyDrop::<Box::<(dyn FakeTrait), Global>> { value: copy obj };
         (*data).p = move _4;
         storage_dead(_4);
         storage_dead(obj);
@@ -980,10 +958,10 @@ fn do_catch::<test_crate::main::closure::closure, ()>(data: *mut Data::<test_cra
     }
 }
 
-fn test_crate::main::closure::<i32, extern "rust-call" fn(()), ()>(_1: test_crate::main::closure::closure, spread_args: ())
+fn test_crate::main::{closure}::<i32, extern "rust-call" fn(()), ()>(_1: test_crate::main::{closure}::{closure}, spread_args: ())
 {
     let _0: (); // return
-    let _1: test_crate::main::closure::closure; // arg #1
+    let _1: test_crate::main::{closure}::{closure}; // arg #1
     let spread_args: (); // arg #2
 
     bb0: {
@@ -994,31 +972,27 @@ fn test_crate::main::closure::<i32, extern "rust-call" fn(()), ()>(_1: test_crat
     }
 }
 
-// Full name: std::panicking::catch_unwind::do_call::<test_crate::main::closure::closure, ()>
-fn do_call::<test_crate::main::closure::closure, ()>(data: *mut Data::<test_crate::main::closure::closure, ()>)
+// Full name: std::panicking::catch_unwind::do_call::<test_crate::main::{closure}::{closure}, ()>
+fn do_call::<test_crate::main::{closure}::{closure}, ()>(data: *mut Data::<test_crate::main::{closure}::{closure}, ()>)
 {
     let _0: (); // return
-    let data: *mut Data::<test_crate::main::closure::closure, ()>; // arg #1
-    let f: test_crate::main::closure::closure; // local
+    let data: *mut Data::<test_crate::main::{closure}::{closure}, ()>; // arg #1
+    let f: test_crate::main::{closure}::{closure}; // local
     let _3: ManuallyDrop::<()>; // anonymous local
     let value: (); // local
-    let _5: MaybeDangling::<()>; // anonymous local
 
     bb0: {
         storage_live(_0);
         _0 = ();
         storage_live(f);
-        f = copy (*data).f.value._0;
+        f = copy (*data).f.value;
         storage_live(_3);
         storage_live(value);
-        value = test_crate::main::closure::<i32, extern "rust-call" fn(()), ()>(move f, const ()) -> bb1 (unwind: bb2);
+        value = test_crate::main::{closure}::<i32, extern "rust-call" fn(()), ()>(move f, const ()) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_live(_5);
-        _5 = MaybeDangling::<()> { _0: copy value };
-        _3 = ManuallyDrop::<()> { value: move _5 };
-        storage_dead(_5);
+        _3 = ManuallyDrop::<()> { value: copy value };
         storage_dead(value);
         (*data).r = move _3;
         storage_dead(_3);
@@ -1031,45 +1005,36 @@ fn do_call::<test_crate::main::closure::closure, ()>(data: *mut Data::<test_crat
     }
 }
 
-pub fn std::panic::catch_unwind::<test_crate::main::closure::closure, ()>(f: test_crate::main::closure::closure) -> Result::<(), Box::<(dyn FakeTrait), Global>>
+pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f: test_crate::main::{closure}::{closure}) -> Result::<(), Box::<(dyn FakeTrait), Global>>
 {
     let _0: Result::<(), Box::<(dyn FakeTrait), Global>>; // return
-    let f: test_crate::main::closure::closure; // arg #1
-    let data: Data::<test_crate::main::closure::closure, ()>; // local
-    let _3: ManuallyDrop::<test_crate::main::closure::closure>; // anonymous local
+    let f: test_crate::main::{closure}::{closure}; // arg #1
+    let data: Data::<test_crate::main::{closure}::{closure}, ()>; // local
+    let _3: ManuallyDrop::<test_crate::main::{closure}::{closure}>; // anonymous local
     let _4: bool; // anonymous local
-    let _5: unsafe fn(*mut Data::<test_crate::main::closure::closure, ()>); // anonymous local
-    let _6: *mut Data::<test_crate::main::closure::closure, ()>; // anonymous local
-    let _7: unsafe fn(*mut Data::<test_crate::main::closure::closure, ()>, *mut u8); // anonymous local
-    let _8: Box::<(dyn FakeTrait), Global>; // anonymous local
-    let slot_9: ManuallyDrop::<Box::<(dyn FakeTrait), Global>>; // local
-    let _10: (); // anonymous local
-    let slot_11: ManuallyDrop::<()>; // local
-    let _12: MaybeDangling::<test_crate::main::closure::closure>; // anonymous local
-    let _13: *const Box::<(dyn FakeTrait), Global>; // anonymous local
-    let _14: *const ManuallyDrop::<Box::<(dyn FakeTrait), Global>>; // anonymous local
-    let _15: *const (); // anonymous local
-    let _16: *const ManuallyDrop::<()>; // anonymous local
+    let _5: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>); // anonymous local
+    let _6: *mut Data::<test_crate::main::{closure}::{closure}, ()>; // anonymous local
+    let _7: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>, *mut u8); // anonymous local
+    let slot_8: Box::<(dyn FakeTrait), Global>; // local
+    let slot_9: (); // local
 
     bb0: {
         storage_live(_0);
-        storage_live(_8);
+        storage_live(slot_8);
+        storage_live(slot_9);
         storage_live(data);
         storage_live(_3);
-        storage_live(_12);
-        _12 = MaybeDangling::<test_crate::main::closure::closure> { _0: copy f };
-        _3 = ManuallyDrop::<test_crate::main::closure::closure> { value: move _12 };
-        storage_dead(_12);
-        data = Data::<test_crate::main::closure::closure, ()> { f: move _3 };
+        _3 = ManuallyDrop::<test_crate::main::{closure}::{closure}> { value: copy f };
+        data = Data::<test_crate::main::{closure}::{closure}, ()> { f: move _3 };
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
-        _5 = cast<do_call::<test_crate::main::closure::closure, ()>, unsafe fn(*mut Data::<test_crate::main::closure::closure, ()>)>(const do_call::<test_crate::main::closure::closure, ()>);
+        _5 = cast<do_call::<test_crate::main::{closure}::{closure}, ()>, unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>)>(const do_call::<test_crate::main::{closure}::{closure}, ()>);
         storage_live(_6);
         _6 = &raw mut data;
         storage_live(_7);
-        _7 = cast<do_catch::<test_crate::main::closure::closure, ()>, unsafe fn(*mut Data::<test_crate::main::closure::closure, ()>, *mut u8)>(const do_catch::<test_crate::main::closure::closure, ()>);
-        _4 = core::intrinsics::catch_unwind::<Data::<test_crate::main::closure::closure, ()>>(move _5, move _6, move _7) -> bb1 (unwind: bb2);
+        _7 = cast<do_catch::<test_crate::main::{closure}::{closure}, ()>, unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>, *mut u8)>(const do_catch::<test_crate::main::{closure}::{closure}, ()>);
+        _4 = core::intrinsics::catch_unwind::<Data::<test_crate::main::{closure}::{closure}, ()>>(move _5, move _6, move _7) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -1084,17 +1049,8 @@ pub fn std::panic::catch_unwind::<test_crate::main::closure::closure, ()>(f: tes
         storage_dead(_7);
         storage_dead(_6);
         storage_dead(_5);
-        storage_live(slot_9);
-        slot_9 = move data.p;
-        storage_live(_13);
-        storage_live(_14);
-        _14 = &raw const slot_9;
-        _13 = cast<*const ManuallyDrop::<Box::<(dyn FakeTrait), Global>>, *const Box::<(dyn FakeTrait), Global>>(copy _14);
-        storage_dead(_14);
-        _8 = copy (*_13);
-        storage_dead(_13);
-        storage_dead(slot_9);
-        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Err { _0: copy _8 };
+        slot_8 = move data.p.value;
+        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Err { _0: copy slot_8 };
         goto bb5;
     }
 
@@ -1102,26 +1058,16 @@ pub fn std::panic::catch_unwind::<test_crate::main::closure::closure, ()>(f: tes
         storage_dead(_7);
         storage_dead(_6);
         storage_dead(_5);
-        storage_live(_10);
-        storage_live(slot_11);
-        slot_11 = move data.r;
-        storage_live(_15);
-        storage_live(_16);
-        _16 = &raw const slot_11;
-        _15 = cast<*const ManuallyDrop::<()>, *const ()>(copy _16);
-        storage_dead(_16);
-        _10 = copy (*_15);
-        storage_dead(_15);
-        storage_dead(slot_11);
-        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Ok { _0: move _10 };
-        storage_dead(_10);
+        slot_9 = move data.r.value;
+        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Ok { _0: copy slot_9 };
         goto bb5;
     }
 
     bb5: {
         storage_dead(_4);
         storage_dead(data);
-        storage_dead(_8);
+        storage_dead(slot_9);
+        storage_dead(slot_8);
         return;
     }
 }
@@ -1141,7 +1087,7 @@ fn main()
 {
     let _0: (); // return
     let _1: Result::<(), Box::<(dyn FakeTrait), Global>>; // anonymous local
-    let _2: test_crate::main::closure::closure; // anonymous local
+    let _2: test_crate::main::{closure}::{closure}; // anonymous local
     let _3: *mut Result::<(), Box::<(dyn FakeTrait), Global>>; // anonymous local
     let _4: (); // anonymous local
 
@@ -1152,8 +1098,8 @@ fn main()
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = test_crate::main::closure::closure {  };
-        _1 = std::panic::catch_unwind::<test_crate::main::closure::closure, ()>(move _2) -> bb1 (unwind: bb2);
+        _2 = test_crate::main::{closure}::{closure} {  };
+        _1 = std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {

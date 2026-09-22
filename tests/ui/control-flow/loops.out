@@ -97,8 +97,6 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
-struct () {}
-
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -109,11 +107,7 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
+struct () {}
 
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
@@ -123,7 +117,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -145,9 +139,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -219,7 +219,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -602,7 +602,7 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         storage_dead(a);
         storage_dead(rhs);
         storage_live(_13);
-        _13 = ub_checks<bool>;
+        _13 = ub_checks;
         _14 = assume(move _13) -> bb5 (unwind: bb6);
     }
 
@@ -730,7 +730,7 @@ pub fn impl_Step_for_usize::forward_unchecked(start: usize, n: usize) -> usize
         storage_live(_0);
         storage_live(_3);
         storage_live(_4);
-        _4 = ub_checks<bool>;
+        _4 = ub_checks;
         if move _4 -> bb1 else -> bb2;
     }
 
@@ -848,7 +848,7 @@ pub fn impl_Step_for_u32::forward_unchecked(start: u32, n: usize) -> u32
         storage_live(rhs);
         rhs = cast<usize, u32>(copy n);
         storage_live(_5);
-        _5 = ub_checks<bool>;
+        _5 = ub_checks;
         if move _5 -> bb1 else -> bb2;
     }
 
@@ -1219,10 +1219,6 @@ pub fn into_iter::<Range::<u32>>(self: Range::<u32>) -> Range::<u32>
     }
 }
 
-// Full name: core::marker::PhantomData::<List::<usize>>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<List::<usize>> {}
-
 // Full name: core::marker::PhantomData::<u8>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<u8> {}
@@ -1230,6 +1226,10 @@ pub struct PhantomData::<u8> {}
 // Full name: core::marker::PhantomData::<u32>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<u32> {}
+
+// Full name: core::marker::PhantomData::<List::<usize>>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<List::<usize>> {}
 
 // Full name: core::mem::SizedTypeProperties::MAX_SLICE_LEN::<u32>
 pub const MAX_SLICE_LEN::<u32>: usize = 2305843009213693951usize
@@ -1304,7 +1304,7 @@ pub fn panic(expr: &'_ str) -> !
 pub struct Global {}
 
 // Full name: core::ptr::non_null::NonNull::<List::<usize>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<List::<usize>> {
   pointer: *const List::<usize> is !null,
 }

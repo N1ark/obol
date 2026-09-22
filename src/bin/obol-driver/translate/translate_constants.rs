@@ -158,20 +158,20 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         }
         let bytes = &alloc.bytes.as_slice()[offset..offset + size];
         let kind = match ty {
-            TyKind::Literal(lit) => match lit {
-                LiteralTy::Int(it) => {
-                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Signed(
+            TyKind::Scalar(lit) => match lit {
+                ScalarTy::Integer(IntegerTy::Signed(it)) => {
+                    ConstantExprKind::Integer(IntegerValue::Signed(
                         it.clone(),
                         self.read_target_int(Self::as_init(bytes)?.as_slice())?,
-                    )))
+                    ))
                 }
-                LiteralTy::UInt(uit) => {
-                    ConstantExprKind::Literal(Literal::Scalar(ScalarValue::Unsigned(
+                ScalarTy::Integer(IntegerTy::Unsigned(uit)) => {
+                    ConstantExprKind::Integer(IntegerValue::Unsigned(
                         uit.clone(),
                         self.read_target_uint(Self::as_init(bytes)?.as_slice())?,
-                    )))
+                    ))
                 }
-                LiteralTy::Bool => {
+                ScalarTy::Bool => {
                     let bool = self.read_target_int(Self::as_init(bytes)?.as_slice())?;
                     let res = match bool {
                         0 => false,
@@ -180,13 +180,13 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             raise_error!(self, span, "Invalid boolean value in constant: {bool}")
                         }
                     };
-                    ConstantExprKind::Literal(Literal::Bool(res))
+                    ConstantExprKind::Bool(res)
                 }
-                LiteralTy::Char => ConstantExprKind::Literal(Literal::Char(
+                ScalarTy::Char => ConstantExprKind::Char(
                     char::from_u32(self.read_target_uint(Self::as_init(bytes)?.as_slice())? as u32)
                         .unwrap(),
-                )),
-                LiteralTy::Float(f) => {
+                ),
+                ScalarTy::Float(f) => {
                     let bits = self.read_target_uint(Self::as_init(bytes)?.as_slice())?;
                     let value = match f {
                         FloatTy::F16 => ieee::Half::from_bits(bits).to_string(),
@@ -194,10 +194,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         FloatTy::F64 => ieee::Double::from_bits(bits).to_string(),
                         FloatTy::F128 => ieee::Quad::from_bits(bits).to_string(),
                     };
-                    ConstantExprKind::Literal(Literal::Float(FloatValue {
+                    ConstantExprKind::Float(FloatValue {
                         value,
                         ty: f.clone(),
-                    }))
+                    })
                 }
             },
             TyKind::Ref(_, subty, _) | TyKind::RawPtr(subty, _) => 'ptr_case: {
@@ -212,7 +212,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     GlobalAlloc::Memory(suballoc) if subty.is_str() => {
                         let as_str =
                             unsafe { String::from_utf8_unchecked(suballoc.raw_bytes().unwrap()) };
-                        ConstantExprKind::Literal(Literal::Str(as_str))
+                        ConstantExprKind::Str(as_str)
                     }
                     GlobalAlloc::Memory(suballoc) if subty.is_slice() => {
                         let meta_bytes = &alloc.bytes.as_slice()[offset + size / 2..offset + size];
@@ -239,7 +239,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         let len = ConstantExpr::mk_usize(len);
                         let sub_constant = ConstantExpr::new(
                             ConstantExprKind::Array(sub_constants),
-                            Ty::mk_array(subty.clone(), len.clone()),
+                            Ty::mk_array(subty.clone(), len.clone(), None),
                         );
                         let metadata = Some(UnsizingMetadata::Length(len));
 
@@ -255,18 +255,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         let generics = self.translate_generic_args(span, &instance.args())?;
                         ConstantExprKind::FnPtr(FnPtr {
                             generics: Box::new(generics),
-                            kind: Box::new(FnPtrKind::Fun(FunId::Regular(id))),
+                            kind: Box::new(FnPtrKind::Fun(id)),
                         })
                     }
                     _ => {
                         let (metadata, dyn_self_ty) = match subty.kind() {
-                            TyKind::Slice(_) => {
+                            TyKind::Slice(..) => {
                                 let meta_bytes =
                                     &alloc.bytes.as_slice()[offset + size / 2..offset + size];
                                 let len =
                                     self.read_target_uint(Self::as_init(meta_bytes)?.as_slice())?;
                                 let meta = UnsizingMetadata::Length(
-                                    ScalarValue::Unsigned(UIntTy::Usize, len).to_constant(),
+                                    IntegerValue::Unsigned(UIntTy::Usize, len).to_constant(),
                                 );
                                 (Some(meta), None)
                             }
@@ -534,7 +534,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .try_collect()?;
                 ConstantExprKind::Adt(variant.clone(), consts)
             }
-            TyKind::Array(subty, _) => {
+            TyKind::Array(subty, ..) => {
                 let rtyk = rty.kind();
                 let ty::RigidTy::Array(subrty, _) = rtyk.rigid().unwrap() else {
                     unreachable!();
@@ -582,7 +582,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         let generics = self.translate_generic_args(span, &instance.args())?;
                         let fn_ptr = FnPtr {
                             generics: Box::new(generics),
-                            kind: Box::new(FnPtrKind::Fun(FunId::Regular(id))),
+                            kind: Box::new(FnPtrKind::Fun(id)),
                         };
                         ConstantExprKind::FnPtr(fn_ptr)
                     }
@@ -610,10 +610,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let len = unsized_len.expect("str constant without a length");
                 let data = &alloc.bytes.as_slice()[offset..offset + len];
                 let as_str = unsafe { String::from_utf8_unchecked(Self::as_init(data)?) };
-                ConstantExprKind::Literal(Literal::Str(as_str))
+                ConstantExprKind::Str(as_str)
             }
             // An unsized `[T]` held directly in a constant.
-            TyKind::Slice(subty) => {
+            TyKind::Slice(subty, _) => {
                 let len = unsized_len.expect("slice constant without a length");
                 let rtyk = rty.kind();
                 let ty::RigidTy::Slice(subrty) = rtyk.rigid().unwrap() else {
@@ -657,7 +657,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     ) -> Result<ConstantExpr, Error> {
         let kind = match ty {
             TyKind::FnDef(fnptr) => ConstantExprKind::FnDef(fnptr.skip_binder.clone()),
-            TyKind::Array(subty, _) => {
+            TyKind::Array(subty, ..) => {
                 let rtyk = rty.kind();
                 let ty::RigidTy::Array(rty, len) = rtyk.rigid().unwrap() else {
                     unreachable!();
@@ -778,7 +778,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             ty::TyConstKind::Param(param) => {
                 // A free const parameter, only reachable while naming a polymorphic item. Emit a
                 // const-generic variable rather than failing.
-                let id = ConstGenericVarId::from_raw(param.index as usize);
+                let id = ConstGenericVarId::from_raw(param.index);
                 let ty = TyKind::Error("Param type".to_string()).into_ty();
                 register_error!(
                     self,

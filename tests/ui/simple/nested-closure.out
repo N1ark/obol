@@ -34,8 +34,6 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
-struct () {}
-
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -46,11 +44,7 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
+struct () {}
 
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
@@ -60,7 +54,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -82,9 +76,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -371,14 +371,14 @@ struct Foo::<'_, i32> {
   _0: &'_ i32,
 }
 
-struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure {
+struct test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure} {
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, spread_args: (&'_ u32,)) -> i32
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}, spread_args: (&'_ u32,)) -> i32
 {
     let _0: i32; // return
-    let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // arg #1
+    let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}; // arg #1
     let spread_args: (&'_ u32,); // arg #2
     let _z: &'_ u32; // local
     let _4: &'_ i32; // anonymous local
@@ -405,14 +405,14 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::
     }
 }
 
-struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure {
+struct test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure} {
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, spread_args: (&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}, spread_args: (&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}
 {
-    let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // return
-    let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // arg #1
+    let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}; // return
+    let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}; // arg #1
     let spread_args: (&'_ u32,); // arg #2
     let _y: &'_ u32; // local
     let _4: &'_ i32; // anonymous local
@@ -426,20 +426,20 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32,
         storage_live(_4);
         _5 = copy (*_1).upvar_0;
         _4 = &(*_5);
-        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure { upvar_0: move _4 };
+        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure} { upvar_0: move _4 };
         storage_dead(_4);
         return;
     }
 }
 
-struct test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure {
+struct test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure} {
   upvar_0: &'_ i32,
 }
 
-fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure, spread_args: ()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure
+fn test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}, (&'_ i32,)>(_1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}, spread_args: ()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}
 {
-    let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // return
-    let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // arg #1
+    let _0: test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}; // return
+    let _1: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}; // arg #1
     let spread_args: (); // arg #2
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
@@ -450,7 +450,7 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, exte
         storage_live(_3);
         _4 = copy (*_1).upvar_0;
         _3 = &(*_4);
-        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure { upvar_0: move _3 };
+        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure} { upvar_0: move _3 };
         storage_dead(_3);
         return;
     }
@@ -461,13 +461,13 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
 {
     let _0: i32; // return
     let x: &'_ &'_ i32; // arg #1
-    let clo: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // local
+    let clo: test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}; // local
     let _3: &'_ i32; // anonymous local
-    let _4: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // anonymous local
-    let _5: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure; // anonymous local
-    let _6: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // anonymous local
-    let _7: test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure; // anonymous local
-    let _8: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure; // anonymous local
+    let _4: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}; // anonymous local
+    let _5: test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}; // anonymous local
+    let _6: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}; // anonymous local
+    let _7: test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}; // anonymous local
+    let _8: &'_ test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}; // anonymous local
     let _9: (); // anonymous local
     let _10: (&'_ u32,); // anonymous local
     let _11: &'_ u32; // anonymous local
@@ -490,7 +490,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         storage_live(_3);
         _18 = copy (*x);
         _3 = &(*_18);
-        clo = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure { upvar_0: move _3 };
+        clo = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure} { upvar_0: move _3 };
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
@@ -500,7 +500,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         _8 = &clo;
         storage_live(_9);
         _9 = ();
-        _7 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure, (&'_ i32,)>(move _8, move _9) -> bb1 (unwind: bb2);
+        _7 = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::<'_, i32, i8, extern "rust-call" fn(()) -> test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}, (&'_ i32,)>(move _8, move _9) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -516,7 +516,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         _12 = &(*_17);
         _11 = &(*_12);
         _10 = (move _11,);
-        _5 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::closure, (&'_ i32,)>(move _6, move _10) -> bb3 (unwind: bb4);
+        _5 = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure}, (&'_ i32,)>(move _6, move _10) -> bb3 (unwind: bb4);
     }
 
     bb2: {
@@ -537,7 +537,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         _15 = &(*_16);
         _14 = &(*_15);
         _13 = (move _14,);
-        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::closure::closure::closure::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(move _4, move _13) -> bb5 (unwind: bb6);
+        _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::<'_, i32, i8, extern "rust-call" fn((&'_ u32,)) -> i32, (&'_ i32,)>(move _4, move _13) -> bb5 (unwind: bb6);
     }
 
     bb4: {

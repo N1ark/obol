@@ -529,149 +529,6 @@ pub fn borrow::<u32>(self: &'_ u32) -> &'_ u32
 #[diagnostic_item("PartialEq")]
 trait PartialEq
 
-// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
-pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
-{
-    let _0: bool; // return
-    let self: &'_ usize; // arg #1
-    let other: &'_ usize; // arg #2
-    let _3: usize; // anonymous local
-    let _4: usize; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _3 = copy (*self);
-        storage_live(_4);
-        _4 = copy (*other);
-        _0 = move _3 < move _4;
-        storage_dead(_4);
-        storage_dead(_3);
-        return;
-    }
-}
-
-// Full name: core::cmp::Ord::max::<usize>
-#[diagnostic_item("cmp_ord_max")]
-pub fn max::<usize>(self: usize, other: usize) -> usize
-{
-    let _0: usize; // return
-    let self: usize; // arg #1
-    let other: usize; // arg #2
-    let _3: bool; // anonymous local
-    let _4: &'_ usize; // anonymous local
-    let _5: &'_ usize; // anonymous local
-    let _6: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_6);
-        _6 = const true;
-        storage_live(_3);
-        storage_live(_4);
-        _4 = &other;
-        storage_live(_5);
-        _5 = &self;
-        _3 = lt(move _4, move _5) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        if move _3 -> bb3 else -> bb4;
-    }
-
-    bb2: {
-        if copy _6 -> bb6 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _6 = const false;
-        _0 = move self;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb4: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = move other;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb5: {
-        return;
-    }
-
-    bb6: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::cmp::Ord::min::<usize>
-#[diagnostic_item("cmp_ord_min")]
-pub fn min::<usize>(self: usize, other: usize) -> usize
-{
-    let _0: usize; // return
-    let self: usize; // arg #1
-    let other: usize; // arg #2
-    let _3: bool; // anonymous local
-    let _4: &'_ usize; // anonymous local
-    let _5: &'_ usize; // anonymous local
-    let _6: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_6);
-        _6 = const true;
-        storage_live(_3);
-        storage_live(_4);
-        _4 = &other;
-        storage_live(_5);
-        _5 = &self;
-        _3 = lt(move _4, move _5) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        if move _3 -> bb3 else -> bb4;
-    }
-
-    bb2: {
-        if copy _6 -> bb6 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = move other;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb4: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _6 = const false;
-        _0 = move self;
-        storage_dead(_3);
-        goto bb5;
-    }
-
-    bb5: {
-        return;
-    }
-
-    bb6: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::cmp::PartialOrd
-#[lang_item(PartialOrd)]
-#[diagnostic_item("PartialOrd")]
-trait PartialOrd
-
 // Full name: core::cmp::impls::{impl PartialEq<u32> for u32}
 impl "impl_PartialEq_u32_for_u32" PartialEq<u32> for u32 {
     non-dyn-compatible
@@ -699,15 +556,6 @@ pub fn eq(self: &'_ u32, other: &'_ u32) -> bool
     }
 }
 
-// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}
-impl "impl_PartialOrd_usize_for_usize" PartialOrd<usize> for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::convert::Infallible
-pub enum Infallible {
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -728,12 +576,6 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
@@ -742,7 +584,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -764,9 +606,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -923,7 +771,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -1625,6 +1473,12 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
 pub fn copy_nonoverlapping::<u8>(src_1: *const u8, dst_2: *mut u8, count_3: usize)
 = <intrinsic:copy_nonoverlapping>
 
+// Full name: core::intrinsics::integer_min::<usize>
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn integer_min::<usize>(a_1: usize, b_2: usize) -> usize
+= <intrinsic:integer_min>
+
 // Full name: core::intrinsics::rotate_left::<u64>
 #[miri::intrinsic_fallback_is_spec]
 #[rustc_intrinsic]
@@ -2002,7 +1856,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         _14 = &raw mut data_8;
         dst_13 = cast<*mut u32, *mut u8>(copy _14);
         storage_live(_53);
-        _53 = ub_checks<bool>;
+        _53 = ub_checks;
         if move _53 -> bb3 else -> bb4;
     }
 
@@ -2085,7 +1939,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         _27 = &raw mut data_21;
         dst_26 = cast<*mut u16, *mut u8>(copy _27);
         storage_live(_55);
-        _55 = ub_checks<bool>;
+        _55 = ub_checks;
         if move _55 -> bb12 else -> bb13;
     }
 
@@ -2161,7 +2015,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         index = copy start wrap.+ move _37;
         storage_dead(_37);
         storage_live(_57);
-        _57 = ub_checks<bool>;
+        _57 = ub_checks;
         if move _57 -> bb21 else -> bb22;
     }
 
@@ -2305,7 +2159,7 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
         storage_live(_9);
         storage_live(v2);
         v2 = copy needed;
-        _9 = min::<usize>(copy length, move v2) -> bb4 (unwind: bb5);
+        _9 = integer_min::<usize>(copy length, move v2) -> bb4 (unwind: bb5);
     }
 
     bb3: {
@@ -2325,7 +2179,7 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
     }
 
     bb5: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb6: {
@@ -2382,7 +2236,7 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
         _30 = &raw mut data;
         dst = cast<*mut u64, *mut u8>(copy _30);
         storage_live(_39);
-        _39 = ub_checks<bool>;
+        _39 = ub_checks;
         if move _39 -> bb13 else -> bb14;
     }
 
@@ -3418,20 +3272,26 @@ impl "impl_Sip_for_Sip13Rounds" Sip for Sip13Rounds {
     non-dyn-compatible
 }
 
+// Full name: core::intrinsics::integer_max::<usize>
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn integer_max::<usize>(a_1: usize, b_2: usize) -> usize
+= <intrinsic:integer_max>
+
 // Full name: core::intrinsics::ctlz::<u64>
 #[rustc_intrinsic]
 pub fn ctlz::<u64>(x_1: u64) -> u32
 = <intrinsic:ctlz>
 
-// Full name: core::intrinsics::ctlz_nonzero::<usize>
-#[rustc_intrinsic]
-pub fn ctlz_nonzero::<usize>(x_1: usize) -> u32
-= <intrinsic:ctlz_nonzero>
-
 // Full name: core::intrinsics::cttz_nonzero::<u64>
 #[rustc_intrinsic]
 pub fn cttz_nonzero::<u64>(x_1: u64) -> u32
 = <intrinsic:cttz_nonzero>
+
+// Full name: core::intrinsics::saturating_sub::<usize>
+#[rustc_intrinsic]
+pub fn saturating_sub::<usize>(a_1: usize, b_2: usize) -> usize
+= <intrinsic:saturating_sub>
 
 // Full name: hashbrown::raw::RawTableInner
 struct RawTableInner {
@@ -3461,16 +3321,10 @@ struct Tag {
 pub fn copy::<Tag>(src_1: *const Tag, dst_2: *mut Tag, count_3: usize)
 = <intrinsic:copy>
 
-// Full name: core::mem::maybe_dangling::MaybeDangling::<Tag>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<Tag> {
-  _0: Tag,
-}
-
 // Full name: core::mem::manually_drop::ManuallyDrop::<Tag>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<Tag> {
-  value: MaybeDangling::<Tag>,
+  value: Tag,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<Tag>
@@ -3705,52 +3559,28 @@ impl SpecRangeSetup<Range::<usize>> for Range::<usize> {
 #[lang_item(PhantomData)]
 pub struct PhantomData::<(u32, u32)> {}
 
-// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 1usize]>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<[u8; 1usize]> {
-  _0: [u8; 1usize],
-}
-
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 1usize]> {
-  value: MaybeDangling::<[u8; 1usize]>,
-}
-
-// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 2usize]>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<[u8; 2usize]> {
-  _0: [u8; 2usize],
+  value: [u8; 1usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 2usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 2usize]> {
-  value: MaybeDangling::<[u8; 2usize]>,
-}
-
-// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 4usize]>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<[u8; 4usize]> {
-  _0: [u8; 4usize],
+  value: [u8; 2usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: MaybeDangling::<[u8; 4usize]>,
-}
-
-// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 8usize]>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<[u8; 8usize]> {
-  _0: [u8; 8usize],
+  value: [u8; 4usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 8usize]> {
-  value: MaybeDangling::<[u8; 8usize]>,
+  value: [u8; 8usize],
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 1usize]>
@@ -3895,19 +3725,19 @@ pub struct NonZero::<u64> {
   _0: NonZeroU64Inner,
 }
 
-// Full name: core::option::Option::<Infallible>
+// Full name: core::option::Option::<!>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<Infallible> {
+pub enum Option::<!> {
   None,
-  Some { _0: Infallible },
+  Some { _0: ! },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Option::<Infallible>, usize>
+// Full name: core::ops::control_flow::ControlFlow::<Option::<!>, usize>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Option::<Infallible>, usize> {
+pub enum ControlFlow::<Option::<!>, usize> {
   Continue { _0: usize },
-  Break { _0: Option::<Infallible> },
+  Break { _0: Option::<!> },
 }
 
 // Full name: hashbrown::TryReserveError
@@ -3916,18 +3746,25 @@ pub enum TryReserveError {
   AllocError { layout: Layout },
 }
 
-// Full name: core::result::Result::<Infallible, TryReserveError>
+// Full name: core::result::Result::<!, TryReserveError>
 #[diagnostic_item("Result")]
-pub enum Result::<Infallible, TryReserveError> {
-  Ok { _0: Infallible },
+pub enum Result::<!, TryReserveError> {
+  Ok { _0: ! },
   Err { _0: TryReserveError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, usize>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner> {
+pub enum ControlFlow::<Result::<!, TryReserveError>, usize> {
+  Continue { _0: usize },
+  Break { _0: Result::<!, TryReserveError> },
+}
+
+// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, RawTableInner>
+#[diagnostic_item("ControlFlow")]
+pub enum ControlFlow::<Result::<!, TryReserveError>, RawTableInner> {
   Continue { _0: RawTableInner },
-  Break { _0: Result::<Infallible, TryReserveError> },
+  Break { _0: Result::<!, TryReserveError> },
 }
 
 // Full name: hashbrown::raw::TableLayout
@@ -3940,55 +3777,48 @@ struct TableLayout {
 #[lang_item(GlobalAlloc)]
 pub struct Global {}
 
-struct hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure {
+struct hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure} {
   upvar_0: &'_ Global,
   upvar_1: TableLayout,
 }
 
-// Full name: hashbrown::scopeguard::ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>
-struct ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure> {
-  dropfn: hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure,
+// Full name: hashbrown::scopeguard::ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>
+struct ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}> {
+  dropfn: hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure},
   value: RawTableInner,
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>> {
-  Continue { _0: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure> },
-  Break { _0: Result::<Infallible, TryReserveError> },
+pub enum ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>> {
+  Continue { _0: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}> },
+  Break { _0: Result::<!, TryReserveError> },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, usize>
-#[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<Infallible, TryReserveError>, usize> {
-  Continue { _0: usize },
-  Break { _0: Result::<Infallible, TryReserveError> },
-}
-
-// Full name: core::result::Result::<Infallible, AllocError>
+// Full name: core::result::Result::<!, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<Infallible, AllocError> {
-  Ok { _0: Infallible },
+pub enum Result::<!, AllocError> {
+  Ok { _0: ! },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<Infallible, AllocError> },
+  Break { _0: Result::<!, AllocError> },
 }
 
 // Full name: core::ops::drop::Drop
 #[lang_item(Drop)]
 trait Drop
 
-struct hashbrown::map::make_hasher::closure::closure {
+struct hashbrown::map::make_hasher::{closure}::{closure} {
   upvar_0: &'_ RandomState,
 }
 
-struct hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure {
-  upvar_0: &'_ hashbrown::map::make_hasher::closure::closure,
+struct hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure} {
+  upvar_0: &'_ hashbrown::map::make_hasher::{closure}::{closure},
 }
 
 // Full name: hashbrown::raw::SizedTypeProperties::IS_ZERO_SIZED::<(u32, u32)>
@@ -4003,10 +3833,10 @@ struct (_,)::<&'_ (u32, u32)> {
   _0: &'_ (u32, u32),
 }
 
-fn hashbrown::map::make_hasher::closure::<u32, u32, RandomState, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> u64, (&'_ RandomState,)>(_1: &'_ hashbrown::map::make_hasher::closure::closure, spread_args: (&'_ (u32, u32),)) -> u64
+fn hashbrown::map::make_hasher::{closure}::<u32, u32, RandomState, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> u64, (&'_ RandomState,)>(_1: &'_ hashbrown::map::make_hasher::{closure}::{closure}, spread_args: (&'_ (u32, u32),)) -> u64
 {
     let _0: u64; // return
-    let _1: &'_ hashbrown::map::make_hasher::closure::closure; // arg #1
+    let _1: &'_ hashbrown::map::make_hasher::{closure}::{closure}; // arg #1
     let spread_args: (&'_ (u32, u32),); // arg #2
     let val_3: &'_ (u32, u32); // local
     let val_4: &'_ u32; // local
@@ -4039,21 +3869,21 @@ struct (_, _)::<&'_ mut RawTableInner, usize> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<(u32, u32)>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<(u32, u32)> {
   pointer: *const (u32, u32) is !null,
 }
 
-fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::closure::closure,)>(_1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, spread_args: (&'_ mut RawTableInner, usize)) -> u64
+fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::{closure}::{closure},)>(_1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, spread_args: (&'_ mut RawTableInner, usize)) -> u64
 {
     let _0: u64; // return
-    let _1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure; // arg #1
+    let _1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}; // arg #1
     let spread_args: (&'_ mut RawTableInner, usize); // arg #2
     let table: &'_ mut RawTableInner; // local
     let index: usize; // local
     let _5: (&'_ (u32, u32),); // anonymous local
     let _6: &'_ (u32, u32); // anonymous local
-    let _7: &'_ hashbrown::map::make_hasher::closure::closure; // anonymous local
+    let _7: &'_ hashbrown::map::make_hasher::{closure}::{closure}; // anonymous local
     let base: NonNull::<(u32, u32)>; // local
     let _9: NonNull::<u8>; // anonymous local
     let ptr: *mut (u32, u32); // local
@@ -4143,7 +3973,7 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Glo
         _6 = &(*_16);
         storage_dead(_16);
         _5 = (copy _6,);
-        _0 = hashbrown::map::make_hasher::closure::<u32, u32, RandomState, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> u64, (&'_ RandomState,)>(move _7, move _5) -> bb12 (unwind: bb13);
+        _0 = hashbrown::map::make_hasher::{closure}::<u32, u32, RandomState, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> u64, (&'_ RandomState,)>(move _7, move _5) -> bb12 (unwind: bb13);
     }
 
     bb10: {
@@ -4172,12 +4002,12 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Glo
     }
 }
 
-// Full name: core::ptr::drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure>
+// Full name: core::ptr::drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}>
 #[lang_item(DropGlue)]
-fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure)
+fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure})
 {
     let _0: (); // return
-    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure; // arg #1
+    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}; // arg #1
 
     bb0: {
         storage_live(_0);
@@ -4186,19 +4016,19 @@ fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::clos
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>
-pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>(_1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, _2: (&'_ mut RawTableInner, usize)) -> u64
+// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>
+pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>(_1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, _2: (&'_ mut RawTableInner, usize)) -> u64
 {
     let _0: u64; // return
-    let _1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure; // arg #1
+    let _1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}; // arg #1
     let _2: (&'_ mut RawTableInner, usize); // arg #2
-    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure; // anonymous local
+    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         _3 = &mut _1;
-        _0 = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::closure::closure,)>(move _3, move _2) -> bb1 (unwind: bb2);
+        _0 = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::{closure}::{closure},)>(move _3, move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4210,16 +4040,16 @@ pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>
-pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>(_1: *mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, _2: (&'_ mut RawTableInner, usize)) -> u64
+// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>
+pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>(_1: *mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, _2: (&'_ mut RawTableInner, usize)) -> u64
 {
     let _0: u64; // return
-    let _1: *mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure; // arg #1
+    let _1: *mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}; // arg #1
     let _2: (&'_ mut RawTableInner, usize); // arg #2
 
     bb0: {
         storage_live(_0);
-        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>(move (*_1), move _2) -> bb1 (unwind: bb2);
+        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>(move (*_1), move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4231,9 +4061,9 @@ pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::
     }
 }
 
-// Full name: {vtable}::core::ops::function::Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>
+// Full name: {vtable}::core::ops::function::Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>
 #[lang_item(Fn)]
-fn Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>() -> *const ()
+fn Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>() -> *const ()
 {
     let vtable: *const (); // return
     let drop: *const (); // local
@@ -4255,12 +4085,12 @@ fn Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&
         storage_live(hashbrown::raw::RawTable::<(u32, u32)>::reserve_rehash::<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}_6);
         storage_live(entry_array);
         storage_live(entry_array_ref);
-        drop = cast<drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure>, *const ()>(const drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure>);
+        drop = cast<drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}>, *const ()>(const drop_glue::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}>);
         size = transmute<usize, *const ()>(const 8usize);
         align = transmute<usize, *const ()>(const 8usize);
-        <{closure@hashbrown::raw::RawTable<(u32, u32)>::reserve_rehash<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(&mut hashbrown::raw::RawTableInner, usize)>>::call_once = cast<call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>, *const ()>(const call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>);
-        hashbrown::raw::RawTable::<(u32, u32)>::reserve_rehash::<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}_5 = cast<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::closure::closure,)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::closure::closure,)>);
-        hashbrown::raw::RawTable::<(u32, u32)>::reserve_rehash::<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}_6 = cast<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::closure::closure,)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::closure::closure,)>);
+        <{closure@hashbrown::raw::RawTable<(u32, u32)>::reserve_rehash<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(&mut hashbrown::raw::RawTableInner, usize)>>::call_once = cast<call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>, *const ()>(const call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>);
+        hashbrown::raw::RawTable::<(u32, u32)>::reserve_rehash::<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}_5 = cast<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::{closure}::{closure},)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::{closure}::{closure},)>);
+        hashbrown::raw::RawTable::<(u32, u32)>::reserve_rehash::<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}_6 = cast<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::{closure}::{closure},)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((&'_ mut RawTableInner, usize)) -> u64, (&'_ hashbrown::map::make_hasher::{closure}::{closure},)>);
         entry_array = [move drop, move size, move align, move <{closure@hashbrown::raw::RawTable<(u32, u32)>::reserve_rehash<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(&mut hashbrown::raw::RawTableInner, usize)>>::call_once, move hashbrown::raw::RawTable::<(u32, u32)>::reserve_rehash::<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}_5, move hashbrown::raw::RawTable::<(u32, u32)>::reserve_rehash::<{closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}_6];
         entry_array_ref = &raw const entry_array;
         vtable = cast<*const [*const (); 6usize], *const ()>(move entry_array_ref);
@@ -4268,9 +4098,9 @@ fn Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&
     }
 }
 
-// Full name: {vtable}::core::ops::function::Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>
+// Full name: {vtable}::core::ops::function::Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>
 #[lang_item(Fn)]
-static Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>: *const () = Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>()
+static Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>: *const () = Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>()
 
 // Full name: core::ops::function::Fn::call::<(dyn FakeTrait), (&'_ mut RawTableInner, usize)>
 pub fn call::<(dyn FakeTrait), (&'_ mut RawTableInner, usize)>(_1: &'_ (dyn FakeTrait), _2: &'_ mut RawTableInner, _3: usize) -> u64
@@ -4283,12 +4113,12 @@ struct RawTable::<(u32, u32), Global> {
   marker: PhantomData::<(u32, u32)>,
 }
 
-struct hashbrown::map::equivalent_key::closure::closure {
+struct hashbrown::map::equivalent_key::{closure}::{closure} {
   upvar_0: &'_ u32,
 }
 
-struct hashbrown::raw::{RawTable::<_, _>}::find::closure::closure {
-  upvar_0: &'_ mut hashbrown::map::equivalent_key::closure::closure,
+struct hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure} {
+  upvar_0: &'_ mut hashbrown::map::equivalent_key::{closure}::{closure},
   upvar_1: &'_ RawTable::<(u32, u32), Global>,
 }
 
@@ -4324,10 +4154,10 @@ pub fn equivalent::<u32, u32>(self: &'_ u32, key: &'_ u32) -> bool
     }
 }
 
-fn hashbrown::map::equivalent_key::closure::<u32, u32, u32, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> bool, (&'_ u32,)>(_1: &'_ hashbrown::map::equivalent_key::closure::closure, spread_args: (&'_ (u32, u32),)) -> bool
+fn hashbrown::map::equivalent_key::{closure}::<u32, u32, u32, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> bool, (&'_ u32,)>(_1: &'_ hashbrown::map::equivalent_key::{closure}::{closure}, spread_args: (&'_ (u32, u32),)) -> bool
 {
     let _0: bool; // return
-    let _1: &'_ hashbrown::map::equivalent_key::closure::closure; // arg #1
+    let _1: &'_ hashbrown::map::equivalent_key::{closure}::{closure}; // arg #1
     let spread_args: (&'_ (u32, u32),); // arg #2
     let x: &'_ (u32, u32); // local
     let _4: &'_ u32; // anonymous local
@@ -4358,15 +4188,15 @@ struct (_,)::<usize> {
   _0: usize,
 }
 
-fn hashbrown::raw::{RawTable::<_, _>}::find::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, spread_args: (usize,)) -> bool
+fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, spread_args: (usize,)) -> bool
 {
     let _0: bool; // return
-    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure; // arg #1
+    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}; // arg #1
     let spread_args: (usize,); // arg #2
     let index: usize; // local
     let _4: (&'_ (u32, u32),); // anonymous local
     let _5: &'_ (u32, u32); // anonymous local
-    let _6: &'_ mut hashbrown::map::equivalent_key::closure::closure; // anonymous local
+    let _6: &'_ mut hashbrown::map::equivalent_key::{closure}::{closure}; // anonymous local
     let self_7: &'_ RawTable::<(u32, u32), Global>; // local
     let base: NonNull::<(u32, u32)>; // local
     let _9: NonNull::<u8>; // anonymous local
@@ -4457,7 +4287,7 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::closure::<(u32, u32), Global, hashb
         _5 = &(*_16);
         storage_dead(_16);
         _4 = (copy _5,);
-        _0 = hashbrown::map::equivalent_key::closure::<u32, u32, u32, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> bool, (&'_ u32,)>(move _6, move _4) -> bb12 (unwind: bb13);
+        _0 = hashbrown::map::equivalent_key::{closure}::<u32, u32, u32, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> bool, (&'_ u32,)>(move _6, move _4) -> bb12 (unwind: bb13);
     }
 
     bb10: {
@@ -4486,12 +4316,12 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::closure::<(u32, u32), Global, hashb
     }
 }
 
-// Full name: core::ptr::drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure>
+// Full name: core::ptr::drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}>
 #[lang_item(DropGlue)]
-fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure)
+fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure})
 {
     let _0: (); // return
-    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure; // arg #1
+    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}; // arg #1
 
     bb0: {
         storage_live(_0);
@@ -4500,19 +4330,19 @@ fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure>(_1: &
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>
-pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>(_1: hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, _2: (usize,)) -> bool
+// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>
+pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>(_1: hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, _2: (usize,)) -> bool
 {
     let _0: bool; // return
-    let _1: hashbrown::raw::{RawTable::<_, _>}::find::closure::closure; // arg #1
+    let _1: hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}; // arg #1
     let _2: (usize,); // arg #2
-    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure; // anonymous local
+    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         _3 = &mut _1;
-        _0 = hashbrown::raw::{RawTable::<_, _>}::find::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>(move _3, move _2) -> bb1 (unwind: bb2);
+        _0 = hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>(move _3, move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4524,16 +4354,16 @@ pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>
-pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>(_1: *mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, _2: (usize,)) -> bool
+// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>
+pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>(_1: *mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, _2: (usize,)) -> bool
 {
     let _0: bool; // return
-    let _1: *mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure; // arg #1
+    let _1: *mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}; // arg #1
     let _2: (usize,); // arg #2
 
     bb0: {
         storage_live(_0);
-        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>(move (*_1), move _2) -> bb1 (unwind: bb2);
+        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>(move (*_1), move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4545,9 +4375,9 @@ pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (
     }
 }
 
-// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>
+// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>
 #[lang_item(FnMut)]
-fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>() -> *const ()
+fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>() -> *const ()
 {
     let vtable: *const (); // return
     let drop: *const (); // local
@@ -4567,11 +4397,11 @@ fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>
         storage_live(hashbrown::raw::RawTable::<(u32, u32)>::find::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}>::{closure#0});
         storage_live(entry_array);
         storage_live(entry_array_ref);
-        drop = cast<drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure>, *const ()>(const drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure>);
+        drop = cast<drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}>, *const ()>(const drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}>);
         size = transmute<usize, *const ()>(const 16usize);
         align = transmute<usize, *const ()>(const 8usize);
-        <{closure@hashbrown::raw::RawTable<(u32, u32)>::find<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(usize,)>>::call_once = cast<call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>, *const ()>(const call_once::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>);
-        hashbrown::raw::RawTable::<(u32, u32)>::find::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}>::{closure#0} = cast<hashbrown::raw::{RawTable::<_, _>}::find::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::find::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>);
+        <{closure@hashbrown::raw::RawTable<(u32, u32)>::find<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(usize,)>>::call_once = cast<call_once::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>, *const ()>(const call_once::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>);
+        hashbrown::raw::RawTable::<(u32, u32)>::find::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}>::{closure#0} = cast<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>);
         entry_array = [move drop, move size, move align, move <{closure@hashbrown::raw::RawTable<(u32, u32)>::find<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(usize,)>>::call_once, move hashbrown::raw::RawTable::<(u32, u32)>::find::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}>::{closure#0}];
         entry_array_ref = &raw const entry_array;
         vtable = cast<*const [*const (); 5usize], *const ()>(move entry_array_ref);
@@ -4579,24 +4409,24 @@ fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>
     }
 }
 
-// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>
+// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>
 #[lang_item(FnMut)]
-static FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>: *const () = FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>()
+static FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>: *const () = FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>()
 
-struct hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure {
-  upvar_0: &'_ mut hashbrown::map::equivalent_key::closure::closure,
+struct hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure} {
+  upvar_0: &'_ mut hashbrown::map::equivalent_key::{closure}::{closure},
   upvar_1: &'_ RawTable::<(u32, u32), Global>,
 }
 
-fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, hashbrown::map::make_hasher::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, spread_args: (usize,)) -> bool
+fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, spread_args: (usize,)) -> bool
 {
     let _0: bool; // return
-    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure; // arg #1
+    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}; // arg #1
     let spread_args: (usize,); // arg #2
     let index: usize; // local
     let _4: (&'_ (u32, u32),); // anonymous local
     let _5: &'_ (u32, u32); // anonymous local
-    let _6: &'_ mut hashbrown::map::equivalent_key::closure::closure; // anonymous local
+    let _6: &'_ mut hashbrown::map::equivalent_key::{closure}::{closure}; // anonymous local
     let self_7: &'_ RawTable::<(u32, u32), Global>; // local
     let base: NonNull::<(u32, u32)>; // local
     let _9: NonNull::<u8>; // anonymous local
@@ -4687,7 +4517,7 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::<(u32
         _5 = &(*_16);
         storage_dead(_16);
         _4 = (copy _5,);
-        _0 = hashbrown::map::equivalent_key::closure::<u32, u32, u32, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> bool, (&'_ u32,)>(move _6, move _4) -> bb12 (unwind: bb13);
+        _0 = hashbrown::map::equivalent_key::{closure}::<u32, u32, u32, i8, extern "rust-call" fn((&'_ (u32, u32),)) -> bool, (&'_ u32,)>(move _6, move _4) -> bb12 (unwind: bb13);
     }
 
     bb10: {
@@ -4716,12 +4546,12 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::<(u32
     }
 }
 
-// Full name: core::ptr::drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure>
+// Full name: core::ptr::drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}>
 #[lang_item(DropGlue)]
-fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure)
+fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}>(_1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure})
 {
     let _0: (); // return
-    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure; // arg #1
+    let _1: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}; // arg #1
 
     bb0: {
         storage_live(_0);
@@ -4730,19 +4560,19 @@ fn drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::cl
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>
-pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>(_1: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, _2: (usize,)) -> bool
+// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>
+pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>(_1: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, _2: (usize,)) -> bool
 {
     let _0: bool; // return
-    let _1: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure; // arg #1
+    let _1: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}; // arg #1
     let _2: (usize,); // arg #2
-    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure; // anonymous local
+    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         _3 = &mut _1;
-        _0 = hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, hashbrown::map::make_hasher::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>(move _3, move _2) -> bb1 (unwind: bb2);
+        _0 = hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>(move _3, move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4754,16 +4584,16 @@ pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>
-pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>(_1: *mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, _2: (usize,)) -> bool
+// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>
+pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>(_1: *mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, _2: (usize,)) -> bool
 {
     let _0: bool; // return
-    let _1: *mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure; // arg #1
+    let _1: *mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}; // arg #1
     let _2: (usize,); // arg #2
 
     bb0: {
         storage_live(_0);
-        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>(move (*_1), move _2) -> bb1 (unwind: bb2);
+        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>(move (*_1), move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4775,9 +4605,9 @@ pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index
     }
 }
 
-// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>
+// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>
 #[lang_item(FnMut)]
-fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>() -> *const ()
+fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>() -> *const ()
 {
     let vtable: *const (); // return
     let drop: *const (); // local
@@ -4797,11 +4627,11 @@ fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closur
         storage_live(hashbrown::raw::RawTable::<(u32, u32)>::find_or_find_insert_index::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}, {closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0});
         storage_live(entry_array);
         storage_live(entry_array_ref);
-        drop = cast<drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure>, *const ()>(const drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure>);
+        drop = cast<drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}>, *const ()>(const drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}>);
         size = transmute<usize, *const ()>(const 16usize);
         align = transmute<usize, *const ()>(const 8usize);
-        <{closure@hashbrown::raw::RawTable<(u32, u32)>::find_or_find_insert_index<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}, {closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(usize,)>>::call_once = cast<call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>, *const ()>(const call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>);
-        hashbrown::raw::RawTable::<(u32, u32)>::find_or_find_insert_index::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}, {closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0} = cast<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, hashbrown::map::make_hasher::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, hashbrown::map::make_hasher::closure::closure, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>)>);
+        <{closure@hashbrown::raw::RawTable<(u32, u32)>::find_or_find_insert_index<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}, {closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(usize,)>>::call_once = cast<call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>, *const ()>(const call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>);
+        hashbrown::raw::RawTable::<(u32, u32)>::find_or_find_insert_index::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}, {closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0} = cast<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>, *const ()>(const hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>);
         entry_array = [move drop, move size, move align, move <{closure@hashbrown::raw::RawTable<(u32, u32)>::find_or_find_insert_index<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}, {closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}} as std::ops::FnOnce<(usize,)>>::call_once, move hashbrown::raw::RawTable::<(u32, u32)>::find_or_find_insert_index::<{closure@hashbrown::map::equivalent_key<u32, u32, u32>::{closure#0}}, {closure@hashbrown::map::make_hasher<u32, u32, std::hash::RandomState>::{closure#0}}>::{closure#0}];
         entry_array_ref = &raw const entry_array;
         vtable = cast<*const [*const (); 5usize], *const ()>(move entry_array_ref);
@@ -4809,15 +4639,15 @@ fn FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closur
     }
 }
 
-// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>
+// Full name: {vtable}::core::ops::function::FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>
 #[lang_item(FnMut)]
-static FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>: *const () = FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>()
+static FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>: *const () = FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>()
 
 // Full name: core::ops::function::FnMut::call_mut::<(dyn FakeTrait), (usize,)>
 pub fn call_mut::<(dyn FakeTrait), (usize,)>(_1: &'_ mut (dyn FakeTrait), _2: usize) -> bool
 = <opaque>
 
-struct hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure {}
+struct hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure} {}
 
 struct (_,)::<*mut u8> {
   _0: *mut u8,
@@ -4837,10 +4667,10 @@ fn drop_glue::<(u32, u32)>(_1: &'_ mut (u32, u32))
     }
 }
 
-fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((*mut u8,)), ()>(_1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure, spread_args: (*mut u8,))
+fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((*mut u8,)), ()>(_1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}, spread_args: (*mut u8,))
 {
     let _0: (); // return
-    let _1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure; // arg #1
+    let _1: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}; // arg #1
     let spread_args: (*mut u8,); // arg #2
     let ptr: *mut u8; // local
     let to_drop: *mut (u32, u32); // local
@@ -4869,20 +4699,20 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::<(u32, u32), G
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure, (*mut u8,)>
-pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure, (*mut u8,)>(_1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure, _2: (*mut u8,))
+// Full name: core::ops::function::FnOnce::call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}, (*mut u8,)>
+pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}, (*mut u8,)>(_1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}, _2: (*mut u8,))
 {
     let _0: (); // return
-    let _1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure; // arg #1
+    let _1: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}; // arg #1
     let _2: (*mut u8,); // arg #2
-    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure; // anonymous local
+    let _3: &'_ mut hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         _0 = ();
         _3 = &mut _1;
-        _0 = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure, i8, extern "rust-call" fn((*mut u8,)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
+        _0 = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}, i8, extern "rust-call" fn((*mut u8,)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4897,6 +4727,14 @@ pub fn call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1
 // Full name: core::ops::index::Index
 #[lang_item(Index)]
 trait Index
+
+// Full name: core::option::Option::<u32>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<u32> {
+  None,
+  Some { _0: u32 },
+}
 
 // Full name: hashbrown::raw::Bucket::<(u32, u32)>
 struct Bucket::<(u32, u32)> {
@@ -4948,12 +4786,12 @@ pub enum Option::<(Layout, usize)> {
   Some { _0: (Layout, usize) },
 }
 
-// Full name: core::option::Option::<u32>
+// Full name: core::option::Option::<&'_ u32>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<u32> {
+pub enum Option::<&'_ u32> {
   None,
-  Some { _0: u32 },
+  Some { _0: &'_ u32 },
 }
 
 // Full name: core::option::Option::<&'_ (u32, u32)>
@@ -4962,14 +4800,6 @@ pub enum Option::<u32> {
 pub enum Option::<&'_ (u32, u32)> {
   None,
   Some { _0: &'_ (u32, u32) },
-}
-
-// Full name: core::option::Option::<&'_ u32>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<&'_ u32> {
-  None,
-  Some { _0: &'_ u32 },
 }
 
 // Full name: core::option::Option::<unsafe fn(*mut u8)>
@@ -5107,14 +4937,14 @@ pub enum AssertKind {
   Match,
 }
 
-struct hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure {
+struct hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure} {
   upvar_0: Option::<unsafe fn(*mut u8)>,
   upvar_1: usize,
 }
 
-// Full name: hashbrown::scopeguard::ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>
-struct ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure> {
-  dropfn: hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure,
+// Full name: hashbrown::scopeguard::ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>
+struct ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}> {
+  dropfn: hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure},
   value: &'_ mut RawTableInner,
 }
 
@@ -5122,10 +4952,10 @@ struct (_,)::<&'_ mut &'_ mut RawTableInner> {
   _0: &'_ mut &'_ mut RawTableInner,
 }
 
-fn hashbrown::raw::{RawTableInner}::rehash_in_place::closure::<i16, extern "rust-call" fn((&'_ mut &'_ mut RawTableInner,)), (Option::<unsafe fn(*mut u8)>, usize)>(_1: &'_ mut hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure, spread_args: (&'_ mut &'_ mut RawTableInner,))
+fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "rust-call" fn((&'_ mut &'_ mut RawTableInner,)), (Option::<unsafe fn(*mut u8)>, usize)>(_1: &'_ mut hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}, spread_args: (&'_ mut &'_ mut RawTableInner,))
 {
     let _0: (); // return
-    let _1: &'_ mut hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure; // arg #1
+    let _1: &'_ mut hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}; // arg #1
     let spread_args: (&'_ mut &'_ mut RawTableInner,); // arg #2
     let self_: &'_ mut &'_ mut RawTableInner; // local
     let iter: Range::<usize>; // local
@@ -5397,13 +5227,13 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::closure::<i16, extern "rust
     }
 }
 
-// Full name: hashbrown::scopeguard::{impl Drop for ScopeGuard::<_, _>}::drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>
-pub fn drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>(self: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>)
+// Full name: hashbrown::scopeguard::{impl Drop for ScopeGuard::<_, _>}::drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>
+pub fn drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>(self: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>)
 {
     let _0: (); // return
-    let self: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>; // arg #1
+    let self: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>; // arg #1
     let _2: (); // anonymous local
-    let _3: &'_ mut hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure; // anonymous local
+    let _3: &'_ mut hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}; // anonymous local
     let _4: (&'_ mut &'_ mut RawTableInner,); // anonymous local
     let _5: &'_ mut &'_ mut RawTableInner; // anonymous local
 
@@ -5417,7 +5247,7 @@ pub fn drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_
         storage_live(_5);
         _5 = &mut (*self).value;
         _4 = (copy _5,);
-        _2 = hashbrown::raw::{RawTableInner}::rehash_in_place::closure::<i16, extern "rust-call" fn((&'_ mut &'_ mut RawTableInner,)), (Option::<unsafe fn(*mut u8)>, usize)>(move _3, move _4) -> bb1 (unwind: bb2);
+        _2 = hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "rust-call" fn((&'_ mut &'_ mut RawTableInner,)), (Option::<unsafe fn(*mut u8)>, usize)>(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -5432,13 +5262,13 @@ pub fn drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_
     }
 }
 
-// Full name: core::ptr::drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>>
+// Full name: core::ptr::drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>>
 #[lang_item(DropGlue)]
-fn drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>>(_1: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>)
+fn drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>>(_1: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>)
 {
     let _0: (); // return
-    let _1: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>; // arg #1
-    let _2: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>; // anonymous local
+    let _1: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>; // arg #1
+    let _2: &'_ mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>; // anonymous local
     let _3: (); // anonymous local
 
     bb0: {
@@ -5447,7 +5277,7 @@ fn drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInne
         storage_live(_3);
         _0 = ();
         _2 = &mut (*_1);
-        _3 = drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>(move _2) -> bb1 (unwind: bb2);
+        _3 = drop::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -5473,20 +5303,20 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
     let size: usize; // local
     let ctrl_align: usize; // local
     let ctrl_offset: usize; // local
-    let _6: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
+    let _6: ControlFlow::<Option::<!>, usize>; // anonymous local
     let self_7: Option::<usize>; // local
-    let _8: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
+    let _8: ControlFlow::<Option::<!>, usize>; // anonymous local
     let self_9: Option::<usize>; // local
-    let _10: Option::<Infallible>; // anonymous local
+    let _10: Option::<!>; // anonymous local
     let val_11: usize; // local
     let rhs_12: usize; // local
-    let _13: Option::<Infallible>; // anonymous local
+    let _13: Option::<!>; // anonymous local
     let val_14: usize; // local
     let _15: usize; // anonymous local
-    let _16: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
+    let _16: ControlFlow::<Option::<!>, usize>; // anonymous local
     let self_17: Option::<usize>; // local
     let rhs_18: usize; // local
-    let _19: Option::<Infallible>; // anonymous local
+    let _19: Option::<!>; // anonymous local
     let len: usize; // local
     let _21: bool; // anonymous local
     let _22: usize; // anonymous local
@@ -5577,10 +5407,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(b_26);
         storage_live(v_32);
         v_32 = move (self_9 as variant Option::<usize>::Some)._0;
-        _8 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v_32 };
+        _8 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v_32 };
         storage_dead(v_32);
         storage_dead(self_9);
-        val_11 = copy (_8 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
+        val_11 = copy (_8 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
         rhs_12 = copy ctrl_align wrap.- const 1usize;
         storage_live(b_33);
         storage_live(_34);
@@ -5620,10 +5450,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(_35);
         storage_live(v_39);
         v_39 = move (self_7 as variant Option::<usize>::Some)._0;
-        _6 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v_39 };
+        _6 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v_39 };
         storage_dead(v_39);
         storage_dead(self_7);
-        val_14 = copy (_6 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
+        val_14 = copy (_6 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
         storage_live(_15);
         _15 = ~(copy rhs_12);
         ctrl_offset = copy val_14 & move _15;
@@ -5691,10 +5521,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(rhs_18);
         storage_live(v_46);
         v_46 = move (self_17 as variant Option::<usize>::Some)._0;
-        _16 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v_46 };
+        _16 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v_46 };
         storage_dead(v_46);
         storage_dead(self_17);
-        len = copy (_16 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
+        len = copy (_16 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
         storage_dead(_16);
         storage_live(_21);
         storage_live(_22);
@@ -5830,10 +5660,10 @@ pub fn deallocate(self: &'_ Global, ptr: NonNull::<u8>, layout: Layout)
     }
 }
 
-fn hashbrown::raw::{RawTableInner}::prepare_resize::closure::<Global, i16, extern "rust-call" fn((&'_ mut RawTableInner,)), (&'_ Global, TableLayout)>(_1: &'_ mut hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure, spread_args: (&'_ mut RawTableInner,))
+fn hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::<Global, i16, extern "rust-call" fn((&'_ mut RawTableInner,)), (&'_ Global, TableLayout)>(_1: &'_ mut hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}, spread_args: (&'_ mut RawTableInner,))
 {
     let _0: (); // return
-    let _1: &'_ mut hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure; // arg #1
+    let _1: &'_ mut hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}; // arg #1
     let spread_args: (&'_ mut RawTableInner,); // arg #2
     let self_: &'_ mut RawTableInner; // local
     let _4: bool; // anonymous local
@@ -5948,13 +5778,13 @@ fn hashbrown::raw::{RawTableInner}::prepare_resize::closure::<Global, i16, exter
     }
 }
 
-// Full name: hashbrown::scopeguard::{impl Drop for ScopeGuard::<_, _>}::drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>
-pub fn drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>(self: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>)
+// Full name: hashbrown::scopeguard::{impl Drop for ScopeGuard::<_, _>}::drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>
+pub fn drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>(self: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>)
 {
     let _0: (); // return
-    let self: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // arg #1
+    let self: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // arg #1
     let _2: (); // anonymous local
-    let _3: &'_ mut hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure; // anonymous local
+    let _3: &'_ mut hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}; // anonymous local
     let _4: (&'_ mut RawTableInner,); // anonymous local
     let _5: &'_ mut RawTableInner; // anonymous local
 
@@ -5968,7 +5798,7 @@ pub fn drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::cl
         storage_live(_5);
         _5 = &mut (*self).value;
         _4 = (copy _5,);
-        _2 = hashbrown::raw::{RawTableInner}::prepare_resize::closure::<Global, i16, extern "rust-call" fn((&'_ mut RawTableInner,)), (&'_ Global, TableLayout)>(move _3, move _4) -> bb1 (unwind: bb2);
+        _2 = hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::<Global, i16, extern "rust-call" fn((&'_ mut RawTableInner,)), (&'_ Global, TableLayout)>(move _3, move _4) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -5983,13 +5813,13 @@ pub fn drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::cl
     }
 }
 
-// Full name: core::ptr::drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>
+// Full name: core::ptr::drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>
 #[lang_item(DropGlue)]
-fn drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>(_1: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>)
+fn drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>(_1: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>)
 {
     let _0: (); // return
-    let _1: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // arg #1
-    let _2: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // anonymous local
+    let _1: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // arg #1
+    let _2: &'_ mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // anonymous local
     let _3: (); // anonymous local
 
     bb0: {
@@ -5998,7 +5828,7 @@ fn drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prep
         storage_live(_3);
         _0 = ();
         _2 = &mut (*_1);
-        _3 = drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>(move _2) -> bb1 (unwind: bb2);
+        _3 = drop::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -6363,7 +6193,7 @@ fn swap_nonoverlapping_chunks::<8usize>(x: *mut MaybeUninit::<[u8; 8usize]>, y: 
         old = copy iter.start;
         storage_live(_15);
         storage_live(_19);
-        _19 = ub_checks<bool>;
+        _19 = ub_checks;
         if move _19 -> bb4 else -> bb5;
     }
 
@@ -6537,7 +6367,7 @@ fn swap_nonoverlapping_bytes(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8]>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
@@ -6626,6 +6456,27 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     }
 }
 
+// Full name: core::result::Result::<usize, usize>
+#[diagnostic_item("Result")]
+pub enum Result::<usize, usize> {
+  Ok { _0: usize },
+  Err { _0: usize },
+}
+
+// Full name: core::result::Result::<usize, TryReserveError>
+#[diagnostic_item("Result")]
+pub enum Result::<usize, TryReserveError> {
+  Ok { _0: usize },
+  Err { _0: TryReserveError },
+}
+
+// Full name: core::result::Result::<usize, !>
+#[diagnostic_item("Result")]
+pub enum Result::<usize, !> {
+  Ok { _0: usize },
+  Err { _0: ! },
+}
+
 // Full name: core::result::Result::<(), TryReserveError>
 #[diagnostic_item("Result")]
 pub enum Result::<(), TryReserveError> {
@@ -6654,10 +6505,10 @@ pub enum Result::<NonNull::<u8>, AllocError> {
   Err { _0: AllocError },
 }
 
-// Full name: core::result::Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>, TryReserveError>
+// Full name: core::result::Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>
 #[diagnostic_item("Result")]
-pub enum Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>, TryReserveError> {
-  Ok { _0: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure> },
+pub enum Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError> {
+  Ok { _0: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}> },
   Err { _0: TryReserveError },
 }
 
@@ -6673,27 +6524,6 @@ pub enum Result::<NonNull::<[u8]>, ()> {
 pub enum Result::<NonNull::<[u8]>, AllocError> {
   Ok { _0: NonNull::<[u8]> },
   Err { _0: AllocError },
-}
-
-// Full name: core::result::Result::<usize, TryReserveError>
-#[diagnostic_item("Result")]
-pub enum Result::<usize, TryReserveError> {
-  Ok { _0: usize },
-  Err { _0: TryReserveError },
-}
-
-// Full name: core::result::Result::<usize, Infallible>
-#[diagnostic_item("Result")]
-pub enum Result::<usize, Infallible> {
-  Ok { _0: usize },
-  Err { _0: Infallible },
-}
-
-// Full name: core::result::Result::<usize, usize>
-#[diagnostic_item("Result")]
-pub enum Result::<usize, usize> {
-  Ok { _0: usize },
-  Err { _0: usize },
 }
 
 // Full name: core::slice::index::SliceIndex
@@ -6842,7 +6672,7 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
     let _34: u64; // anonymous local
     let _35: u64; // anonymous local
     let self_36: Option::<usize>; // local
-    let _37: Option::<Infallible>; // anonymous local
+    let _37: Option::<!>; // anonymous local
     let _38: BitMask; // anonymous local
     let _39: Option::<NonZero::<u64>>; // anonymous local
     let _40: isize; // anonymous local
@@ -7150,19 +6980,19 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
     }
 }
 
-// Full name: hashbrown::raw::{RawTable::<_, _>}::find::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure>
-fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure>(self_1: &'_ RawTable::<(u32, u32), Global>, hash: u64, eq: hashbrown::map::equivalent_key::closure::closure) -> Option::<Bucket::<(u32, u32)>>
+// Full name: hashbrown::raw::{RawTable::<_, _>}::find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}>
+fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}>(self_1: &'_ RawTable::<(u32, u32), Global>, hash: u64, eq: hashbrown::map::equivalent_key::{closure}::{closure}) -> Option::<Bucket::<(u32, u32)>>
 {
     let _0: Option::<Bucket::<(u32, u32)>>; // return
     let self_1: &'_ RawTable::<(u32, u32), Global>; // arg #1
     let hash: u64; // arg #2
-    let eq: hashbrown::map::equivalent_key::closure::closure; // arg #3
+    let eq: hashbrown::map::equivalent_key::{closure}::{closure}; // arg #3
     let result: Option::<usize>; // local
     let _5: &'_ RawTableInner; // anonymous local
     let _6: &'_ mut (dyn FakeTrait); // anonymous local
-    let _7: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure; // anonymous local
-    let _8: hashbrown::raw::{RawTable::<_, _>}::find::closure::closure; // anonymous local
-    let _9: &'_ mut hashbrown::map::equivalent_key::closure::closure; // anonymous local
+    let _7: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}; // anonymous local
+    let _8: hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}; // anonymous local
+    let _9: &'_ mut hashbrown::map::equivalent_key::{closure}::{closure}; // anonymous local
     let _10: isize; // anonymous local
     let index: usize; // local
     let _12: Bucket::<(u32, u32)>; // anonymous local
@@ -7187,10 +7017,10 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure>(
         storage_live(_8);
         storage_live(_9);
         _9 = &mut eq;
-        _8 = hashbrown::raw::{RawTable::<_, _>}::find::closure::closure { upvar_0: copy _9, upvar_1: copy self_1 };
+        _8 = hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure} { upvar_0: copy _9, upvar_1: copy self_1 };
         storage_dead(_9);
         _7 = &mut _8;
-        _6 = unsize_cast<&'_ mut hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, &'_ mut (dyn FakeTrait), FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::closure::closure, (usize,)>>(copy _7);
+        _6 = unsize_cast<&'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, &'_ mut (dyn FakeTrait), FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>>(copy _7);
         result = find_inner(move _5, move hash, move _6) -> bb1 (unwind: bb2);
     }
 
@@ -7295,7 +7125,7 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
     let hash_builder: &'_ RandomState; // local
     let _6: Option::<&'_ (u32, u32)>; // anonymous local
     let self_7: &'_ RawTable::<(u32, u32), Global>; // local
-    let eq: hashbrown::map::equivalent_key::closure::closure; // local
+    let eq: hashbrown::map::equivalent_key::{closure}::{closure}; // local
     let v: &'_ u32; // local
     let _10: &'_ (u32, u32); // anonymous local
     let _11: usize; // anonymous local
@@ -7344,11 +7174,11 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
         storage_live(self_7);
         self_7 = &(*self_1).table;
         storage_live(eq);
-        eq = hashbrown::map::equivalent_key::closure::closure { upvar_0: copy k };
+        eq = hashbrown::map::equivalent_key::{closure}::{closure} { upvar_0: copy k };
         storage_live(_13);
         storage_live(_14);
         storage_live(_12);
-        _12 = find::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure>(move self_7, move hash, move eq) -> bb6 (unwind: bb7);
+        _12 = find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}>(move self_7, move hash, move eq) -> bb6 (unwind: bb7);
     }
 
     bb5: {
@@ -8093,7 +7923,7 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
     let _41: u64; // anonymous local
     let _42: u64; // anonymous local
     let self_43: Option::<usize>; // local
-    let _44: Option::<Infallible>; // anonymous local
+    let _44: Option::<!>; // anonymous local
     let _45: BitMask; // anonymous local
     let _46: Option::<NonZero::<u64>>; // anonymous local
     let _47: isize; // anonymous local
@@ -8561,7 +8391,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
     let dest_19: *mut Tag; // local
     let index: usize; // local
     let _21: usize; // anonymous local
-    let self_22: Result::<usize, Infallible>; // local
+    let self_22: Result::<usize, !>; // local
     let step: usize; // local
     let n_24: NonZero::<usize>; // local
     let remaining: usize; // local
@@ -8658,7 +8488,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_dead(n_29);
         step = transmute<NonZero::<usize>, usize>(copy n_24);
         storage_dead(n_24);
-        self_22 = Result::<usize, Infallible>::Ok { _0: copy step };
+        self_22 = Result::<usize, !>::Ok { _0: copy step };
         storage_dead(self_22);
         storage_live(remaining);
         remaining = copy iter.iter.end;
@@ -9016,8 +8846,8 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     let size_of: usize; // arg #3
     let drop: Option::<unsafe fn(*mut u8)>; // arg #4
     let _5: (); // anonymous local
-    let guard: ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>; // local
-    let dropfn: hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure; // local
+    let guard: ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>; // local
+    let dropfn: hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}; // local
     let iter: Range::<usize>; // local
     let _9: usize; // anonymous local
     let _10: Option::<usize>; // anonymous local
@@ -9147,7 +8977,7 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     let t_134: Option::<unsafe fn(*mut u8)>; // local
     let t_135: usize; // local
     let _136: *const *const (); // anonymous local
-    let _137: *mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>; // anonymous local
+    let _137: *mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>; // anonymous local
     let _138: (); // anonymous local
     let _139: (); // anonymous local
     let _140: Tag; // anonymous local
@@ -9185,8 +9015,8 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     bb1: {
         storage_live(guard);
         storage_live(dropfn);
-        dropfn = hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure { upvar_0: copy drop, upvar_1: copy size_of };
-        guard = ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure> { dropfn: copy dropfn, value: copy self_1 };
+        dropfn = hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure} { upvar_0: copy drop, upvar_1: copy size_of };
+        guard = ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}> { dropfn: copy dropfn, value: copy self_1 };
         storage_dead(dropfn);
         storage_live(_9);
         self_26 = copy guard.value;
@@ -9349,7 +9179,7 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
 
     bb13: {
         _137 = &raw mut guard;
-        _138 = drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::closure::closure>>(move _137) -> bb15 (unwind: bb16);
+        _138 = drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>>(move _137) -> bb15 (unwind: bb16);
     }
 
     bb14: {
@@ -9774,7 +9604,7 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
     let self_14: *mut u8; // local
     let self_15: NonNull::<u8>; // local
     let self_16: Option::<usize>; // local
-    let _17: Option::<Infallible>; // anonymous local
+    let _17: Option::<!>; // anonymous local
     let _18: BitMask; // anonymous local
     let _19: Option::<NonZero::<u64>>; // anonymous local
     let _20: isize; // anonymous local
@@ -10003,10 +9833,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<Infallible, AllocError>; // anonymous local
+    let _10: Result::<!, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -10071,7 +9901,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         ptr_14 = *mut  (copy self_15, const 0usize);
         storage_dead(self_15);
         storage_live(_35);
-        _35 = ub_checks<bool>;
+        _35 = ub_checks;
         if move _35 -> bb3 else -> bb4;
     }
 
@@ -10197,7 +10027,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     bb21: {
         storage_live(_23);
         storage_live(_37);
-        _37 = ub_checks<bool>;
+        _37 = ub_checks;
         if move _37 -> bb24 else -> bb25;
     }
 
@@ -10236,10 +10066,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);
@@ -10248,7 +10078,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         ptr_29 = *mut  (copy self_30, copy size);
         storage_dead(self_30);
         storage_live(_38);
-        _38 = ub_checks<bool>;
+        _38 = ub_checks;
         if move _38 -> bb28 else -> bb29;
     }
 
@@ -10611,9 +10441,9 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     let _11: bool; // anonymous local
     let buckets_12: usize; // local
     let adjusted_cap: usize; // local
-    let _14: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
+    let _14: ControlFlow::<Option::<!>, usize>; // anonymous local
     let self: Option::<usize>; // local
-    let _16: Option::<Infallible>; // anonymous local
+    let _16: Option::<!>; // anonymous local
     let val: usize; // local
     let buckets_18: usize; // local
     let _19: u64; // anonymous local
@@ -10632,24 +10462,26 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     let v: usize; // local
     let _33: isize; // anonymous local
     let _34: bool; // anonymous local
-    let _35: usize; // anonymous local
-    let _36: usize; // anonymous local
-    let _37: bool; // anonymous local
-    let p: usize; // local
-    let z: u32; // local
-    let _40: u64; // anonymous local
-    let b_41: bool; // local
-    let _42: (u64, bool); // anonymous local
-    let _43: u64; // anonymous local
-    let _44: u64; // anonymous local
-    let prod_45: usize; // local
-    let _46: (); // anonymous local
-    let table_layout_47: usize; // local
-    let table_layout_48: usize; // local
+    let m1: usize; // local
+    let _36: bool; // anonymous local
+    let _37: isize; // anonymous local
+    let exp: u32; // local
+    let buckets_39: usize; // local
+    let _40: u32; // anonymous local
+    let _41: u64; // anonymous local
+    let _42: u64; // anonymous local
+    let b_43: bool; // local
+    let _44: (u64, bool); // anonymous local
+    let _45: u64; // anonymous local
+    let _46: u64; // anonymous local
+    let prod_47: usize; // local
+    let _48: (); // anonymous local
     let table_layout_49: usize; // local
-    let _50: (); // anonymous local
-    let _51: Option::<usize>; // anonymous local
-    let _52: Option::<usize>; // anonymous local
+    let table_layout_50: usize; // local
+    let table_layout_51: usize; // local
+    let _52: (); // anonymous local
+    let _53: Option::<usize>; // anonymous local
+    let _54: Option::<usize>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -10662,8 +10494,9 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(val);
         storage_live(_25);
         storage_live(_31);
-        storage_live(_46);
-        storage_live(_50);
+        storage_live(buckets_39);
+        storage_live(_48);
+        storage_live(_52);
         storage_live(_3);
         _3 = copy cap_1 < const 15usize;
         if move _3 -> bb1 else -> bb2;
@@ -10716,18 +10549,14 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(b_27);
         storage_live(v);
         v = move (self as variant Option::<usize>::Some)._0;
-        _14 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v };
+        _14 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v };
         storage_dead(v);
         storage_dead(self);
-        val = copy (_14 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
+        val = copy (_14 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
         adjusted_cap = copy val ub./ const 7usize;
         storage_dead(_14);
-        storage_live(buckets_18);
-        storage_live(_36);
-        storage_live(_35);
-        storage_live(_37);
-        _37 = copy adjusted_cap <= const 1usize;
-        if move _37 -> bb11 else -> bb12;
+        storage_live(m1);
+        m1 = saturating_sub::<usize>(move adjusted_cap, const 1usize) -> bb11 (unwind: bb12);
     }
 
     bb7: {
@@ -10737,13 +10566,13 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
 
     bb8: {
         storage_live(cap_8);
-        cap_8 = max::<usize>(move min_cap, move cap_1) -> bb13 (unwind: bb14);
+        cap_8 = integer_max::<usize>(move min_cap, move cap_1) -> bb13 (unwind: bb14);
     }
 
     bb9: {
-        storage_live(_51);
-        _51 = Option::<usize>::None {  };
-        self = move _51;
+        storage_live(_53);
+        _53 = Option::<usize>::None {  };
+        self = move _53;
         storage_dead(a);
         storage_dead(b_27);
         storage_dead(self);
@@ -10751,7 +10580,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(_34);
         _33 = @discriminant(_16);
         _34 = copy _33 == const 0isize;
-        _50 = assume(move _34) -> bb15 (unwind: bb16);
+        _52 = assume(move _34) -> bb15 (unwind: bb16);
     }
 
     bb10: {
@@ -10759,33 +10588,31 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     }
 
     bb11: {
-        _35 = const 0usize;
-        storage_dead(_37);
-        goto bb18;
+        storage_live(_36);
+        storage_live(_37);
+        _37 = cast<usize, isize>(copy m1);
+        _36 = move _37 >= const 0isize;
+        if move _36 -> bb18 else -> bb19;
     }
 
     bb12: {
-        storage_dead(_37);
-        storage_live(p);
-        p = copy adjusted_cap wrap.- const 1usize;
-        storage_live(z);
-        z = ctlz_nonzero::<usize>(move p) -> bb19 (unwind: bb20);
+        undefined_behavior;
     }
 
     bb13: {
         storage_live(_10);
         _10 = copy cap_8 < const 4usize;
-        if move _10 -> bb21 else -> bb22;
+        if move _10 -> bb20 else -> bb21;
     }
 
     bb14: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb15: {
-        storage_live(_52);
-        _52 = Option::<usize>::None {  };
-        _0 = move _52;
+        storage_live(_54);
+        _54 = Option::<usize>::None {  };
+        _0 = move _54;
         storage_dead(_34);
         storage_dead(_33);
         storage_dead(_14);
@@ -10802,93 +10629,84 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     }
 
     bb18: {
-        _36 = copy _35 panic.+ const 1usize;
-        buckets_18 = move _36;
-        storage_dead(_35);
-        storage_dead(_36);
-        storage_live(table_layout_48);
-        storage_live(table_layout_49);
-        table_layout_48 = copy table_layout_2.size;
-        table_layout_49 = copy table_layout_2.ctrl_align;
-        storage_live(prod_45);
-        switch copy table_layout_48 -> 0usize: bb26, otherwise: bb27;
+        storage_dead(_37);
+        storage_live(exp);
+        storage_live(_40);
+        storage_live(_41);
+        _41 = cast<usize, u64>(copy m1);
+        _40 = ctlz::<u64>(move _41) -> bb22 (unwind: bb23);
     }
 
     bb19: {
-        _35 = const 18446744073709551615usize wrap.>> copy z;
-        storage_dead(z);
-        storage_dead(p);
-        goto bb18;
+        storage_dead(_37);
+        storage_dead(_36);
+        storage_dead(m1);
+        assert(const true == false) (overflow) else panic;
+        buckets_39 = const 0usize;
+        goto bb27;
     }
 
     bb20: {
-        undefined_behavior;
+        buckets_9 = const 4usize;
+        goto bb24;
     }
 
     bb21: {
-        buckets_9 = const 4usize;
-        goto bb23;
+        storage_live(_11);
+        _11 = copy cap_8 < const 8usize;
+        if move _11 -> bb25 else -> bb26;
     }
 
     bb22: {
-        storage_live(_11);
-        _11 = copy cap_8 < const 8usize;
-        if move _11 -> bb24 else -> bb25;
+        storage_dead(_41);
+        exp = const 64u32 wrap.- move _40;
+        storage_dead(_40);
+        buckets_39 = const 1usize wrap.<< copy exp;
+        storage_dead(exp);
+        storage_dead(_36);
+        storage_dead(m1);
+        goto bb27;
     }
 
     bb23: {
+        undefined_behavior;
+    }
+
+    bb24: {
         storage_dead(_10);
-        storage_live(table_layout_47);
-        table_layout_47 = copy table_layout_2.ctrl_align;
+        storage_live(table_layout_49);
+        table_layout_49 = copy table_layout_2.ctrl_align;
         storage_live(buckets_12);
         buckets_12 = copy buckets_9;
         storage_live(prod_24);
         switch copy table_layout_5 -> 0usize: bb28, otherwise: bb29;
     }
 
-    bb24: {
+    bb25: {
         buckets_9 = const 8usize;
         goto bb30;
     }
 
-    bb25: {
+    bb26: {
         buckets_9 = const 16usize;
         goto bb30;
     }
 
-    bb26: {
-        storage_dead(prod_45);
-        storage_dead(table_layout_48);
-        storage_dead(table_layout_49);
-        _0 = Option::<usize>::Some { _0: copy buckets_18 };
-        storage_dead(buckets_18);
-        storage_dead(adjusted_cap);
-        goto bb17;
-    }
-
     bb27: {
-        storage_live(b_41);
-        storage_live(_42);
-        storage_live(_43);
-        _43 = cast<usize, u64>(copy table_layout_48);
-        storage_live(_44);
-        _44 = cast<usize, u64>(copy buckets_18);
-        _42 = move _43 checked.* move _44;
-        storage_dead(_44);
-        storage_dead(_43);
-        storage_live(_40);
-        _40 = copy _42._0;
-        b_41 = copy _42._1;
-        storage_dead(_42);
-        prod_45 = cast<u64, usize>(copy _40);
-        storage_dead(_40);
-        if copy b_41 -> bb31 else -> bb32;
+        storage_live(table_layout_50);
+        storage_live(table_layout_51);
+        table_layout_50 = copy table_layout_2.size;
+        table_layout_51 = copy table_layout_2.ctrl_align;
+        storage_live(buckets_18);
+        buckets_18 = copy buckets_39;
+        storage_live(prod_47);
+        switch copy table_layout_50 -> 0usize: bb31, otherwise: bb32;
     }
 
     bb28: {
         storage_dead(prod_24);
         storage_dead(buckets_12);
-        storage_dead(table_layout_47);
+        storage_dead(table_layout_49);
         _0 = Option::<usize>::Some { _0: move buckets_9 };
         storage_dead(cap_8);
         storage_dead(_3);
@@ -10916,16 +10734,36 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
 
     bb30: {
         storage_dead(_11);
-        goto bb23;
+        goto bb24;
     }
 
     bb31: {
-        _46 = cold_path() -> bb35 (unwind: bb36);
+        storage_dead(prod_47);
+        storage_dead(buckets_18);
+        storage_dead(table_layout_50);
+        storage_dead(table_layout_51);
+        _0 = Option::<usize>::Some { _0: move buckets_39 };
+        storage_dead(adjusted_cap);
+        goto bb17;
     }
 
     bb32: {
-        storage_dead(b_41);
-        goto bb26;
+        storage_live(b_43);
+        storage_live(_44);
+        storage_live(_45);
+        _45 = cast<usize, u64>(copy table_layout_50);
+        storage_live(_46);
+        _46 = cast<usize, u64>(copy buckets_18);
+        _44 = move _45 checked.* move _46;
+        storage_dead(_46);
+        storage_dead(_45);
+        storage_live(_42);
+        _42 = copy _44._0;
+        b_43 = copy _44._1;
+        storage_dead(_44);
+        prod_47 = cast<u64, usize>(copy _42);
+        storage_dead(_42);
+        if copy b_43 -> bb35 else -> bb36;
     }
 
     bb33: {
@@ -10938,13 +10776,12 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     }
 
     bb35: {
-        storage_dead(b_41);
-        prod_45 = const 18446744073709551615usize;
-        goto bb26;
+        _48 = cold_path() -> bb39 (unwind: bb40);
     }
 
     bb36: {
-        undefined_behavior;
+        storage_dead(b_43);
+        goto bb31;
     }
 
     bb37: {
@@ -10954,6 +10791,16 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     }
 
     bb38: {
+        undefined_behavior;
+    }
+
+    bb39: {
+        storage_dead(b_43);
+        prod_47 = const 18446744073709551615usize;
+        goto bb31;
+    }
+
+    bb40: {
         undefined_behavior;
     }
 }
@@ -10966,14 +10813,14 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
     let table_layout: TableLayout; // arg #2
     let capacity: usize; // arg #3
     let fallibility: Fallibility; // arg #4
-    let _5: ControlFlow::<Result::<Infallible, TryReserveError>, usize>; // anonymous local
+    let _5: ControlFlow::<Result::<!, TryReserveError>, usize>; // anonymous local
     let self_6: Result::<usize, TryReserveError>; // local
     let self_7: Option::<usize>; // local
-    let residual_8: Result::<Infallible, TryReserveError>; // local
+    let residual_8: Result::<!, TryReserveError>; // local
     let buckets: usize; // local
-    let _10: ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>; // anonymous local
+    let _10: ControlFlow::<Result::<!, TryReserveError>, RawTableInner>; // anonymous local
     let self_11: Result::<RawTableInner, TryReserveError>; // local
-    let residual_12: Result::<Infallible, TryReserveError>; // local
+    let residual_12: Result::<!, TryReserveError>; // local
     let result: RawTableInner; // local
     let self_14: &'_ mut [MaybeUninit::<Tag>]; // local
     let _15: isize; // anonymous local
@@ -10981,14 +10828,14 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
     let _17: TryReserveError; // anonymous local
     let v_18: usize; // local
     let e_19: TryReserveError; // local
-    let _20: Result::<Infallible, TryReserveError>; // anonymous local
+    let _20: Result::<!, TryReserveError>; // anonymous local
     let _21: isize; // anonymous local
     let e_22: TryReserveError; // local
     let _23: bool; // anonymous local
     let _24: isize; // anonymous local
     let v_25: RawTableInner; // local
     let e_26: TryReserveError; // local
-    let _27: Result::<Infallible, TryReserveError>; // anonymous local
+    let _27: Result::<!, TryReserveError>; // anonymous local
     let _28: *mut MaybeUninit::<Tag>; // anonymous local
     let _29: NonNull::<u8>; // anonymous local
     let count: usize; // local
@@ -11055,10 +10902,10 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_dead(self_7);
         storage_live(v_18);
         v_18 = move (self_6 as variant Result::<usize, TryReserveError>::Ok)._0;
-        _5 = ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Continue { _0: copy v_18 };
+        _5 = ControlFlow::<Result::<!, TryReserveError>, usize>::Continue { _0: copy v_18 };
         storage_dead(v_18);
         storage_dead(self_6);
-        buckets = copy (_5 as variant ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Continue)._0;
+        buckets = copy (_5 as variant ControlFlow::<Result::<!, TryReserveError>, usize>::Continue)._0;
         storage_dead(_5);
         storage_live(_10);
         storage_live(self_11);
@@ -11077,13 +10924,13 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_live(e_19);
         e_19 = move (self_6 as variant Result::<usize, TryReserveError>::Err)._0;
         storage_live(_20);
-        _20 = Result::<Infallible, TryReserveError>::Err { _0: copy e_19 };
-        _5 = ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Break { _0: move _20 };
+        _20 = Result::<!, TryReserveError>::Err { _0: copy e_19 };
+        _5 = ControlFlow::<Result::<!, TryReserveError>, usize>::Break { _0: move _20 };
         storage_dead(_20);
         storage_dead(e_19);
         storage_dead(self_6);
         storage_live(residual_8);
-        residual_8 = move (_5 as variant ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Break)._0;
+        residual_8 = move (_5 as variant ControlFlow::<Result::<!, TryReserveError>, usize>::Break)._0;
         storage_live(_21);
         storage_live(_23);
         _21 = @discriminant(residual_8);
@@ -11107,7 +10954,7 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
 
     bb13: {
         storage_live(e_22);
-        e_22 = copy (residual_8 as variant Result::<Infallible, TryReserveError>::Err)._0;
+        e_22 = copy (residual_8 as variant Result::<!, TryReserveError>::Err)._0;
         _0 = Result::<RawTableInner, TryReserveError>::Err { _0: copy e_22 };
         storage_dead(e_22);
         storage_dead(_23);
@@ -11124,11 +10971,11 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
     bb15: {
         storage_live(v_25);
         v_25 = move (self_11 as variant Result::<RawTableInner, TryReserveError>::Ok)._0;
-        _10 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue { _0: copy v_25 };
+        _10 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue { _0: copy v_25 };
         storage_dead(v_25);
         storage_dead(_24);
         storage_dead(self_11);
-        result = move (_10 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue)._0;
+        result = move (_10 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue)._0;
         storage_dead(_10);
         storage_live(self_14);
         storage_live(_29);
@@ -11160,14 +11007,14 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_live(e_26);
         e_26 = move (self_11 as variant Result::<RawTableInner, TryReserveError>::Err)._0;
         storage_live(_27);
-        _27 = Result::<Infallible, TryReserveError>::Err { _0: copy e_26 };
-        _10 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break { _0: move _27 };
+        _27 = Result::<!, TryReserveError>::Err { _0: copy e_26 };
+        _10 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break { _0: move _27 };
         storage_dead(_27);
         storage_dead(e_26);
         storage_dead(_24);
         storage_dead(self_11);
         storage_live(residual_12);
-        residual_12 = move (_10 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break)._0;
+        residual_12 = move (_10 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break)._0;
         storage_live(_34);
         storage_live(_36);
         _34 = @discriminant(residual_12);
@@ -11188,7 +11035,7 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
 
     bb19: {
         storage_live(e_35);
-        e_35 = copy (residual_12 as variant Result::<Infallible, TryReserveError>::Err)._0;
+        e_35 = copy (residual_12 as variant Result::<!, TryReserveError>::Err)._0;
         _0 = Result::<RawTableInner, TryReserveError>::Err { _0: copy e_35 };
         storage_dead(e_35);
         storage_dead(_36);
@@ -11213,11 +11060,11 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     let hasher: &'_ (dyn FakeTrait); // arg #4
     let fallibility: Fallibility; // arg #5
     let layout: TableLayout; // arg #6
-    let new_table_7: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // local
-    let _8: ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>; // anonymous local
-    let self_9: Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>, TryReserveError>; // local
-    let residual_10: Result::<Infallible, TryReserveError>; // local
-    let val: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // local
+    let new_table_7: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // local
+    let _8: ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>; // anonymous local
+    let self_9: Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>; // local
+    let residual_10: Result::<!, TryReserveError>; // local
+    let val: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // local
     let self_12: FullBucketsIndices; // local
     let iter: FullBucketsIndices; // local
     let nxt: Option::<usize>; // local
@@ -11233,22 +11080,22 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     let _24: usize; // anonymous local
     let _25: usize; // anonymous local
     let _26: (); // anonymous local
-    let _27: ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>; // anonymous local
+    let _27: ControlFlow::<Result::<!, TryReserveError>, RawTableInner>; // anonymous local
     let self_28: Result::<RawTableInner, TryReserveError>; // local
-    let residual_29: Result::<Infallible, TryReserveError>; // local
+    let residual_29: Result::<!, TryReserveError>; // local
     let new_table_30: RawTableInner; // local
-    let _31: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // anonymous local
-    let dropfn: hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure; // local
+    let _31: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // anonymous local
+    let dropfn: hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}; // local
     let _33: isize; // anonymous local
     let v_34: RawTableInner; // local
     let e_35: TryReserveError; // local
-    let _36: Result::<Infallible, TryReserveError>; // anonymous local
+    let _36: Result::<!, TryReserveError>; // anonymous local
     let _37: isize; // anonymous local
     let e_38: TryReserveError; // local
     let _39: bool; // anonymous local
-    let v_40: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // local
+    let v_40: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // local
     let e_41: TryReserveError; // local
-    let _42: Result::<Infallible, TryReserveError>; // anonymous local
+    let _42: Result::<!, TryReserveError>; // anonymous local
     let self_43: *mut Tag; // local
     let _44: BitMaskIter; // anonymous local
     let self_45: BitMask; // local
@@ -11305,9 +11152,9 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     let old_ctrl: u8; // local
     let _97: (); // anonymous local
     let _98: (); // anonymous local
-    let _99: *mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // anonymous local
+    let _99: *mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // anonymous local
     let _100: (); // anonymous local
-    let _101: *mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>; // anonymous local
+    let _101: *mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // anonymous local
     let _102: (); // anonymous local
     let _103: *const *const (); // anonymous local
     let _104: (); // anonymous local
@@ -11351,27 +11198,27 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     bb3: {
         storage_live(v_34);
         v_34 = move (self_28 as variant Result::<RawTableInner, TryReserveError>::Ok)._0;
-        _27 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue { _0: copy v_34 };
+        _27 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue { _0: copy v_34 };
         storage_dead(v_34);
         storage_dead(_33);
         storage_dead(self_28);
-        new_table_30 = move (_27 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue)._0;
+        new_table_30 = move (_27 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue)._0;
         storage_dead(_27);
         storage_live(_31);
         storage_live(dropfn);
-        dropfn = hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure { upvar_0: copy alloc, upvar_1: copy layout };
-        _31 = ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure> { dropfn: copy dropfn, value: copy new_table_30 };
+        dropfn = hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure} { upvar_0: copy alloc, upvar_1: copy layout };
+        _31 = ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}> { dropfn: copy dropfn, value: copy new_table_30 };
         storage_dead(dropfn);
-        self_9 = Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>, TryReserveError>::Ok { _0: move _31 };
+        self_9 = Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>::Ok { _0: move _31 };
         storage_dead(_31);
         storage_dead(new_table_30);
         storage_live(v_40);
-        v_40 = move (self_9 as variant Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>, TryReserveError>::Ok)._0;
-        _8 = ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>::Continue { _0: copy v_40 };
+        v_40 = move (self_9 as variant Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>::Ok)._0;
+        _8 = ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Continue { _0: copy v_40 };
         storage_dead(v_40);
         storage_dead(self_9);
         storage_live(val);
-        val = move (_8 as variant ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>::Continue)._0;
+        val = move (_8 as variant ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Continue)._0;
         new_table_7 = move val;
         storage_dead(val);
         storage_dead(_8);
@@ -11396,14 +11243,14 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(e_35);
         e_35 = move (self_28 as variant Result::<RawTableInner, TryReserveError>::Err)._0;
         storage_live(_36);
-        _36 = Result::<Infallible, TryReserveError>::Err { _0: copy e_35 };
-        _27 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break { _0: move _36 };
+        _36 = Result::<!, TryReserveError>::Err { _0: copy e_35 };
+        _27 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break { _0: move _36 };
         storage_dead(_36);
         storage_dead(e_35);
         storage_dead(_33);
         storage_dead(self_28);
         storage_live(residual_29);
-        residual_29 = move (_27 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break)._0;
+        residual_29 = move (_27 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break)._0;
         storage_live(_37);
         storage_live(_39);
         _37 = @discriminant(residual_29);
@@ -11425,13 +11272,13 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
 
     bb7: {
         _99 = &raw mut new_table_7;
-        _100 = drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>(move _99) -> bb14 (unwind: bb15);
+        _100 = drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>(move _99) -> bb14 (unwind: bb15);
     }
 
     bb8: {
         storage_live(e_38);
-        e_38 = copy (residual_29 as variant Result::<Infallible, TryReserveError>::Err)._0;
-        self_9 = Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>, TryReserveError>::Err { _0: copy e_38 };
+        e_38 = copy (residual_29 as variant Result::<!, TryReserveError>::Err)._0;
+        self_9 = Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>::Err { _0: copy e_38 };
         storage_dead(e_38);
         storage_dead(_39);
         storage_dead(_37);
@@ -11439,15 +11286,15 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_dead(_27);
         storage_dead(new_table_30);
         storage_live(e_41);
-        e_41 = move (self_9 as variant Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>, TryReserveError>::Err)._0;
+        e_41 = move (self_9 as variant Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>::Err)._0;
         storage_live(_42);
-        _42 = Result::<Infallible, TryReserveError>::Err { _0: copy e_41 };
-        _8 = ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>::Break { _0: move _42 };
+        _42 = Result::<!, TryReserveError>::Err { _0: copy e_41 };
+        _8 = ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Break { _0: move _42 };
         storage_dead(_42);
         storage_dead(e_41);
         storage_dead(self_9);
         storage_live(residual_10);
-        residual_10 = move (_8 as variant ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>::Break)._0;
+        residual_10 = move (_8 as variant ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Break)._0;
         storage_live(_56);
         storage_live(_58);
         _56 = @discriminant(residual_10);
@@ -11461,7 +11308,7 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
 
     bb10: {
         storage_live(e_57);
-        e_57 = copy (residual_10 as variant Result::<Infallible, TryReserveError>::Err)._0;
+        e_57 = copy (residual_10 as variant Result::<!, TryReserveError>::Err)._0;
         _0 = Result::<(), TryReserveError>::Err { _0: copy e_57 };
         storage_dead(e_57);
         storage_dead(_58);
@@ -11568,7 +11415,7 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         _106 = Result::<(), TryReserveError>::Ok { _0: const () };
         _0 = move _106;
         _101 = &raw mut new_table_7;
-        _102 = drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::closure::closure>>(move _101) -> bb24 (unwind: bb25);
+        _102 = drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>(move _101) -> bb24 (unwind: bb25);
     }
 
     bb22: {
@@ -11752,7 +11599,7 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
     let _16: (); // anonymous local
     let _17: usize; // anonymous local
     let _18: usize; // anonymous local
-    let _19: usize; // anonymous local
+    let other: usize; // local
     let b: bool; // local
     let _21: (usize, bool); // anonymous local
     let _22: usize; // anonymous local
@@ -11858,9 +11705,9 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
     bb11: {
         storage_dead(_14);
         storage_live(_18);
-        storage_live(_19);
-        _19 = move full_capacity wrap.+ const 1usize;
-        _18 = max::<usize>(move new_items, move _19) -> bb14 (unwind: bb15);
+        storage_live(other);
+        other = move full_capacity wrap.+ const 1usize;
+        _18 = integer_max::<usize>(move new_items, move other) -> bb14 (unwind: bb15);
     }
 
     bb12: {
@@ -11876,12 +11723,12 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
     }
 
     bb14: {
-        storage_dead(_19);
+        storage_dead(other);
         _0 = resize_inner::<Global>(move self_1, move alloc, move _18, move hasher, move fallibility, move layout) -> bb17 (unwind: bb18);
     }
 
     bb15: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb16: {
@@ -11900,13 +11747,13 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
     }
 }
 
-// Full name: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure_as_fn
-fn closure_as_fn(arg1: *mut u8)
+// Full name: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{as_fn}
+fn {as_fn}(arg1: *mut u8)
 {
     let _0: (); // return
     let arg1: *mut u8; // arg #1
     let args: (*mut u8,); // local
-    let state: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure; // local
+    let state: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}; // local
 
     bb0: {
         storage_live(_0);
@@ -11914,8 +11761,8 @@ fn closure_as_fn(arg1: *mut u8)
         storage_live(state);
         _0 = ();
         args = (move arg1,);
-        state = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure {  };
-        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure#1::closure, (*mut u8,)>(move state, move args) -> bb1 (unwind: bb2);
+        state = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure} {  };
+        _0 = call_once::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::{closure}, (*mut u8,)>(move state, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -11933,20 +11780,20 @@ const TABLE_LAYOUT::<(u32, u32), Global>: TableLayout = TableLayout { size: 8usi
 // Full name: hashbrown::raw::SizedTypeProperties::NEEDS_DROP::<(u32, u32)>
 const NEEDS_DROP::<(u32, u32)>: bool = false
 
-// Full name: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>
-fn reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>(self: &'_ mut RawTable::<(u32, u32), Global>, additional: usize, hasher: hashbrown::map::make_hasher::closure::closure, fallibility: Fallibility) -> Result::<(), TryReserveError>
+// Full name: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}>
+fn reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}>(self: &'_ mut RawTable::<(u32, u32), Global>, additional: usize, hasher: hashbrown::map::make_hasher::{closure}::{closure}, fallibility: Fallibility) -> Result::<(), TryReserveError>
 {
     let _0: Result::<(), TryReserveError>; // return
     let self: &'_ mut RawTable::<(u32, u32), Global>; // arg #1
     let additional: usize; // arg #2
-    let hasher: hashbrown::map::make_hasher::closure::closure; // arg #3
+    let hasher: hashbrown::map::make_hasher::{closure}::{closure}; // arg #3
     let fallibility: Fallibility; // arg #4
     let _5: &'_ mut RawTableInner; // anonymous local
     let _6: &'_ Global; // anonymous local
     let _7: &'_ (dyn FakeTrait); // anonymous local
-    let _8: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure; // anonymous local
-    let _9: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure; // anonymous local
-    let _10: &'_ hashbrown::map::make_hasher::closure::closure; // anonymous local
+    let _8: &'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}; // anonymous local
+    let _9: hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}; // anonymous local
+    let _10: &'_ hashbrown::map::make_hasher::{closure}::{closure}; // anonymous local
     let _11: Option::<unsafe fn(*mut u8)>; // anonymous local
     let _12: unsafe fn(*mut u8); // anonymous local
     let _13: Option::<unsafe fn(*mut u8)>; // anonymous local
@@ -11962,17 +11809,17 @@ fn reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::closure::cl
         storage_live(_9);
         storage_live(_10);
         _10 = &hasher;
-        _9 = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure { upvar_0: copy _10 };
+        _9 = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure} { upvar_0: copy _10 };
         storage_dead(_10);
         _8 = &_9;
-        _7 = unsize_cast<&'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, &'_ (dyn FakeTrait), Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::closure::closure, (&'_ mut RawTableInner, usize)>>(copy _8);
+        _7 = unsize_cast<&'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, &'_ (dyn FakeTrait), Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>>(copy _8);
         storage_live(_11);
         if copy NEEDS_DROP::<(u32, u32)> -> bb1 else -> bb2;
     }
 
     bb1: {
         storage_live(_12);
-        _12 = cast<closure_as_fn, unsafe fn(*mut u8)>(const closure_as_fn);
+        _12 = cast<{as_fn}, unsafe fn(*mut u8)>(const {as_fn});
         _11 = Option::<unsafe fn(*mut u8)>::Some { _0: copy _12 };
         storage_dead(_12);
         goto bb3;
@@ -12004,17 +11851,17 @@ fn reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::closure::cl
     }
 }
 
-// Full name: hashbrown::raw::{RawTable::<_, _>}::reserve::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>
-fn reserve::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>(self: &'_ mut RawTable::<(u32, u32), Global>, additional: usize, hasher: hashbrown::map::make_hasher::closure::closure)
+// Full name: hashbrown::raw::{RawTable::<_, _>}::reserve::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}>
+fn reserve::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}>(self: &'_ mut RawTable::<(u32, u32), Global>, additional: usize, hasher: hashbrown::map::make_hasher::{closure}::{closure})
 {
     let _0: (); // return
     let self: &'_ mut RawTable::<(u32, u32), Global>; // arg #1
     let additional: usize; // arg #2
-    let hasher: hashbrown::map::make_hasher::closure::closure; // arg #3
+    let hasher: hashbrown::map::make_hasher::{closure}::{closure}; // arg #3
     let b: bool; // local
     let _5: usize; // anonymous local
     let result: Result::<(), TryReserveError>; // local
-    let _7: hashbrown::map::make_hasher::closure::closure; // anonymous local
+    let _7: hashbrown::map::make_hasher::{closure}::{closure}; // anonymous local
     let _8: bool; // anonymous local
     let _9: (); // anonymous local
     let _10: isize; // anonymous local
@@ -12054,7 +11901,7 @@ fn reserve::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>(
         _7 = move hasher;
         storage_live(_13);
         _13 = Fallibility::Infallible {  };
-        result = reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>(move self, move additional, move _7, move _13) -> bb6 (unwind: bb7);
+        result = reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}>(move self, move additional, move _7, move _13) -> bb6 (unwind: bb7);
     }
 
     bb4: {
@@ -12092,21 +11939,21 @@ fn reserve::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>(
     }
 }
 
-// Full name: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, hashbrown::map::make_hasher::closure::closure>
-fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, hashbrown::map::make_hasher::closure::closure>(self_1: &'_ mut RawTable::<(u32, u32), Global>, hash: u64, eq: hashbrown::map::equivalent_key::closure::closure, hasher: hashbrown::map::make_hasher::closure::closure) -> Result::<Bucket::<(u32, u32)>, usize>
+// Full name: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}>
+fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}>(self_1: &'_ mut RawTable::<(u32, u32), Global>, hash: u64, eq: hashbrown::map::equivalent_key::{closure}::{closure}, hasher: hashbrown::map::make_hasher::{closure}::{closure}) -> Result::<Bucket::<(u32, u32)>, usize>
 {
     let _0: Result::<Bucket::<(u32, u32)>, usize>; // return
     let self_1: &'_ mut RawTable::<(u32, u32), Global>; // arg #1
     let hash: u64; // arg #2
-    let eq: hashbrown::map::equivalent_key::closure::closure; // arg #3
-    let hasher: hashbrown::map::make_hasher::closure::closure; // arg #4
+    let eq: hashbrown::map::equivalent_key::{closure}::{closure}; // arg #3
+    let hasher: hashbrown::map::make_hasher::{closure}::{closure}; // arg #4
     let _5: (); // anonymous local
     let _6: Result::<usize, usize>; // anonymous local
     let _7: &'_ RawTableInner; // anonymous local
     let _8: &'_ mut (dyn FakeTrait); // anonymous local
-    let _9: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure; // anonymous local
-    let _10: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure; // anonymous local
-    let _11: &'_ mut hashbrown::map::equivalent_key::closure::closure; // anonymous local
+    let _9: &'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}; // anonymous local
+    let _10: hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}; // anonymous local
+    let _11: &'_ mut hashbrown::map::equivalent_key::{closure}::{closure}; // anonymous local
     let _12: &'_ RawTable::<(u32, u32), Global>; // anonymous local
     let _13: isize; // anonymous local
     let index_14: usize; // local
@@ -12125,7 +11972,7 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
         storage_live(_0);
         storage_live(_5);
         storage_live(_13);
-        _5 = reserve::<(u32, u32), Global, hashbrown::map::make_hasher::closure::closure>(copy self_1, const 1usize, move hasher) -> bb1 (unwind: bb2);
+        _5 = reserve::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::{closure}>(copy self_1, const 1usize, move hasher) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -12139,11 +11986,11 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
         _11 = &mut eq;
         storage_live(_12);
         _12 = &(*self_1);
-        _10 = hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure { upvar_0: copy _11, upvar_1: copy _12 };
+        _10 = hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure} { upvar_0: copy _11, upvar_1: copy _12 };
         storage_dead(_12);
         storage_dead(_11);
         _9 = &mut _10;
-        _8 = unsize_cast<&'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, &'_ mut (dyn FakeTrait), FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::closure::closure, (usize,)>>(copy _9);
+        _8 = unsize_cast<&'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, &'_ mut (dyn FakeTrait), FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>>(copy _9);
         _6 = find_or_find_insert_index_inner(move _7, move hash, move _8) -> bb3 (unwind: bb2);
     }
 
@@ -12248,9 +12095,9 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::insert::<u32, u3
     let hash: u64; // local
     let hash_builder_5: &'_ RandomState; // local
     let val: &'_ u32; // local
-    let equivalent: hashbrown::map::equivalent_key::closure::closure; // local
+    let equivalent: hashbrown::map::equivalent_key::{closure}::{closure}; // local
     let k_8: &'_ u32; // local
-    let hasher: hashbrown::map::make_hasher::closure::closure; // local
+    let hasher: hashbrown::map::make_hasher::{closure}::{closure}; // local
     let hash_builder_10: &'_ RandomState; // local
     let _11: Result::<Bucket::<(u32, u32)>, usize>; // anonymous local
     let _12: &'_ mut RawTable::<(u32, u32), Global>; // anonymous local
@@ -12297,17 +12144,17 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::insert::<u32, u3
         storage_live(equivalent);
         storage_live(k_8);
         k_8 = &k_2;
-        equivalent = hashbrown::map::equivalent_key::closure::closure { upvar_0: copy k_8 };
+        equivalent = hashbrown::map::equivalent_key::{closure}::{closure} { upvar_0: copy k_8 };
         storage_dead(k_8);
         storage_live(hasher);
         storage_live(hash_builder_10);
         hash_builder_10 = &(*self_1).hash_builder;
-        hasher = hashbrown::map::make_hasher::closure::closure { upvar_0: copy hash_builder_10 };
+        hasher = hashbrown::map::make_hasher::{closure}::{closure} { upvar_0: copy hash_builder_10 };
         storage_dead(hash_builder_10);
         storage_live(_11);
         storage_live(_12);
         _12 = &two-phase-mut (*self_1).table;
-        _11 = find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_key::closure::closure, hashbrown::map::make_hasher::closure::closure>(move _12, copy hash, move equivalent, move hasher) -> bb3 (unwind: bb2);
+        _11 = find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}>(move _12, copy hash, move equivalent, move hasher) -> bb3 (unwind: bb2);
     }
 
     bb2: {
@@ -12548,6 +12395,10 @@ struct (_, _)::<Option::<unsafe fn(*mut u8)>, usize> {
   _1: usize,
 }
 
+struct (_,)::<&'_ u32> {
+  _0: &'_ u32,
+}
+
 struct (_,)::<&'_ RandomState> {
   _0: &'_ RandomState,
 }
@@ -12557,17 +12408,13 @@ struct (_, _)::<&'_ Global, TableLayout> {
   _1: TableLayout,
 }
 
-struct (_, _)::<&'_ mut hashbrown::map::equivalent_key::closure::closure, &'_ RawTable::<(u32, u32), Global>> {
-  _0: &'_ mut hashbrown::map::equivalent_key::closure::closure,
+struct (_, _)::<&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>> {
+  _0: &'_ mut hashbrown::map::equivalent_key::{closure}::{closure},
   _1: &'_ RawTable::<(u32, u32), Global>,
 }
 
-struct (_,)::<&'_ hashbrown::map::make_hasher::closure::closure> {
-  _0: &'_ hashbrown::map::make_hasher::closure::closure,
-}
-
-struct (_,)::<&'_ u32> {
-  _0: &'_ u32,
+struct (_,)::<&'_ hashbrown::map::make_hasher::{closure}::{closure}> {
+  _0: &'_ hashbrown::map::make_hasher::{closure}::{closure},
 }
 
 // Full name: hashbrown::Equivalent

@@ -50,8 +50,6 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
-struct () {}
-
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -62,11 +60,7 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
+struct () {}
 
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
@@ -76,7 +70,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -98,9 +92,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -120,7 +120,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -475,16 +475,10 @@ fn drop_glue::<DropOnPanic::<usize>>(_1: &'_ mut DropOnPanic::<usize>)
     }
 }
 
-// Full name: core::mem::maybe_dangling::MaybeDangling::<usize>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<usize> {
-  _0: usize,
-}
-
 // Full name: core::mem::manually_drop::ManuallyDrop::<usize>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<usize> {
-  value: MaybeDangling::<usize>,
+  value: usize,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<usize>
@@ -527,50 +521,42 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     let _13: MaybeUninit::<usize>; // anonymous local
     let _14: MaybeUninit::<usize>; // anonymous local
     let _15: ManuallyDrop::<usize>; // anonymous local
-    let _16: MaybeDangling::<usize>; // anonymous local
-    let _17: ManuallyDrop::<usize>; // anonymous local
-    let _18: MaybeDangling::<usize>; // anonymous local
-    let _19: *mut MaybeUninit::<usize>; // anonymous local
-    let _20: *mut MaybeUninit::<usize>; // anonymous local
-    let _21: &'_ mut usize; // anonymous local
-    let _22: (); // anonymous local
+    let _16: ManuallyDrop::<usize>; // anonymous local
+    let _17: *mut MaybeUninit::<usize>; // anonymous local
+    let _18: *mut MaybeUninit::<usize>; // anonymous local
+    let _19: &'_ mut usize; // anonymous local
+    let _20: (); // anonymous local
     let t: *mut usize; // local
-    let _24: *mut DropOnPanic::<usize>; // anonymous local
-    let _25: (); // anonymous local
+    let _22: *mut DropOnPanic::<usize>; // anonymous local
+    let _23: (); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(drop);
         storage_live(_11);
+        storage_live(_20);
         storage_live(_22);
-        storage_live(_24);
-        storage_live(_25);
+        storage_live(_23);
         storage_live(true_val_4);
         storage_live(_15);
-        storage_live(_16);
-        _16 = MaybeDangling::<usize> { _0: copy true_val_2 };
-        _15 = ManuallyDrop::<usize> { value: move _16 };
-        storage_dead(_16);
+        _15 = ManuallyDrop::<usize> { value: copy true_val_2 };
         true_val_4 = MaybeUninit::<usize> { value: move _15 };
         storage_dead(_15);
         storage_live(false_val_5);
-        storage_live(_17);
-        storage_live(_18);
-        _18 = MaybeDangling::<usize> { _0: copy false_val_3 };
-        _17 = ManuallyDrop::<usize> { value: move _18 };
-        storage_dead(_18);
-        false_val_5 = MaybeUninit::<usize> { value: move _17 };
-        storage_dead(_17);
+        storage_live(_16);
+        _16 = ManuallyDrop::<usize> { value: copy false_val_3 };
+        false_val_5 = MaybeUninit::<usize> { value: move _16 };
+        storage_dead(_16);
         storage_live(true_ptr);
-        storage_live(_19);
-        _19 = &raw mut true_val_4;
-        true_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _19);
-        storage_dead(_19);
+        storage_live(_17);
+        _17 = &raw mut true_val_4;
+        true_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _17);
+        storage_dead(_17);
         storage_live(false_ptr);
-        storage_live(_20);
-        _20 = &raw mut false_val_5;
-        false_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _20);
-        storage_dead(_20);
+        storage_live(_18);
+        _18 = &raw mut false_val_5;
+        false_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _18);
+        storage_dead(_18);
         storage_live(guard_8);
         guard_8 = core::intrinsics::select_unpredictable::<*mut usize>(copy condition, copy true_ptr, copy false_ptr) -> bb1 (unwind: bb2);
     }
@@ -586,9 +572,9 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     bb3: {
         storage_live(guard_10);
         guard_10 = DropOnPanic::<usize> { inner: copy guard_8 };
-        storage_live(_21);
-        _21 = &mut (*drop);
-        _11 = drop_glue::<usize>(move _21) -> bb5 (unwind: bb6);
+        storage_live(_19);
+        _19 = &mut (*drop);
+        _11 = drop_glue::<usize>(move _19) -> bb5 (unwind: bb6);
     }
 
     bb4: {
@@ -596,7 +582,7 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     }
 
     bb5: {
-        storage_dead(_21);
+        storage_dead(_19);
         storage_live(t);
         t = move guard_10.inner;
         storage_dead(t);
@@ -609,14 +595,14 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     }
 
     bb6: {
-        _24 = &raw mut guard_10;
-        _25 = drop_glue::<DropOnPanic::<usize>>(move _24) -> bb9 (unwind: bb10);
+        _22 = &raw mut guard_10;
+        _23 = drop_glue::<DropOnPanic::<usize>>(move _22) -> bb9 (unwind: bb10);
     }
 
     bb7: {
         storage_dead(_14);
         storage_dead(_13);
-        _22 = assert_inhabited::<usize>() -> bb11 (unwind: bb12);
+        _20 = assert_inhabited::<usize>() -> bb11 (unwind: bb12);
     }
 
     bb8: {
@@ -771,7 +757,7 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(this: usiz
     }
 }
 
-struct test_crate::main::closure::closure {}
+struct test_crate::main::{closure}::{closure} {}
 
 struct (_,)::<&'_ u32> {
   _0: &'_ u32,
@@ -780,10 +766,10 @@ struct (_,)::<&'_ u32> {
 // Full name: anon_const_4
 const anon_const_4: u32 = 3u32
 
-fn test_crate::main::closure::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(_1: &'_ mut test_crate::main::closure::closure, spread_args: (&'_ u32,)) -> Ordering
+fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(_1: &'_ mut test_crate::main::{closure}::{closure}, spread_args: (&'_ u32,)) -> Ordering
 {
     let _0: Ordering; // return
-    let _1: &'_ mut test_crate::main::closure::closure; // arg #1
+    let _1: &'_ mut test_crate::main::{closure}::{closure}; // arg #1
     let spread_args: (&'_ u32,); // arg #2
     let x: &'_ u32; // local
     let _4: &'_ u32; // anonymous local
@@ -821,12 +807,12 @@ fn test_crate::main::closure::<i16, extern "rust-call" fn((&'_ u32,)) -> Orderin
     }
 }
 
-// Full name: core::slice::{[T]}::binary_search_by::<'_, u32, test_crate::main::closure::closure>
-pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_ [u32], f: test_crate::main::closure::closure) -> Result::<usize, usize>
+// Full name: core::slice::{[T]}::binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>
+pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self: &'_ [u32], f: test_crate::main::{closure}::{closure}) -> Result::<usize, usize>
 {
     let _0: Result::<usize, usize>; // return
     let self: &'_ [u32]; // arg #1
-    let f: test_crate::main::closure::closure; // arg #2
+    let f: test_crate::main::{closure}::{closure}; // arg #2
     let size: usize; // local
     let _4: usize; // anonymous local
     let base: usize; // local
@@ -837,13 +823,13 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
     let mid: usize; // local
     let _11: usize; // anonymous local
     let cmp_12: Ordering; // local
-    let _13: &'_ mut test_crate::main::closure::closure; // anonymous local
+    let _13: &'_ mut test_crate::main::{closure}::{closure}; // anonymous local
     let _14: (&'_ u32,); // anonymous local
     let _15: &'_ u32; // anonymous local
     let _16: usize; // anonymous local
     let _17: bool; // anonymous local
     let cmp_18: Ordering; // local
-    let _19: &'_ mut test_crate::main::closure::closure; // anonymous local
+    let _19: &'_ mut test_crate::main::{closure}::{closure}; // anonymous local
     let _20: (&'_ u32,); // anonymous local
     let _21: &'_ u32; // anonymous local
     let index: usize; // local
@@ -944,7 +930,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         storage_live(_14);
         storage_live(_29);
         storage_live(_43);
-        _43 = ub_checks<bool>;
+        _43 = ub_checks;
         if move _43 -> bb7 else -> bb8;
     }
 
@@ -959,7 +945,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         index = copy base;
         storage_live(_35);
         storage_live(_44);
-        _44 = ub_checks<bool>;
+        _44 = ub_checks;
         if move _44 -> bb9 else -> bb10;
     }
 
@@ -1006,7 +992,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         _15 = &(*_29);
         storage_dead(_29);
         _14 = (copy _15,);
-        cmp_12 = test_crate::main::closure::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _13, move _14) -> bb15 (unwind: bb16);
+        cmp_12 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _13, move _14) -> bb15 (unwind: bb16);
     }
 
     bb14: {
@@ -1045,7 +1031,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         storage_dead(_35);
         storage_dead(index);
         _20 = (copy _21,);
-        cmp_18 = test_crate::main::closure::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _19, move _20) -> bb21 (unwind: bb16);
+        cmp_18 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _19, move _20) -> bb21 (unwind: bb16);
     }
 
     bb20: {
@@ -1078,7 +1064,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         cond_23 = move _24 < copy _39;
         storage_dead(_24);
         storage_live(_47);
-        _47 = ub_checks<bool>;
+        _47 = ub_checks;
         if move _47 -> bb25 else -> bb26;
     }
 
@@ -1094,7 +1080,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::closure::closure>(self: &'_
         storage_live(cond_28);
         cond_28 = copy result <= copy _39;
         storage_live(_48);
-        _48 = ub_checks<bool>;
+        _48 = ub_checks;
         if move _48 -> bb27 else -> bb28;
     }
 
@@ -1161,7 +1147,7 @@ fn main()
     let res: Result::<usize, usize>; // local
     let _6: &'_ [u32]; // anonymous local
     let _7: &'_ [u32; 5usize]; // anonymous local
-    let _8: test_crate::main::closure::closure; // anonymous local
+    let _8: test_crate::main::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1183,8 +1169,8 @@ fn main()
         _6 = unsize_cast<&'_ [u32; 5usize], &'_ [u32], 5usize>(move _7);
         storage_dead(_7);
         storage_live(_8);
-        _8 = test_crate::main::closure::closure {  };
-        res = binary_search_by::<'_, u32, test_crate::main::closure::closure>(move _6, move _8) -> bb1 (unwind: bb2);
+        _8 = test_crate::main::{closure}::{closure} {  };
+        res = binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(move _6, move _8) -> bb1 (unwind: bb2);
     }
 
     bb1: {

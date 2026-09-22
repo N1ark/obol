@@ -22,16 +22,10 @@ pub struct Cell::<State::<!>> {
 
 struct () {}
 
-// Full name: core::mem::maybe_dangling::MaybeDangling::<u32>
-#[lang_item(MaybeDangling)]
-pub struct MaybeDangling::<u32> {
-  _0: u32,
-}
-
 // Full name: core::mem::manually_drop::ManuallyDrop::<u32>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<u32> {
-  value: MaybeDangling::<u32>,
+  value: u32,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<u32>
@@ -51,12 +45,6 @@ struct str {
   _0: [u8],
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 pub struct core::fmt::Error {}
 
 // Full name: core::result::Result::<(), core::fmt::Error>
@@ -67,7 +55,7 @@ pub enum Result::<(), core::fmt::Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -106,13 +94,19 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -1033,7 +1027,7 @@ pub fn encode_utf8_raw(code: u32, dst: &'_ mut [u8]) -> &'_ mut [u8]
         _15 = &raw mut (*dst) with_metadata(copy dst.metadata);
         data = cast<*mut [u8], *mut u8>(copy _15);
         storage_live(_19);
-        _19 = ub_checks<bool>;
+        _19 = ub_checks;
         if move _19 -> bb14 else -> bb15;
     }
 
@@ -1066,10 +1060,6 @@ pub fn encode_utf8_raw(code: u32, dst: &'_ mut [u8]) -> &'_ mut [u8]
     }
 }
 
-// Full name: core::convert::Infallible
-pub enum Infallible {
-}
-
 #[diagnostic_item("FmtWrite")]
 trait core::fmt::Write
 
@@ -1095,7 +1085,7 @@ pub enum Result::<(), core::io::error::Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<(dyn FakeTrait)> {
   pointer: *const (dyn FakeTrait) is !null,
 }
@@ -1159,7 +1149,7 @@ pub struct Custom {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Custom>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Custom> {
   pointer: *const Custom is !null,
 }
@@ -1253,7 +1243,7 @@ struct (_,)::<*mut Custom> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<SimpleMessage>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<SimpleMessage> {
   pointer: *const SimpleMessage is !null,
 }
@@ -2113,14 +2103,14 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     }
 }
 
-// Full name: core::io::error::repr::{impl Drop for Repr}::drop::closure::closure
-struct impl_Drop_for_Repr::drop::closure::closure {}
+// Full name: core::io::error::repr::{impl Drop for Repr}::drop::{closure}::{closure}
+struct impl_Drop_for_Repr::drop::{closure}::{closure} {}
 
-// Full name: core::io::error::repr::{impl Drop for Repr}::drop::closure::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>
-fn impl_Drop_for_Repr::drop::closure::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>(_1: impl_Drop_for_Repr::drop::closure::closure, spread_args: (*mut Custom,)) -> CustomOwner
+// Full name: core::io::error::repr::{impl Drop for Repr}::drop::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>
+fn impl_Drop_for_Repr::drop::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>(_1: impl_Drop_for_Repr::drop::{closure}::{closure}, spread_args: (*mut Custom,)) -> CustomOwner
 {
     let _0: CustomOwner; // return
-    let _1: impl_Drop_for_Repr::drop::closure::closure; // arg #1
+    let _1: impl_Drop_for_Repr::drop::{closure}::{closure}; // arg #1
     let spread_args: (*mut Custom,); // arg #2
     let p: *mut Custom; // local
     let custom: NonNull::<Custom>; // local
@@ -2135,7 +2125,7 @@ fn impl_Drop_for_Repr::drop::closure::<i32, extern "rust-call" fn((*mut Custom,)
         p = move spread_args._0;
         storage_live(custom);
         storage_live(_7);
-        _7 = ub_checks<bool>;
+        _7 = ub_checks;
         if move _7 -> bb1 else -> bb2;
     }
 
@@ -2232,12 +2222,12 @@ fn core::hint::unreachable_unchecked::precondition_check()
     }
 }
 
-// Full name: core::io::error::repr::decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::closure::closure>
-fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::closure::closure>(ptr: NonNull::<()>, make_custom: impl_Drop_for_Repr::drop::closure::closure) -> ErrorData::<CustomOwner>
+// Full name: core::io::error::repr::decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>
+fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(ptr: NonNull::<()>, make_custom: impl_Drop_for_Repr::drop::{closure}::{closure}) -> ErrorData::<CustomOwner>
 {
     let _0: ErrorData::<CustomOwner>; // return
     let ptr: NonNull::<()>; // arg #1
-    let make_custom: impl_Drop_for_Repr::drop::closure::closure; // arg #2
+    let make_custom: impl_Drop_for_Repr::drop::{closure}::{closure}; // arg #2
     let bits: usize; // local
     let self_4: *mut (); // local
     let _5: usize; // anonymous local
@@ -2252,7 +2242,7 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::closure::closure>(ptr: N
     let self_14: NonNull::<SimpleMessage>; // local
     let custom: *mut Custom; // local
     let _16: CustomOwner; // anonymous local
-    let _17: impl_Drop_for_Repr::drop::closure::closure; // anonymous local
+    let _17: impl_Drop_for_Repr::drop::{closure}::{closure}; // anonymous local
     let _18: (*mut Custom,); // anonymous local
     let _19: !; // anonymous local
     let _20: bool; // anonymous local
@@ -2371,7 +2361,7 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::closure::closure>(ptr: N
         _17 = move make_custom;
         storage_live(_18);
         _18 = (copy custom,);
-        _16 = impl_Drop_for_Repr::drop::closure::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>(move _17, move _18) -> bb17 (unwind: bb8);
+        _16 = impl_Drop_for_Repr::drop::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>(move _17, move _18) -> bb17 (unwind: bb8);
     }
 
     bb10: {
@@ -2388,7 +2378,7 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::closure::closure>(ptr: N
 
     bb13: {
         storage_live(_30);
-        _30 = ub_checks<bool>;
+        _30 = ub_checks;
         _31 = assume(move _30) -> bb18 (unwind: bb19);
     }
 
@@ -2443,7 +2433,7 @@ pub fn impl_Drop_for_Repr::drop(self: &'_ mut Repr)
     let _3: NonNull::<()>; // anonymous local
     let _4: *mut ErrorData::<CustomOwner>; // anonymous local
     let _5: (); // anonymous local
-    let _6: impl_Drop_for_Repr::drop::closure::closure; // anonymous local
+    let _6: impl_Drop_for_Repr::drop::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2454,8 +2444,8 @@ pub fn impl_Drop_for_Repr::drop(self: &'_ mut Repr)
         storage_live(_3);
         _3 = copy (*self)._0;
         storage_live(_6);
-        _6 = impl_Drop_for_Repr::drop::closure::closure {  };
-        _2 = decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::closure::closure>(move _3, move _6) -> bb1 (unwind: bb2);
+        _6 = impl_Drop_for_Repr::drop::{closure}::{closure} {  };
+        _2 = decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(move _3, move _6) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -3288,12 +3278,12 @@ enum ErrorData::<&'_ Custom> {
   Custom { _0: &'_ Custom },
 }
 
-struct core::io::error::repr::{Repr}::data::closure::closure {}
+struct core::io::error::repr::{Repr}::data::{closure}::{closure} {}
 
-fn core::io::error::repr::{Repr}::data::closure::<i32, extern "rust-call" fn((*mut Custom,)) -> &'_ Custom, ()>(_1: core::io::error::repr::{Repr}::data::closure::closure, spread_args: (*mut Custom,)) -> &'_ Custom
+fn core::io::error::repr::{Repr}::data::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> &'_ Custom, ()>(_1: core::io::error::repr::{Repr}::data::{closure}::{closure}, spread_args: (*mut Custom,)) -> &'_ Custom
 {
     let _0: &'_ Custom; // return
-    let _1: core::io::error::repr::{Repr}::data::closure::closure; // arg #1
+    let _1: core::io::error::repr::{Repr}::data::{closure}::{closure}; // arg #1
     let spread_args: (*mut Custom,); // arg #2
     let c: *mut Custom; // local
 
@@ -3306,12 +3296,12 @@ fn core::io::error::repr::{Repr}::data::closure::<i32, extern "rust-call" fn((*m
     }
 }
 
-// Full name: core::io::error::repr::decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::closure::closure>
-fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::closure::closure>(ptr: NonNull::<()>, make_custom: core::io::error::repr::{Repr}::data::closure::closure) -> ErrorData::<&'_ Custom>
+// Full name: core::io::error::repr::decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{closure}>
+fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{closure}>(ptr: NonNull::<()>, make_custom: core::io::error::repr::{Repr}::data::{closure}::{closure}) -> ErrorData::<&'_ Custom>
 {
     let _0: ErrorData::<&'_ Custom>; // return
     let ptr: NonNull::<()>; // arg #1
-    let make_custom: core::io::error::repr::{Repr}::data::closure::closure; // arg #2
+    let make_custom: core::io::error::repr::{Repr}::data::{closure}::{closure}; // arg #2
     let bits: usize; // local
     let self_4: *mut (); // local
     let _5: usize; // anonymous local
@@ -3326,7 +3316,7 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::closure::closu
     let self_14: NonNull::<SimpleMessage>; // local
     let custom: *mut Custom; // local
     let _16: &'_ Custom; // anonymous local
-    let _17: core::io::error::repr::{Repr}::data::closure::closure; // anonymous local
+    let _17: core::io::error::repr::{Repr}::data::{closure}::{closure}; // anonymous local
     let _18: (*mut Custom,); // anonymous local
     let _19: !; // anonymous local
     let _20: bool; // anonymous local
@@ -3445,7 +3435,7 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::closure::closu
         _17 = move make_custom;
         storage_live(_18);
         _18 = (copy custom,);
-        _16 = core::io::error::repr::{Repr}::data::closure::<i32, extern "rust-call" fn((*mut Custom,)) -> &'_ Custom, ()>(move _17, move _18) -> bb17 (unwind: bb8);
+        _16 = core::io::error::repr::{Repr}::data::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> &'_ Custom, ()>(move _17, move _18) -> bb17 (unwind: bb8);
     }
 
     bb10: {
@@ -3462,7 +3452,7 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::closure::closu
 
     bb13: {
         storage_live(_30);
-        _30 = ub_checks<bool>;
+        _30 = ub_checks;
         _31 = assume(move _30) -> bb18 (unwind: bb19);
     }
 
@@ -3529,7 +3519,7 @@ pub fn is_interrupted(self: &'_ core::io::error::Error) -> bool
     let _11: isize; // anonymous local
     let f: &'_ OsFunctions; // local
     let _13: fn(i32) -> bool; // anonymous local
-    let _14: core::io::error::repr::{Repr}::data::closure::closure; // anonymous local
+    let _14: core::io::error::repr::{Repr}::data::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3540,8 +3530,8 @@ pub fn is_interrupted(self: &'_ core::io::error::Error) -> bool
         storage_live(_8);
         _8 = copy (*self).repr._0;
         storage_live(_14);
-        _14 = core::io::error::repr::{Repr}::data::closure::closure {  };
-        _2 = decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::closure::closure>(move _8, move _14) -> bb1 (unwind: bb2);
+        _14 = core::io::error::repr::{Repr}::data::{closure}::{closure} {  };
+        _2 = decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{closure}>(move _8, move _14) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -4117,7 +4107,7 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
         storage_live(len);
         len = copy bits wrap.>> const 1i32;
         storage_live(_16);
-        _16 = ub_checks<bool>;
+        _16 = ub_checks;
         if move _16 -> bb3 else -> bb4;
     }
 
@@ -4671,18 +4661,18 @@ pub const IS_ZST::<MaybeUninit::<u32>>: bool = false
 #[non_exhaustive]
 pub struct AccessError {}
 
-// Full name: core::result::Result::<Infallible, AccessError>
+// Full name: core::result::Result::<!, AccessError>
 #[diagnostic_item("Result")]
-pub enum Result::<Infallible, AccessError> {
-  Ok { _0: Infallible },
+pub enum Result::<!, AccessError> {
+  Ok { _0: ! },
   Err { _0: AccessError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AccessError>, &'_ u32>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AccessError>, &'_ u32>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<Infallible, AccessError>, &'_ u32> {
+pub enum ControlFlow::<Result::<!, AccessError>, &'_ u32> {
   Continue { _0: &'_ u32 },
-  Break { _0: Result::<Infallible, AccessError> },
+  Break { _0: Result::<!, AccessError> },
 }
 
 // Full name: std::sys::thread_local::native::lazy::Storage::<u32, !>
@@ -4691,7 +4681,7 @@ pub struct Storage::<u32, !> {
   state: Cell::<State::<!>>,
 }
 
-// Full name: test_crate::FOO::{const}::closure#1::__RUST_STD_INTERNAL_VAL
+// Full name: test_crate::FOO::{const}::{closure#1}::__RUST_STD_INTERNAL_VAL
 thread_local __RUST_STD_INTERNAL_VAL: Storage::<u32, !> = Storage::<u32, !> { value: UnsafeCell::<MaybeUninit::<u32>> { value: RawMemory(--, --, --, --) }, state: Cell::<State::<!>> { value: UnsafeCell::<State::<!>> { value: State::<!>::Uninitialized {  } } } }
 
 // Full name: test_crate::FOO::__rust_std_internal_init_fn
@@ -4707,7 +4697,7 @@ fn __rust_std_internal_init_fn() -> u32
     }
 }
 
-struct test_crate::FOO::{const}::closure#1::closure {}
+struct test_crate::FOO::{const}::{closure#1}::{closure} {}
 
 // Full name: core::option::Option::<u32>
 #[lang_item(Option)]
@@ -4936,28 +4926,27 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     let _30: __rust_std_internal_init_fn; // anonymous local
     let _31: *const UnsafeCell::<MaybeUninit::<u32>>; // anonymous local
     let _32: ManuallyDrop::<u32>; // anonymous local
-    let _33: MaybeDangling::<u32>; // anonymous local
-    let _34: (); // anonymous local
-    let _35: *const (); // anonymous local
-    let _36: *mut State::<!>; // anonymous local
-    let _37: *const UnsafeCell::<State::<!>>; // anonymous local
+    let _33: (); // anonymous local
+    let _34: *const (); // anonymous local
+    let _35: *mut State::<!>; // anonymous local
+    let _36: *const UnsafeCell::<State::<!>>; // anonymous local
     let to_drop: *mut u32; // local
-    let _39: *mut MaybeUninit::<u32>; // anonymous local
-    let _40: &'_ mut u32; // anonymous local
+    let _38: *mut MaybeUninit::<u32>; // anonymous local
+    let _39: &'_ mut u32; // anonymous local
     let s: &'_ str; // local
-    let _42: NonNull::<u8>; // anonymous local
-    let _43: *const u8; // anonymous local
-    let _44: NonNull::<Argument::<'_>>; // anonymous local
+    let _41: NonNull::<u8>; // anonymous local
+    let _42: *const u8; // anonymous local
+    let _43: NonNull::<Argument::<'_>>; // anonymous local
+    let _44: usize; // anonymous local
     let _45: usize; // anonymous local
     let _46: usize; // anonymous local
-    let _47: usize; // anonymous local
-    let _48: *const str; // anonymous local
-    let _49: &'_ [u8]; // anonymous local
-    let _50: *const UnsafeCell::<MaybeUninit::<u32>>; // anonymous local
-    let _51: bool; // anonymous local
-    let _52: *mut Result::<(), core::io::error::Error>; // anonymous local
-    let _53: (); // anonymous local
-    let _54: *const u32; // anonymous local
+    let _47: *const str; // anonymous local
+    let _48: &'_ [u8]; // anonymous local
+    let _49: *const UnsafeCell::<MaybeUninit::<u32>>; // anonymous local
+    let _50: bool; // anonymous local
+    let _51: *mut Result::<(), core::io::error::Error>; // anonymous local
+    let _52: (); // anonymous local
+    let _53: *const u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4969,10 +4958,10 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_live(_21);
         storage_live(_25);
         storage_live(_31);
-        storage_live(_34);
-        storage_live(_50);
+        storage_live(_33);
+        storage_live(_49);
+        storage_live(_51);
         storage_live(_52);
-        storage_live(_53);
         storage_live(_4);
         storage_live(_23);
         storage_live(_24);
@@ -5003,9 +4992,9 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     }
 
     bb3: {
-        storage_live(_54);
-        _54 = cast<usize, *const u32>(const 0usize);
-        _0 = move _54;
+        storage_live(_53);
+        _53 = cast<usize, *const u32>(const 0usize);
+        _0 = move _53;
         goto bb7;
     }
 
@@ -5078,21 +5067,18 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         self_11 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *mut MaybeUninit::<u32>>(copy _31);
         storage_live(src);
         storage_live(_32);
-        storage_live(_33);
-        _33 = MaybeDangling::<u32> { _0: copy v };
-        _32 = ManuallyDrop::<u32> { value: move _33 };
-        storage_dead(_33);
+        _32 = ManuallyDrop::<u32> { value: copy v };
         src = MaybeUninit::<u32> { value: move _32 };
         storage_dead(_32);
-        storage_live(_51);
-        _51 = ub_checks<bool>;
-        if move _51 -> bb14 else -> bb15;
+        storage_live(_50);
+        _50 = ub_checks;
+        if move _50 -> bb14 else -> bb15;
     }
 
     bb14: {
-        storage_live(_35);
-        _35 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const ()>(copy _31);
-        _34 = core::ptr::replace::precondition_check(move _35, copy ALIGN::<MaybeUninit::<u32>>, copy IS_ZST::<MaybeUninit::<u32>>) -> bb16 (unwind: bb17);
+        storage_live(_34);
+        _34 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const ()>(copy _31);
+        _33 = core::ptr::replace::precondition_check(move _34, copy ALIGN::<MaybeUninit::<u32>>, copy IS_ZST::<MaybeUninit::<u32>>) -> bb16 (unwind: bb17);
     }
 
     bb15: {
@@ -5100,7 +5086,7 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     }
 
     bb16: {
-        storage_dead(_35);
+        storage_dead(_34);
         goto bb15;
     }
 
@@ -5125,14 +5111,14 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_live(_14);
         storage_live(val);
         val = State::<!>::Alive {  };
+        storage_live(_35);
         storage_live(_36);
-        storage_live(_37);
-        _37 = &raw const (*self_1).state.value;
-        _36 = cast<*const UnsafeCell::<State::<!>>, *mut State::<!>>(copy _37);
-        storage_dead(_37);
-        _14 = copy (*_36);
-        (*_36) = copy val;
+        _36 = &raw const (*self_1).state.value;
+        _35 = cast<*const UnsafeCell::<State::<!>>, *mut State::<!>>(copy _36);
         storage_dead(_36);
+        _14 = copy (*_35);
+        (*_35) = copy val;
+        storage_dead(_35);
         storage_dead(val);
         _16 = @discriminant(_14);
         switch move _16 -> 0isize: bb21, 1isize: bb22, 2isize: bb23, otherwise: bb4;
@@ -5144,13 +5130,13 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
 
     bb22: {
         storage_live(to_drop);
+        storage_live(_38);
+        _38 = &raw mut old_value;
+        to_drop = cast<*mut MaybeUninit::<u32>, *mut u32>(copy _38);
+        storage_dead(_38);
         storage_live(_39);
-        _39 = &raw mut old_value;
-        to_drop = cast<*mut MaybeUninit::<u32>, *mut u32>(copy _39);
-        storage_dead(_39);
-        storage_live(_40);
-        _40 = &mut (*to_drop);
-        _13 = drop_glue::<u32>(move _40) -> bb26 (unwind: bb27);
+        _39 = &mut (*to_drop);
+        _13 = drop_glue::<u32>(move _39) -> bb26 (unwind: bb27);
     }
 
     bb23: {
@@ -5160,31 +5146,31 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_live(_20);
         storage_live(s);
         s = const "fatal runtime error: unreachable, aborting\n";
+        storage_live(_41);
         storage_live(_42);
+        storage_live(_47);
+        _47 = &raw const (*s) with_metadata(copy s.metadata);
+        _42 = cast<*const str, *const u8>(copy _47);
+        storage_dead(_47);
+        _41 = transmute<*const u8, NonNull::<u8>>(copy _42);
+        storage_dead(_42);
         storage_live(_43);
-        storage_live(_48);
-        _48 = &raw const (*s) with_metadata(copy s.metadata);
-        _43 = cast<*const str, *const u8>(copy _48);
-        storage_dead(_48);
-        _42 = transmute<*const u8, NonNull::<u8>>(copy _43);
-        storage_dead(_43);
         storage_live(_44);
         storage_live(_45);
         storage_live(_46);
-        storage_live(_47);
-        storage_live(_49);
-        _49 = transmute<&'_ str, &'_ [u8]>(const "fatal runtime error: unreachable, aborting\n");
-        _47 = copy _49.metadata;
-        storage_dead(_49);
-        _46 = move _47 wrap.<< const 1i32;
-        storage_dead(_47);
-        _45 = move _46 | const 1usize;
+        storage_live(_48);
+        _48 = transmute<&'_ str, &'_ [u8]>(const "fatal runtime error: unreachable, aborting\n");
+        _46 = copy _48.metadata;
+        storage_dead(_48);
+        _45 = move _46 wrap.<< const 1i32;
         storage_dead(_46);
-        _44 = transmute<usize, NonNull::<Argument::<'_>>>(move _45);
+        _44 = move _45 | const 1usize;
         storage_dead(_45);
-        _20 = Arguments::<'_> { template: move _42, args: move _44 };
+        _43 = transmute<usize, NonNull::<Argument::<'_>>>(move _44);
         storage_dead(_44);
-        storage_dead(_42);
+        _20 = Arguments::<'_> { template: move _41, args: move _43 };
+        storage_dead(_43);
+        storage_dead(_41);
         storage_dead(s);
         _18 = core::io::write::Write::write_fmt::<Stderr>(move _19, move _20) -> bb28 (unwind: bb29);
     }
@@ -5192,9 +5178,9 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     bb24: {
         storage_dead(_14);
         storage_live(self_22);
-        _50 = &raw const (*self_1).value;
-        self_22 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *mut MaybeUninit::<u32>>(copy _50);
-        _0 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const u32>(copy _50);
+        _49 = &raw const (*self_1).value;
+        self_22 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *mut MaybeUninit::<u32>>(copy _49);
+        _0 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const u32>(copy _49);
         storage_dead(self_22);
         storage_dead(old_value);
         goto bb10;
@@ -5205,7 +5191,7 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     }
 
     bb26: {
-        storage_dead(_40);
+        storage_dead(_39);
         storage_dead(to_drop);
         goto bb24;
     }
@@ -5216,8 +5202,8 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
 
     bb28: {
         storage_dead(_20);
-        _52 = &raw mut _18;
-        _53 = drop_glue::<Result::<(), core::io::error::Error>>(move _52) -> bb30 (unwind: bb31);
+        _51 = &raw mut _18;
+        _52 = drop_glue::<Result::<(), core::io::error::Error>>(move _51) -> bb30 (unwind: bb31);
     }
 
     bb29: {
@@ -5312,10 +5298,10 @@ pub fn get_or_init::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::<
     }
 }
 
-fn test_crate::FOO::{const}::closure#1::<i8, extern "rust-call" fn((Option::<&'_ mut Option::<u32>>,)) -> *const u32, ()>(_1: &'_ test_crate::FOO::{const}::closure#1::closure, spread_args: (Option::<&'_ mut Option::<u32>>,)) -> *const u32
+fn test_crate::FOO::{const}::{closure#1}::<i8, extern "rust-call" fn((Option::<&'_ mut Option::<u32>>,)) -> *const u32, ()>(_1: &'_ test_crate::FOO::{const}::{closure#1}::{closure}, spread_args: (Option::<&'_ mut Option::<u32>>,)) -> *const u32
 {
     let _0: *const u32; // return
-    let _1: &'_ test_crate::FOO::{const}::closure#1::closure; // arg #1
+    let _1: &'_ test_crate::FOO::{const}::{closure#1}::{closure}; // arg #1
     let spread_args: (Option::<&'_ mut Option::<u32>>,); // arg #2
     let __rust_std_internal_init: Option::<&'_ mut Option::<u32>>; // local
     let _4: &'_ Storage::<u32, !>; // anonymous local
@@ -5347,19 +5333,19 @@ fn test_crate::FOO::{const}::closure#1::<i8, extern "rust-call" fn((Option::<&'_
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<test_crate::FOO::{const}::closure#1::closure, (Option::<&'_ mut Option::<u32>>,)>
-pub fn call_once::<test_crate::FOO::{const}::closure#1::closure, (Option::<&'_ mut Option::<u32>>,)>(_1: test_crate::FOO::{const}::closure#1::closure, _2: (Option::<&'_ mut Option::<u32>>,)) -> *const u32
+// Full name: core::ops::function::FnOnce::call_once::<test_crate::FOO::{const}::{closure#1}::{closure}, (Option::<&'_ mut Option::<u32>>,)>
+pub fn call_once::<test_crate::FOO::{const}::{closure#1}::{closure}, (Option::<&'_ mut Option::<u32>>,)>(_1: test_crate::FOO::{const}::{closure#1}::{closure}, _2: (Option::<&'_ mut Option::<u32>>,)) -> *const u32
 {
     let _0: *const u32; // return
-    let _1: test_crate::FOO::{const}::closure#1::closure; // arg #1
+    let _1: test_crate::FOO::{const}::{closure#1}::{closure}; // arg #1
     let _2: (Option::<&'_ mut Option::<u32>>,); // arg #2
-    let _3: &'_ mut test_crate::FOO::{const}::closure#1::closure; // anonymous local
+    let _3: &'_ mut test_crate::FOO::{const}::{closure#1}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         _3 = &mut _1;
-        _0 = test_crate::FOO::{const}::closure#1::<i8, extern "rust-call" fn((Option::<&'_ mut Option::<u32>>,)) -> *const u32, ()>(move _3, move _2) -> bb1 (unwind: bb2);
+        _0 = test_crate::FOO::{const}::{closure#1}::<i8, extern "rust-call" fn((Option::<&'_ mut Option::<u32>>,)) -> *const u32, ()>(move _3, move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -5435,16 +5421,16 @@ pub struct LocalKey::<u32> {
 fn panic_access_error(_1: AccessError) -> !
 = <missing>
 
-struct test_crate::main::closure::closure {}
+struct test_crate::main::{closure}::{closure} {}
 
 struct (_,)::<&'_ u32> {
   _0: &'_ u32,
 }
 
-fn test_crate::main::closure::<i32, extern "rust-call" fn((&'_ u32,)) -> u32, ()>(_1: test_crate::main::closure::closure, spread_args: (&'_ u32,)) -> u32
+fn test_crate::main::{closure}::<i32, extern "rust-call" fn((&'_ u32,)) -> u32, ()>(_1: test_crate::main::{closure}::{closure}, spread_args: (&'_ u32,)) -> u32
 {
     let _0: u32; // return
-    let _1: test_crate::main::closure::closure; // arg #1
+    let _1: test_crate::main::{closure}::{closure}; // arg #1
     let spread_args: (&'_ u32,); // arg #2
     let x: &'_ u32; // local
 
@@ -5457,21 +5443,21 @@ fn test_crate::main::closure::<i32, extern "rust-call" fn((&'_ u32,)) -> u32, ()
     }
 }
 
-// Full name: std::thread::local::{LocalKey::<_>}::try_with::<u32, test_crate::main::closure::closure, u32>
-pub fn try_with::<u32, test_crate::main::closure::closure, u32>(self_1: &'_ LocalKey::<u32>, f: test_crate::main::closure::closure) -> Result::<u32, AccessError>
+// Full name: std::thread::local::{LocalKey::<_>}::try_with::<u32, test_crate::main::{closure}::{closure}, u32>
+pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ LocalKey::<u32>, f: test_crate::main::{closure}::{closure}) -> Result::<u32, AccessError>
 {
     let _0: Result::<u32, AccessError>; // return
     let self_1: &'_ LocalKey::<u32>; // arg #1
-    let f: test_crate::main::closure::closure; // arg #2
-    let _3: ControlFlow::<Result::<Infallible, AccessError>, &'_ u32>; // anonymous local
+    let f: test_crate::main::{closure}::{closure}; // arg #2
+    let _3: ControlFlow::<Result::<!, AccessError>, &'_ u32>; // anonymous local
     let self_4: Result::<&'_ u32, AccessError>; // local
     let self_5: Option::<&'_ u32>; // local
     let self_6: *const u32; // local
     let _7: fn(Option::<&'_ mut Option::<u32>>) -> *const u32; // anonymous local
-    let _8: Result::<Infallible, AccessError>; // anonymous local
+    let _8: Result::<!, AccessError>; // anonymous local
     let thread_local: &'_ u32; // local
     let _10: u32; // anonymous local
-    let _11: test_crate::main::closure::closure; // anonymous local
+    let _11: test_crate::main::{closure}::{closure}; // anonymous local
     let _12: (&'_ u32,); // anonymous local
     let _13: bool; // anonymous local
     let _14: bool; // anonymous local
@@ -5561,10 +5547,10 @@ pub fn try_with::<u32, test_crate::main::closure::closure, u32>(self_1: &'_ Loca
         storage_dead(self_5);
         storage_live(v_18);
         v_18 = copy (self_4 as variant Result::<&'_ u32, AccessError>::Ok)._0;
-        _3 = ControlFlow::<Result::<Infallible, AccessError>, &'_ u32>::Continue { _0: copy v_18 };
+        _3 = ControlFlow::<Result::<!, AccessError>, &'_ u32>::Continue { _0: copy v_18 };
         storage_dead(v_18);
         storage_dead(self_4);
-        thread_local = copy (_3 as variant ControlFlow::<Result::<Infallible, AccessError>, &'_ u32>::Continue)._0;
+        thread_local = copy (_3 as variant ControlFlow::<Result::<!, AccessError>, &'_ u32>::Continue)._0;
         storage_dead(_3);
         storage_live(_10);
         storage_live(_11);
@@ -5572,7 +5558,7 @@ pub fn try_with::<u32, test_crate::main::closure::closure, u32>(self_1: &'_ Loca
         _11 = move f;
         storage_live(_12);
         _12 = (copy thread_local,);
-        _10 = test_crate::main::closure::<i32, extern "rust-call" fn((&'_ u32,)) -> u32, ()>(move _11, move _12) -> bb9 (unwind: bb2);
+        _10 = test_crate::main::{closure}::<i32, extern "rust-call" fn((&'_ u32,)) -> u32, ()>(move _11, move _12) -> bb9 (unwind: bb2);
     }
 
     bb5: {
@@ -5606,12 +5592,12 @@ pub fn try_with::<u32, test_crate::main::closure::closure, u32>(self_1: &'_ Loca
     }
 }
 
-// Full name: std::thread::local::{LocalKey::<_>}::with::<u32, test_crate::main::closure::closure, u32>
-pub fn with::<u32, test_crate::main::closure::closure, u32>(self: &'_ LocalKey::<u32>, f: test_crate::main::closure::closure) -> u32
+// Full name: std::thread::local::{LocalKey::<_>}::with::<u32, test_crate::main::{closure}::{closure}, u32>
+pub fn with::<u32, test_crate::main::{closure}::{closure}, u32>(self: &'_ LocalKey::<u32>, f: test_crate::main::{closure}::{closure}) -> u32
 {
     let r: u32; // return
     let self: &'_ LocalKey::<u32>; // arg #1
-    let f: test_crate::main::closure::closure; // arg #2
+    let f: test_crate::main::{closure}::{closure}; // arg #2
     let _3: Result::<u32, AccessError>; // anonymous local
     let _4: isize; // anonymous local
     let _5: !; // anonymous local
@@ -5622,7 +5608,7 @@ pub fn with::<u32, test_crate::main::closure::closure, u32>(self: &'_ LocalKey::
         storage_live(_4);
         storage_live(_5);
         storage_live(_3);
-        _3 = try_with::<u32, test_crate::main::closure::closure, u32>(move self, move f) -> bb1 (unwind: bb2);
+        _3 = try_with::<u32, test_crate::main::{closure}::{closure}, u32>(move self, move f) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -5659,21 +5645,21 @@ pub fn with::<u32, test_crate::main::closure::closure, u32>(self: &'_ LocalKey::
     }
 }
 
-// Full name: test_crate::FOO::{const}::closure#1::closure_as_fn
-fn closure_as_fn(arg1: Option::<&'_ mut Option::<u32>>) -> *const u32
+// Full name: test_crate::FOO::{const}::{closure#1}::{as_fn}
+fn {as_fn}(arg1: Option::<&'_ mut Option::<u32>>) -> *const u32
 {
     let _0: *const u32; // return
     let arg1: Option::<&'_ mut Option::<u32>>; // arg #1
     let args: (Option::<&'_ mut Option::<u32>>,); // local
-    let state: test_crate::FOO::{const}::closure#1::closure; // local
+    let state: test_crate::FOO::{const}::{closure#1}::{closure}; // local
 
     bb0: {
         storage_live(_0);
         storage_live(args);
         storage_live(state);
         args = (move arg1,);
-        state = test_crate::FOO::{const}::closure#1::closure {  };
-        _0 = call_once::<test_crate::FOO::{const}::closure#1::closure, (Option::<&'_ mut Option::<u32>>,)>(move state, move args) -> bb1 (unwind: bb2);
+        state = test_crate::FOO::{const}::{closure#1}::{closure} {  };
+        _0 = call_once::<test_crate::FOO::{const}::{closure#1}::{closure}, (Option::<&'_ mut Option::<u32>>,)>(move state, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -5686,7 +5672,7 @@ fn closure_as_fn(arg1: Option::<&'_ mut Option::<u32>>) -> *const u32
 }
 
 // Full name: anon_const_0
-const anon_const_0: LocalKey::<u32> = LocalKey::<u32> { inner: fnptr(closure_as_fn<test_crate::FOO::{const}::closure#1::closure, (Option::<&'_ mut Option::<u32>>,)>) }
+const anon_const_0: LocalKey::<u32> = LocalKey::<u32> { inner: fnptr({as_fn}<test_crate::FOO::{const}::{closure#1}::{closure}, (Option::<&'_ mut Option::<u32>>,)>) }
 
 // Full name: test_crate::main
 fn main()
@@ -5694,7 +5680,7 @@ fn main()
     let _0: (); // return
     let _1: u32; // anonymous local
     let _2: &'_ LocalKey::<u32>; // anonymous local
-    let _3: test_crate::main::closure::closure; // anonymous local
+    let _3: test_crate::main::{closure}::{closure}; // anonymous local
     let _4: &'_ LocalKey::<u32>; // anonymous local
     let _5: &'_ LocalKey::<u32>; // anonymous local
 
@@ -5709,8 +5695,8 @@ fn main()
         _4 = move _5;
         _2 = &(*_4);
         storage_live(_3);
-        _3 = test_crate::main::closure::closure {  };
-        _1 = with::<u32, test_crate::main::closure::closure, u32>(move _2, move _3) -> bb1 (unwind: bb2);
+        _3 = test_crate::main::{closure}::{closure} {  };
+        _1 = with::<u32, test_crate::main::{closure}::{closure}, u32>(move _2, move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {

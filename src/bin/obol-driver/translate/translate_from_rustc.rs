@@ -48,10 +48,13 @@ translate_lang_items!(
     PointeeTrait,
     Metadata,
     DynMetadata,
+    NonNull,
     Freeze,
     UnsafeUnpin,
     FnPtrTrait,
-    FnPtrAddr,
+    FnPtrAsPtr,
+    FnPtrFromPtr,
+    Code,
     Drop,
     Destruct,
     AsyncDrop,
@@ -101,6 +104,7 @@ translate_lang_items!(
     Fn,
     FnMut,
     FnOnce,
+    FnStatic,
     AsyncFn,
     AsyncFnMut,
     AsyncFnOnce,
@@ -248,6 +252,7 @@ translate_lang_items!(
     FieldOffset,
     From,
     FromFn,
+    FnPtr,
 );
 
 /// Charon models only a subset of rustc's *parsed* attributes as `from_rustc::AttributeKind`;
@@ -316,9 +321,6 @@ impl TranslateCtx<'_> {
                 })
             }
             AttributeKind::RustcIntrinsic => Ok(from_rustc::AttributeKind::RustcIntrinsic),
-            AttributeKind::RustcTestEntrypointMarker => {
-                Ok(from_rustc::AttributeKind::RustcTestEntrypointMarker)
-            }
             AttributeKind::ShouldPanic { reason } => Ok(from_rustc::AttributeKind::ShouldPanic {
                 reason: (reason)
                     .as_ref()

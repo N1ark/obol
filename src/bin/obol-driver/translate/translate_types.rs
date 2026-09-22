@@ -243,14 +243,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     std::backtrace::Backtrace::force_capture()
                 ),
                 ty::TyKind::Bound(db, bound_ty) => {
-                    let id = TypeVarId::from_raw(bound_ty.var as usize);
+                    let id = TypeVarId::from_usize(bound_ty.var);
                     let ty = TyKind::TypeVar(TypeDbVar::Bound(DeBruijnId::new(db), id)).into_ty();
                     self.t_ctx.type_trans_cache.insert(mir_ty, ty.clone());
                     register_error!(self, span, "translate_ty got a bound type var: {:?}", ty);
                     return Ok(ty);
                 }
                 ty::TyKind::Param(ty) => {
-                    let id = TypeVarId::from_raw(ty.index as usize);
+                    let id = TypeVarId::from_raw(ty.index);
                     let ty = TyKind::TypeVar(TypeDbVar::Free(id)).into_ty();
                     self.t_ctx.type_trans_cache.insert(mir_ty, ty.clone());
                     register_error!(self, span, "translate_ty got a type parameter: {:?}", ty);
@@ -261,17 +261,17 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         };
 
         let kind = match ty {
-            ty::RigidTy::Bool => TyKind::Literal(LiteralTy::Bool),
-            ty::RigidTy::Char => TyKind::Literal(LiteralTy::Char),
-            ty::RigidTy::Int(int_ty) => {
-                TyKind::Literal(LiteralTy::Int(self.translate_int_ty(int_ty)))
-            }
-            ty::RigidTy::Uint(int_ty) => {
-                TyKind::Literal(LiteralTy::UInt(self.translate_uint_ty(int_ty)))
-            }
+            ty::RigidTy::Bool => TyKind::Scalar(ScalarTy::Bool),
+            ty::RigidTy::Char => TyKind::Scalar(ScalarTy::Char),
+            ty::RigidTy::Int(int_ty) => TyKind::Scalar(ScalarTy::Integer(IntegerTy::Signed(
+                self.translate_int_ty(int_ty),
+            ))),
+            ty::RigidTy::Uint(int_ty) => TyKind::Scalar(ScalarTy::Integer(IntegerTy::Unsigned(
+                self.translate_uint_ty(int_ty),
+            ))),
             ty::RigidTy::Float(float_ty) => {
                 use ty::FloatTy;
-                TyKind::Literal(LiteralTy::Float(match float_ty {
+                TyKind::Scalar(ScalarTy::Float(match float_ty {
                     FloatTy::F16 => charon_lib::ast::types::FloatTy::F16,
                     FloatTy::F32 => charon_lib::ast::types::FloatTy::F32,
                     FloatTy::F64 => charon_lib::ast::types::FloatTy::F64,
@@ -287,7 +287,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let def_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, item.def_id());
                 let builtin = (self.t_ctx.tcx.as_lang_item(def_id)
                     == Some(rustc_attr_ir::LangItem::OwnedBox))
-                .then_some(BuiltinTy::Box);
+                .then_some(BuiltinAdt::Box);
                 // no generics since it's monomorphic
                 let tref = TypeDeclRef::new(id, GenericArgs::empty(), builtin);
 
@@ -296,17 +296,17 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             }
             ty::RigidTy::Str => {
                 let id = self.register_str_decl_id(span);
-                let tref = TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinTy::Str));
+                let tref = TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinAdt::Str));
                 TyKind::Adt(tref)
             }
             ty::RigidTy::Array(ty, const_param) => {
                 let c = self.translate_tyconst_to_const_expr(span, const_param)?;
                 let ty = self.translate_ty(span, *ty)?;
-                TyKind::Array(ty, c)
+                TyKind::Array(ty, c, None)
             }
             ty::RigidTy::Slice(ty) => {
                 let ty = self.translate_ty(span, *ty)?;
-                TyKind::Slice(ty)
+                TyKind::Slice(ty, None)
             }
             ty::RigidTy::Ref(region, ty, mutability) => {
                 trace!("Ref");
@@ -332,10 +332,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     let fields = TupleTy::generic_fields(params.len());
                     let id = self.register_tuple_decl_id(span, mir_ty, fields);
                     let generics = GenericArgs::new_types(params.into());
-                    TypeDeclRef::new(id, generics, Some(BuiltinTy::Tuple))
+                    TypeDeclRef::new(id, generics, Some(BuiltinAdt::Tuple))
                 } else {
                     let id = self.register_tuple_decl_id(span, mir_ty, params);
-                    TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinTy::Tuple))
+                    TypeDeclRef::new(id, GenericArgs::empty(), Some(BuiltinAdt::Tuple))
                 };
                 TyKind::Adt(tref)
             }
@@ -379,7 +379,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let instance = mir::mono::Instance::resolve(*item, args)?;
                 let fn_id = self.register_fun_decl_id(span, instance);
                 let fnref = RegionBinder::empty(FnPtr {
-                    kind: Box::new(FnPtrKind::Fun(FunId::Regular(fn_id))),
+                    kind: Box::new(FnPtrKind::Fun(fn_id)),
                     generics: Box::new(GenericArgs::empty()),
                 });
                 TyKind::FnDef(fnref)
@@ -538,7 +538,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 
         fn translate_variant_layout(
             variant_layout: &r_abi::VariantLayout<r_abi::FieldIdx>,
-            tagger: Vec<(u64, ScalarValue)>,
+            tagger: Vec<(u64, IntegerValue)>,
         ) -> Option<VariantLayout> {
             let field_offsets = variant_layout
                 .field_offsets
@@ -547,14 +547,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 .collect();
             Some(VariantLayout {
                 field_offsets,
-                uninhabited: variant_layout.is_uninhabited(),
+                inhabited: inhabited_predicate(!variant_layout.is_uninhabited()),
                 tagger,
             })
         }
 
         fn translate_layout_data(
             variant_layout: &r_abi::LayoutData<r_abi::FieldIdx, r_abi::VariantIdx>,
-            tagger: Vec<(u64, ScalarValue)>,
+            tagger: Vec<(u64, IntegerValue)>,
         ) -> Option<VariantLayout> {
             let field_offsets = match &variant_layout.fields {
                 r_abi::FieldsShape::Arbitrary { offsets, .. } => {
@@ -566,9 +566,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             };
             Some(VariantLayout {
                 field_offsets,
-                uninhabited: variant_layout.is_uninhabited(),
+                inhabited: inhabited_predicate(!variant_layout.is_uninhabited()),
                 tagger,
             })
+        }
+
+        // Obol only handles monomorphic code, so inhabitedness is always known.
+        fn inhabited_predicate(inhabited: bool) -> InhabitedPredicate {
+            if inhabited {
+                InhabitedPredicate::mk_true()
+            } else {
+                InhabitedPredicate::mk_false()
+            }
         }
 
         fn translate_primitive_int(int_ty: r_abi::Integer, signed: bool) -> IntegerTy {
@@ -607,8 +616,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         let ty = rustc_public::rustc_internal::internal(self.t_ctx.tcx, ty);
 
         let (size, align) = (
-            SizeExpr::new(layout.size().bytes()),
-            SizeExpr::new(layout.align().abi.bytes()),
+            Size::new(layout.size().bytes()),
+            Size::new(layout.align().abi.bytes()),
         );
         let ptr_size = self
             .t_ctx
@@ -652,10 +661,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         .tag_for_variant(ty_env.as_query_input((ty, id)))
                         .map(|s| match tag_ty {
                             IntegerTy::Signed(int_ty) => {
-                                ScalarValue::from_int(ptr_size, int_ty, s.to_int(tag_size)).unwrap()
+                                IntegerValue::from_int(ptr_size, int_ty, s.to_int(tag_size))
+                                    .unwrap()
                             }
                             IntegerTy::Unsigned(uint_ty) => {
-                                ScalarValue::from_uint(ptr_size, uint_ty, s.to_uint(tag_size))
+                                IntegerValue::from_uint(ptr_size, uint_ty, s.to_uint(tag_size))
                                     .unwrap()
                             }
                         })
@@ -721,14 +731,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         };
                         match niche {
                             Some((lo, hi)) if lo == valid.start && hi < valid.end => {
-                                let range = ScalarValue::from_bits(tag_ty, hi + 1)
-                                    ..=ScalarValue::from_bits(tag_ty, valid.end);
+                                let range = IntegerValue::from_bits(tag_ty, hi + 1)
+                                    ..=IntegerValue::from_bits(tag_ty, valid.end);
                                 children.push((range, untagged));
                                 Discriminator::Invalid
                             }
                             Some((lo, hi)) if hi == valid.end && lo > valid.start => {
-                                let range = ScalarValue::from_bits(tag_ty, valid.start)
-                                    ..=ScalarValue::from_bits(tag_ty, lo - 1);
+                                let range = IntegerValue::from_bits(tag_ty, valid.start)
+                                    ..=IntegerValue::from_bits(tag_ty, lo - 1);
                                 children.insert(0, (range, untagged));
                                 Discriminator::Invalid
                             }
@@ -777,7 +787,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             size,
             align,
             discriminator,
-            uninhabited: layout.is_uninhabited(),
+            inhabited: inhabited_predicate(!layout.is_uninhabited()),
             variant_layouts,
             repr,
         })
@@ -802,12 +812,12 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         let explicit_discr_type = repr.int.map(|int_ty| {
             use rustc_public::abi::{IntegerLength, IntegerType};
             match int_ty {
-                IntegerType::Pointer { is_signed: true } => LiteralTy::Int(IntTy::Isize),
-                IntegerType::Pointer { is_signed: false } => LiteralTy::UInt(UIntTy::Usize),
+                IntegerType::Pointer { is_signed: true } => IntegerTy::Signed(IntTy::Isize),
+                IntegerType::Pointer { is_signed: false } => IntegerTy::Unsigned(UIntTy::Usize),
                 IntegerType::Fixed {
                     length,
                     is_signed: true,
-                } => LiteralTy::Int(match length {
+                } => IntegerTy::Signed(match length {
                     IntegerLength::I8 => IntTy::I8,
                     IntegerLength::I16 => IntTy::I16,
                     IntegerLength::I32 => IntTy::I32,
@@ -817,7 +827,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 IntegerType::Fixed {
                     length,
                     is_signed: false,
-                } => LiteralTy::UInt(match length {
+                } => IntegerTy::Unsigned(match length {
                     IntegerLength::I8 => UIntTy::U8,
                     IntegerLength::I16 => UIntTy::U16,
                     IntegerLength::I32 => UIntTy::U32,
@@ -920,13 +930,13 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let discr = adt.discriminant_for_variant(ty::VariantIdx::to_val(i));
 
                 let ty = self.translate_ty(def_span, discr.ty)?;
-                let lit_ty = ty.kind().as_literal().unwrap();
-                match Literal::from_bits(lit_ty, discr.val) {
-                    Some(lit) => lit,
+                let scalar_ty = ty.kind().as_scalar().unwrap();
+                match scalar_ty.as_integer() {
+                    Some(int_ty) => IntegerValue::from_bits(*int_ty, discr.val),
                     None => raise_error!(self, def_span, "unexpected discriminant type: {ty:?}",),
                 }
             } else {
-                Literal::Scalar(ScalarValue::Unsigned(UIntTy::U8, 0))
+                IntegerValue::Unsigned(UIntTy::U8, 0)
             };
 
             let mut variant = Variant {

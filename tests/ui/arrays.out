@@ -25,14 +25,8 @@ pub enum Result::<(), Error> {
   Err { _0: Error },
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -71,9 +65,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 struct str {
@@ -81,7 +81,7 @@ struct str {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -1871,7 +1871,7 @@ pub fn const_array() -> [u32; 2usize]
 
     bb0: {
         storage_live(_0);
-        _0 = [const 0u32; 2usize];
+        _0 = [const 0u32, const 0u32];
         return;
     }
 }
@@ -1932,7 +1932,7 @@ pub fn take_all()
         storage_live(_0);
         _0 = ();
         storage_live(x);
-        x = [const 0u32; 2usize];
+        x = [const 0u32, const 0u32];
         storage_live(_2);
         storage_live(_3);
         _3 = copy x;
@@ -2125,7 +2125,7 @@ pub fn index_all() -> u32
         storage_live(_21);
         storage_live(_26);
         storage_live(x);
-        x = [const 0u32; 2usize];
+        x = [const 0u32, const 0u32];
         storage_live(_2);
         _2 = const true;
         if move _2 -> bb1 else -> bb2;
@@ -2133,7 +2133,7 @@ pub fn index_all() -> u32
 
     bb1: {
         storage_live(_y);
-        _y = [const 0u32; 2usize];
+        _y = [const 0u32, const 0u32];
         storage_dead(_y);
         goto bb3;
     }
@@ -2324,7 +2324,7 @@ pub fn update_all()
         storage_live(_0);
         _0 = ();
         storage_live(x);
-        x = [const 0u32; 2usize];
+        x = [const 0u32, const 0u32];
         storage_live(_2);
         storage_live(_3);
         _3 = copy x;
@@ -2408,7 +2408,7 @@ pub fn range_all()
         storage_live(_0);
         _0 = ();
         storage_live(x);
-        x = [const 0u32; 4usize];
+        x = [const 0u32, const 0u32, const 0u32, const 0u32];
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
@@ -2997,7 +2997,7 @@ pub fn ite()
         storage_live(_0);
         _0 = ();
         storage_live(x);
-        x = [const 0u32; 2usize];
+        x = [const 0u32, const 0u32];
         storage_live(_2);
         _2 = const true;
         if move _2 -> bb1 else -> bb2;
@@ -3005,7 +3005,7 @@ pub fn ite()
 
     bb1: {
         storage_live(y);
-        y = [const 0u32; 2usize];
+        y = [const 0u32, const 0u32];
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);

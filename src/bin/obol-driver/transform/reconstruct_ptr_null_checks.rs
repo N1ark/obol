@@ -48,15 +48,12 @@ struct LocalUsageCounter {
     counts: IndexVec<LocalId, usize>,
 }
 
-fn literal_is_zero(lit: &Literal) -> bool {
-    matches!(lit, Literal::Scalar(scalar) if scalar.to_bits() == 0)
+fn const_is_zero(c: &ConstantExprKind) -> bool {
+    matches!(c, ConstantExprKind::Integer(int) if int.to_bits() == 0)
 }
 
 fn operand_is_zero(op: &Operand) -> bool {
-    matches!(
-        op,
-        Operand::Const(c) if matches!(c.kind(), ConstantExprKind::Literal(lit) if literal_is_zero(lit))
-    )
+    matches!(op, Operand::Const(c) if const_is_zero(c.kind()))
 }
 
 fn operand_as_local(op: &Operand) -> Option<LocalId> {
@@ -100,8 +97,7 @@ fn feeds_null_check(block: &BlockData, local: LocalId) -> bool {
         && let SwitchScrutinee::Value(discr) = &data.scrutinee
         && data.fallback.is_some()
         && let [(case, _)] = data.branches.as_slice()
-        && let ConstantExprKind::Literal(lit) = case.kind()
-        && literal_is_zero(lit)
+        && const_is_zero(case.kind())
         && operand_as_local(discr) == Some(local)
     {
         return true;
@@ -134,8 +130,9 @@ fn match_transmuted_null_check(
         return None;
     };
     let result = place.as_local()?;
-    let TyKind::Literal(LiteralTy::UInt(UIntTy::Usize) | LiteralTy::Int(IntTy::Isize)) =
-        tgt_ty.kind()
+    let TyKind::Scalar(ScalarTy::Integer(
+        IntegerTy::Unsigned(UIntTy::Usize) | IntegerTy::Signed(IntTy::Isize),
+    )) = tgt_ty.kind()
     else {
         return None;
     };
@@ -194,7 +191,7 @@ impl UllbcPass for Transform {
             if !targets.contains(&result) {
                 return;
             }
-            let TyKind::Literal(tgt_lit_ty) = tgt_ty.kind() else {
+            let TyKind::Scalar(tgt_lit_ty) = tgt_ty.kind() else {
                 return;
             };
             let tgt_lit_ty = *tgt_lit_ty;
@@ -214,7 +211,7 @@ impl UllbcPass for Transform {
             ctx.insert_assn_stmt(
                 dest,
                 Rvalue::UnaryOp(
-                    UnOp::Cast(CastKind::Scalar(LiteralTy::Bool, tgt_lit_ty)),
+                    UnOp::Cast(CastKind::Scalar(ScalarTy::Bool, tgt_lit_ty)),
                     Operand::Move(tmp.clone()),
                 ),
             );

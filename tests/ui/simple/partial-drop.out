@@ -87,12 +87,6 @@ struct str {
 
 struct () {}
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -104,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -143,9 +137,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -565,7 +565,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
 pub struct Global {}
 
 // Full name: core::ptr::non_null::NonNull::<u32>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<u32> {
   pointer: *const u32 is !null,
 }
@@ -681,7 +681,7 @@ pub fn {impl Drop for Box::<_, _>}::drop::<u32, Global>(self: &'_ mut Box::<u32,
 
     bb3: {
         storage_live(_16);
-        _16 = ub_checks<bool>;
+        _16 = ub_checks;
         if move _16 -> bb5 else -> bb6;
     }
 
@@ -697,7 +697,7 @@ pub fn {impl Drop for Box::<_, _>}::drop::<u32, Global>(self: &'_ mut Box::<u32,
         alignment = transmute<usize, Alignment>(copy align);
         storage_dead(align);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb8 else -> bb9;
     }
 

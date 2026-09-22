@@ -1,3 +1,4 @@
+#![recursion_limit = "256"]
 #![feature(rustc_private)]
 #![feature(iterator_try_collect)]
 #![feature(iter_array_chunks)]

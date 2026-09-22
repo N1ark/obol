@@ -87,12 +87,6 @@ struct str {
 
 struct () {}
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -104,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -143,9 +137,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -511,7 +511,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
 
     bb3: {
         storage_live(_21);
-        _21 = ub_checks<bool>;
+        _21 = ub_checks;
         if move _21 -> bb5 else -> bb6;
     }
 
@@ -695,6 +695,14 @@ pub struct UsizeNoHighBit {
 #[lang_item(Drop)]
 trait Drop
 
+// Full name: core::option::Option::<u8>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<u8> {
+  None,
+  Some { _0: u8 },
+}
+
 struct (_, _)::<NonNull::<u8>, Layout> {
   _0: NonNull::<u8>,
   _1: Layout,
@@ -706,14 +714,6 @@ struct (_, _)::<NonNull::<u8>, Layout> {
 pub enum Option::<(NonNull::<u8>, Layout)> {
   None,
   Some { _0: (NonNull::<u8>, Layout) },
-}
-
-// Full name: core::option::Option::<u8>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<u8> {
-  None,
-  Some { _0: u8 },
 }
 
 // Full name: core::option::Option::Some::<u8>
@@ -745,6 +745,20 @@ pub struct PanicInfo::<'_> {
   location: &'_ Location::<'_>,
   can_unwind: bool,
   force_no_backtrace: bool,
+}
+
+// Full name: core::ptr::drop_glue::<[u8]>
+#[lang_item(DropGlue)]
+fn drop_glue::<[u8]>(_1: &'_ mut [u8])
+{
+    let _0: (); // return
+    let _1: &'_ mut [u8]; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
+    }
 }
 
 // Full name: alloc::alloc::Global
@@ -787,20 +801,6 @@ pub struct String {
 struct Foo {
   _0: u32,
   _1: String,
-}
-
-// Full name: core::ptr::drop_glue::<[u8]>
-#[lang_item(DropGlue)]
-fn drop_glue::<[u8]>(_1: &'_ mut [u8])
-{
-    let _0: (); // return
-    let _1: &'_ mut [u8]; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
 }
 
 // Full name: alloc::vec::{impl Drop for Vec::<_, _>}::drop::<u8, Global>
@@ -910,7 +910,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         rhs = transmute<UsizeNoHighBit, usize>(copy self_8);
         storage_dead(self_8);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb6 else -> bb7;
     }
 
@@ -926,7 +926,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         _13 = copy elem_layout.align;
         align = transmute<Alignment, usize>(copy _13);
         storage_live(_18);
-        _18 = ub_checks<bool>;
+        _18 = ub_checks;
         if move _18 -> bb9 else -> bb10;
     }
 

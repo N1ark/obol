@@ -143,8 +143,8 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
         let convert_loc = |pos: rustc_span::BytePos| -> Loc {
             let loc = smap.lookup_char_pos(pos);
             Loc {
-                line: loc.line,
-                col: loc.col_display + 1,
+                line: loc.line as u32,
+                col: loc.col_display as u32 + 1,
             }
         };
         let beg = convert_loc(span.lo());
@@ -156,10 +156,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
     }
 
     pub(crate) fn translate_span_from_smir(&mut self, span: &ty::Span) -> Span {
-        Span {
-            data: self.translate_raw_span(span),
-            generated_from_span: None,
-        }
+        Span::new(self.translate_raw_span(span), None)
     }
 
     pub(crate) fn translate_span_from_rustc(&mut self, span: &rustc_span::Span) -> Span {
@@ -234,7 +231,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             disambiguator: 0,
         });
 
-        let disambiguator = Disambiguator::from_raw(last.disambiguator as usize);
+        let disambiguator = Disambiguator::from_raw(last.disambiguator);
         let extra = match last.data {
             DefPathData::CrateRoot => {
                 let krate = self.tcx.crate_name(internal.krate);
@@ -243,9 +240,13 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             DefPathData::ValueNs(sym) | DefPathData::TypeNs(sym) | DefPathData::MacroNs(sym) => {
                 Some(PathElem::Ident(sym.to_string(), disambiguator))
             }
-            DefPathData::Closure => Some(PathElem::Ident("closure".to_string(), disambiguator)),
-            DefPathData::Use => Some(PathElem::Ident("{use}".to_string(), disambiguator)),
-            DefPathData::AnonConst => Some(PathElem::Ident("{const}".to_string(), disambiguator)),
+            DefPathData::Closure => {
+                Some(PathElem::Builtin(BuiltinPathElem::Closure, disambiguator))
+            }
+            DefPathData::Use => Some(PathElem::Builtin(BuiltinPathElem::Use, disambiguator)),
+            DefPathData::AnonConst => {
+                Some(PathElem::Builtin(BuiltinPathElem::AnonConst, disambiguator))
+            }
 
             DefPathData::Impl => {
                 let kind = self.tcx.def_kind(internal);
@@ -281,7 +282,8 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             | DefPathData::OpaqueLifetime(_)
             | DefPathData::AnonAssocTy(_)
             | DefPathData::NestedStatic
-            | DefPathData::SyntheticCoroutineBody => {
+            | DefPathData::SyntheticCoroutineBody
+            | DefPathData::TestBinderConstraints => {
                 unreachable!("unexpected def path data")
             }
         };
@@ -313,25 +315,27 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 // Builtins belong to no crate; they're named after themselves. The tuple's
                 // elements are appended below, as for any other monomorphized item.
                 TransItemSource::Tuple(tuple) => Name {
-                    name: vec![PathElem::Builtin(BuiltinPathElem::Tuple(
-                        tuple.fields.len(),
-                    ))],
+                    name: vec![PathElem::Builtin(
+                        BuiltinPathElem::Tuple(tuple.fields.len()),
+                        Disambiguator::ZERO,
+                    )],
                 },
                 TransItemSource::Str => Name {
-                    name: vec![PathElem::Builtin(BuiltinPathElem::Str)],
+                    name: vec![PathElem::Builtin(BuiltinPathElem::Str, Disambiguator::ZERO)],
                 },
                 _ => unreachable!("Item source without def_id: {src:?}"),
             }
         };
 
         match src {
-            TransItemSource::Closure(..) => name
-                .name
-                .push(PathElem::Ident("closure".into(), Disambiguator::ZERO)),
-            TransItemSource::ClosureAsFn(..) => {
-                name.name
-                    .push(PathElem::Ident("closure_as_fn".into(), Disambiguator::ZERO));
-            }
+            TransItemSource::Closure(..) => name.name.push(PathElem::Builtin(
+                BuiltinPathElem::Closure,
+                Disambiguator::ZERO,
+            )),
+            TransItemSource::ClosureAsFn(..) => name.name.push(PathElem::Builtin(
+                BuiltinPathElem::ClosureAsFn,
+                Disambiguator::ZERO,
+            )),
             TransItemSource::Fun(_)
             | TransItemSource::Type(..)
             | TransItemSource::NamedConst(..) => 'add_generics: {
@@ -398,7 +402,10 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     ))));
                 name.name.splice(
                     0..0,
-                    [PathElem::Ident("{vtable}".into(), Disambiguator::ZERO)],
+                    [PathElem::Builtin(
+                        BuiltinPathElem::VTable,
+                        Disambiguator::ZERO,
+                    )],
                 );
             }
             _ => {}

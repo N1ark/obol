@@ -87,12 +87,6 @@ struct str {
 
 struct () {}
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -104,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -143,9 +137,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -459,10 +459,6 @@ pub struct AllocError {}
 // Full name: core::alloc::Allocator
 trait Allocator
 
-// Full name: core::convert::Infallible
-pub enum Infallible {
-}
-
 // Full name: core::fmt::Arguments::<'_>
 #[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
@@ -632,34 +628,34 @@ pub const MAX: f32 = 3.40282347E+38f32
 // Full name: core::f64::{f64}::MIN
 pub const MIN: f64 = -1.7976931348623157E+308f64
 
-// Full name: core::result::Result::<Infallible, AllocError>
+// Full name: core::result::Result::<!, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<Infallible, AllocError> {
-  Ok { _0: Infallible },
+pub enum Result::<!, AllocError> {
+  Ok { _0: ! },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<Infallible, AllocError> },
+  Break { _0: Result::<!, AllocError> },
 }
 
 // Full name: core::ops::drop::Drop
 #[lang_item(Drop)]
 trait Drop
 
-struct test_crate::fn_casts::closure::closure {}
+struct test_crate::fn_casts::{closure}::{closure} {}
 
 struct (_,)::<u8> {
   _0: u8,
 }
 
-fn test_crate::fn_casts::closure::<i8, extern "rust-call" fn((u8,)), ()>(_1: &'_ test_crate::fn_casts::closure::closure, spread_args: (u8,))
+fn test_crate::fn_casts::{closure}::<i8, extern "rust-call" fn((u8,)), ()>(_1: &'_ test_crate::fn_casts::{closure}::{closure}, spread_args: (u8,))
 {
     let _0: (); // return
-    let _1: &'_ test_crate::fn_casts::closure::closure; // arg #1
+    let _1: &'_ test_crate::fn_casts::{closure}::{closure}; // arg #1
     let spread_args: (u8,); // arg #2
     let _3: u8; // anonymous local
 
@@ -673,20 +669,20 @@ fn test_crate::fn_casts::closure::<i8, extern "rust-call" fn((u8,)), ()>(_1: &'_
     }
 }
 
-// Full name: core::ops::function::FnOnce::call_once::<test_crate::fn_casts::closure::closure, (u8,)>
-pub fn call_once::<test_crate::fn_casts::closure::closure, (u8,)>(_1: test_crate::fn_casts::closure::closure, _2: (u8,))
+// Full name: core::ops::function::FnOnce::call_once::<test_crate::fn_casts::{closure}::{closure}, (u8,)>
+pub fn call_once::<test_crate::fn_casts::{closure}::{closure}, (u8,)>(_1: test_crate::fn_casts::{closure}::{closure}, _2: (u8,))
 {
     let _0: (); // return
-    let _1: test_crate::fn_casts::closure::closure; // arg #1
+    let _1: test_crate::fn_casts::{closure}::{closure}; // arg #1
     let _2: (u8,); // arg #2
-    let _3: &'_ mut test_crate::fn_casts::closure::closure; // anonymous local
+    let _3: &'_ mut test_crate::fn_casts::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         _0 = ();
         _3 = &mut _1;
-        _0 = test_crate::fn_casts::closure::<i8, extern "rust-call" fn((u8,)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
+        _0 = test_crate::fn_casts::{closure}::<i8, extern "rust-call" fn((u8,)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -729,7 +725,7 @@ pub struct PanicInfo::<'_> {
 pub struct Global {}
 
 // Full name: core::ptr::non_null::NonNull::<i32>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<i32> {
   pointer: *const i32 is !null,
 }
@@ -845,7 +841,7 @@ pub fn drop::<i32, Global>(self: &'_ mut Box::<i32, Global>)
 
     bb3: {
         storage_live(_16);
-        _16 = ub_checks<bool>;
+        _16 = ub_checks;
         if move _16 -> bb5 else -> bb6;
     }
 
@@ -861,7 +857,7 @@ pub fn drop::<i32, Global>(self: &'_ mut Box::<i32, Global>)
         alignment = transmute<usize, Alignment>(copy align);
         storage_dead(align);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb8 else -> bb9;
     }
 
@@ -942,7 +938,7 @@ fn drop_glue::<Box::<i32, Global>>(_1: &'_ mut Box::<i32, Global>)
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8]>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
@@ -1067,10 +1063,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<Infallible, AllocError>; // anonymous local
+    let _10: Result::<!, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -1135,7 +1131,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         ptr_14 = *mut  (copy self_15, const 0usize);
         storage_dead(self_15);
         storage_live(_35);
-        _35 = ub_checks<bool>;
+        _35 = ub_checks;
         if move _35 -> bb3 else -> bb4;
     }
 
@@ -1261,7 +1257,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     bb21: {
         storage_live(_23);
         storage_live(_37);
-        _37 = ub_checks<bool>;
+        _37 = ub_checks;
         if move _37 -> bb24 else -> bb25;
     }
 
@@ -1300,10 +1296,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);
@@ -1312,7 +1308,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         ptr_29 = *mut  (copy self_30, copy size);
         storage_dead(self_30);
         storage_live(_38);
-        _38 = ub_checks<bool>;
+        _38 = ub_checks;
         if move _38 -> bb28 else -> bb29;
     }
 
@@ -1678,13 +1674,13 @@ fn ptr_casts()
     }
 }
 
-// Full name: test_crate::fn_casts::closure::closure_as_fn
-fn closure_as_fn(arg1: u8)
+// Full name: test_crate::fn_casts::{closure}::{as_fn}
+fn {as_fn}(arg1: u8)
 {
     let _0: (); // return
     let arg1: u8; // arg #1
     let args: (u8,); // local
-    let state: test_crate::fn_casts::closure::closure; // local
+    let state: test_crate::fn_casts::{closure}::{closure}; // local
 
     bb0: {
         storage_live(_0);
@@ -1692,8 +1688,8 @@ fn closure_as_fn(arg1: u8)
         storage_live(state);
         _0 = ();
         args = (move arg1,);
-        state = test_crate::fn_casts::closure::closure {  };
-        _0 = call_once::<test_crate::fn_casts::closure::closure, (u8,)>(move state, move args) -> bb1 (unwind: bb2);
+        state = test_crate::fn_casts::{closure}::{closure} {  };
+        _0 = call_once::<test_crate::fn_casts::{closure}::{closure}, (u8,)>(move state, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -1736,11 +1732,11 @@ fn fn_casts()
     let _0: (); // return
     let _1: fn(); // anonymous local
     let _2: unsafe fn(); // anonymous local
-    let closure: test_crate::fn_casts::closure::closure; // local
+    let closure: test_crate::fn_casts::{closure}::{closure}; // local
     let _4: fn(u8); // anonymous local
-    let _5: test_crate::fn_casts::closure::closure; // anonymous local
+    let _5: test_crate::fn_casts::{closure}::{closure}; // anonymous local
     let _6: unsafe fn(u8); // anonymous local
-    let _7: test_crate::fn_casts::closure::closure; // anonymous local
+    let _7: test_crate::fn_casts::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1752,17 +1748,17 @@ fn fn_casts()
         _2 = cast<bar, unsafe fn()>(const bar);
         storage_dead(_2);
         storage_live(closure);
-        closure = test_crate::fn_casts::closure::closure {  };
+        closure = test_crate::fn_casts::{closure}::{closure} {  };
         storage_live(_4);
         storage_live(_5);
         _5 = copy closure;
-        _4 = cast<closure_as_fn, fn(u8)>(const closure_as_fn);
+        _4 = cast<{as_fn}, fn(u8)>(const {as_fn});
         storage_dead(_5);
         storage_dead(_4);
         storage_live(_6);
         storage_live(_7);
         _7 = copy closure;
-        _6 = cast<closure_as_fn, unsafe fn(u8)>(const closure_as_fn);
+        _6 = cast<{as_fn}, unsafe fn(u8)>(const {as_fn});
         storage_dead(_7);
         storage_dead(_6);
         _0 = ();

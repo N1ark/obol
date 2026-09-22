@@ -87,12 +87,6 @@ struct str {
 
 struct () {}
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -104,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -143,9 +137,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -512,7 +512,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
 
     bb3: {
         storage_live(_21);
-        _21 = ub_checks<bool>;
+        _21 = ub_checks;
         if move _21 -> bb5 else -> bb6;
     }
 
@@ -980,7 +980,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         rhs = transmute<UsizeNoHighBit, usize>(copy self_8);
         storage_dead(self_8);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb6 else -> bb7;
     }
 
@@ -996,7 +996,7 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
         _13 = copy elem_layout.align;
         align = transmute<Alignment, usize>(copy _13);
         storage_live(_18);
-        _18 = ub_checks<bool>;
+        _18 = ub_checks;
         if move _18 -> bb9 else -> bb10;
     }
 
@@ -1274,8 +1274,105 @@ fn drop_glue::<String>(_1: &'_ mut String)
     }
 }
 
+// Full name: core::ptr::drop_glue::<[String]>
+#[lang_item(DropGlue)]
+fn drop_glue::<[String]>(_1: &'_ mut [String])
+{
+    let _0: (); // return
+    let _1: &'_ mut [String]; // arg #1
+    let _2: usize; // anonymous local
+    let _3: usize; // anonymous local
+    let _4: *mut String; // anonymous local
+    let _5: bool; // anonymous local
+    let _6: *mut String; // anonymous local
+    let _7: bool; // anonymous local
+    let _8: *mut String; // anonymous local
+    let _9: (); // anonymous local
+    let _10: *mut String; // anonymous local
+    let _11: (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_8);
+        storage_live(_9);
+        storage_live(_10);
+        storage_live(_11);
+        _0 = ();
+        _2 = copy _1.metadata;
+        _3 = const 0usize;
+        goto bb1;
+    }
+
+    bb1: {
+        _7 = copy _3 == copy _2;
+        if move _7 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        return;
+    }
+
+    bb3: {
+        _6 = &raw mut (*_1)[copy _3];
+        _3 = move _3 wrap.+ const 1usize;
+        _8 = &raw mut (*_6);
+        _9 = drop_glue::<String>(move _8) -> bb1 (unwind: bb4);
+    }
+
+    bb4: {
+        _5 = copy _3 == copy _2;
+        if move _5 -> bb5 else -> bb6;
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        _4 = &raw mut (*_1)[copy _3];
+        _3 = move _3 wrap.+ const 1usize;
+        _10 = &raw mut (*_4);
+        _11 = drop_glue::<String>(move _10) -> bb4 (unwind: bb7);
+    }
+
+    bb7: {
+        unwind_terminate;
+    }
+}
+
+// Full name: core::ptr::drop_glue::<[String; 4usize]>
+#[lang_item(DropGlue)]
+fn drop_glue::<[String; 4usize]>(_1: &'_ mut [String; 4usize])
+{
+    let _0: (); // return
+    let _1: &'_ mut [String; 4usize]; // arg #1
+    let _2: &'_ mut [String]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _0 = ();
+        _2 = unsize_cast<&'_ mut [String; 4usize], &'_ mut [String], 4usize>(move _1);
+        _0 = drop_glue::<[String]>(move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
 // Full name: core::ptr::non_null::NonNull::<[String]>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<[String]> {
   pointer: *const [String] is !null,
 }
@@ -1348,7 +1445,7 @@ pub fn {impl Drop for Box::<_, _>}::drop::<[String], Global>(self: &'_ mut Box::
 
     bb3: {
         storage_live(_16);
-        _16 = ub_checks<bool>;
+        _16 = ub_checks;
         if move _16 -> bb5 else -> bb6;
     }
 
@@ -1364,7 +1461,7 @@ pub fn {impl Drop for Box::<_, _>}::drop::<[String], Global>(self: &'_ mut Box::
         alignment = transmute<usize, Alignment>(copy align);
         storage_dead(align);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb8 else -> bb9;
     }
 
@@ -1411,78 +1508,6 @@ pub fn {impl Drop for Box::<_, _>}::drop::<[String], Global>(self: &'_ mut Box::
 
     bb14: {
         unwind_continue;
-    }
-}
-
-// Full name: core::ptr::drop_glue::<[String]>
-#[lang_item(DropGlue)]
-fn drop_glue::<[String]>(_1: &'_ mut [String])
-{
-    let _0: (); // return
-    let _1: &'_ mut [String]; // arg #1
-    let _2: usize; // anonymous local
-    let _3: usize; // anonymous local
-    let _4: *mut String; // anonymous local
-    let _5: bool; // anonymous local
-    let _6: *mut String; // anonymous local
-    let _7: bool; // anonymous local
-    let _8: *mut String; // anonymous local
-    let _9: (); // anonymous local
-    let _10: *mut String; // anonymous local
-    let _11: (); // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_8);
-        storage_live(_9);
-        storage_live(_10);
-        storage_live(_11);
-        _0 = ();
-        _2 = copy _1.metadata;
-        _3 = const 0usize;
-        goto bb1;
-    }
-
-    bb1: {
-        _7 = copy _3 == copy _2;
-        if move _7 -> bb2 else -> bb3;
-    }
-
-    bb2: {
-        return;
-    }
-
-    bb3: {
-        _6 = &raw mut (*_1)[copy _3];
-        _3 = move _3 wrap.+ const 1usize;
-        _8 = &raw mut (*_6);
-        _9 = drop_glue::<String>(move _8) -> bb1 (unwind: bb4);
-    }
-
-    bb4: {
-        _5 = copy _3 == copy _2;
-        if move _5 -> bb5 else -> bb6;
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
-        _4 = &raw mut (*_1)[copy _3];
-        _3 = move _3 wrap.+ const 1usize;
-        _10 = &raw mut (*_4);
-        _11 = drop_glue::<String>(move _10) -> bb4 (unwind: bb7);
-    }
-
-    bb7: {
-        unwind_terminate;
     }
 }
 
@@ -1597,31 +1622,6 @@ fn drop_glue::<(String, String)>(_1: &'_ mut (String, String))
 
     bb6: {
         unwind_terminate;
-    }
-}
-
-// Full name: core::ptr::drop_glue::<[String; 4usize]>
-#[lang_item(DropGlue)]
-fn drop_glue::<[String; 4usize]>(_1: &'_ mut [String; 4usize])
-{
-    let _0: (); // return
-    let _1: &'_ mut [String; 4usize]; // arg #1
-    let _2: &'_ mut [String]; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        _0 = ();
-        _2 = unsize_cast<&'_ mut [String; 4usize], &'_ mut [String], 4usize>(move _1);
-        _0 = drop_glue::<[String]>(move _2) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
     }
 }
 

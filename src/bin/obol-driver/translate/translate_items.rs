@@ -357,7 +357,7 @@ impl ItemTransCtx<'_, '_> {
         if tuple.is_generic() {
             generics.types = (0..fields.len())
                 .map(|i| TypeParam {
-                    index: TypeVarId::from_raw(i),
+                    index: TypeVarId::from_usize(i),
                     name: format!("T{i}"),
                     variance: Variance::Unknown,
                 })
@@ -368,7 +368,7 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics,
             kind: TypeDeclKind::Struct(fields),
-            src: TypeSource::Builtin(BuiltinTy::Tuple),
+            src: TypeSource::Builtin(BuiltinAdt::Tuple),
             layout,
             ptr_metadata,
         })
@@ -381,13 +381,13 @@ impl ItemTransCtx<'_, '_> {
         item_meta: ItemMeta,
     ) -> Result<TypeDecl, Error> {
         let span = item_meta.span;
-        let u8_ty = TyKind::Literal(LiteralTy::UInt(UIntTy::U8)).into_ty();
+        let u8_ty = TyKind::Scalar(ScalarTy::Integer(IntegerTy::Unsigned(UIntTy::U8))).into_ty();
         let fields: IndexVec<FieldId, Field> = [Field {
             span,
             attr_info: AttrInfo::dummy_public(),
             name: "_0".to_string(),
             is_positional: true,
-            ty: Ty::mk_slice(u8_ty),
+            ty: Ty::mk_slice(u8_ty, None),
         }]
         .into_iter()
         .collect();
@@ -404,7 +404,7 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics: GenericParams::empty(),
             kind: TypeDeclKind::Struct(fields),
-            src: TypeSource::Builtin(BuiltinTy::Str),
+            src: TypeSource::Builtin(BuiltinAdt::Str),
             layout,
             ptr_metadata: PtrMetadata::Length,
         })
@@ -460,7 +460,7 @@ impl ItemTransCtx<'_, '_> {
         ConstantExpr::new(
             ConstantExprKind::Call(
                 FnPtr {
-                    kind: Box::new(FnPtrKind::Fun(FunId::Regular(init))),
+                    kind: Box::new(FnPtrKind::Fun(init)),
                     generics: Box::new(GenericArgs::empty()),
                 },
                 vec![],
@@ -709,7 +709,7 @@ impl ItemTransCtx<'_, '_> {
             match param.kind {
                 GenericParamDefKind::Lifetime => {
                     while params.regions.len() < index {
-                        let i = RegionId::from_raw(params.regions.len());
+                        let i = RegionId::from_usize(params.regions.len());
                         params.regions.push(RegionParam {
                             index: i,
                             name: None,
@@ -718,7 +718,7 @@ impl ItemTransCtx<'_, '_> {
                         });
                     }
                     params.regions.push(RegionParam {
-                        index: RegionId::from_raw(index),
+                        index: RegionId::from_usize(index),
                         name: Some(name),
                         variance: Variance::Unknown,
                         mutability: LifetimeMutability::Unknown,
@@ -726,7 +726,7 @@ impl ItemTransCtx<'_, '_> {
                 }
                 GenericParamDefKind::Type { .. } => {
                     while params.types.len() < index {
-                        let i = TypeVarId::from_raw(params.types.len());
+                        let i = TypeVarId::from_usize(params.types.len());
                         params.types.push(TypeParam {
                             index: i,
                             name: "_".to_string(),
@@ -734,14 +734,14 @@ impl ItemTransCtx<'_, '_> {
                         });
                     }
                     params.types.push(TypeParam {
-                        index: TypeVarId::from_raw(index),
+                        index: TypeVarId::from_usize(index),
                         name,
                         variance: Variance::Unknown,
                     });
                 }
                 GenericParamDefKind::Const { .. } => {
                     while params.const_generics.len() < index {
-                        let i = ConstGenericVarId::from_raw(params.const_generics.len());
+                        let i = ConstGenericVarId::from_usize(params.const_generics.len());
                         params.const_generics.push(ConstGenericParam {
                             index: i,
                             name: "_".to_string(),
@@ -749,7 +749,7 @@ impl ItemTransCtx<'_, '_> {
                         });
                     }
                     params.const_generics.push(ConstGenericParam {
-                        index: ConstGenericVarId::from_raw(index),
+                        index: ConstGenericVarId::from_usize(index),
                         name,
                         ty: placeholder_ty(),
                     });

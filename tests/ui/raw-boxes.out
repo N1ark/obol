@@ -87,12 +87,6 @@ struct str {
 
 struct () {}
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[diagnostic_item("NonNull")]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -104,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -143,9 +137,15 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -459,10 +459,6 @@ pub struct AllocError {}
 // Full name: core::alloc::Allocator
 trait Allocator
 
-// Full name: core::convert::Infallible
-pub enum Infallible {
-}
-
 // Full name: core::fmt::Arguments::<'_>
 #[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
@@ -626,18 +622,18 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
 // Full name: core::mem::SizedTypeProperties::LAYOUT::<i32>
 pub const LAYOUT::<i32>: Layout = Layout { size: 4usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl2 {  } } }
 
-// Full name: core::result::Result::<Infallible, AllocError>
+// Full name: core::result::Result::<!, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<Infallible, AllocError> {
-  Ok { _0: Infallible },
+pub enum Result::<!, AllocError> {
+  Ok { _0: ! },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<Infallible, AllocError> },
+  Break { _0: Result::<!, AllocError> },
 }
 
 // Full name: core::ops::drop::Drop
@@ -675,7 +671,7 @@ pub struct PanicInfo::<'_> {
 pub struct Global {}
 
 // Full name: core::ptr::non_null::NonNull::<i32>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<i32> {
   pointer: *const i32 is !null,
 }
@@ -791,7 +787,7 @@ pub fn drop::<i32, Global>(self: &'_ mut Box::<i32, Global>)
 
     bb3: {
         storage_live(_16);
-        _16 = ub_checks<bool>;
+        _16 = ub_checks;
         if move _16 -> bb5 else -> bb6;
     }
 
@@ -807,7 +803,7 @@ pub fn drop::<i32, Global>(self: &'_ mut Box::<i32, Global>)
         alignment = transmute<usize, Alignment>(copy align);
         storage_dead(align);
         storage_live(_17);
-        _17 = ub_checks<bool>;
+        _17 = ub_checks;
         if move _17 -> bb8 else -> bb9;
     }
 
@@ -888,7 +884,7 @@ fn drop_glue::<Box::<i32, Global>>(_1: &'_ mut Box::<i32, Global>)
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8]>
-#[diagnostic_item("NonNull")]
+#[lang_item(NonNull)]
 pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
@@ -1013,10 +1009,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<Infallible, AllocError>; // anonymous local
+    let _10: Result::<!, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -1081,7 +1077,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         ptr_14 = *mut  (copy self_15, const 0usize);
         storage_dead(self_15);
         storage_live(_35);
-        _35 = ub_checks<bool>;
+        _35 = ub_checks;
         if move _35 -> bb3 else -> bb4;
     }
 
@@ -1207,7 +1203,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     bb21: {
         storage_live(_23);
         storage_live(_37);
-        _37 = ub_checks<bool>;
+        _37 = ub_checks;
         if move _37 -> bb24 else -> bb25;
     }
 
@@ -1246,10 +1242,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);
@@ -1258,7 +1254,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         ptr_29 = *mut  (copy self_30, copy size);
         storage_dead(self_30);
         storage_live(_38);
-        _38 = ub_checks<bool>;
+        _38 = ub_checks;
         if move _38 -> bb28 else -> bb29;
     }
 
@@ -1474,7 +1470,7 @@ pub fn from_raw::<i32>(raw: *mut i32) -> Box::<i32, Global>
         storage_live(_2);
         storage_live(_3);
         storage_live(_6);
-        _6 = ub_checks<bool>;
+        _6 = ub_checks;
         if move _6 -> bb1 else -> bb2;
     }
 
