@@ -1,10 +1,15 @@
-//! `obol setup`: build the sysroot Obol compiles crates against.
+//! The sysroot Obol compiles crates against (for `obol cargo` and `obol rustc`, unless
+//! `--sysroot` says otherwise).
 //!
 //! The standard library shipped with the toolchain is compiled with optimized MIR (and no MIR at
 //! all for some items), which is not what we want to translate. Like `cargo miri setup`, we
 //! instead build the standard library from the toolchain's `rust-src` with Obol's MIR options
 //! (see [`obol_lib::mir_options`]). Unlike Miri, this is the production standard library: no
 //! `--cfg miri`.
+//!
+//! The sysroot is built on first use and cached per toolchain and target. Concurrent Obol runs
+//! serialize the build with a lock file, and a cached sysroot that is incomplete or corrupt (e.g.
+//! files deleted, or left behind by an interrupted build) is detected and rebuilt.
 use anyhow::{Context, Result, bail};
 use rustc_build_sysroot::{BuildMode, SysrootBuilder, SysrootConfig, SysrootStatus};
 use std::{env, path::PathBuf};
@@ -31,7 +36,7 @@ fn cache_dir() -> Result<PathBuf> {
 
 /// Ensure the sysroot for `target` (the host by default) is built, and return its path. This is
 /// fast when the sysroot is already cached. Progress messages go to stderr.
-pub fn setup(target: Option<&str>) -> Result<PathBuf> {
+pub fn ensure_sysroot(target: Option<&str>) -> Result<PathBuf> {
     let rustc_path = toolchain::toolchain_path()?.join("bin").join("rustc");
     let rustc = || {
         let mut cmd = toolchain::in_toolchain(&rustc_path).unwrap();
@@ -41,6 +46,7 @@ pub fn setup(target: Option<&str>) -> Result<PathBuf> {
     let version = rustc_version::VersionMeta::for_command(rustc())
         .context("failed to determine the toolchain's rustc version")?;
     let target = target.unwrap_or(&version.host).to_owned();
+    let expected_version = version.short_version_string.clone();
     let commit = version.commit_hash.clone().unwrap_or_default();
 
     // One sysroot per toolchain and target.
@@ -48,6 +54,38 @@ pub fn setup(target: Option<&str>) -> Result<PathBuf> {
     let sysroot_dir = cache_dir()?
         .join(format!("{}-{short_commit}", version.semver))
         .join(&target);
+
+    // Serialize concurrent builds of the same sysroot (e.g. several `obol cargo` runs started in
+    // parallel on a fresh machine). `rustc-build-sysroot` installs atomically, but without the
+    // lock each run would build its own copy. The lock is released when `_lock` is dropped.
+    std::fs::create_dir_all(&sysroot_dir)
+        .with_context(|| format!("failed to create `{}`", sysroot_dir.display()))?;
+    let lock_path = sysroot_dir.join(".obol-sysroot.lock");
+    let _lock = std::fs::File::create(&lock_path)
+        .with_context(|| format!("failed to create `{}`", lock_path.display()))?;
+    if _lock.try_lock().is_err() {
+        eprintln!(
+            "Waiting for another Obol process to finish building the sysroot in `{}`...",
+            sysroot_dir.display()
+        );
+        _lock
+            .lock()
+            .with_context(|| format!("failed to lock `{}`", lock_path.display()))?;
+    }
+
+    // `rustc-build-sysroot` only rebuilds when its hash file is missing or outdated. Also rebuild
+    // when the libraries themselves are missing or unreadable.
+    let target_dir = sysroot_dir.join("lib").join("rustlib").join(&target);
+    if target_dir.exists()
+        && let Err(problem) = check_sysroot(&target_dir, &expected_version)
+    {
+        eprintln!(
+            "Obol's cached sysroot in `{}` is unusable ({problem}); rebuilding it.",
+            sysroot_dir.display()
+        );
+        std::fs::remove_dir_all(&target_dir)
+            .with_context(|| format!("failed to remove `{}`", target_dir.display()))?;
+    }
 
     let src_dir = rustc_build_sysroot::rustc_sysroot_src(rustc())?;
     if !src_dir.join("std").join("Cargo.toml").exists() {
@@ -104,7 +142,39 @@ pub fn setup(target: Option<&str>) -> Result<PathBuf> {
         .build_from_source(&src_dir)
         .context("failed to build Obol's sysroot")?;
     if status == SysrootStatus::SysrootBuilt {
+        check_sysroot(&target_dir, &expected_version).map_err(|problem| {
+            anyhow::anyhow!("the freshly built sysroot is unusable: {problem}")
+        })?;
         eprintln!("Obol's sysroot for {target} is ready.");
     }
     Ok(sysroot_dir)
+}
+
+/// Check that a cached sysroot (`<sysroot>/lib/rustlib/<target>`) contains the metadata (`.rmeta`,
+/// or `.rlib` for crates built with codegen, like `std` in a full build) of the
+/// standard library crates, readable and produced by the expected compiler (`rustc --version`).
+fn check_sysroot(target_dir: &std::path::Path, rustc_version: &str) -> Result<(), String> {
+    let lib = target_dir.join("lib");
+    let entries =
+        std::fs::read_dir(&lib).map_err(|e| format!("cannot read `{}`: {e}", lib.display()))?;
+    let files: Vec<PathBuf> = entries.filter_map(|e| e.ok()).map(|e| e.path()).collect();
+    for krate in ["core", "alloc", "std"] {
+        let prefix = format!("lib{krate}-");
+        let rmeta = files
+            .iter()
+            .find(|p| {
+                p.file_name().and_then(|n| n.to_str()).is_some_and(|n| {
+                    n.starts_with(&prefix) && (n.ends_with(".rmeta") || n.ends_with(".rlib"))
+                })
+            })
+            .ok_or_else(|| format!("no metadata for `{krate}`"))?;
+        match obol_lib::rmeta::version_from_rmeta_file(rmeta) {
+            Ok(Some(v)) if v == rustc_version => {}
+            Ok(Some(v)) => return Err(format!("`{}` was built by `{v}`", rmeta.display())),
+            Ok(None) | Err(_) => {
+                return Err(format!("`{}` is not valid metadata", rmeta.display()));
+            }
+        }
+    }
+    Ok(())
 }

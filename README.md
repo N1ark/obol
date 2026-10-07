@@ -16,24 +16,35 @@ running the toolchain.
 ## Usage
 
 ```sh
-obol setup [--target <triple>] [--print-sysroot]
 obol cargo [obol options] [-- <cargo options>]
 obol rustc [obol options] -- <rustc options> <file.rs>
+obol buck2 [obol options] <target> [-- <buck2 options>]     # see below
+obol print-sysroot [--target <triple>] [--sysroot default|<path>]
 ```
 
 Obol translates the standard library and the dependencies of a crate along with the crate itself,
-so they must all be compiled with MIR suited for that (`obol_lib::mir_options`). For the standard
-library, `obol setup` builds a sysroot from the toolchain's `rust-src` component with these options
-(much like `cargo miri setup`, but this is the production standard library, without `--cfg miri`).
-Building it requires access to crates.io; it is cached in
-`$XDG_CACHE_HOME/obol/sysroot/<rustc version>-<commit>/<target>` (or under `$OBOL_SYSROOT_DIR`
-instead of `$XDG_CACHE_HOME/obol/sysroot`), so later calls are fast. With `--print-sysroot`, the
-last line of stdout is the path to the sysroot.
+so they must all be compiled with MIR suited for that (`obol_lib::mir_options`).
 
-`obol cargo` and `obol rustc` use that sysroot (building it if needed) unless told otherwise with
-`--sysroot <path>` or `--sysroot default` (the toolchain's own sysroot); for `obol rustc`, a rustc
-`--sysroot` argument takes precedence. Build scripts and proc-macros are always compiled against
-the toolchain's own sysroot.
+**Sysroot.** Like Charon, Obol handles the standard library implicitly: `obol cargo` and
+`obol rustc` compile against a sysroot whose standard library has full MIR, built on first use
+from the toolchain's `rust-src` component with Obol's MIR options (much like `cargo miri setup`,
+but this is the production standard library, without `--cfg miri`). Building it takes a few
+minutes and needs access to crates.io; it is then cached in
+`$XDG_CACHE_HOME/obol/sysroot/<rustc version>-<commit>/<target>` (or under `$OBOL_SYSROOT_DIR`
+instead of `$XDG_CACHE_HOME/obol/sysroot`). Concurrent Obol runs wait for each other (lock file)
+instead of building it twice, and a cache that is incomplete or corrupt (missing or unreadable
+`core`/`alloc`/`std` metadata, interrupted build) is rebuilt. `--sysroot` has the same semantics
+as Charon's: `--sysroot default` uses the toolchain's distributed sysroot (which lacks MIR bodies
+for many standard library functions), `--sysroot <path>` uses that sysroot. For `obol rustc`, a
+rustc `--sysroot` argument takes precedence. Build scripts and proc-macros are always compiled
+against the toolchain's own sysroot. `obol buck2` never uses this sysroot: the standard library
+comes from the Buck build.
+
+`obol print-sysroot` prints (as the last line of stdout) the sysroot `obol cargo`/`obol rustc`
+would use for `--target` (default: the host), building it if needed, and exits non-zero on
+failure; with `--sysroot`, it resolves the value the same way (`default` prints the toolchain's
+sysroot, a path is printed back). Use it to compile crates that are linked into analysed code
+(e.g. with `--extern`) against the same standard library.
 
 ## Buck2 projects: `obol buck2`
 

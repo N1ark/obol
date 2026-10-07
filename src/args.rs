@@ -21,9 +21,6 @@ pub enum ObolCli {
     Rustc(CliOpts),
     /// Runs obol on a cargo project.
     Cargo(CliOpts),
-    /// Build (or reuse the cached) sysroot that Obol compiles crates against: the standard library
-    /// built from the toolchain's sources with Obol's MIR options.
-    Setup(SetupOpts),
     /// Runs obol on a Buck2 Rust target (rust_library, rust_binary or rust_test).
     ///
     /// Buck builds all dependencies, std included, with full MIR (in a dedicated isolation dir),
@@ -36,6 +33,10 @@ pub enum ObolCli {
     ListTargets,
     /// Print the path to the rustc toolchain used by obol.
     ToolchainPath,
+    /// Print the sysroot `obol cargo`/`obol rustc` compile against, building Obol's full-MIR
+    /// sysroot first if needed. The path is the last line of stdout. Use it to build crates that
+    /// are linked into analysed code (e.g. with `--extern`) against the same standard library.
+    PrintSysroot(PrintSysrootOpts),
     /// Print the version of the rustc toolchain used by obol.
     ToolchainVersion,
     /// Print the version of Obol (or Charon, if flag provided)
@@ -83,9 +84,13 @@ pub struct CliOpts {
     /// Output serialization format (postcard or json).
     #[clap(long = "format", default_value = "postcard")]
     pub format: OutputFormat,
-    /// The sysroot to compile the crate (and its dependencies) against: `setup` (the default) for
-    /// the one built by `obol setup` (which is built if needed), `default` for the toolchain's own
-    /// sysroot, or a path. For `obol rustc`, a `--sysroot` rustc argument takes precedence.
+    /// Sysroot to compile the crate (and its dependencies) against. By default Obol builds (once,
+    /// then caches) a sysroot whose standard library has full MIR: the production standard
+    /// library compiled from the toolchain's `rust-src` with Obol's MIR options. Pass a path to
+    /// use another sysroot, or `default` for the toolchain's distributed sysroot, which lacks MIR
+    /// bodies for many standard library functions. (Same semantics as Charon's `--sysroot`.)
+    /// For `obol rustc`, a rustc `--sysroot` argument takes precedence. Not supported by
+    /// `obol buck2`, where the standard library comes from the Buck build.
     #[clap(long = "sysroot")]
     pub sysroot: Option<String>,
     /// Args that are passed to the underlying tool (`rustc`, `cargo` or `buck2`).
@@ -127,14 +132,16 @@ pub struct Buck2Opts {
     pub obol: CliOpts,
 }
 
-#[derive(Debug, Default, Clone, clap::Parser, Serialize, Deserialize)]
-pub struct SetupOpts {
-    /// The target to build the sysroot for (defaults to the host).
+/// Options of `obol print-sysroot`.
+#[derive(Debug, Default, Clone, clap::Parser)]
+pub struct PrintSysrootOpts {
+    /// The target to get the sysroot for (defaults to the host).
     #[clap(long = "target")]
     pub target: Option<String>,
-    /// Print the path to the sysroot (and only that) on the last line of stdout.
-    #[clap(long = "print-sysroot")]
-    pub print_sysroot: bool,
+    /// Resolve this `--sysroot` value as `obol cargo`/`obol rustc` would: `default` prints the
+    /// toolchain's distributed sysroot, a path is printed as is.
+    #[clap(long = "sysroot")]
+    pub sysroot: Option<String>,
 }
 
 #[derive(Debug, Default, Clone, clap::Parser, Serialize, Deserialize)]

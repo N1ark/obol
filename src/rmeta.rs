@@ -28,14 +28,25 @@ pub fn version_from_metadata(bytes: &[u8]) -> Option<String> {
     s.ends_with(')').then(|| s.to_owned())
 }
 
-/// Read the compiler version from an `.rmeta` file. Returns `None` for non-rmeta files (e.g.
-/// `.rlib` archives or proc-macro `.so` files).
+/// Read the compiler version from an `.rmeta` file, or from the metadata member of an `.rlib`
+/// archive. Returns `None` for other files (e.g. proc-macro `.so` files).
 pub fn version_from_rmeta_file(path: &Path) -> std::io::Result<Option<String>> {
-    let mut buf = vec![0u8; 256];
     let mut f = std::fs::File::open(path)?;
-    let n = f.read(&mut buf)?;
-    buf.truncate(n);
-    Ok(version_from_metadata(&buf))
+    let mut buf = Vec::new();
+    // rustc puts the metadata member first in rlibs, so it is near the start of the file.
+    f.by_ref().take(1 << 20).read_to_end(&mut buf)?;
+    Ok(version_from_bytes(&buf))
+}
+
+/// Like [`version_from_metadata`], but also accepts an `ar` archive (`.rlib`) containing the
+/// metadata.
+pub fn version_from_bytes(bytes: &[u8]) -> Option<String> {
+    if bytes.starts_with(b"!<arch>\n") {
+        let pos = bytes.windows(7).position(|w| w == b"rust\0\0\0")?;
+        version_from_metadata(&bytes[pos..])
+    } else {
+        version_from_metadata(bytes)
+    }
 }
 
 #[cfg(test)]
@@ -51,5 +62,9 @@ mod tests {
         header.extend_from_slice(b"\xc1\x02\x96 trailing");
         assert_eq!(version_from_metadata(&header).as_deref(), Some(v));
         assert_eq!(version_from_metadata(b"!<arch>\nfoo"), None);
+        let mut rlib =
+            b"!<arch>\nlib.rmeta/      0           0     0     644     1234      `\n".to_vec();
+        rlib.extend_from_slice(&header);
+        assert_eq!(version_from_bytes(&rlib).as_deref(), Some(v));
     }
 }

@@ -8,7 +8,7 @@ use std::{env, path::PathBuf, process::ExitStatus};
 use crate::toolchain::{toolchain_path, toolchain_version};
 
 mod buck2;
-mod setup;
+mod sysroot;
 mod toolchain;
 
 fn main() -> Result<()> {
@@ -17,22 +17,22 @@ fn main() -> Result<()> {
     let res = match opts {
         ObolCli::Rustc(opts) => translate_without_cargo(opts)?,
         ObolCli::Cargo(opts) => translate_with_cargo(opts)?,
-        ObolCli::Setup(opts) => {
-            ensure_rustup();
-            let sysroot = setup::setup(opts.target.as_deref())?;
-            if opts.print_sysroot {
-                println!("{}", sysroot.display());
-            } else {
-                eprintln!("Obol's sysroot: {}", sysroot.display());
-            }
-            ExitStatus::default()
-        }
         ObolCli::Buck2(opts) => {
             ensure_rustup();
             buck2::translate_with_buck2(opts)?
         }
         ObolCli::ListTargets => {
             list_targets()?;
+            ExitStatus::default()
+        }
+        ObolCli::PrintSysroot(opts) => {
+            ensure_rustup();
+            let sysroot =
+                match resolve_sysroot_value(opts.sysroot.as_deref(), opts.target.as_deref())? {
+                    Some(path) => path,
+                    None => toolchain_path()?,
+                };
+            println!("{}", sysroot.display());
             ExitStatus::default()
         }
         ObolCli::ToolchainPath => {
@@ -191,15 +191,22 @@ fn list_targets() -> Result<()> {
 }
 
 /// The sysroot to compile the crate against, as selected by `--sysroot`: by default the one built
-/// by `obol setup` for the requested target (building it if needed). `None` means the toolchain's
+/// automatically for the requested target (built if needed, then cached). `None` means the toolchain's
 /// own sysroot.
 fn resolve_sysroot(options: &CliOpts) -> Result<Option<PathBuf>> {
-    match options.sysroot.as_deref() {
+    resolve_sysroot_value(
+        options.sysroot.as_deref(),
+        arg_value(&options.spread, "--target"),
+    )
+}
+
+/// Resolve a `--sysroot` value (same semantics as Charon's): `None` means Obol's full-MIR sysroot
+/// for `target` (the host by default), built if needed; `default` means the toolchain's own
+/// sysroot (returned as `None`); anything else is a path.
+fn resolve_sysroot_value(sysroot: Option<&str>, target: Option<&str>) -> Result<Option<PathBuf>> {
+    match sysroot {
         Some("default") => Ok(None),
-        Some("setup") | None => {
-            let target = arg_value(&options.spread, "--target");
-            Ok(Some(setup::setup(target)?))
-        }
+        None => Ok(Some(sysroot::ensure_sysroot(target)?)),
         Some(path) => Ok(Some(PathBuf::from(path))),
     }
 }

@@ -190,7 +190,7 @@ fn perform_test(test_case: &Case) -> anyhow::Result<()> {
 
     // Charon args
     cmd.arg("--print-ullbc");
-    // Compile against the toolchain's own sysroot rather than the one built by `obol setup`: this
+    // Compile against the toolchain's own sysroot rather than Obol's implicit full-MIR one: this
     // keeps the tests self-contained, and the auxiliary crates above are compiled against it.
     cmd.arg("--sysroot=default");
     if matches!(
