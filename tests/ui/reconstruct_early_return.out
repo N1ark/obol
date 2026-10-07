@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_, _)::<i32, bool> {
   _0: i32,
   _1: bool,
@@ -42,7 +39,7 @@ fn f() -> usize
         storage_live(_4);
         _4 = copy i;
         _3 = move _4 < const 32i32;
-        if move _3 -> bb2 else -> bb3;
+        if move _3 -> bb2 else -> bb8;
     }
 
     bb2: {
@@ -53,38 +50,25 @@ fn f() -> usize
         storage_live(_7);
         _7 = copy j;
         _6 = move _7 > const 16i32;
-        if move _6 -> bb5 else -> bb6;
+        if move _6 -> bb3 else -> bb4;
     }
 
     bb3: {
-        storage_dead(_4);
-        storage_dead(_3);
-        _0 = const 0usize;
-        storage_dead(j);
-        storage_dead(i);
-        goto bb4;
+        storage_dead(_7);
+        j = copy j panic./ const 2i32;
+        goto bb7;
     }
 
     bb4: {
-        return;
-    }
-
-    bb5: {
-        storage_dead(_7);
-        j = copy j panic./ const 2i32;
-        goto bb9;
-    }
-
-    bb6: {
         storage_dead(_7);
         storage_live(_8);
         storage_live(_9);
         _9 = copy j;
         _8 = move _9 > const 32i32;
-        if move _8 -> bb7 else -> bb8;
+        if move _8 -> bb5 else -> bb6;
     }
 
-    bb7: {
+    bb5: {
         storage_dead(_9);
         _0 = const 1usize;
         storage_dead(_8);
@@ -92,21 +76,34 @@ fn f() -> usize
         storage_dead(_3);
         storage_dead(j);
         storage_dead(i);
-        goto bb4;
-    }
-
-    bb8: {
-        storage_dead(_9);
-        storage_dead(_8);
         goto bb9;
     }
 
-    bb9: {
+    bb6: {
+        storage_dead(_9);
+        storage_dead(_8);
+        goto bb7;
+    }
+
+    bb7: {
         storage_dead(_6);
         _10 = copy i panic.+ const 1i32;
         i = move _10;
         storage_dead(_3);
         goto bb1;
+    }
+
+    bb8: {
+        storage_dead(_4);
+        storage_dead(_3);
+        _0 = const 0usize;
+        storage_dead(j);
+        storage_dead(i);
+        goto bb9;
+    }
+
+    bb9: {
+        return;
     }
 }
 

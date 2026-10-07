@@ -74,7 +74,7 @@ impl UllbcPass for Transform {
 /// known TypeId marker global, returns the corresponding type T.
 fn extract_typeid_ty(cexpr: &ConstantExpr, map: &HashMap<GlobalDeclId, Ty>) -> Option<Ty> {
     if let ConstantExprKind::Adt(None, fields) = cexpr.kind()
-        && let [data_field] = fields.as_slice()
+        && let [data_field] = fields.as_raw_slice()
         && let ConstantExprKind::Array(ptrs) = data_field.kind()
         && let [ptr0, ptr1] = ptrs.as_slice()
         && let ConstantExprKind::Ptr(RefKind::Shared, inner0, None) = ptr0.kind()

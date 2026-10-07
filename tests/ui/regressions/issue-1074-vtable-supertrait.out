@@ -26,8 +26,6 @@ trait FakeTrait
 // Full name: anon_const_0
 const anon_const_0: MyStruct = MyStruct {  }
 
-trait test_crate::MyTrait
-
 // Full name: test_crate::{impl test_crate::MyTrait for MyStruct}::foo
 pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
 {
@@ -42,44 +40,7 @@ pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
     }
 }
 
-fn {vtable}::test_crate::MyTrait::<MyStruct>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <test_crate::MyStruct as test_crate::MyTrait>::foo: *const (); // local
-    let entry_array: [*const (); 4usize]; // local
-    let entry_array_ref: *const [*const (); 4usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<test_crate::MyStruct as test_crate::MyTrait>::foo);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<MyStruct>, *const ()>(const drop_glue::<MyStruct>);
-        size = transmute<usize, *const ()>(const 0usize);
-        align = transmute<usize, *const ()>(const 1usize);
-        <test_crate::MyStruct as test_crate::MyTrait>::foo = cast<impl_MyTrait_for_MyStruct::foo, *const ()>(const impl_MyTrait_for_MyStruct::foo);
-        entry_array = [move drop, move size, move align, move <test_crate::MyStruct as test_crate::MyTrait>::foo];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-static {vtable}::test_crate::MyTrait::<MyStruct>: *const () = {vtable}::test_crate::MyTrait::<MyStruct>()
-
-pub fn test_crate::MyTrait::foo::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
-= <opaque>
-
-// Full name: test_crate::{impl test_crate::MyTrait for MyStruct}
-impl "impl_MyTrait_for_MyStruct" test_crate::MyTrait for MyStruct {
-    non-dyn-compatible
-}
+vtable {vtable}::test_crate::MyTrait::<MyStruct>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<MyStruct>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(impl_MyTrait_for_MyStruct::foo))]
 
 // Full name: test_crate::main
 fn main()
@@ -107,7 +68,7 @@ fn main()
         _6 = move _8;
         _3 = &(*_6);
         _2 = &(*_3);
-        x = unsize_cast<&'_ MyStruct, &'_ (dyn FakeTrait), {vtable}::test_crate::MyTrait::<MyStruct>>(move _2);
+        x = unsize_cast<&'_ MyStruct, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<MyStruct>)>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
@@ -125,7 +86,7 @@ fn main()
         return;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         unwind_continue;
     }
 }

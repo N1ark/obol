@@ -81,8 +81,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             let prov = match prov_alloc {
                 mir::alloc::GlobalAlloc::Function(fun) => {
                     let id = self.register_fun_decl_id(span, fun);
-                    Provenance::Function(FunDeclRef {
-                        id,
+                    Provenance::Function(FnPtr {
+                        kind: Box::new(FnPtrKind::Fun(id)),
                         generics: Box::new(GenericArgs::empty()),
                     })
                 }
@@ -288,16 +288,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     let t = rustc_public::rustc_internal::stable(t);
                                     t.with_self_ty(self_ty)
                                 });
-                                let vtable_global = self.register_vtable(span, self_ty, trait_ref);
-
-                                let global_ref = GlobalDeclRef {
-                                    id: vtable_global,
-                                    generics: Box::new(GenericArgs::empty()),
-                                };
-                                let meta = ConstantExpr::new(
-                                    ConstantExprKind::Global(global_ref),
-                                    TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
-                                );
+                                let meta =
+                                    self.translate_vtable_ptr_const(span, self_ty, trait_ref);
                                 let meta = UnsizingMetadata::VTable(self.dummy_trait_ref(), meta);
                                 (Some(meta), Some(self_ty))
                             }
@@ -605,12 +597,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             TyKind::Adt(tref) if tref.is_box() => {
                 unreachable!("We never create builtin boxes");
             }
-            // An unsized `str` held directly in a constant: its data is the raw UTF-8 bytes.
+            // An unsized `str` held directly in a constant (e.g. the tail of a `str`-tailed DST).
+            // Like charon, we encode it as `struct { [u8] }` holding its UTF-8 bytes.
             TyKind::Adt(tref) if tref.is_str() => {
                 let len = unsized_len.expect("str constant without a length");
                 let data = &alloc.bytes.as_slice()[offset..offset + len];
-                let as_str = unsafe { String::from_utf8_unchecked(Self::as_init(data)?) };
-                ConstantExprKind::Str(as_str)
+                let bytes = Self::as_init(data)?
+                    .into_iter()
+                    .map(|b| IntegerValue::Unsigned(UIntTy::U8, b.into()).to_constant())
+                    .collect();
+                let slice_ty = Ty::mk_slice(Ty::mk_u8(), None);
+                let bytes = ConstantExpr::new(ConstantExprKind::Array(bytes), slice_ty);
+                ConstantExprKind::Adt(None, [bytes].into())
             }
             // An unsized `[T]` held directly in a constant.
             TyKind::Slice(subty, _) => {

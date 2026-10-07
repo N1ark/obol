@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: test_crate::Ordering
 enum Ordering {
   Less,
@@ -27,31 +24,31 @@ fn main()
         storage_live(_1);
         _1 = Ordering::Less {  };
         _2 = @discriminant(_1);
-        switch move _2 -> -1isize: bb1, 0isize: bb2, 1isize: bb3, otherwise: bb4;
+        switch move _2 -> -1isize: bb1, 0isize: bb2, 1isize: bb3, otherwise: bb5;
     }
 
     bb1: {
         _0 = ();
-        goto bb5;
+        goto bb4;
     }
 
     bb2: {
         _0 = ();
-        goto bb5;
+        goto bb4;
     }
 
     bb3: {
         _0 = ();
-        goto bb5;
+        goto bb4;
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_1);
+        return;
     }
 
     bb5: {
-        storage_dead(_1);
-        return;
+        undefined_behavior;
     }
 }
 

@@ -158,7 +158,7 @@ impl ItemTransCtx<'_, '_> {
     /// `BodyBuilder`, which evaluates every const operand. That would discard the information
     /// that a constant refers to a named const item. Instead we fetch the MIR ourselves,
     /// and run our own [`NamedConstPreservingEvaluator`].
-    pub fn get_body(&mut self, def: mir::mono::Instance) -> Option<rustc_public::mir::Body> {
+    pub fn get_body(&mut self, def: mir::mono::Instance) -> Option<MonoBody> {
         let tcx = self.t_ctx.tcx;
         let instance = rustc_internal::internal(tcx, def);
         let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
@@ -199,7 +199,13 @@ impl ItemTransCtx<'_, '_> {
             );
             use rustc_middle::mir::visit::MutVisitor;
             NamedConstPreservingEvaluator { tcx, typing_env }.visit_body(&mut b);
-            rustc_public::rustc_internal::stable(b)
+            // `rustc_public` doesn't expose whether a block is a cleanup block, so record it here;
+            // block indices are preserved by the conversion.
+            let cleanup_blocks = b.basic_blocks.iter().map(|bb| bb.is_cleanup).collect();
+            MonoBody {
+                body: rustc_public::rustc_internal::stable(b),
+                cleanup_blocks,
+            }
         })
     }
 
@@ -212,7 +218,7 @@ impl ItemTransCtx<'_, '_> {
         def: mir::mono::Instance,
         n_args: usize,
     ) -> Vec<Option<String>> {
-        let Some(body) = self.get_body(def) else {
+        let Some(MonoBody { body, .. }) = self.get_body(def) else {
             return vec![None; n_args];
         };
         body.arg_locals()
@@ -232,4 +238,11 @@ impl ItemTransCtx<'_, '_> {
             })
             .collect()
     }
+}
+
+/// A monomorphic MIR body, along with the information that `rustc_public` doesn't expose.
+pub struct MonoBody {
+    pub body: rustc_public::mir::Body,
+    /// For each block, whether it is a cleanup (unwinding) block.
+    pub cleanup_blocks: Vec<bool>,
 }

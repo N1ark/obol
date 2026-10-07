@@ -1,23 +1,10 @@
 
 // Final ULLBC:
 
-// Full name: core::clone::Clone
-#[lang_item(Clone)]
-#[diagnostic_item("Clone")]
-trait Clone
-
 struct () {}
-
-// Full name: FakeTrait
-trait FakeTrait
 
 // Full name: test_crate::Struct
 struct Struct {}
-
-// Full name: test_crate::{impl Clone for Struct}
-impl "impl_Clone_for_Struct" Clone for Struct {
-    non-dyn-compatible
-}
 
 // Full name: test_crate::{impl Clone for Struct}::clone
 #[inline(hint)]
@@ -57,7 +44,7 @@ fn takes_alias::<Struct>(x: Struct)
         return;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         unwind_continue;
     }
 }
@@ -85,7 +72,7 @@ fn use_alias()
         return;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         unwind_continue;
     }
 }

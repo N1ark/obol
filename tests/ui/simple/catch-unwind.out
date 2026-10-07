@@ -189,7 +189,7 @@ pub struct PanicInfo::<'_> {
 }
 
 // Full name: core::panicking::panic_fmt::panic_impl
-fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
+extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:panic_impl>
 
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
@@ -228,7 +228,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
         return;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         undefined_behavior;
     }
 }
@@ -258,15 +258,23 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3 (cleanup): {
+        undefined_behavior;
+    }
+
+    bb4: {
         storage_dead(_2);
         storage_live(pi);
         storage_live(_5);
@@ -274,26 +282,14 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         _6 = &fmt;
         _5 = &(*_6);
         storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        undefined_behavior;
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -301,18 +297,22 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
+    bb7: {
         undefined_behavior;
     }
 
-    bb10: {
+    bb8 (cleanup): {
+        unwind_continue;
+    }
+
+    bb9 (cleanup): {
+        unwind_continue;
+    }
+
+    bb10 (cleanup): {
         unwind_continue;
     }
 }
@@ -334,7 +334,7 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         undefined_behavior;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         unwind_continue;
     }
 }
@@ -367,7 +367,7 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         undefined_behavior;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         unwind_terminate;
     }
 }
@@ -449,13 +449,10 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
         undefined_behavior;
     }
 
-    bb4: {
+    bb4 (cleanup): {
         undefined_behavior;
     }
 }
-
-// Full name: core::alloc::Allocator
-trait Allocator
 
 // Full name: core::intrinsics::ctpop::<usize>
 #[rustc_intrinsic]
@@ -557,25 +554,21 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         _0 = ();
         storage_live(_2);
         storage_live(_6);
-        _6 = ctpop::<usize>(move align) -> bb1 (unwind: bb2);
+        _6 = ctpop::<usize>(move align) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         _2 = move _6 == const 1u32;
         storage_dead(_6);
-        if move _2 -> bb3 else -> bb4;
+        if move _2 -> bb2 else -> bb3;
     }
 
     bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
         storage_dead(_2);
         return;
     }
 
-    bb4: {
+    bb3: {
         msg = const "unsafe precondition(s) violated: Alignment::new_unchecked requires a power of two\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_5);
         storage_live(_7);
@@ -603,38 +596,20 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
         storage_dead(_7);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb5 (unwind: bb6);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb4 (unwind: bb5);
     }
 
-    bb5: {
+    bb4: {
         undefined_behavior;
     }
 
-    bb6: {
+    bb5 (cleanup): {
         undefined_behavior;
     }
-}
 
-// Full name: core::ops::drop::Drop
-#[lang_item(Drop)]
-trait Drop
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
+    bb6 (cleanup): {
+        undefined_behavior;
+    }
 }
 
 // Full name: core::result::Result::<(), Box::<(dyn FakeTrait), Global>>
@@ -645,7 +620,7 @@ pub enum Result::<(), Box::<(dyn FakeTrait), Global>> {
 }
 
 // Full name: alloc::alloc::__rust_dealloc
-fn __rust_dealloc(_1: NonNull::<u8>, _2: usize, _3: Alignment)
+extern fn __rust_dealloc(_1: NonNull::<u8>, _2: usize, _3: Alignment)
 = <extern:__rust_dealloc>
 
 // Full name: alloc::alloc::{impl Allocator for Global}::deallocate
@@ -663,26 +638,26 @@ pub fn deallocate(self: &'_ Global, ptr: NonNull::<u8>, layout: Layout)
         _0 = ();
         storage_live(_4);
         _4 = copy layout.size;
-        switch copy _4 -> 0usize: bb1, otherwise: bb2;
+        switch copy _4 -> 0usize: bb3, otherwise: bb1;
     }
 
     bb1: {
+        storage_live(_5);
+        _5 = copy layout.align;
+        _0 = __rust_dealloc(move ptr, move _4, move _5) -> bb2 (unwind: bb4);
+    }
+
+    bb2: {
+        storage_dead(_5);
+        goto bb3;
+    }
+
+    bb3: {
         storage_dead(_4);
         return;
     }
 
-    bb2: {
-        storage_live(_5);
-        _5 = copy layout.align;
-        _0 = __rust_dealloc(move ptr, move _4, move _5) -> bb3 (unwind: bb4);
-    }
-
-    bb3: {
-        storage_dead(_5);
-        goto bb1;
-    }
-
-    bb4: {
+    bb4 (cleanup): {
         undefined_behavior;
     }
 }
@@ -727,57 +702,64 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
         _4 = transmute<NonNull::<(dyn FakeTrait)>, *mut (dyn FakeTrait)>(copy ptr_14);
         val = transmute<NonNull::<(dyn FakeTrait)>, *const (dyn FakeTrait)>(copy ptr_14);
         storage_live(alignment);
-        size = size_of_val::<(dyn FakeTrait)>(copy val) -> bb1 (unwind: bb2);
+        size = size_of_val::<(dyn FakeTrait)>(copy val) -> bb1 (unwind: bb14);
     }
 
     bb1: {
         storage_live(align);
-        align = align_of_val::<(dyn FakeTrait)>(move val) -> bb3 (unwind: bb4);
+        align = align_of_val::<(dyn FakeTrait)>(move val) -> bb2 (unwind: bb13);
     }
 
     bb2: {
-        undefined_behavior;
+        storage_live(_16);
+        _16 = ub_checks;
+        if move _16 -> bb3 else -> bb5;
     }
 
     bb3: {
-        storage_live(_16);
-        _16 = ub_checks;
-        if move _16 -> bb5 else -> bb6;
+        _10 = core::mem::alignment::{Alignment}::new_unchecked::precondition_check(copy align) -> bb5 (unwind: bb4);
     }
 
-    bb4: {
+    bb4 (cleanup): {
         undefined_behavior;
     }
 
     bb5: {
-        _10 = core::mem::alignment::{Alignment}::new_unchecked::precondition_check(copy align) -> bb6 (unwind: bb7);
-    }
-
-    bb6: {
         alignment = transmute<usize, Alignment>(copy align);
         storage_dead(align);
         storage_live(_17);
         _17 = ub_checks;
-        if move _17 -> bb8 else -> bb9;
+        if move _17 -> bb6 else -> bb8;
     }
 
-    bb7: {
+    bb6: {
+        _11 = core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_check(copy size, copy alignment) -> bb8 (unwind: bb7);
+    }
+
+    bb7 (cleanup): {
         undefined_behavior;
     }
 
     bb8: {
-        _11 = core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_check(copy size, copy alignment) -> bb9 (unwind: bb10);
-    }
-
-    bb9: {
         layout = Layout { size: copy size, align: copy alignment };
         storage_dead(alignment);
         storage_dead(val);
-        switch copy size -> 0usize: bb11, otherwise: bb12;
+        switch copy size -> 0usize: bb11, otherwise: bb9;
+    }
+
+    bb9: {
+        storage_live(_6);
+        _6 = &(*self)._1;
+        storage_live(_13);
+        _13 = cast<*mut (dyn FakeTrait), *mut u8>(copy _4);
+        unique = transmute<*mut u8, NonNull::<u8>>(copy _13);
+        storage_dead(_13);
+        _5 = deallocate(move _6, move unique, move layout) -> bb10 (unwind: bb12);
     }
 
     bb10: {
-        undefined_behavior;
+        storage_dead(_6);
+        goto bb11;
     }
 
     bb11: {
@@ -787,23 +769,16 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
         return;
     }
 
-    bb12: {
-        storage_live(_6);
-        _6 = &(*self)._1;
-        storage_live(_13);
-        _13 = cast<*mut (dyn FakeTrait), *mut u8>(copy _4);
-        unique = transmute<*mut u8, NonNull::<u8>>(copy _13);
-        storage_dead(_13);
-        _5 = deallocate(move _6, move unique, move layout) -> bb13 (unwind: bb14);
-    }
-
-    bb13: {
-        storage_dead(_6);
-        goto bb11;
-    }
-
-    bb14: {
+    bb12 (cleanup): {
         unwind_continue;
+    }
+
+    bb13 (cleanup): {
+        undefined_behavior;
+    }
+
+    bb14 (cleanup): {
+        undefined_behavior;
     }
 }
 
@@ -833,32 +808,32 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
         _0 = ();
         _6 = transmute<NonNull::<(dyn FakeTrait)>, *const (dyn FakeTrait)>(copy (*_1)._0.pointer);
         _7 = &raw mut (*_6) with_metadata(copy _6.metadata);
-        _8 = (copy (*_7.metadata))(move _7) -> bb1 (unwind: bb2);
+        _8 = (copy (*_7.metadata))(move _7) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         _2 = &mut (*_1);
-        _3 = drop::<(dyn FakeTrait), Global>(move _2) -> bb3 (unwind: bb4);
+        _3 = drop::<(dyn FakeTrait), Global>(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
+        unwind_continue;
+    }
+
+    bb4 (cleanup): {
         _4 = &mut (*_1);
         _5 = drop::<(dyn FakeTrait), Global>(move _4) -> bb5 (unwind: bb6);
     }
 
-    bb3: {
-        return;
-    }
-
-    bb4: {
+    bb5 (cleanup): {
         unwind_continue;
     }
 
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
+    bb6 (terminate): {
         unwind_terminate;
     }
 }
@@ -880,46 +855,19 @@ fn drop_glue::<Result::<(), Box::<(dyn FakeTrait), Global>>>(_1: &'_ mut Result:
         storage_live(_4);
         _0 = ();
         _2 = @discriminant((*_1));
-        switch move _2 -> 0isize: bb1, otherwise: bb2;
+        switch move _2 -> 0isize: bb2, otherwise: bb1;
     }
 
     bb1: {
-        return;
-    }
-
-    bb2: {
         _3 = &raw mut ((*_1) as variant Result::<(), Box::<(dyn FakeTrait), Global>>::Err)._0;
-        _4 = drop_glue::<Box::<(dyn FakeTrait), Global>>(move _3) -> bb1 (unwind: bb3);
-    }
-
-    bb3: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::ptr::drop_glue::<(dyn FakeTrait)>
-#[lang_item(DropGlue)]
-fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
-{
-    let _0: (); // return
-    let _1: &'_ mut (dyn FakeTrait); // arg #1
-    let _2: *mut (dyn FakeTrait); // anonymous local
-    let _3: (); // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _0 = ();
-        _2 = &raw mut (*_1) with_metadata(copy _1.metadata);
-        _3 = (copy (*_2.metadata))(move _2) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
+        _4 = drop_glue::<Box::<(dyn FakeTrait), Global>>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        return;
+    }
+
+    bb3 (cleanup): {
         unwind_continue;
     }
 }
@@ -953,7 +901,7 @@ fn do_catch::<test_crate::main::{closure}::{closure}, ()>(data: *mut Data::<test
         return;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         unwind_terminate;
     }
 }
@@ -1000,7 +948,7 @@ fn do_call::<test_crate::main::{closure}::{closure}, ()>(data: *mut Data::<test_
         return;
     }
 
-    bb2: {
+    bb2 (cleanup): {
         unwind_continue;
     }
 }
@@ -1034,52 +982,42 @@ pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f:
         _6 = &raw mut data;
         storage_live(_7);
         _7 = cast<do_catch::<test_crate::main::{closure}::{closure}, ()>, unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>, *mut u8)>(const do_catch::<test_crate::main::{closure}::{closure}, ()>);
-        _4 = core::intrinsics::catch_unwind::<Data::<test_crate::main::{closure}::{closure}, ()>>(move _5, move _6, move _7) -> bb1 (unwind: bb2);
+        _4 = core::intrinsics::catch_unwind::<Data::<test_crate::main::{closure}::{closure}, ()>>(move _5, move _6, move _7) -> bb1 (unwind: bb5);
     }
 
     bb1: {
-        if move _4 -> bb3 else -> bb4;
+        if move _4 -> bb2 else -> bb3;
     }
 
     bb2: {
-        undefined_behavior;
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_5);
+        slot_8 = move data.p.value;
+        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Err { _0: copy slot_8 };
+        goto bb4;
     }
 
     bb3: {
         storage_dead(_7);
         storage_dead(_6);
         storage_dead(_5);
-        slot_8 = move data.p.value;
-        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Err { _0: copy slot_8 };
-        goto bb5;
+        slot_9 = move data.r.value;
+        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Ok { _0: copy slot_9 };
+        goto bb4;
     }
 
     bb4: {
-        storage_dead(_7);
-        storage_dead(_6);
-        storage_dead(_5);
-        slot_9 = move data.r.value;
-        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Ok { _0: copy slot_9 };
-        goto bb5;
-    }
-
-    bb5: {
         storage_dead(_4);
         storage_dead(data);
         storage_dead(slot_9);
         storage_dead(slot_8);
         return;
     }
-}
 
-// Full name: alloc::alloc::{impl Allocator for Global}
-impl "impl_Allocator_for_Global" Allocator for Global {
-    non-dyn-compatible
-}
-
-// Full name: alloc::boxed::{impl Drop for Box::<_, _>}
-impl<T, A> Drop for Box::<_, _> {
-    non-dyn-compatible
+    bb5 (cleanup): {
+        undefined_behavior;
+    }
 }
 
 // Full name: test_crate::main
@@ -1099,26 +1037,26 @@ fn main()
         storage_live(_1);
         storage_live(_2);
         _2 = test_crate::main::{closure}::{closure} {  };
-        _1 = std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(move _2) -> bb1 (unwind: bb2);
+        _1 = std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(move _2) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_2);
         _3 = &raw mut _1;
-        _4 = drop_glue::<Result::<(), Box::<(dyn FakeTrait), Global>>>(move _3) -> bb3 (unwind: bb4);
+        _4 = drop_glue::<Result::<(), Box::<(dyn FakeTrait), Global>>>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_1);
         _0 = ();
         return;
     }
 
-    bb4: {
+    bb3 (cleanup): {
+        unwind_continue;
+    }
+
+    bb4 (cleanup): {
         unwind_continue;
     }
 }

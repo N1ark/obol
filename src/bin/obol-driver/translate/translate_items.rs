@@ -2,6 +2,7 @@ extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_span;
+extern crate rustc_trait_selection;
 
 use log::trace;
 use rustc_public::{CrateDef, mir, ty};
@@ -13,6 +14,7 @@ use crate::translate::{
     translate_body::BodyTransCtx,
     translate_crate::{TransItemSource, TupleTy},
     translate_ctx::{ItemTransCtx, TranslateCtx},
+    translate_functions::MonoBody,
 };
 
 impl<'tcx, 'ctx> TranslateCtx<'tcx> {
@@ -53,20 +55,26 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 }
             };
             match res {
-                Ok(Ok(())) => return,
+                Ok(Ok(())) => {}
                 // Translation error
                 Ok(Err(msg)) => {
                     trace!("Item {name} caused errors; ignoring. {msg:?}");
                     sanitize_name(&mut ctx);
-                    register_error!(ctx, span, "Item `{name}` caused errors; ignoring.")
+                    register_error!(ctx, span, "Item `{name}` caused errors; ignoring.");
                 }
                 // Panic
                 Err(msg) => {
                     trace!("Item {name} caused errors; ignoring. {msg:?}");
                     sanitize_name(&mut ctx);
-                    register_error!(ctx, span, "Thread panicked when extracting item `{name}`.")
+                    register_error!(ctx, span, "Thread panicked when extracting item `{name}`.");
                 }
             };
+            if let Some(trans_id) = trans_id
+                && ctx.errors.borrow().item_has_errors(trans_id)
+                && let Some(mut item) = ctx.translated.get_item_mut(trans_id)
+            {
+                item.item_meta().has_errors = true;
+            }
         })
     }
 
@@ -168,16 +176,6 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let decl = bt_ctx.translate_vtable(id, item_meta, *ty, tref)?;
                 self.translated.global_decls.set_slot(id, decl);
             }
-            TransItemSource::VTableInit(ty, tref) => {
-                let Some(ItemId::Fun(id)) = trans_id else {
-                    unreachable!()
-                };
-                let tref = tref
-                    .clone()
-                    .map(|(def_id, args)| ty::TraitRef::try_new(def_id, args.into()).unwrap());
-                let decl = bt_ctx.translate_vtable_init(id, item_meta, *ty, tref)?;
-                self.translated.fun_decls.set_slot(id, decl);
-            }
             TransItemSource::Static(stt) => {
                 let Some(ItemId::Global(id)) = trans_id else {
                     unreachable!()
@@ -192,11 +190,11 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let decl = bt_ctx.translate_named_const(id, item_meta, *def, args.clone())?;
                 self.translated.global_decls.set_slot(id, decl);
             }
-            TransItemSource::TraitDecl(_) => {
+            TransItemSource::TraitDecl(trait_def_id) => {
                 let Some(ItemId::TraitDecl(id)) = trans_id else {
                     unreachable!()
                 };
-                let decl = bt_ctx.translate_trait_decl(id, item_meta)?;
+                let decl = bt_ctx.translate_trait_decl(id, item_meta, *trait_def_id)?;
                 self.translated.trait_decls.set_slot(id, decl);
             }
             TransItemSource::TraitImpl(impl_def_id) => {
@@ -233,9 +231,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 source_text: None,
                 attr_info: AttrInfo::default(),
                 is_local: false,
+                started_from: false,
+                is_extern: false,
                 opacity: ItemOpacity::Transparent,
                 lang_item: None,
                 diagnostic_item: None,
+                has_errors: false,
             },
             generics: GenericParams::empty(),
             implied_clauses: vec![].into(),
@@ -243,11 +244,87 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             types: IndexMap::new(),
             methods: IndexMap::new(),
             vtable: None,
+            is_unsafe: false,
         });
     }
 }
 
 impl ItemTransCtx<'_, '_> {
+    /// Compute which marker traits a (monomorphic) type implements, as charon does for
+    /// monomorphic types. Returns `None` for types that still have generic parameters.
+    pub(crate) fn translate_marker_traits(
+        &self,
+        rty: ty::Ty,
+    ) -> Option<Box<ImplementsMarkerTraits>> {
+        use rustc_middle::ty::{self as mty, TypingEnv};
+        use rustc_trait_selection::infer::TyCtxtInferExt;
+        use rustc_trait_selection::traits;
+        if self.t_ctx.ty_has_params(rty) {
+            return None;
+        }
+        let tcx = self.t_ctx.tcx;
+        let ty: mty::Ty<'_> = rustc_public::rustc_internal::internal(tcx, rty);
+        let typing_env = TypingEnv::fully_monomorphized();
+        let (infcx, param_env) = tcx.infer_ctxt().build_with_typing_env(typing_env);
+        let implements = |trait_id: Option<rustc_hir::def_id::DefId>| {
+            trait_id.is_some_and(|trait_id| {
+                traits::type_known_to_meet_bound_modulo_regions(&infcx, param_env, ty, trait_id)
+            })
+        };
+        Some(Box::new(ImplementsMarkerTraits {
+            is_sized: ty.is_sized(tcx, typing_env),
+            is_send: implements(tcx.get_diagnostic_item(rustc_span::sym::Send)),
+            is_sync: implements(tcx.lang_items().sync_trait()),
+            is_freeze: ty.is_freeze(tcx, typing_env),
+            is_unpin: ty.is_unpin(tcx, typing_env),
+        }))
+    }
+
+    /// The kind of a static global: its mutability, safety and thread-locality.
+    pub(crate) fn translate_static_kind(&self, def: mir::mono::StaticDef) -> GlobalKind {
+        let tcx = self.t_ctx.tcx;
+        let def_id = rustc_public::rustc_internal::internal(tcx, def.def_id());
+        let rustc_hir::def::DefKind::Static {
+            safety, mutability, ..
+        } = tcx.def_kind(def_id)
+        else {
+            unreachable!("not a static: {def_id:?}")
+        };
+        GlobalKind::Static {
+            is_mut: mutability.is_mut(),
+            is_safe: matches!(safety, rustc_hir::Safety::Safe),
+            is_thread_local: tcx.is_thread_local_static(def_id),
+        }
+    }
+
+    /// The pointer metadata of references to an unsized allocation of type `rty` holding
+    /// `size` bytes: the length of its unsized tail.
+    fn unsized_alloc_metadata(&self, rty: ty::Ty, size: usize) -> Result<ConstantExpr, Error> {
+        let tcx = self.t_ctx.tcx;
+        let ty: rustc_middle::ty::Ty<'_> = rustc_public::rustc_internal::internal(tcx, rty);
+        let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
+        let tail = tcx.struct_tail_for_codegen(ty, typing_env);
+        // The unsized tail starts after the sized prefix of the type.
+        let prefix = rty.layout()?.shape().size.bytes();
+        let len = match tail.kind() {
+            rustc_middle::ty::Str => size.saturating_sub(prefix) as u128,
+            rustc_middle::ty::Slice(elem) => {
+                let elem_size = rustc_public::rustc_internal::stable(*elem)
+                    .layout()?
+                    .shape()
+                    .size
+                    .bytes();
+                if elem_size == 0 {
+                    0
+                } else {
+                    (size.saturating_sub(prefix) / elem_size) as u128
+                }
+            }
+            _ => return Ok(ConstantExpr::mk_unit()),
+        };
+        Ok(ConstantExpr::mk_usize(len))
+    }
+
     /// Translate a type definition.
     ///
     /// Note that we translate the types one by one: we don't need to take into
@@ -283,6 +360,9 @@ impl ItemTransCtx<'_, '_> {
             .map(|l| (self.t_ctx.get_target_triple(), l))
             .collect();
         let ptr_metadata = self.translate_ptr_metadata();
+        let marker_traits = self.translate_marker_traits(ty::Ty::from_rigid_kind(
+            ty::RigidTy::Adt(*def, genargs.clone()),
+        ));
         let type_def = TypeDecl {
             def_id: trans_id,
             item_meta,
@@ -291,6 +371,7 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Normal,
             layout,
             ptr_metadata,
+            marker_traits,
         };
 
         Ok(type_def)
@@ -300,13 +381,15 @@ impl ItemTransCtx<'_, '_> {
         self,
         trans_id: TypeDeclId,
         item_meta: ItemMeta,
-        _def: &ty::ForeignDef,
+        def: &ty::ForeignDef,
     ) -> Result<TypeDecl, Error> {
         // Translate generics and predicates
         // self.translate_def_generics(span, def)?;
 
         // Translate type body
         let kind = TypeDeclKind::Opaque;
+        let marker_traits =
+            self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Foreign(*def)));
         let type_def = TypeDecl {
             def_id: trans_id,
             item_meta,
@@ -315,6 +398,7 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Normal,
             layout: Default::default(),
             ptr_metadata: PtrMetadata::None,
+            marker_traits,
         };
 
         Ok(type_def)
@@ -363,6 +447,11 @@ impl ItemTransCtx<'_, '_> {
                 })
                 .collect();
         }
+        let marker_traits = if tuple.is_generic() {
+            None
+        } else {
+            self.translate_marker_traits(tuple.rty)
+        };
         Ok(TypeDecl {
             def_id: trans_id,
             item_meta,
@@ -371,6 +460,7 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Builtin(BuiltinAdt::Tuple),
             layout,
             ptr_metadata,
+            marker_traits,
         })
     }
 
@@ -399,6 +489,7 @@ impl ItemTransCtx<'_, '_> {
             .into_iter()
             .map(|l| (self.t_ctx.get_target_triple(), l))
             .collect();
+        let marker_traits = self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Str));
         Ok(TypeDecl {
             def_id: trans_id,
             item_meta,
@@ -407,6 +498,7 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Builtin(BuiltinAdt::Str),
             layout,
             ptr_metadata: PtrMetadata::Length,
+            marker_traits,
         })
     }
 
@@ -434,8 +526,17 @@ impl ItemTransCtx<'_, '_> {
             || matches!(def.kind, mir::mono::InstanceKind::Intrinsic)
         {
             Body::Opaque
-        } else if let Some(body) = self.get_body(def) {
+        } else if let Some(MonoBody {
+            body,
+            cleanup_blocks,
+        }) = self.get_body(def)
+        {
             let mut bt_ctx = BodyTransCtx::new(&mut self, body.locals(), &mut signature);
+            bt_ctx.cleanup_blocks = cleanup_blocks;
+            bt_ctx.caller = Some(rustc_public::rustc_internal::internal(
+                bt_ctx.t_ctx.tcx,
+                def.def.def_id(),
+            ));
             bt_ctx.translate_body(span, def, &body)
         } else {
             trace!("Instance {} has no body -- left opaque.", def.name(),);
@@ -522,6 +623,11 @@ impl ItemTransCtx<'_, '_> {
             None => TyKind::Error("Untype global".into()).into_ty(),
         };
         let alloc: mir::alloc::GlobalAlloc = def.clone().into();
+        let (mut size, mut align) = (
+            Size::from_expr(SizeExpr::size_of(&translated_ty)),
+            Size::from_expr(SizeExpr::align_of(&translated_ty)),
+        );
+        let mut ptr_metadata = ConstantExpr::mk_unit();
         let (global_kind, value) = match alloc {
             mir::alloc::GlobalAlloc::Static(static_def) => {
                 let instance: mir::mono::Instance = static_def.into();
@@ -536,9 +642,25 @@ impl ItemTransCtx<'_, '_> {
                 } else {
                     self.translate_global_alloc_value(def, ty)?
                 };
-                (GlobalKind::Static, value)
+                (self.translate_static_kind(static_def), value)
             }
-            mir::alloc::GlobalAlloc::Memory(..) | mir::alloc::GlobalAlloc::TypeId { .. } => {
+            mir::alloc::GlobalAlloc::Memory(ref mem) => {
+                // Like charon, an anonymous allocation has the size and alignment of the
+                // allocation itself.
+                size = Size::new(mem.bytes.len() as u64);
+                align = Size::new(mem.align);
+                // References to an unsized global (e.g. a `str` or `[T]` allocation) get their
+                // metadata from the global.
+                if let Some(rty) = ty
+                    && let Ok(layout) = rty.layout()
+                    && layout.shape().is_unsized()
+                {
+                    ptr_metadata = self.unsized_alloc_metadata(rty, mem.bytes.len())?;
+                }
+                let value = self.translate_global_alloc_value(def, ty)?;
+                (GlobalKind::AnonConst, value)
+            }
+            mir::alloc::GlobalAlloc::TypeId { .. } => {
                 let value = self.translate_global_alloc_value(def, ty)?;
                 (GlobalKind::AnonConst, value)
             }
@@ -555,6 +677,9 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics: GenericParams::empty(),
             ty: translated_ty,
+            size,
+            align,
+            ptr_metadata,
             src: item_kind,
             global_kind,
             value,
@@ -583,6 +708,9 @@ impl ItemTransCtx<'_, '_> {
             Err(err) => TypeDeclKind::Error(err.msg),
         };
         let ptr_metadata = self.translate_ptr_metadata();
+        let marker_traits = self.translate_marker_traits(ty::Ty::from_rigid_kind(
+            ty::RigidTy::Closure(*def, genargs.clone()),
+        ));
         let type_def = TypeDecl {
             def_id: trans_id,
             item_meta,
@@ -591,6 +719,7 @@ impl ItemTransCtx<'_, '_> {
             src,
             layout: Default::default(),
             ptr_metadata,
+            marker_traits,
         };
 
         Ok(type_def)
@@ -621,17 +750,15 @@ impl ItemTransCtx<'_, '_> {
             self.translate_alloc_to_const(span, &alloc, Some(def.ty()))?
         };
 
-        // Distinguish thread-local statics (`#[thread_local]`) from regular ones.
-        let global_kind = if self.t_ctx.tcx.is_thread_local_static(internal_def_id) {
-            GlobalKind::ThreadLocal
-        } else {
-            GlobalKind::Static
-        };
+        let global_kind = self.translate_static_kind(def);
 
         Ok(GlobalDecl {
             def_id,
             item_meta,
             generics: GenericParams::empty(),
+            size: Size::from_expr(SizeExpr::size_of(&ty)),
+            align: Size::from_expr(SizeExpr::align_of(&ty)),
+            ptr_metadata: ConstantExpr::mk_unit(),
             ty,
             src: item_kind,
             global_kind,
@@ -678,6 +805,9 @@ impl ItemTransCtx<'_, '_> {
             def_id,
             item_meta,
             generics: GenericParams::empty(),
+            size: Size::from_expr(SizeExpr::size_of(&ty)),
+            align: Size::from_expr(SizeExpr::align_of(&ty)),
+            ptr_metadata: ConstantExpr::mk_unit(),
             ty,
             src: GlobalSource::Normal,
             global_kind: GlobalKind::NamedConst,
@@ -765,7 +895,10 @@ impl ItemTransCtx<'_, '_> {
         self,
         trans_id: TraitDeclId,
         item_meta: ItemMeta,
+        trait_def_id: rustc_public::DefId,
     ) -> Result<TraitDecl, Error> {
+        let internal = rustc_public::rustc_internal::internal(self.t_ctx.tcx, trait_def_id);
+        let is_unsafe = self.t_ctx.tcx.trait_def(internal).safety.is_unsafe();
         Ok(TraitDecl {
             def_id: trans_id,
             item_meta,
@@ -776,6 +909,7 @@ impl ItemTransCtx<'_, '_> {
             types: IndexMap::new(),
             methods: IndexMap::new(),
             vtable: None,
+            is_unsafe,
         })
     }
 
@@ -799,10 +933,16 @@ impl ItemTransCtx<'_, '_> {
             .translate_generic_args(span, &trait_ref.args())
             .unwrap_or_else(|_| GenericArgs::empty());
 
+        let header = self.t_ctx.tcx.impl_trait_header(internal);
+        let is_negative = matches!(header.polarity, rustc_middle::ty::ImplPolarity::Negative);
+        let is_unsafe = header.safety.is_unsafe();
+
         Ok(TraitImpl {
             def_id: trans_id,
             item_meta,
             src: TraitImplSource::Normal,
+            is_negative,
+            is_unsafe,
             impl_trait: TraitDeclRef {
                 id: trait_decl_id,
                 generics: Box::new(generics),
@@ -812,7 +952,9 @@ impl ItemTransCtx<'_, '_> {
             consts: IndexMap::new(),
             types: IndexMap::new(),
             methods: IndexMap::new(),
-            vtable: None,
+            // Obol doesn't translate the contents of trait impls (vtables are translated per
+            // concrete type instead, see `translate_vtable`).
+            vtable: VTableDecl::Unknown("trait impl contents are not translated by Obol".into()),
         })
     }
 }

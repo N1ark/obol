@@ -149,10 +149,11 @@ impl ItemTransCtx<'_, '_> {
             //   closure.call(args)
             // }
             let mk_stt = |content| Statement::new(span, content);
-            let mk_block = |statements, terminator| -> BlockData {
+            let mk_block = |statements, terminator, kind| -> BlockData {
                 BlockData {
                     statements,
                     terminator: Terminator::new(span, terminator),
+                    kind,
                 }
             };
             let fun_id: FunDeclId = self.register_fun_decl_id(span, instance);
@@ -194,18 +195,27 @@ impl ItemTransCtx<'_, '_> {
 
             let mut blocks = IndexMap::default();
             let start_block = blocks.reserve_slot();
-            let ret_block = blocks.push(mk_block(vec![], TerminatorKind::Return));
-            let unwind_block = blocks.push(mk_block(vec![], TerminatorKind::UnwindResume));
+            let ret_block = blocks.push(mk_block(
+                vec![],
+                TerminatorKind::Return,
+                UnwindKind::Regular,
+            ));
+            let unwind_block = blocks.push(mk_block(
+                vec![],
+                TerminatorKind::UnwindResume,
+                UnwindKind::Cleanup,
+            ));
             let call = TerminatorKind::Call {
                 target: ret_block,
                 call: Call {
                     func: fn_op,
                     args: vec![Operand::Move(state), Operand::Move(args_tupled)],
                     dest: output,
+                    safety: CallSafety::Inherit,
                 },
                 on_unwind: unwind_block,
             };
-            blocks.set_slot(start_block, mk_block(statements, call));
+            blocks.set_slot(start_block, mk_block(statements, call, UnwindKind::Regular));
 
             let body: ExprBody = GExprBody {
                 span,

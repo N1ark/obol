@@ -303,7 +303,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
         } else {
             match src {
                 // VTables may not have a def_id if they are for an auto-trait.
-                TransItemSource::VTable(_, _) | TransItemSource::VTableInit(_, _) => Name {
+                TransItemSource::VTable(_, _) => Name {
                     name: vec![PathElem::Ident("unknown_trait".into(), Disambiguator::ZERO)],
                 },
                 TransItemSource::Global(id, ..) => Name {
@@ -382,7 +382,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                         },
                     ))));
             }
-            TransItemSource::VTable(ty, tref) | TransItemSource::VTableInit(ty, tref) => {
+            TransItemSource::VTable(ty, tref) => {
                 let mut item_ctx = ItemTransCtx::new(None, self);
                 let generics = if let Some((_, args)) = tref {
                     item_ctx.translate_generic_args(Span::dummy(), &args.clone().into())?
@@ -482,7 +482,6 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             TransItemSource::Closure(..)
                 | TransItemSource::ClosureAsFn(..)
                 | TransItemSource::VTable(..)
-                | TransItemSource::VTableInit(..)
                 // Impl blocks have no meaningful attributes and `tcx.visibility` ICEs on external ones.
                 | TransItemSource::TraitImpl(..)
         ) || (matches!(src, TransItemSource::Fun(..)) && self.tcx.is_closure_like(internal))
@@ -575,9 +574,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             TransItemSource::Type(def, _) => Some(def.span()),
             // Builtins have no source location.
             TransItemSource::Tuple(..) | TransItemSource::Str => None,
-            TransItemSource::VTable(_, tdef) | TransItemSource::VTableInit(_, tdef) => {
-                tdef.as_ref().map(|t| t.0.span())
-            }
+            TransItemSource::VTable(_, tdef) => tdef.as_ref().map(|t| t.0.span()),
             TransItemSource::TraitDecl(did) | TransItemSource::TraitImpl(did) => {
                 let internal = rustc_public::rustc_internal::internal(self.tcx, *did);
                 Some(rustc_public::rustc_internal::stable(
@@ -590,12 +587,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             None => Span::dummy(),
         };
         let attr_info = self.translate_attr_info(span, item_src);
-        let is_local = match item_src.as_def_id() {
+        let (is_local, is_extern) = match item_src.as_def_id() {
             Some(def_id) => {
                 let internal = rustc_public::rustc_internal::internal(self.tcx, def_id);
-                internal.is_local()
+                (internal.is_local(), self.tcx.is_foreign_item(internal))
             }
-            None => false,
+            None => (false, false),
         };
 
         let (lang_item, diagnostic_item) = if let Some(def_id) = item_src.as_def_id() {
@@ -627,9 +624,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             source_text: None,
             attr_info,
             is_local,
+            started_from: self.started_from.contains(item_src),
+            is_extern,
             opacity,
             lang_item,
             diagnostic_item,
+            has_errors: false,
         };
         self.cached_item_metas
             .insert(item_src.clone(), item_meta.clone());

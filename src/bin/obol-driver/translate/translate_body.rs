@@ -1,4 +1,5 @@
 extern crate rustc_abi;
+extern crate rustc_attr_ir;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
@@ -7,7 +8,7 @@ extern crate rustc_span;
 
 use itertools::Itertools;
 use log::trace;
-use rustc_public::{CrateDefType, mir, rustc_internal, ty};
+use rustc_public::{CrateDef, CrateDefType, mir, rustc_internal, ty};
 use rustc_public_bridge::IndexedVal;
 use rustc_span::{Symbol, sym};
 use std::{
@@ -43,6 +44,12 @@ pub(crate) struct BodyTransCtx<'tcx, 'tctx, 'ictx> {
     /// writing the translation functions as recursive functions. We do
     /// so because we had stack overflows in the past.
     pub blocks_stack: VecDeque<mir::BasicBlockIdx>,
+    /// The item whose body we are translating, if it has a `DefId`. Used to compute the safety
+    /// of calls to `#[target_feature]` functions.
+    pub caller: Option<rustc_hir::def_id::DefId>,
+    /// For each MIR block, whether it is a cleanup (unwinding) block. `rustc_public` doesn't
+    /// expose this, so it is taken from the internal MIR body (see [`MonoBody`]).
+    pub cleanup_blocks: Vec<bool>,
 }
 
 impl<'tcx, 'tctx, 'ictx> Deref for BodyTransCtx<'tcx, 'tctx, 'ictx> {
@@ -72,6 +79,8 @@ impl<'tcx, 'tctx, 'ictx> BodyTransCtx<'tcx, 'tctx, 'ictx> {
             blocks: Default::default(),
             blocks_map: Default::default(),
             blocks_stack: Default::default(),
+            cleanup_blocks: Default::default(),
+            caller: None,
         }
     }
 }
@@ -82,6 +91,8 @@ pub(crate) struct BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
     pub b_ctx: &'bctx mut BodyTransCtx<'tcx, 'tctx, 'ictx>,
     /// Block onto which we're adding statements.
     pub current_block: BlockId,
+    /// The kind of the current block.
+    pub kind: UnwindKind,
     /// List of currently translated statements
     pub statements: Vec<Statement>,
 }
@@ -90,10 +101,12 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
     pub(crate) fn new(
         b_ctx: &'bctx mut BodyTransCtx<'tcx, 'tctx, 'ictx>,
         current_block: BlockId,
+        kind: UnwindKind,
     ) -> Self {
         BlockTransCtx {
             b_ctx,
             current_block,
+            kind,
             statements: Vec::new(),
         }
     }
@@ -103,6 +116,7 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
         let block = BlockData {
             statements: self.statements,
             terminator,
+            kind: self.kind,
         };
         self.b_ctx.blocks.set_slot(self.current_block, block);
     }
@@ -112,9 +126,10 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
     /// as calls: unwinding out of them is UB.
     fn push_nounwind_call(&mut self, span: Span, call: Call) {
         let target = self.blocks.reserve_slot();
-        let on_unwind = self.blocks.push(
-            Terminator::new(span, TerminatorKind::Abort(AbortKind::UndefinedBehavior)).into_block(),
-        );
+        let unwind_kind = self.kind.further_unwind_kind();
+        let on_unwind = self
+            .blocks
+            .push(Terminator::new(span, TerminatorKind::UndefinedBehavior).into_block(unwind_kind));
         let block = BlockData {
             statements: mem::take(&mut self.statements),
             terminator: Terminator::new(
@@ -125,6 +140,7 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
                     on_unwind,
                 },
             ),
+            kind: self.kind,
         };
         let current_block = mem::replace(&mut self.current_block, target);
         self.blocks.set_slot(current_block, block);
@@ -168,6 +184,7 @@ impl BodyTransCtx<'_, '_, '_> {
             name,
             ty,
             span,
+            drop_flag_for: None,
         });
         self.locals_map.insert(rid, local_id);
     }
@@ -223,11 +240,22 @@ impl BodyTransCtx<'_, '_, '_> {
 
     fn translate_basic_block(
         &mut self,
+        mir_block_id: mir::BasicBlockIdx,
         block_id: BlockId,
         block: &mir::BasicBlock,
     ) -> Result<(), Error> {
         // Translate the statements
-        let mut block_ctx = BlockTransCtx::new(self, block_id);
+        let kind = if self
+            .cleanup_blocks
+            .get(mir_block_id)
+            .copied()
+            .unwrap_or(false)
+        {
+            UnwindKind::Cleanup
+        } else {
+            UnwindKind::Regular
+        };
+        let mut block_ctx = BlockTransCtx::new(self, block_id, kind);
         for statement in &block.statements {
             block_ctx.translate_statement(statement)?;
         }
@@ -397,7 +425,7 @@ impl BodyTransCtx<'_, '_, '_> {
         while let Some(mir_block_id) = self.blocks_stack.pop_front() {
             let mir_block = body.blocks.get(mir_block_id).unwrap();
             let block_id = self.translate_basic_block_id(mir_block_id);
-            self.translate_basic_block(block_id, mir_block)?;
+            self.translate_basic_block(mir_block_id, block_id, mir_block)?;
         }
 
         // We might need to tuple arguments, and possibly create a local too
@@ -557,15 +585,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     let stable = rustc_public::rustc_internal::stable(ex_trait_ref);
                     stable.with_self_ty(self_ty)
                 });
-                let vtable_global = self.register_vtable(span, self_ty, trait_ref);
-                let vtable_ref = GlobalDeclRef {
-                    id: vtable_global,
-                    generics: Box::new(GenericArgs::empty()),
-                };
-                let meta = ConstantExpr::new(
-                    ConstantExprKind::Global(vtable_ref),
-                    TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
-                );
+                let meta = self.translate_vtable_ptr_const(span, self_ty, trait_ref);
                 Ok(UnsizingMetadata::VTable(self.dummy_trait_ref(), meta))
             }
             _ => {
@@ -849,10 +869,20 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         ));
                         CastKind::FnPtr(src_ty, tgt_ty)
                     }
+                    mir::CastKind::PointerExposeAddress => {
+                        let Some(tgt_scalar) = tgt_ty.kind().as_scalar().copied() else {
+                            raise_error!(self, span, "Pointer exposed to a non-scalar type")
+                        };
+                        CastKind::PtrExposeProvenance(src_ty, tgt_scalar)
+                    }
+                    mir::CastKind::PointerWithExposedProvenance => {
+                        let Some(src_scalar) = src_ty.kind().as_scalar().copied() else {
+                            raise_error!(self, span, "Pointer built from a non-scalar type")
+                        };
+                        CastKind::PtrWithExposedProvenance(src_scalar, tgt_ty)
+                    }
                     mir::CastKind::PtrToPtr
                     | mir::CastKind::FnPtrToPtr
-                    | mir::CastKind::PointerExposeAddress
-                    | mir::CastKind::PointerWithExposedProvenance
                     | mir::CastKind::PointerCoercion(
                         mir::PointerCoercion::MutToConstPointer
                         | mir::PointerCoercion::ArrayToPointer,
@@ -1158,7 +1188,15 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             generics: Box::new(GenericArgs::empty()),
         });
         let dest = self.locals.new_var(None, Ty::mk_unit());
-        self.push_nounwind_call(span, Call { func, args, dest });
+        self.push_nounwind_call(
+            span,
+            Call {
+                func,
+                args,
+                dest,
+                safety: CallSafety::Inherit,
+            },
+        );
         Ok(())
     }
 
@@ -1187,11 +1225,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 TerminatorKind::Switch { data, branches }
             }
             mir::TerminatorKind::Resume => TerminatorKind::UnwindResume,
-            mir::TerminatorKind::Abort => TerminatorKind::Abort(AbortKind::UnwindTerminate),
+            mir::TerminatorKind::Abort => TerminatorKind::UnwindTerminate,
             mir::TerminatorKind::Return => TerminatorKind::Return,
             // A MIR `Unreachable` terminator indicates undefined behavior of the rust abstract
             // machine.
-            mir::TerminatorKind::Unreachable => TerminatorKind::Abort(AbortKind::UndefinedBehavior),
+            mir::TerminatorKind::Unreachable => TerminatorKind::UndefinedBehavior,
             mir::TerminatorKind::Drop {
                 place,
                 target,
@@ -1250,6 +1288,8 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         func,
                         args: vec![operand],
                         dest: unit_place,
+                        // Desugared drops are safe to call.
+                        safety: CallSafety::Safe,
                     },
                     target,
                     on_unwind,
@@ -1402,20 +1442,19 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
     }
 
     fn translate_unwind(&mut self, span: Span, unwind: &mir::UnwindAction) -> BlockId {
+        let unwind_kind = self.kind.further_unwind_kind();
         match unwind {
             mir::UnwindAction::Continue => {
                 let unwind_continue = Terminator::new(span, TerminatorKind::UnwindResume);
-                self.blocks.push(unwind_continue.into_block())
+                self.blocks.push(unwind_continue.into_block(unwind_kind))
             }
             mir::UnwindAction::Unreachable => {
-                let abort =
-                    Terminator::new(span, TerminatorKind::Abort(AbortKind::UndefinedBehavior));
-                self.blocks.push(abort.into_block())
+                let abort = Terminator::new(span, TerminatorKind::UndefinedBehavior);
+                self.blocks.push(abort.into_block(unwind_kind))
             }
             mir::UnwindAction::Terminate => {
-                let abort =
-                    Terminator::new(span, TerminatorKind::Abort(AbortKind::UnwindTerminate));
-                self.blocks.push(abort.into_block())
+                let abort = Terminator::new(span, TerminatorKind::UnwindTerminate);
+                self.blocks.push(abort.into_block(unwind_kind))
             }
             mir::UnwindAction::Cleanup(bb) => self.translate_basic_block_id(*bb),
         }
@@ -1442,6 +1481,12 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         let fn_args = self.translate_arguments(span, args)?;
         // Translate the function operand.
         let fn_ty = fun.ty(self.local_decls)?;
+        let safety = match fn_ty.kind() {
+            ty::TyKind::RigidTy(ty::RigidTy::FnDef(fn_def, args)) => {
+                self.translate_call_safety(fn_def, &args)
+            }
+            _ => CallSafety::Inherit,
+        };
         let mut extra_stts: Vec<StatementKind> = vec![];
         let fn_operand = match fn_ty.kind() {
             ty::TyKind::RigidTy(ty::RigidTy::FnDef(fn_def, args)) => {
@@ -1502,14 +1547,15 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             func: fn_operand,
             args: fn_args,
             dest: lval,
+            safety,
         };
 
         let target = match target {
             Some(target) => self.translate_basic_block_id(*target),
             None => {
-                let abort =
-                    Terminator::new(span, TerminatorKind::Abort(AbortKind::UndefinedBehavior));
-                self.blocks.push(abort.into_block())
+                let abort = Terminator::new(span, TerminatorKind::UndefinedBehavior);
+                let kind = self.kind;
+                self.blocks.push(abort.into_block(kind))
             }
         };
         let on_unwind = self.translate_unwind(span, unwind);
@@ -1523,6 +1569,53 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             target,
             on_unwind,
         })
+    }
+
+    /// Compute the safety of a call to the given function item, mirroring charon-driver.
+    fn translate_call_safety(&self, fn_def: ty::FnDef, args: &ty::GenericArgs) -> CallSafety {
+        let tcx = self.t_ctx.tcx;
+        let def_id = rustc_internal::internal(tcx, fn_def.def_id());
+        let sig_is_unsafe = tcx.fn_sig(def_id).skip_binder().safety().is_unsafe();
+
+        // Safe `#[target_feature]` functions still get an unsafe signature, but calling them is
+        // safe if the caller enables the same (or implying) features. We also get the inverse:
+        // `#[unsafe(force_target_feature)]` functions have a safe signature, but calling them is
+        // unsafe if the caller does not enable the feature.
+        let attrs = tcx.codegen_fn_attrs(def_id);
+        let caller_features = self
+            .caller
+            .map(|caller| tcx.typeck_root_def_id(caller))
+            .filter(|caller| tcx.def_kind(*caller).has_codegen_attrs())
+            .map_or(&[][..], |caller| {
+                &tcx.codegen_fn_attrs(caller).target_features[..]
+            });
+        let has_feature = tcx.is_target_feature_call_safe(&attrs.target_features, caller_features);
+        if sig_is_unsafe && attrs.safe_target_features && has_feature {
+            return CallSafety::Safe;
+        } else if !has_feature {
+            return CallSafety::Unsafe;
+        }
+
+        // Explicitly calling a `Drop` method is unsafe.
+        let trait_id = tcx.trait_of_assoc(def_id);
+        if let Some(trait_id) = trait_id
+            && tcx.is_lang_item(trait_id, rustc_attr_ir::LangItem::Drop)
+        {
+            return CallSafety::Unsafe;
+        }
+
+        // Obol is monomorphic: like charon in mono mode, track the safety of dyn trait method
+        // calls here since trait declarations carry no methods.
+        let args = rustc_internal::internal(tcx, args);
+        if trait_id.is_some() && args.type_at(0).is_trait() {
+            return if sig_is_unsafe {
+                CallSafety::Unsafe
+            } else {
+                CallSafety::Safe
+            };
+        }
+
+        CallSafety::Inherit
     }
 
     /// Evaluate function arguments in a context, and return the list of computed

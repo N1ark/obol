@@ -66,6 +66,8 @@ pub struct TranslateCtx<'tcx> {
     // FIXME: in the future, we should look into preserving attributes that exist in the AST.
     // see https://rust-lang.zulipchat.com/#narrow/channel/131828-t-compiler/topic/Retrieving.20.60.23.5Btest.5D.60.20and.20.60.23.5Bshould_panic.5D.60/with/577547122
     pub test_fn_paths: HashSet<String>,
+    /// The items we started translation from (see `collect_entrypoints`).
+    pub started_from: HashSet<TransItemSource>,
 }
 
 /// A translation context for items.

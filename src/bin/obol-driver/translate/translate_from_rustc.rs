@@ -285,6 +285,10 @@ impl TranslateCtx<'_> {
                     span: self.translate_span_from_rustc(span),
                 })
             }
+            AttributeKind::ExportName { name, span } => Ok(from_rustc::AttributeKind::ExportName {
+                name: (name).to_string().into(),
+                span: self.translate_span_from_rustc(span),
+            }),
             AttributeKind::Fundamental => Ok(from_rustc::AttributeKind::Fundamental),
             AttributeKind::Ignore { span, reason } => Ok(from_rustc::AttributeKind::Ignore {
                 span: self.translate_span_from_rustc(span),
@@ -297,6 +301,9 @@ impl TranslateCtx<'_> {
                 self.translate_inline_attr_from_rustc(_0)?,
                 self.translate_span_from_rustc(_1),
             )),
+            AttributeKind::LinkSection { name } => Ok(from_rustc::AttributeKind::LinkSection {
+                name: (name).to_string().into(),
+            }),
             AttributeKind::MayDangle(_0) => Ok(from_rustc::AttributeKind::MayDangle(
                 self.translate_span_from_rustc(_0),
             )),
