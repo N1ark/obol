@@ -46,6 +46,10 @@ failure; with `--sysroot`, it resolves the value the same way (`default` prints 
 sysroot, a path is printed back). Use it to compile crates that are linked into analysed code
 (e.g. with `--extern`) against the same standard library.
 
+**Constants.** Anonymous constants are always evaluated: inline `const { .. }` blocks become
+values, and promoted constants (`&[1, 2, 3]`) become `AnonConst` globals holding the evaluated
+value (no initializer function), referenced with `&`, so they have static lifetime.
+
 ## Buck2 projects: `obol buck2`
 
 ```sh
