@@ -849,6 +849,8 @@ pub fn translate<'tcx, 'ctx>(
             .keys()
             .copied()
             .filter(|id| !ctx.translated.item_names.contains_key(id))
+            // Sort for a deterministic output: naming an item may register new ones.
+            .sorted()
             .collect();
         if missing.is_empty() {
             break;
