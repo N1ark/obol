@@ -13,6 +13,7 @@ extern crate rustc_session;
 extern crate rustc_span;
 
 pub mod driver;
+pub mod missing_mir;
 pub mod transform;
 pub mod translate;
 
@@ -22,6 +23,7 @@ use charon_lib::{
     export::CrateData, logger, options::SerializationFormat, transform::TransformCtx,
 };
 use obol_lib::args::{self, OutputFormat};
+use obol_lib::driver_env::{self, DriverMode};
 
 pub enum ObolError {
     /// Number of errors encountered during translation.
@@ -148,15 +150,31 @@ fn run_obol(options: args::CliOpts) -> Result<usize, ObolError> {
             OutputFormat::Postcard => SerializationFormat::Postcard,
         };
 
-        let path = options.dest_file.clone().unwrap_or_else(|| {
-            let crate_name = &crate_data.translated.crate_name;
-            let extension = serial_fmt.output_extension(true);
-            PathBuf::from(format!("{crate_name}.{extension}"))
-        });
+        let path = driver_env::dest_from_env()
+            .or_else(|| options.dest_file.clone())
+            .unwrap_or_else(|| {
+                let crate_name = &crate_data.translated.crate_name;
+                let extension = serial_fmt.output_extension(true);
+                PathBuf::from(format!("{crate_name}.{extension}"))
+            });
 
+        if let Some(parent) = path.parent()
+            && !parent.as_os_str().is_empty()
+        {
+            let _ = std::fs::create_dir_all(parent);
+        }
         crate_data
             .serialize_to_file(&path, serial_fmt)
             .expect("Failed to write output");
+    }
+
+    // Report functions of dependencies that had no MIR (their crate wasn't compiled with
+    // `-Zalways-encode-mir`). In explicit translate mode (e.g. `obol buck2`), this is an error:
+    // the output would silently lack those bodies.
+    let strict = matches!(DriverMode::from_env(), Ok(DriverMode::Translate))
+        && env::var_os(driver_env::OBOL_ALLOW_MISSING_MIR).is_none();
+    if missing_mir::report(strict) && strict {
+        return Err(ObolError::ObolError(error_count + 1));
     }
 
     Ok(error_count)
@@ -169,9 +187,17 @@ fn main() {
     // Retrieve the Charon options by deserializing them from the environment variable
     // (cargo-charon serialized the arguments and stored them in a specific environment
     // variable before calling cargo with RUSTC_WRAPPER=charon-driver).
-    let options: args::CliOpts = match env::var(args::OBOL_ARGS) {
-        Ok(opts) => serde_json::from_str(opts.as_str()).unwrap(),
-        Err(_) => Default::default(),
+    let options: args::CliOpts = if let Some(file) = env::var_os(driver_env::OBOL_ARGS_FILE) {
+        let contents = std::fs::read_to_string(&file).unwrap_or_else(|e| {
+            eprintln!("error: cannot read {}: {e}", driver_env::OBOL_ARGS_FILE);
+            std::process::exit(1)
+        });
+        serde_json::from_str(&contents).unwrap()
+    } else {
+        match env::var(args::OBOL_ARGS) {
+            Ok(opts) => serde_json::from_str(opts.as_str()).unwrap(),
+            Err(_) => Default::default(),
+        }
     };
 
     // Catch any and all panics coming from charon to display a clear error.

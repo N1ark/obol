@@ -3,6 +3,7 @@ use crate::ObolError;
 use crate::translate::translate_crate;
 use charon_lib::transform::TransformCtx;
 use obol_lib::args::{self, CliOpts};
+use obol_lib::driver_env::DriverMode;
 use obol_lib::mir_options;
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::Config;
@@ -52,9 +53,25 @@ fn setup_compiler(config: &mut Config, do_translate: bool) {
 /// charon (e.g. because it was a dependency). Otherwise returns the translated crate, ready for
 /// post-processing transformations.
 pub fn run_rustc_driver(options: &CliOpts) -> Result<Option<TransformCtx>, ObolError> {
-    // Retreive the command-line arguments pased to `charon_driver`. The first arg is the path to
-    // the current executable, we skip it.
-    let mut compiler_args: Vec<String> = env::args().skip(1).collect();
+    // Retrieve the command-line arguments passed to the driver, normalized so that the first one
+    // is a program name, as `rustc_driver` expects (see `driver_args`).
+    let mut compiler_args: Vec<String> = driver_args(env::args().collect());
+    // For inspecting the command line we need `@argsfile`s expanded (Buck passes almost
+    // everything through argsfiles). rustc still gets the unexpanded arguments and expands them
+    // itself, the same way.
+    let inspected_args = match obol_lib::argsfile::expand_argsfiles(
+        &compiler_args[1..],
+        &env::current_dir().unwrap_or_default(),
+    ) {
+        Ok(args) => args,
+        // Let rustc report the error.
+        Err(_) => compiler_args[1..].to_vec(),
+    };
+
+    let mode = DriverMode::from_env().unwrap_or_else(|err| {
+        eprintln!("error: {err}");
+        std::process::exit(1)
+    });
 
     // When called using cargo, we tell cargo to use `charon-driver` by setting the `RUSTC_WRAPPER`
     // env var. This uses `charon-driver` for all the crates being compiled.
@@ -69,17 +86,24 @@ pub fn run_rustc_driver(options: &CliOpts) -> Result<Option<TransformCtx>, ObolE
     // Currently, we detect this by checking for "--target=", which is never set for host crates.
     // This matches what Miri does, which hopefully makes it reliable enough. This relies on us
     // always invoking cargo itself with `--target`, which `charon` ensures.
-    let is_target = arg_values(&compiler_args, "--target").next().is_some();
+    let is_target = arg_values(&inspected_args, "--target").next().is_some();
     // When building test binaries with `cargo test --no-run`, cargo first compiles the library
     // crate (primary package, with codegen) and then the test binary. We only want to translate
     // the actual test binary (identified by the `--test` flag that cargo passes to rustc), not the
     // library. If we suppressed codegen for the library, the test binary could not link against it.
     // `OBOL_BUILDING_TEST` is set by `obol` when it detects `--test` in the spread args.
     let is_building_test_target = env::var("OBOL_BUILDING_TEST").is_ok();
-    let is_test_binary = compiler_args.iter().any(|a| a == "--test");
-    // Whether this is the crate we want to translate.
-    let is_selected_crate =
-        !is_workspace_dependency && is_target && (!is_building_test_target || is_test_binary);
+    let is_test_binary = inspected_args.iter().any(|a| a == "--test");
+    // Whether this is the crate we want to translate. Build systems that know which invocation is
+    // the root (Buck: `--target` is always passed, so the heuristic would select every crate) set
+    // `OBOL_MODE` explicitly.
+    let is_selected_crate = match mode {
+        DriverMode::Translate => true,
+        DriverMode::Rustc => false,
+        DriverMode::Auto => {
+            !is_workspace_dependency && is_target && (!is_building_test_target || is_test_binary)
+        }
+    };
 
     // Tweak options to get usable MIR even for foreign crates. The flags come last so that they
     // take precedence over the user's.
@@ -88,7 +112,7 @@ pub fn run_rustc_driver(options: &CliOpts) -> Result<Option<TransformCtx>, ObolE
     // built by `obol setup`), unless the command line already specifies one. Host crates (build
     // scripts and proc-macros) keep the toolchain's sysroot, like `cargo miri` does.
     if is_target
-        && arg_values(&compiler_args, "--sysroot").next().is_none()
+        && arg_values(&inspected_args, "--sysroot").next().is_none()
         && let Some(sysroot) = env::var_os(args::OBOL_SYSROOT)
     {
         compiler_args.push("--sysroot".to_owned());
@@ -168,6 +192,31 @@ impl<'a> Callbacks for RunCompilerNormallyCallbacks<'a> {
     fn config(&mut self, config: &mut Config) {
         setup_compiler(config, false);
     }
+}
+
+/// Normalize the driver's `argv` into rustc arguments whose first element is a program name.
+///
+/// The driver is invoked in several ways:
+/// * as a `RUSTC_WRAPPER` by cargo: `obol-driver /path/to/rustc <args>`;
+/// * by `obol rustc`: `obol-driver rustc <args>`;
+/// * directly as the compiler, e.g. by Buck's `rustc_action.py`: `obol-driver @argsfile` or
+///   `obol-driver <args>`.
+///
+/// `rustc_driver` expects `args[0]` to be the program name, so in the last case we insert one.
+fn driver_args(argv: Vec<String>) -> Vec<String> {
+    let mut args: Vec<String> = argv.into_iter().skip(1).collect();
+    let first_is_rustc = args.first().is_some_and(|a| {
+        !a.starts_with('-')
+            && !a.starts_with('@')
+            && std::path::Path::new(a)
+                .file_stem()
+                .and_then(|s| s.to_str())
+                .is_some_and(|s| s == "rustc" || s.ends_with("-rustc") || s.ends_with("_rustc"))
+    });
+    if !first_is_rustc {
+        args.insert(0, "rustc".to_owned());
+    }
+    args
 }
 
 /// Returns the values of the command-line options that match `find_arg`. The options are built-in

@@ -133,7 +133,9 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             Some(id) => *id,
             None => {
                 let filename = smap.span_to_filename(span);
-                let filename = self.translate_filename(&filename);
+                let translated = self.translate_filename(&filename);
+                let filename =
+                    self.normalize_buck_filename(translated, &filename, source_file.cnum);
                 let id = self.register_file(filename, span);
                 self.source_file_to_id.insert(source_file.stable_id, id);
                 id

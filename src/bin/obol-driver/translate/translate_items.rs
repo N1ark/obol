@@ -540,6 +540,7 @@ impl ItemTransCtx<'_, '_> {
             bt_ctx.translate_body(span, def, &body)
         } else {
             trace!("Instance {} has no body -- left opaque.", def.name(),);
+            self.record_missing_mir(def);
             Body::Missing
         };
 

@@ -1,0 +1,57 @@
+load("@prelude//tests:test_toolchain.bzl", "noop_test_toolchain")
+load("@prelude//toolchains:cxx.bzl", "system_cxx_toolchain")
+load("@prelude//toolchains:genrule.bzl", "system_genrule_toolchain")
+load("@prelude//toolchains:python.bzl", "system_python_bootstrap_toolchain", "system_python_toolchain")
+load("@prelude//toolchains:remote_test_execution.bzl", "remote_test_execution_toolchain")
+load(":rust.bzl", "obol_test_rust_toolchain")
+
+system_cxx_toolchain(
+    name = "cxx",
+    compiler = "gcc",
+    compiler_type = "gcc",
+    cxx_compiler = "g++",
+    linker = "g++",
+    visibility = ["PUBLIC"],
+)
+
+system_genrule_toolchain(name = "genrule", visibility = ["PUBLIC"])
+
+system_python_bootstrap_toolchain(name = "python_bootstrap", visibility = ["PUBLIC"])
+
+system_python_toolchain(name = "python", visibility = ["PUBLIC"])
+
+noop_test_toolchain(name = "test", visibility = ["PUBLIC"])
+
+remote_test_execution_toolchain(name = "remote_test_execution", visibility = ["PUBLIC"])
+
+# Absolute path of the rustc matching obol-driver (written into .buckconfig by run.sh).
+_COMPILER = read_root_config("rust", "compiler", "rustc")
+
+# Like fbcode's `rust.extra_rustc_flags`: space-separated, applied to every crate incl. std.
+_EXTRA_RUSTC_FLAGS = [f for f in read_root_config("rust", "extra_rustc_flags", "").split(" ") if f]
+
+_STD = "root//third-party/rust-std"
+
+# Toolchain for user crates: std comes from Buck-built explicit sysroot deps (empty --sysroot).
+obol_test_rust_toolchain(
+    name = "rust",
+    compiler = _COMPILER,
+    core = _STD + ":core",
+    std = _STD + ":std",
+    proc_macro = _STD + ":proc_macro",
+    panic_unwind = _STD + ":panic_unwind",
+    panic_abort = _STD + ":panic_abort",
+    others = [_STD + ":alloc", _STD + ":compiler_builtins", _STD + ":test"],
+    # Needed for `--extern noprelude,nounused:std=...` (fbcode passes it too).
+    rustc_flags = ["-Zunstable-options"],
+    extra_rustc_flags = _EXTRA_RUSTC_FLAGS,
+    visibility = ["PUBLIC"],
+)
+
+# Toolchain for the std crates themselves (generated in third-party/rust-std by gen_std_buck.py).
+obol_test_rust_toolchain(
+    name = "rust_bootstrap",
+    compiler = _COMPILER,
+    extra_rustc_flags = _EXTRA_RUSTC_FLAGS,
+    visibility = ["PUBLIC"],
+)

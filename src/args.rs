@@ -24,6 +24,12 @@ pub enum ObolCli {
     /// Build (or reuse the cached) sysroot that Obol compiles crates against: the standard library
     /// built from the toolchain's sources with Obol's MIR options.
     Setup(SetupOpts),
+    /// Runs obol on a Buck2 Rust target (rust_library, rust_binary or rust_test).
+    ///
+    /// Buck builds all dependencies, std included, with full MIR (in a dedicated isolation dir),
+    /// then obol-driver re-runs the target crate's exact rustc command line and translates it.
+    /// Arguments after `--` are passed to `buck2 build`/`buck2 aquery` (e.g. `@fbcode//mode/dev`).
+    Buck2(Buck2Opts),
     /// List the targets (lib, bins, examples, tests) of a cargo project, as a
     /// JSON array of `{ "name": ..., "kind": ... }` objects. Run from within the
     /// crate directory.
@@ -37,6 +43,9 @@ pub enum ObolCli {
 }
 
 #[derive(Debug, Default, Clone, clap::Parser, Serialize, Deserialize)]
+// Missing fields take their default, so that hand-written `OBOL_ARGS`/`OBOL_ARGS_FILE` JSON (e.g.
+// in a Buck action) only needs the options it sets.
+#[serde(default)]
 pub struct CliOpts {
     /// The destination file. By default `<dest_dir>/<crate_name>.ullbc`.
     #[clap(long = "dest-file", value_parser)]
@@ -79,9 +88,43 @@ pub struct CliOpts {
     /// sysroot, or a path. For `obol rustc`, a `--sysroot` rustc argument takes precedence.
     #[clap(long = "sysroot")]
     pub sysroot: Option<String>,
-    /// Args that are passed to the underlying tool (`rustc` or `cargo` depending on `--cargo`).
+    /// Args that are passed to the underlying tool (`rustc`, `cargo` or `buck2`).
     #[arg(last = true)]
     pub spread: Vec<String>,
+}
+
+/// Options of `obol buck2`.
+#[derive(Debug, Clone, clap::Parser)]
+pub struct Buck2Opts {
+    /// The Buck2 target to translate, e.g. `//foo:bar` or `fbcode//foo:bar`.
+    pub target: String,
+    /// Translate the crate as a test harness: adds `--test` to its rustc command line (like
+    /// `cargo test --lib`) and uses the `#[test]` functions as entry points. Implied for targets
+    /// whose rustc command line already has `--test` (`rust_test`).
+    #[clap(long = "test")]
+    pub test: bool,
+    /// The `buck2` executable.
+    #[clap(long = "buck2", default_value = "buck2", env = "OBOL_BUCK2")]
+    pub buck2: String,
+    /// Buck2 isolation dir used for the full-MIR build. Using a dedicated one keeps the
+    /// `-c rust.extra_rustc_flags=...` config change from invalidating your normal daemon state.
+    #[clap(long = "isolation-dir", default_value = "obol")]
+    pub isolation_dir: String,
+    /// Print the reconstructed obol-driver invocation (environment, arguments) and stop.
+    #[clap(long = "print-command")]
+    pub print_command: bool,
+    /// Don't check that Buck's rustc and obol-driver are the same compiler version.
+    #[clap(long = "skip-version-check")]
+    pub skip_version_check: bool,
+    /// Don't fail when a function from a dependency has no MIR (only warn).
+    #[clap(long = "allow-missing-mir")]
+    pub allow_missing_mir: bool,
+    /// Don't add `-c rust.extra_rustc_flags=<Obol's MIR flags>`: use when the build already
+    /// produces full-MIR metadata (e.g. through a modifier or a custom toolchain).
+    #[clap(long = "no-mir-flags")]
+    pub no_mir_flags: bool,
+    #[clap(flatten)]
+    pub obol: CliOpts,
 }
 
 #[derive(Debug, Default, Clone, clap::Parser, Serialize, Deserialize)]

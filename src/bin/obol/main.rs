@@ -7,6 +7,7 @@ use std::{env, path::PathBuf, process::ExitStatus};
 
 use crate::toolchain::{toolchain_path, toolchain_version};
 
+mod buck2;
 mod setup;
 mod toolchain;
 
@@ -25,6 +26,10 @@ fn main() -> Result<()> {
                 eprintln!("Obol's sysroot: {}", sysroot.display());
             }
             ExitStatus::default()
+        }
+        ObolCli::Buck2(opts) => {
+            ensure_rustup();
+            buck2::translate_with_buck2(opts)?
         }
         ObolCli::ListTargets => {
             list_targets()?;
