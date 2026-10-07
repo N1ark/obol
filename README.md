@@ -33,7 +33,9 @@ minutes and needs access to crates.io; it is then cached in
 `$XDG_CACHE_HOME/obol/sysroot/<rustc version>-<commit>/<target>` (or under `$OBOL_SYSROOT_DIR`
 instead of `$XDG_CACHE_HOME/obol/sysroot`). Concurrent Obol runs wait for each other (lock file)
 instead of building it twice, and a cache that is incomplete or corrupt (missing or unreadable
-`core`/`alloc`/`std` metadata, interrupted build) is rebuilt. `--sysroot` has the same semantics
+`core`/`alloc`/`std` metadata, interrupted build) is rebuilt. Source paths are not remapped, so
+the spans of standard-library items point at the toolchain's `rust-src` files (written
+`/rustc/library/...` in the output, relative to `<toolchain>/lib/rustlib/src/rust`). `--sysroot` has the same semantics
 as Charon's: `--sysroot default` uses the toolchain's distributed sysroot (which lacks MIR bodies
 for many standard library functions), `--sysroot <path>` uses that sysroot. For `obol rustc`, a
 rustc `--sysroot` argument takes precedence. Build scripts and proc-macros are always compiled

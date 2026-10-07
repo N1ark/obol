@@ -109,13 +109,12 @@ pub fn ensure_sysroot(target: Option<&str>) -> Result<PathBuf> {
         cargo.env_remove(var);
     }
 
-    let mut rustflags = obol_lib::mir_options::rustc_flags();
-    // Make the paths to the standard library sources look like those of the distributed standard
-    // library, so that they don't depend on where the toolchain is installed.
-    rustflags.push(format!(
-        "--remap-path-prefix={}=/rustc/{commit}/library",
-        src_dir.display()
-    ));
+    // No `--remap-path-prefix` (like cargo-miri): the standard library's spans must stay real
+    // paths into the toolchain's `rust-src`. rustc only maps `/rustc/<hash>/...` back to local
+    // files when the sysroot itself contains `lib/rustlib/src/rust`, which ours doesn't, so a remap
+    // would leave nonexistent paths in the output. (Changing the flags changes
+    // `rustc-build-sysroot`'s hash, so caches built with the old remap are rebuilt in place.)
+    let rustflags = obol_lib::mir_options::rustc_flags();
 
     // A full build lets the sysroot be used for anything, but needs a linker and C library for
     // the target (`std` is also built as a dylib). Obol only needs the metadata (with MIR) of the
