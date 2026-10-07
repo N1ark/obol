@@ -259,8 +259,22 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         })
                     }
                     _ => {
+                        let pointee_has_len_metadata = || {
+                            let tcx = self.t_ctx.tcx;
+                            let Some(pointee) = rty.kind().builtin_deref(true).map(|d| d.ty) else {
+                                return false;
+                            };
+                            let pointee: rustc_middle::ty::Ty<'_> =
+                                rustc_public::rustc_internal::internal(tcx, pointee);
+                            let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
+                            matches!(
+                                tcx.struct_tail_for_codegen(pointee, typing_env).kind(),
+                                rustc_middle::ty::Str | rustc_middle::ty::Slice(..)
+                            )
+                        };
                         let (metadata, dyn_self_ty) = match subty.kind() {
-                            TyKind::Slice(..) => {
+                            // Slices, and (e.g. `CStr`) structs with a slice or `str` tail.
+                            TyKind::Slice(..) | TyKind::Adt(..) if pointee_has_len_metadata() => {
                                 let meta_bytes =
                                     &alloc.bytes.as_slice()[offset + size / 2..offset + size];
                                 let len =
@@ -311,6 +325,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     && let Ok(layout) = inner.layout()
                                     && !layout.shape().is_unsized()
                                     && mem.bytes.len() > layout.shape().size.bytes() as usize =>
+                            {
+                                self.raw_alloc_ty(mem.bytes.len(), mem.align as usize)?
+                            }
+                            // An unsized pointee (e.g. `&CStr`): we avoid unsized globals by
+                            // representing the allocation as raw memory; the reference keeps the
+                            // metadata.
+                            (GlobalAlloc::Memory(mem), _)
+                                if metadata.is_some()
+                                    && let Some(inner) =
+                                        rty.kind().builtin_deref(true).map(|d| d.ty)
+                                    && let Ok(layout) = inner.layout()
+                                    && layout.shape().is_unsized() =>
                             {
                                 self.raw_alloc_ty(mem.bytes.len(), mem.align as usize)?
                             }

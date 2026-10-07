@@ -158,6 +158,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             8 if size % 8 == 0 => (ty::UintTy::U64, 8),
             4 if size % 4 == 0 => (ty::UintTy::U32, 4),
             2 if size % 2 == 0 => (ty::UintTy::U16, 2),
+            1 => (ty::UintTy::U8, 1),
             _ => {
                 raise_error!(
                     self,
