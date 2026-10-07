@@ -2,7 +2,7 @@
 // Final ULLBC:
 
 // Full name: core::ptr::non_null::NonNull::<i32>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<i32> {
   pointer: *const i32 is !null,
 }
@@ -111,7 +111,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -150,13 +150,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -174,7 +174,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -476,10 +476,16 @@ const anon_const_7: [u8; 62usize] = [33u8, 109u8, 101u8, 109u8, 58u8, 58u8, 99u8
 // Full name: core::mem::SizedTypeProperties::IS_ZST::<i32>
 pub const IS_ZST::<i32>: bool = false
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<i32>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<i32> {
+  _0: i32,
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<i32>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<i32> {
-  value: i32,
+  value: MaybeDangling::<i32>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<i32>
@@ -1449,18 +1455,22 @@ pub fn branch::<i32>(self: NeverShortCircuit::<i32>) -> ControlFlow::<NeverShort
     }
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<NeverShortCircuitResidual, !>
+// Full name: core::convert::Infallible
+pub enum Infallible {
+}
+
+// Full name: core::ops::control_flow::ControlFlow::<NeverShortCircuitResidual, Infallible>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<NeverShortCircuitResidual, !> {
-  Continue { _0: ! },
+pub enum ControlFlow::<NeverShortCircuitResidual, Infallible> {
+  Continue { _0: Infallible },
   Break { _0: NeverShortCircuitResidual },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32>
+// Full name: core::ops::control_flow::ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32> {
+pub enum ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32> {
   Continue { _0: i32 },
-  Break { _0: ControlFlow::<NeverShortCircuitResidual, !> },
+  Break { _0: ControlFlow::<NeverShortCircuitResidual, Infallible> },
 }
 
 #[track_caller]
@@ -1563,19 +1573,19 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     let _4: bool; // anonymous local
     let _5: usize; // anonymous local
     let _6: usize; // anonymous local
-    let _7: ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32>; // anonymous local
+    let _7: ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32>; // anonymous local
     let self_8: ControlFlow::<NeverShortCircuitResidual, i32>; // local
     let _9: NeverShortCircuit::<i32>; // anonymous local
     let _10: &'_ mut &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
     let _11: (usize,); // anonymous local
     let _12: usize; // anonymous local
-    let residual: ControlFlow::<NeverShortCircuitResidual, !>; // local
+    let residual: ControlFlow::<NeverShortCircuitResidual, Infallible>; // local
     let item: i32; // local
     let _15: &'_ mut [MaybeUninit::<i32>]; // anonymous local
     let _16: isize; // anonymous local
     let c: i32; // local
     let b: NeverShortCircuitResidual; // local
-    let _19: ControlFlow::<NeverShortCircuitResidual, !>; // anonymous local
+    let _19: ControlFlow::<NeverShortCircuitResidual, Infallible>; // anonymous local
     let index: usize; // local
     let _21: usize; // anonymous local
     let self_22: usize; // local
@@ -1585,20 +1595,21 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     let _26: usize; // anonymous local
     let _27: MaybeUninit::<i32>; // anonymous local
     let _28: ManuallyDrop::<i32>; // anonymous local
-    let _29: (); // anonymous local
+    let _29: MaybeDangling::<i32>; // anonymous local
     let _30: (); // anonymous local
-    let _31: isize; // anonymous local
-    let _32: NeverShortCircuitResidual; // anonymous local
-    let _33: bool; // anonymous local
-    let t_34: &'_ mut [MaybeUninit::<i32>]; // local
-    let t_35: usize; // local
-    let _36: *mut Guard::<'_, i32>; // anonymous local
-    let _37: (); // anonymous local
-    let _38: bool; // anonymous local
-    let _39: (); // anonymous local
-    let _40: *mut Guard::<'_, i32>; // anonymous local
-    let _41: (); // anonymous local
-    let _42: bool; // anonymous local
+    let _31: (); // anonymous local
+    let _32: isize; // anonymous local
+    let _33: NeverShortCircuitResidual; // anonymous local
+    let _34: bool; // anonymous local
+    let t_35: &'_ mut [MaybeUninit::<i32>]; // local
+    let t_36: usize; // local
+    let _37: *mut Guard::<'_, i32>; // anonymous local
+    let _38: (); // anonymous local
+    let _39: bool; // anonymous local
+    let _40: (); // anonymous local
+    let _41: *mut Guard::<'_, i32>; // anonymous local
+    let _42: (); // anonymous local
+    let _43: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1606,13 +1617,13 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         storage_live(_15);
         storage_live(self_23);
         storage_live(_25);
-        storage_live(_29);
         storage_live(_30);
-        storage_live(_36);
+        storage_live(_31);
         storage_live(_37);
-        storage_live(_39);
+        storage_live(_38);
         storage_live(_40);
         storage_live(_41);
+        storage_live(_42);
         storage_live(guard);
         guard = Guard::<'_, i32> { array_mut: copy buffer, initialized: const 0usize };
         goto bb1;
@@ -1661,19 +1672,19 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     bb5: {
         storage_live(c);
         c = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, i32>::Continue)._0;
-        _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32>::Continue { _0: copy c };
+        _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32>::Continue { _0: copy c };
         storage_dead(c);
         storage_dead(_16);
         storage_dead(self_8);
-        item = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32>::Continue)._0;
+        item = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32>::Continue)._0;
         storage_dead(_7);
         storage_live(self_24);
         self_23 = copy guard.array_mut;
         storage_live(index);
         index = copy guard.initialized;
-        storage_live(_38);
-        _38 = ub_checks;
-        if move _38 -> bb6 else -> bb9;
+        storage_live(_39);
+        _39 = ub_checks;
+        if move _39 -> bb6 else -> bb9;
     }
 
     bb6: {
@@ -1696,25 +1707,28 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         storage_dead(index);
         storage_live(_27);
         storage_live(_28);
-        _28 = ManuallyDrop::<i32> { value: copy item };
+        storage_live(_29);
+        _29 = MaybeDangling::<i32> { _0: copy item };
+        _28 = ManuallyDrop::<i32> { value: move _29 };
+        storage_dead(_29);
         _27 = MaybeUninit::<i32> { value: move _28 };
         storage_dead(_28);
         (*self_24) = move _27;
         storage_dead(_27);
-        _29 = assert_inhabited::<i32>() -> bb10 (unwind: bb14);
+        _30 = assert_inhabited::<i32>() -> bb10 (unwind: bb14);
     }
 
     bb10: {
         storage_live(_21);
         storage_live(self_22);
         self_22 = copy guard.initialized;
-        storage_live(_42);
-        _42 = ub_checks;
-        if move _42 -> bb11 else -> bb13;
+        storage_live(_43);
+        _43 = ub_checks;
+        if move _43 -> bb11 else -> bb13;
     }
 
     bb11: {
-        _30 = core::num::{usize}::unchecked_add::precondition_check(copy self_22, const 1usize) -> bb13 (unwind: bb12);
+        _31 = core::num::{usize}::unchecked_add::precondition_check(copy self_22, const 1usize) -> bb13 (unwind: bb12);
     }
 
     bb12 (cleanup): {
@@ -1739,33 +1753,33 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         storage_live(b);
         b = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, i32>::Break)._0;
         storage_live(_19);
-        _19 = ControlFlow::<NeverShortCircuitResidual, !>::Break { _0: copy b };
-        _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32>::Break { _0: move _19 };
+        _19 = ControlFlow::<NeverShortCircuitResidual, Infallible>::Break { _0: copy b };
+        _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32>::Break { _0: move _19 };
         storage_dead(_19);
         storage_dead(b);
         storage_dead(_16);
         storage_dead(self_8);
         storage_live(residual);
-        residual = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32>::Break)._0;
-        storage_live(_31);
-        storage_live(_33);
-        _31 = @discriminant(residual);
-        _33 = copy _31 == const 1isize;
-        _39 = assume(move _33) -> bb16 (unwind: bb18);
+        residual = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, Infallible>, i32>::Break)._0;
+        storage_live(_32);
+        storage_live(_34);
+        _32 = @discriminant(residual);
+        _34 = copy _32 == const 1isize;
+        _40 = assume(move _34) -> bb16 (unwind: bb18);
     }
 
     bb16: {
-        storage_live(_32);
-        _32 = copy (residual as variant ControlFlow::<NeverShortCircuitResidual, !>::Break)._0;
-        _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Break { _0: copy _32 };
-        storage_dead(_32);
+        storage_live(_33);
+        _33 = copy (residual as variant ControlFlow::<NeverShortCircuitResidual, Infallible>::Break)._0;
+        _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Break { _0: copy _33 };
         storage_dead(_33);
-        storage_dead(_31);
+        storage_dead(_34);
+        storage_dead(_32);
         storage_dead(residual);
         storage_dead(_7);
         storage_dead(_4);
-        _40 = &raw mut guard;
-        _41 = drop_glue::<Guard::<'_, i32>>(move _40) -> bb17 (unwind: bb21);
+        _41 = &raw mut guard;
+        _42 = drop_glue::<Guard::<'_, i32>>(move _41) -> bb17 (unwind: bb21);
     }
 
     bb17: {
@@ -1782,8 +1796,8 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
     }
 
     bb20 (cleanup): {
-        _36 = &raw mut guard;
-        _37 = drop_glue::<Guard::<'_, i32>>(move _36) -> bb21 (unwind: bb22);
+        _37 = &raw mut guard;
+        _38 = drop_glue::<Guard::<'_, i32>>(move _37) -> bb21 (unwind: bb22);
     }
 
     bb21 (cleanup): {
@@ -1798,12 +1812,12 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
-        storage_live(t_34);
         storage_live(t_35);
-        t_34 = move guard.array_mut;
-        t_35 = move guard.initialized;
-        storage_dead(t_34);
+        storage_live(t_36);
+        t_35 = move guard.array_mut;
+        t_36 = move guard.initialized;
         storage_dead(t_35);
+        storage_dead(t_36);
         _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Continue { _0: const () };
         storage_dead(guard);
         goto bb24;
@@ -1906,14 +1920,20 @@ pub fn try_from_fn::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core
     }
 }
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[i32; 256usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[i32; 256usize]> {
+  _0: [i32; 256usize],
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<[i32; 256usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[i32; 256usize]> {
-  value: [i32; 256usize],
+  value: MaybeDangling::<[i32; 256usize]>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<ManuallyDrop::<[i32; 256usize]>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<ManuallyDrop::<[i32; 256usize]>> {
   pointer: *const ManuallyDrop::<[i32; 256usize]> is !null,
 }
@@ -1955,36 +1975,40 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
     let f_4: Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // local
     let f_5: &'_ mut core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}; // local
     let _6: &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
+    let _7: MaybeDangling::<[i32; 256usize]>; // anonymous local
     let ptr: NonNull::<i32>; // local
-    let self_8: NonNull::<ManuallyDrop::<[i32; 256usize]>>; // local
+    let self_9: NonNull::<ManuallyDrop::<[i32; 256usize]>>; // local
     let end_or_len: *mut i32; // local
-    let self_10: *mut i32; // local
-    let _11: *mut ManuallyDrop::<[i32; 256usize]>; // anonymous local
-    let _12: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
-    let _13: (); // anonymous local
-    let _14: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
-    let _15: (); // anonymous local
-    let _16: PhantomData::<&'_ mut [i32]>; // anonymous local
+    let self_11: *mut i32; // local
+    let _12: *mut ManuallyDrop::<[i32; 256usize]>; // anonymous local
+    let _13: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
+    let _14: (); // anonymous local
+    let _15: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
+    let _16: (); // anonymous local
+    let _17: PhantomData::<&'_ mut [i32]>; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
+        storage_live(_16);
         storage_live(me);
-        me = ManuallyDrop::<[i32; 256usize]> { value: copy self_1 };
+        storage_live(_7);
+        _7 = MaybeDangling::<[i32; 256usize]> { _0: copy self_1 };
+        me = ManuallyDrop::<[i32; 256usize]> { value: move _7 };
+        storage_dead(_7);
         storage_live(f_4);
         storage_live(f_5);
         f_5 = &mut f_2;
         storage_live(end_or_len);
-        storage_live(_11);
+        storage_live(_12);
         storage_live(ptr);
-        storage_live(self_8);
-        _11 = &raw mut me;
-        self_8 = transmute<*mut ManuallyDrop::<[i32; 256usize]>, NonNull::<ManuallyDrop::<[i32; 256usize]>>>(copy _11);
-        ptr = transmute<*mut ManuallyDrop::<[i32; 256usize]>, NonNull::<i32>>(copy _11);
-        storage_dead(self_8);
+        storage_live(self_9);
+        _12 = &raw mut me;
+        self_9 = transmute<*mut ManuallyDrop::<[i32; 256usize]>, NonNull::<ManuallyDrop::<[i32; 256usize]>>>(copy _12);
+        ptr = transmute<*mut ManuallyDrop::<[i32; 256usize]>, NonNull::<i32>>(copy _12);
+        storage_dead(self_9);
         if copy IS_ZST::<i32> -> bb1 else -> bb2;
     }
 
@@ -1994,19 +2018,19 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
     }
 
     bb2: {
-        storage_live(self_10);
-        self_10 = transmute<NonNull::<i32>, *mut i32>(copy ptr);
-        end_or_len = copy self_10 offset const 256usize;
-        storage_dead(self_10);
+        storage_live(self_11);
+        self_11 = transmute<NonNull::<i32>, *mut i32>(copy ptr);
+        end_or_len = copy self_11 offset const 256usize;
+        storage_dead(self_11);
         goto bb3;
     }
 
     bb3: {
-        storage_live(_16);
-        _16 = PhantomData::<&'_ mut [i32]> {  };
-        f_4 = Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}> { ptr: copy ptr, end_or_len: copy end_or_len, f: copy f_5, l: move _16 };
+        storage_live(_17);
+        _17 = PhantomData::<&'_ mut [i32]> {  };
+        f_4 = Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}> { ptr: copy ptr, end_or_len: copy end_or_len, f: copy f_5, l: move _17 };
         storage_dead(ptr);
-        storage_dead(_11);
+        storage_dead(_12);
         storage_dead(end_or_len);
         storage_dead(f_5);
         storage_live(_6);
@@ -2016,8 +2040,8 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
 
     bb4: {
         storage_dead(_6);
-        _12 = &raw mut f_4;
-        _13 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _12) -> bb5 (unwind: bb7);
+        _13 = &raw mut f_4;
+        _14 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _13) -> bb5 (unwind: bb7);
     }
 
     bb5: {
@@ -2027,8 +2051,8 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
     }
 
     bb6 (cleanup): {
-        _14 = &raw mut f_4;
-        _15 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _14) -> bb7 (unwind: bb8);
+        _15 = &raw mut f_4;
+        _16 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _15) -> bb7 (unwind: bb8);
     }
 
     bb7 (cleanup): {

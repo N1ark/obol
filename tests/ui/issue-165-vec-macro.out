@@ -98,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -137,13 +137,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -607,6 +607,90 @@ pub fn clone(self: &'_ i32) -> i32
     }
 }
 
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
+pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
+{
+    let _0: bool; // return
+    let self: &'_ usize; // arg #1
+    let other: &'_ usize; // arg #2
+    let _3: usize; // anonymous local
+    let _4: usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
+
+// Full name: core::cmp::Ord::max::<usize>
+#[diagnostic_item("cmp_ord_max")]
+pub fn max::<usize>(self: usize, other: usize) -> usize
+{
+    let _0: usize; // return
+    let self: usize; // arg #1
+    let other: usize; // arg #2
+    let _3: bool; // anonymous local
+    let _4: &'_ usize; // anonymous local
+    let _5: &'_ usize; // anonymous local
+    let _6: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_6);
+        _6 = const true;
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &other;
+        storage_live(_5);
+        _5 = &self;
+        _3 = lt(move _4, move _5) -> bb1 (unwind: bb5);
+    }
+
+    bb1: {
+        if move _3 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _6 = const false;
+        _0 = move self;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = move other;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        if copy _6 -> bb6 else -> bb6;
+    }
+
+    bb6 (cleanup): {
+        unwind_continue;
+    }
+}
+
+// Full name: core::convert::Infallible
+pub enum Infallible {
+}
+
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
@@ -732,12 +816,6 @@ pub fn assume(b_1: bool)
 pub fn cold_path()
 = <intrinsic:cold_path>
 
-// Full name: core::intrinsics::integer_max::<usize>
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn integer_max::<usize>(a_1: usize, b_2: usize) -> usize
-= <intrinsic:integer_max>
-
 // Full name: core::intrinsics::copy_nonoverlapping::<u8>
 #[rustc_intrinsic]
 pub fn copy_nonoverlapping::<u8>(src_1: *const u8, dst_2: *mut u8, count_3: usize)
@@ -784,19 +862,31 @@ pub struct PhantomData::<Foo> {}
 #[lang_item(PhantomData)]
 pub struct PhantomData::<MaybeUninit::<[Foo; 1usize]>> {}
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[i32; 1usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[i32; 1usize]> {
+  _0: [i32; 1usize],
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<[i32; 1usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[i32; 1usize]> {
-  value: [i32; 1usize],
+  value: MaybeDangling::<[i32; 1usize]>,
 }
 
 // Full name: test_crate::Foo
 pub struct Foo {}
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[Foo; 1usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[Foo; 1usize]> {
+  _0: [Foo; 1usize],
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<[Foo; 1usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[Foo; 1usize]> {
-  value: [Foo; 1usize],
+  value: MaybeDangling::<[Foo; 1usize]>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[i32; 1usize]>
@@ -1014,31 +1104,31 @@ pub struct UsizeNoHighBit {
   _0: usize is 0usize..=9223372036854775807usize,
 }
 
-// Full name: core::result::Result::<!, AllocError>
+// Full name: core::result::Result::<Infallible, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<!, AllocError> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, AllocError> {
+  Ok { _0: Infallible },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<!, AllocError> },
+  Break { _0: Result::<Infallible, AllocError> },
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<[u8]>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>> {
+pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<[u8]>> {
   Continue { _0: NonNull::<[u8]> },
-  Break { _0: Result::<!, AllocError> },
+  Break { _0: Result::<Infallible, AllocError> },
 }
 
 // Full name: alloc::collections::TryReserveErrorKind
@@ -1047,18 +1137,18 @@ pub enum TryReserveErrorKind {
   AllocError { layout: Layout, non_exhaustive: () },
 }
 
-// Full name: core::result::Result::<!, TryReserveErrorKind>
+// Full name: core::result::Result::<Infallible, TryReserveErrorKind>
 #[diagnostic_item("Result")]
-pub enum Result::<!, TryReserveErrorKind> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, TryReserveErrorKind> {
+  Ok { _0: Infallible },
   Err { _0: TryReserveErrorKind },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveErrorKind>, usize>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveErrorKind>, usize>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, TryReserveErrorKind>, usize> {
+pub enum ControlFlow::<Result::<Infallible, TryReserveErrorKind>, usize> {
   Continue { _0: usize },
-  Break { _0: Result::<!, TryReserveErrorKind> },
+  Break { _0: Result::<Infallible, TryReserveErrorKind> },
 }
 
 // Full name: alloc::collections::TryReserveError
@@ -1066,25 +1156,25 @@ pub struct TryReserveError {
   kind: TryReserveErrorKind,
 }
 
-// Full name: core::result::Result::<!, TryReserveError>
+// Full name: core::result::Result::<Infallible, TryReserveError>
 #[diagnostic_item("Result")]
-pub enum Result::<!, TryReserveError> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, TryReserveError> {
+  Ok { _0: Infallible },
   Err { _0: TryReserveError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, Layout>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, Layout>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, TryReserveError>, Layout> {
+pub enum ControlFlow::<Result::<Infallible, TryReserveError>, Layout> {
   Continue { _0: Layout },
-  Break { _0: Result::<!, TryReserveError> },
+  Break { _0: Result::<Infallible, TryReserveError> },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, NonNull::<[u8]>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>> {
+pub enum ControlFlow::<Result::<Infallible, TryReserveError>, NonNull::<[u8]>> {
   Continue { _0: NonNull::<[u8]> },
-  Break { _0: Result::<!, TryReserveError> },
+  Break { _0: Result::<Infallible, TryReserveError> },
 }
 
 // Full name: core::ops::range::Range::<usize>
@@ -2356,37 +2446,37 @@ fn drop_glue::<SetLenOnDrop::<'_>>(_1: &'_ mut SetLenOnDrop::<'_>)
 }
 
 // Full name: core::ptr::non_null::NonNull::<[i32; 1usize]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[i32; 1usize]> {
   pointer: *const [i32; 1usize] is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<[Foo; 1usize]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[Foo; 1usize]> {
   pointer: *const [Foo; 1usize] is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<[i32]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[i32]> {
   pointer: *const [i32] is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<[Foo]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[Foo]> {
   pointer: *const [Foo] is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<MaybeUninit::<[i32; 1usize]>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<MaybeUninit::<[i32; 1usize]>> {
   pointer: *const MaybeUninit::<[i32; 1usize]> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<MaybeUninit::<[Foo; 1usize]>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<MaybeUninit::<[Foo; 1usize]>> {
   pointer: *const MaybeUninit::<[Foo; 1usize]> is !null,
 }
@@ -2593,10 +2683,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<!, AllocError>; // anonymous local
+    let _10: Result::<Infallible, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -2818,10 +2908,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);
@@ -2891,18 +2981,18 @@ fn grow_impl_runtime(self_1: &'_ Global, ptr_2: NonNull::<u8>, old_layout: Layou
     let new_size: usize; // local
     let cond: bool; // local
     let raw_ptr: *mut u8; // local
-    let _13: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let _13: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
     let self_14: Result::<NonNull::<u8>, AllocError>; // local
     let self_15: Option::<NonNull::<u8>>; // local
-    let _16: Result::<!, AllocError>; // anonymous local
+    let _16: Result::<Infallible, AllocError>; // anonymous local
     let ptr_17: NonNull::<u8>; // local
     let _18: (); // anonymous local
     let self_19: *mut u8; // local
     let count: usize; // local
     let _21: NonNull::<[u8]>; // anonymous local
-    let _22: ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>>; // anonymous local
+    let _22: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<[u8]>>; // anonymous local
     let self_23: Result::<NonNull::<[u8]>, AllocError>; // local
-    let _24: Result::<!, AllocError>; // anonymous local
+    let _24: Result::<Infallible, AllocError>; // anonymous local
     let new_ptr: NonNull::<[u8]>; // local
     let src: *const u8; // local
     let dst: *mut u8; // local
@@ -3120,10 +3210,10 @@ fn grow_impl_runtime(self_1: &'_ Global, ptr_2: NonNull::<u8>, old_layout: Layou
         storage_dead(self_15);
         storage_live(v_38);
         v_38 = move (self_14 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _13 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_38 };
+        _13 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_38 };
         storage_dead(v_38);
         storage_dead(self_14);
-        ptr_17 = copy (_13 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_17 = copy (_13 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_13);
         if copy zeroed -> bb18 else -> bb25;
     }
@@ -3233,11 +3323,11 @@ fn grow_impl_runtime(self_1: &'_ Global, ptr_2: NonNull::<u8>, old_layout: Layou
     bb34: {
         storage_live(v_49);
         v_49 = move (self_23 as variant Result::<NonNull::<[u8]>, AllocError>::Ok)._0;
-        _22 = ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>>::Continue { _0: copy v_49 };
+        _22 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<[u8]>>::Continue { _0: copy v_49 };
         storage_dead(v_49);
         storage_dead(_48);
         storage_dead(self_23);
-        new_ptr = copy (_22 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>>::Continue)._0;
+        new_ptr = copy (_22 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<[u8]>>::Continue)._0;
         storage_dead(_22);
         storage_live(src);
         src = transmute<NonNull::<u8>, *const u8>(copy ptr_2);
@@ -4534,9 +4624,9 @@ fn finish_grow::<Global>(self_1: &'_ RawVecInner::<Global>, cap: usize, elem_lay
     let cap: usize; // arg #2
     let elem_layout_3: Layout; // arg #3
     let new_layout: Layout; // local
-    let _5: ControlFlow::<Result::<!, TryReserveError>, Layout>; // anonymous local
+    let _5: ControlFlow::<Result::<Infallible, TryReserveError>, Layout>; // anonymous local
     let self_6: Result::<Layout, TryReserveError>; // local
-    let residual: Result::<!, TryReserveError>; // local
+    let residual: Result::<Infallible, TryReserveError>; // local
     let val: Layout; // local
     let memory: Result::<NonNull::<[u8]>, AllocError>; // local
     let _10: Option::<(NonNull::<u8>, Layout)>; // anonymous local
@@ -4563,7 +4653,7 @@ fn finish_grow::<Global>(self_1: &'_ RawVecInner::<Global>, cap: usize, elem_lay
     let t_31: Layout; // local
     let v: Layout; // local
     let e_33: TryReserveError; // local
-    let _34: Result::<!, TryReserveError>; // anonymous local
+    let _34: Result::<Infallible, TryReserveError>; // anonymous local
     let _35: isize; // anonymous local
     let e_36: TryReserveError; // local
     let _37: bool; // anonymous local
@@ -4669,10 +4759,10 @@ fn finish_grow::<Global>(self_1: &'_ RawVecInner::<Global>, cap: usize, elem_lay
         storage_dead(elem_layout_46);
         storage_live(v);
         v = move (self_6 as variant Result::<Layout, TryReserveError>::Ok)._0;
-        _5 = ControlFlow::<Result::<!, TryReserveError>, Layout>::Continue { _0: copy v };
+        _5 = ControlFlow::<Result::<Infallible, TryReserveError>, Layout>::Continue { _0: copy v };
         storage_dead(v);
         storage_dead(self_6);
-        val = copy (_5 as variant ControlFlow::<Result::<!, TryReserveError>, Layout>::Continue)._0;
+        val = copy (_5 as variant ControlFlow::<Result::<Infallible, TryReserveError>, Layout>::Continue)._0;
         new_layout = copy val;
         storage_dead(_5);
         storage_live(_10);
@@ -4821,13 +4911,13 @@ fn finish_grow::<Global>(self_1: &'_ RawVecInner::<Global>, cap: usize, elem_lay
         storage_live(e_33);
         e_33 = move (self_6 as variant Result::<Layout, TryReserveError>::Err)._0;
         storage_live(_34);
-        _34 = Result::<!, TryReserveError>::Err { _0: copy e_33 };
-        _5 = ControlFlow::<Result::<!, TryReserveError>, Layout>::Break { _0: move _34 };
+        _34 = Result::<Infallible, TryReserveError>::Err { _0: copy e_33 };
+        _5 = ControlFlow::<Result::<Infallible, TryReserveError>, Layout>::Break { _0: move _34 };
         storage_dead(_34);
         storage_dead(e_33);
         storage_dead(self_6);
         storage_live(residual);
-        residual = move (_5 as variant ControlFlow::<Result::<!, TryReserveError>, Layout>::Break)._0;
+        residual = move (_5 as variant ControlFlow::<Result::<Infallible, TryReserveError>, Layout>::Break)._0;
         storage_live(_35);
         storage_live(_37);
         _35 = @discriminant(residual);
@@ -4837,7 +4927,7 @@ fn finish_grow::<Global>(self_1: &'_ RawVecInner::<Global>, cap: usize, elem_lay
 
     bb26: {
         storage_live(e_36);
-        e_36 = copy (residual as variant Result::<!, TryReserveError>::Err)._0;
+        e_36 = copy (residual as variant Result::<Infallible, TryReserveError>::Err)._0;
         _0 = Result::<NonNull::<[u8]>, TryReserveError>::Err { _0: copy e_36 };
         storage_dead(e_36);
         storage_dead(_37);
@@ -4866,10 +4956,10 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
     let additional: usize; // arg #3
     let elem_layout: Layout; // arg #4
     let size: usize; // local
-    let _6: ControlFlow::<Result::<!, TryReserveErrorKind>, usize>; // anonymous local
+    let _6: ControlFlow::<Result::<Infallible, TryReserveErrorKind>, usize>; // anonymous local
     let self_7: Result::<usize, TryReserveErrorKind>; // local
     let self_8: Option::<usize>; // local
-    let residual_9: Result::<!, TryReserveErrorKind>; // local
+    let residual_9: Result::<Infallible, TryReserveErrorKind>; // local
     let required_cap: usize; // local
     let cap_11: usize; // local
     let v1_12: usize; // local
@@ -4877,10 +4967,10 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
     let self_14: UsizeNoHighBit; // local
     let cap_15: usize; // local
     let v1_16: usize; // local
-    let _17: ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>; // anonymous local
+    let _17: ControlFlow::<Result::<Infallible, TryReserveError>, NonNull::<[u8]>>; // anonymous local
     let self_18: Result::<NonNull::<[u8]>, TryReserveError>; // local
     let _19: &'_ RawVecInner::<Global>; // anonymous local
-    let residual_20: Result::<!, TryReserveError>; // local
+    let residual_20: Result::<Infallible, TryReserveError>; // local
     let ptr: NonNull::<[u8]>; // local
     let b: bool; // local
     let _23: (usize, bool); // anonymous local
@@ -4889,7 +4979,7 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
     let v_26: usize; // local
     let v_27: usize; // local
     let e_28: TryReserveErrorKind; // local
-    let _29: Result::<!, TryReserveErrorKind>; // anonymous local
+    let _29: Result::<Infallible, TryReserveErrorKind>; // anonymous local
     let _30: isize; // anonymous local
     let e_31: TryReserveErrorKind; // local
     let _32: TryReserveError; // anonymous local
@@ -4898,7 +4988,7 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
     let _35: isize; // anonymous local
     let v_36: NonNull::<[u8]>; // local
     let e_37: TryReserveError; // local
-    let _38: Result::<!, TryReserveError>; // anonymous local
+    let _38: Result::<Infallible, TryReserveError>; // anonymous local
     let _39: Unique::<u8>; // anonymous local
     let _40: NonNull::<u8>; // anonymous local
     let _41: UsizeNoHighBit; // anonymous local
@@ -4968,13 +5058,13 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
         storage_live(e_28);
         e_28 = move (self_7 as variant Result::<usize, TryReserveErrorKind>::Err)._0;
         storage_live(_29);
-        _29 = Result::<!, TryReserveErrorKind>::Err { _0: copy e_28 };
-        _6 = ControlFlow::<Result::<!, TryReserveErrorKind>, usize>::Break { _0: move _29 };
+        _29 = Result::<Infallible, TryReserveErrorKind>::Err { _0: copy e_28 };
+        _6 = ControlFlow::<Result::<Infallible, TryReserveErrorKind>, usize>::Break { _0: move _29 };
         storage_dead(_29);
         storage_dead(e_28);
         storage_dead(self_7);
         storage_live(residual_9);
-        residual_9 = move (_6 as variant ControlFlow::<Result::<!, TryReserveErrorKind>, usize>::Break)._0;
+        residual_9 = move (_6 as variant ControlFlow::<Result::<Infallible, TryReserveErrorKind>, usize>::Break)._0;
         storage_live(_30);
         storage_live(_33);
         _30 = @discriminant(residual_9);
@@ -4984,7 +5074,7 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
 
     bb5: {
         storage_live(e_31);
-        e_31 = copy (residual_9 as variant Result::<!, TryReserveErrorKind>::Err)._0;
+        e_31 = copy (residual_9 as variant Result::<Infallible, TryReserveErrorKind>::Err)._0;
         storage_live(_32);
         _32 = TryReserveError { kind: copy e_31 };
         _0 = Result::<(), TryReserveError>::Err { _0: move _32 };
@@ -5019,10 +5109,10 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
         storage_dead(self_8);
         storage_live(v_27);
         v_27 = move (self_7 as variant Result::<usize, TryReserveErrorKind>::Ok)._0;
-        _6 = ControlFlow::<Result::<!, TryReserveErrorKind>, usize>::Continue { _0: copy v_27 };
+        _6 = ControlFlow::<Result::<Infallible, TryReserveErrorKind>, usize>::Continue { _0: copy v_27 };
         storage_dead(v_27);
         storage_dead(self_7);
-        required_cap = copy (_6 as variant ControlFlow::<Result::<!, TryReserveErrorKind>, usize>::Continue)._0;
+        required_cap = copy (_6 as variant ControlFlow::<Result::<Infallible, TryReserveErrorKind>, usize>::Continue)._0;
         storage_dead(_6);
         storage_live(cap_11);
         storage_live(v1_12);
@@ -5033,7 +5123,7 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
         storage_dead(self_14);
         v1_12 = move _13 wrap.* const 2usize;
         storage_dead(_13);
-        cap_11 = integer_max::<usize>(move v1_12, move required_cap) -> bb9 (unwind: bb26);
+        cap_11 = max::<usize>(move v1_12, move required_cap) -> bb9 (unwind: bb26);
     }
 
     bb9: {
@@ -5070,7 +5160,7 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
     }
 
     bb15: {
-        cap_15 = integer_max::<usize>(move v1_16, move cap_11) -> bb16 (unwind: bb25);
+        cap_15 = max::<usize>(move v1_16, move cap_11) -> bb16 (unwind: bb25);
     }
 
     bb16: {
@@ -5092,11 +5182,11 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
     bb18: {
         storage_live(v_36);
         v_36 = move (self_18 as variant Result::<NonNull::<[u8]>, TryReserveError>::Ok)._0;
-        _17 = ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>::Continue { _0: copy v_36 };
+        _17 = ControlFlow::<Result::<Infallible, TryReserveError>, NonNull::<[u8]>>::Continue { _0: copy v_36 };
         storage_dead(v_36);
         storage_dead(_35);
         storage_dead(self_18);
-        ptr = copy (_17 as variant ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>::Continue)._0;
+        ptr = copy (_17 as variant ControlFlow::<Result::<Infallible, TryReserveError>, NonNull::<[u8]>>::Continue)._0;
         storage_dead(_17);
         storage_live(_39);
         storage_live(_40);
@@ -5129,14 +5219,14 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
         storage_live(e_37);
         e_37 = move (self_18 as variant Result::<NonNull::<[u8]>, TryReserveError>::Err)._0;
         storage_live(_38);
-        _38 = Result::<!, TryReserveError>::Err { _0: copy e_37 };
-        _17 = ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>::Break { _0: move _38 };
+        _38 = Result::<Infallible, TryReserveError>::Err { _0: copy e_37 };
+        _17 = ControlFlow::<Result::<Infallible, TryReserveError>, NonNull::<[u8]>>::Break { _0: move _38 };
         storage_dead(_38);
         storage_dead(e_37);
         storage_dead(_35);
         storage_dead(self_18);
         storage_live(residual_20);
-        residual_20 = move (_17 as variant ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>::Break)._0;
+        residual_20 = move (_17 as variant ControlFlow::<Result::<Infallible, TryReserveError>, NonNull::<[u8]>>::Break)._0;
         storage_live(_44);
         storage_live(_46);
         _44 = @discriminant(residual_20);
@@ -5146,7 +5236,7 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
 
     bb20: {
         storage_live(e_45);
-        e_45 = copy (residual_20 as variant Result::<!, TryReserveError>::Err)._0;
+        e_45 = copy (residual_20 as variant Result::<Infallible, TryReserveError>::Err)._0;
         _0 = Result::<(), TryReserveError>::Err { _0: copy e_45 };
         storage_dead(e_45);
         storage_dead(_46);
@@ -5175,11 +5265,11 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
     }
 
     bb25 (cleanup): {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb26 (cleanup): {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 
@@ -5753,7 +5843,7 @@ fn foo()
 
     bb1: {
         _5 = transmute<Unique::<MaybeUninit::<[i32; 1usize]>>, *const MaybeUninit::<[i32; 1usize]>>(copy _3._0);
-        (*_5).value.value = [const 1i32];
+        (*_5).value.value._0 = [const 1i32];
         _2 = move _3;
         storage_dead(_3);
         _v = box_assume_init_into_vec_unsafe::<i32, 1usize>(move _2) -> bb2 (unwind: bb8);
@@ -5828,7 +5918,7 @@ pub fn bar()
         storage_live(_4);
         _4 = Foo {  };
         _5 = transmute<Unique::<MaybeUninit::<[Foo; 1usize]>>, *const MaybeUninit::<[Foo; 1usize]>>(copy _3._0);
-        (*_5).value.value = [move _4];
+        (*_5).value.value._0 = [move _4];
         storage_dead(_4);
         _2 = move _3;
         storage_dead(_3);

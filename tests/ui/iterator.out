@@ -18,7 +18,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -57,13 +57,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -81,7 +81,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -386,10 +386,16 @@ struct IndexRange {
   end: usize,
 }
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<i32>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<i32> {
+  _0: i32,
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<i32>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<i32> {
-  value: i32,
+  value: MaybeDangling::<i32>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<i32>
@@ -923,10 +929,16 @@ fn core::array::iter::iter_inner::{PolymorphicIter::<[MaybeUninit::<_>]>}::next:
     }
 }
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>> {
+  _0: PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>,
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>> {
-  value: PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>,
+  value: MaybeDangling::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>,
 }
 
 // Full name: core::array::iter::IntoIter::<i32, 7usize>
@@ -944,6 +956,7 @@ pub fn impl_IntoIterator_for_array::into_iter::<i32, 7usize>(self: [i32; 7usize]
     let _3: PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>; // anonymous local
     let _4: IndexRange; // anonymous local
     let _5: ManuallyDrop::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>; // anonymous local
+    let _6: MaybeDangling::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -955,7 +968,10 @@ pub fn impl_IntoIterator_for_array::into_iter::<i32, 7usize>(self: [i32; 7usize]
         _3 = PolymorphicIter::<[MaybeUninit::<i32>; 7usize]> { alive: copy _4, data: copy _2 };
         storage_dead(_4);
         storage_live(_5);
-        _5 = ManuallyDrop::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>> { value: copy _3 };
+        storage_live(_6);
+        _6 = MaybeDangling::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>> { _0: copy _3 };
+        _5 = ManuallyDrop::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>> { value: move _6 };
+        storage_dead(_6);
         _0 = IntoIter::<i32, 7usize> { inner: move _5 };
         storage_dead(_5);
         storage_dead(_3);
@@ -976,7 +992,7 @@ pub fn {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(self: &'_ mut I
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = &mut (*self).inner.value;
+        _3 = &mut (*self).inner.value._0;
         _2 = unsize_cast<&'_ mut PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>, &'_ mut PolymorphicIter::<[MaybeUninit::<i32>]>, 7usize>(copy _3);
         storage_dead(_3);
         _0 = core::array::iter::iter_inner::{PolymorphicIter::<[MaybeUninit::<_>]>}::next::<i32>(move _2) -> bb1 (unwind: bb2);
@@ -1034,7 +1050,7 @@ pub fn {impl Drop for IntoIter::<_, _>}::drop::<i32, 7usize>(self: &'_ mut IntoI
 
     bb1: {
         storage_live(_2);
-        _2 = &mut (*self).inner.value;
+        _2 = &mut (*self).inner.value._0;
         _0 = drop_glue::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>(move _2) -> bb2 (unwind: bb3);
     }
 
@@ -1049,6 +1065,86 @@ pub fn {impl Drop for IntoIter::<_, _>}::drop::<i32, 7usize>(self: &'_ mut IntoI
 
     bb4: {
         return;
+    }
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
+pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
+{
+    let _0: bool; // return
+    let self: &'_ usize; // arg #1
+    let other: &'_ usize; // arg #2
+    let _3: usize; // anonymous local
+    let _4: usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
+
+// Full name: core::cmp::Ord::min::<usize>
+#[diagnostic_item("cmp_ord_min")]
+pub fn min::<usize>(self: usize, other: usize) -> usize
+{
+    let _0: usize; // return
+    let self: usize; // arg #1
+    let other: usize; // arg #2
+    let _3: bool; // anonymous local
+    let _4: &'_ usize; // anonymous local
+    let _5: &'_ usize; // anonymous local
+    let _6: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_6);
+        _6 = const true;
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &other;
+        storage_live(_5);
+        _5 = &self;
+        _3 = lt(move _4, move _5) -> bb1 (unwind: bb5);
+    }
+
+    bb1: {
+        if move _3 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = move other;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _6 = const false;
+        _0 = move self;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        if copy _6 -> bb6 else -> bb6;
+    }
+
+    bb6 (cleanup): {
+        unwind_continue;
     }
 }
 
@@ -1178,12 +1274,6 @@ pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
 
-// Full name: core::intrinsics::integer_min::<usize>
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn integer_min::<usize>(a_1: usize, b_2: usize) -> usize
-= <intrinsic:integer_min>
-
 // Full name: core::intrinsics::ctpop::<usize>
 #[rustc_intrinsic]
 pub fn ctpop::<usize>(x_1: usize) -> u32
@@ -1203,7 +1293,7 @@ pub fn impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(self: IntoI
 }
 
 // Full name: core::ptr::non_null::NonNull::<i32>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<i32> {
   pointer: *const i32 is !null,
 }
@@ -1607,7 +1697,7 @@ fn drop_glue::<IntoIter::<i32, 7usize>>(_1: &'_ mut IntoIter::<i32, 7usize>)
 }
 
 // Full name: core::ptr::non_null::NonNull::<[i32]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[i32]> {
   pointer: *const [i32] is !null,
 }
@@ -2281,7 +2371,7 @@ pub fn {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(self_1: &'_ mut Chun
         v1 = copy _10.metadata;
         storage_live(v2);
         v2 = copy (*self_1).chunk_size;
-        chunksz = integer_min::<usize>(move v1, move v2) -> bb3 (unwind: bb7);
+        chunksz = min::<usize>(move v1, move v2) -> bb3 (unwind: bb7);
     }
 
     bb3: {
@@ -2316,7 +2406,7 @@ pub fn {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(self_1: &'_ mut Chun
     }
 
     bb7 (cleanup): {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 
@@ -2374,8 +2464,8 @@ pub fn {impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>(self_1: &'_ mut
         storage_live(_9);
         _9 = copy _4;
         (*_4) = copy x_12;
-        storage_dead(_9);
         _0 = Option::<&'_ [i32]>::Some { _0: copy x_11 };
+        storage_dead(_9);
         storage_dead(x_11);
         storage_dead(x_12);
         goto bb5;

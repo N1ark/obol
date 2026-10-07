@@ -61,7 +61,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -83,13 +83,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -111,7 +111,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -466,10 +466,16 @@ fn drop_glue::<DropOnPanic::<usize>>(_1: &'_ mut DropOnPanic::<usize>)
     }
 }
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<usize>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<usize> {
+  _0: usize,
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<usize>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<usize> {
-  value: usize,
+  value: MaybeDangling::<usize>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<usize>
@@ -512,42 +518,50 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     let _13: MaybeUninit::<usize>; // anonymous local
     let _14: MaybeUninit::<usize>; // anonymous local
     let _15: ManuallyDrop::<usize>; // anonymous local
-    let _16: ManuallyDrop::<usize>; // anonymous local
-    let _17: *mut MaybeUninit::<usize>; // anonymous local
-    let _18: *mut MaybeUninit::<usize>; // anonymous local
-    let _19: &'_ mut usize; // anonymous local
-    let _20: (); // anonymous local
+    let _16: MaybeDangling::<usize>; // anonymous local
+    let _17: ManuallyDrop::<usize>; // anonymous local
+    let _18: MaybeDangling::<usize>; // anonymous local
+    let _19: *mut MaybeUninit::<usize>; // anonymous local
+    let _20: *mut MaybeUninit::<usize>; // anonymous local
+    let _21: &'_ mut usize; // anonymous local
+    let _22: (); // anonymous local
     let t: *mut usize; // local
-    let _22: *mut DropOnPanic::<usize>; // anonymous local
-    let _23: (); // anonymous local
+    let _24: *mut DropOnPanic::<usize>; // anonymous local
+    let _25: (); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(drop);
         storage_live(_11);
-        storage_live(_20);
         storage_live(_22);
-        storage_live(_23);
+        storage_live(_24);
+        storage_live(_25);
         storage_live(true_val_4);
         storage_live(_15);
-        _15 = ManuallyDrop::<usize> { value: copy true_val_2 };
+        storage_live(_16);
+        _16 = MaybeDangling::<usize> { _0: copy true_val_2 };
+        _15 = ManuallyDrop::<usize> { value: move _16 };
+        storage_dead(_16);
         true_val_4 = MaybeUninit::<usize> { value: move _15 };
         storage_dead(_15);
         storage_live(false_val_5);
-        storage_live(_16);
-        _16 = ManuallyDrop::<usize> { value: copy false_val_3 };
-        false_val_5 = MaybeUninit::<usize> { value: move _16 };
-        storage_dead(_16);
-        storage_live(true_ptr);
         storage_live(_17);
-        _17 = &raw mut true_val_4;
-        true_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _17);
-        storage_dead(_17);
-        storage_live(false_ptr);
         storage_live(_18);
-        _18 = &raw mut false_val_5;
-        false_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _18);
+        _18 = MaybeDangling::<usize> { _0: copy false_val_3 };
+        _17 = ManuallyDrop::<usize> { value: move _18 };
         storage_dead(_18);
+        false_val_5 = MaybeUninit::<usize> { value: move _17 };
+        storage_dead(_17);
+        storage_live(true_ptr);
+        storage_live(_19);
+        _19 = &raw mut true_val_4;
+        true_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _19);
+        storage_dead(_19);
+        storage_live(false_ptr);
+        storage_live(_20);
+        _20 = &raw mut false_val_5;
+        false_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _20);
+        storage_dead(_20);
         storage_live(guard_8);
         guard_8 = core::intrinsics::select_unpredictable::<*mut usize>(copy condition, copy true_ptr, copy false_ptr) -> bb1 (unwind: bb12);
     }
@@ -559,13 +573,13 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     bb2: {
         storage_live(guard_10);
         guard_10 = DropOnPanic::<usize> { inner: copy guard_8 };
-        storage_live(_19);
-        _19 = &mut (*drop);
-        _11 = drop_glue::<usize>(move _19) -> bb3 (unwind: bb8);
+        storage_live(_21);
+        _21 = &mut (*drop);
+        _11 = drop_glue::<usize>(move _21) -> bb3 (unwind: bb8);
     }
 
     bb3: {
-        storage_dead(_19);
+        storage_dead(_21);
         storage_live(t);
         t = move guard_10.inner;
         storage_dead(t);
@@ -580,7 +594,7 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     bb4: {
         storage_dead(_14);
         storage_dead(_13);
-        _20 = assert_inhabited::<usize>() -> bb5 (unwind: bb6);
+        _22 = assert_inhabited::<usize>() -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -604,8 +618,8 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     }
 
     bb8 (cleanup): {
-        _22 = &raw mut guard_10;
-        _23 = drop_glue::<DropOnPanic::<usize>>(move _22) -> bb9 (unwind: bb10);
+        _24 = &raw mut guard_10;
+        _25 = drop_glue::<DropOnPanic::<usize>>(move _24) -> bb9 (unwind: bb10);
     }
 
     bb9 (cleanup): {

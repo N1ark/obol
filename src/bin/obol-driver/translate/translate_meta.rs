@@ -282,8 +282,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             | DefPathData::OpaqueLifetime(_)
             | DefPathData::AnonAssocTy(_)
             | DefPathData::NestedStatic
-            | DefPathData::SyntheticCoroutineBody
-            | DefPathData::TestBinderConstraints => {
+            | DefPathData::SyntheticCoroutineBody => {
                 unreachable!("unexpected def path data")
             }
         };
@@ -600,7 +599,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             let lang_item = self
                 .tcx
                 .as_lang_item(internal_id)
-                .map(translate_from_rustc::translate_lang_item);
+                .and_then(translate_from_rustc::translate_lang_item);
             let diagnostic_item = self
                 .tcx
                 .get_diagnostic_name(internal_id)

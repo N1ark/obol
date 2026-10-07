@@ -1,6 +1,88 @@
 
 // Final ULLBC:
 
+struct () {}
+
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
+pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
+{
+    let _0: bool; // return
+    let self: &'_ usize; // arg #1
+    let other: &'_ usize; // arg #2
+    let _3: usize; // anonymous local
+    let _4: usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
+
+// Full name: core::cmp::Ord::min::<usize>
+#[diagnostic_item("cmp_ord_min")]
+pub fn min::<usize>(self: usize, other: usize) -> usize
+{
+    let _0: usize; // return
+    let self: usize; // arg #1
+    let other: usize; // arg #2
+    let _3: bool; // anonymous local
+    let _4: &'_ usize; // anonymous local
+    let _5: &'_ usize; // anonymous local
+    let _6: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_6);
+        _6 = const true;
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &other;
+        storage_live(_5);
+        _5 = &self;
+        _3 = lt(move _4, move _5) -> bb1 (unwind: bb5);
+    }
+
+    bb1: {
+        if move _3 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = move other;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _6 = const false;
+        _0 = move self;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        if copy _6 -> bb6 else -> bb6;
+    }
+
+    bb6 (cleanup): {
+        unwind_continue;
+    }
+}
+
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -21,8 +103,6 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-struct () {}
-
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
@@ -31,7 +111,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -53,13 +133,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -81,7 +161,7 @@ struct str {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -103,12 +183,6 @@ pub struct Location::<'_> {
 #[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
-
-// Full name: core::intrinsics::integer_min::<usize>
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn integer_min::<usize>(a_1: usize, b_2: usize) -> usize
-= <intrinsic:integer_min>
 
 // Full name: core::intrinsics::ctpop::<usize>
 #[rustc_intrinsic]
@@ -932,7 +1006,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         v1 = copy _10.metadata;
         storage_live(v2);
         v2 = copy (*self_1).chunk_size;
-        chunksz = integer_min::<usize>(move v1, move v2) -> bb3 (unwind: bb7);
+        chunksz = min::<usize>(move v1, move v2) -> bb3 (unwind: bb7);
     }
 
     bb3: {
@@ -967,7 +1041,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
     }
 
     bb7 (cleanup): {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 

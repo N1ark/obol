@@ -126,6 +126,10 @@ pub fn type_id::<&'_ str>(self: &'_ &'_ str) -> TypeId
 #[diagnostic_item("Any")]
 vtable {vtable}::core::any::Any::<&'_ str>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ str>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(type_id::<&'_ str>))]
 
+// Full name: core::convert::Infallible
+pub enum Infallible {
+}
+
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -154,7 +158,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -176,13 +180,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -273,7 +277,7 @@ pub fn assume(b_1: bool)
 = <intrinsic:assume>
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -308,18 +312,18 @@ pub struct PhantomData::<(dyn FakeTrait)> {}
 // Full name: core::mem::SizedTypeProperties::LAYOUT::<&'_ str>
 pub const LAYOUT::<&'_ str>: Layout = Layout { size: 16usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl3 {  } } }
 
-// Full name: core::result::Result::<!, AllocError>
+// Full name: core::result::Result::<Infallible, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<!, AllocError> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, AllocError> {
+  Ok { _0: Infallible },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<!, AllocError> },
+  Break { _0: Result::<Infallible, AllocError> },
 }
 
 // Full name: core::option::Option::<NonNull::<u8>>
@@ -380,6 +384,130 @@ fn core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(message: &'_ Arguments:
         _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
         return;
     }
+}
+
+#[diagnostic_item("process_abort")]
+pub fn std::process::abort() -> !
+= <missing>
+
+// Full name: std::panicking::payload_as_str
+fn payload_as_str(_1: &'_ (dyn FakeTrait)) -> &'_ str
+= <missing>
+
+// Full name: std::panicking::begin_panic::Payload::<&'_ str>
+struct Payload::<&'_ str> {
+  inner: Option::<&'_ str>,
+}
+
+// Full name: std::panicking::begin_panic::{impl Display for Payload::<_>}::fmt::<&'_ str>
+pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+{
+    let _0: Result::<(), Error>; // return
+    let self: &'_ Payload::<&'_ str>; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
+    let _3: isize; // anonymous local
+    let a: &'_ &'_ str; // local
+    let _5: &'_ str; // anonymous local
+    let _6: &'_ (dyn FakeTrait); // anonymous local
+    let _7: !; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_7);
+        _3 = @discriminant((*self).inner);
+        switch move _3 -> 0isize: bb1, 1isize: bb4, otherwise: bb9;
+    }
+
+    bb1: {
+        _7 = std::process::abort() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3 (cleanup): {
+        unwind_continue;
+    }
+
+    bb4: {
+        storage_live(a);
+        a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
+        storage_live(_5);
+        storage_live(_6);
+        _6 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
+        _5 = payload_as_str(move _6) -> bb5 (unwind: bb8);
+    }
+
+    bb5: {
+        storage_dead(_6);
+        _0 = write_str::<'_>(move f, move _5) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
+        storage_dead(_5);
+        storage_dead(a);
+        return;
+    }
+
+    bb7 (cleanup): {
+        unwind_continue;
+    }
+
+    bb8 (cleanup): {
+        unwind_continue;
+    }
+
+    bb9: {
+        undefined_behavior;
+    }
+}
+
+// Full name: std::panicking::begin_panic::{impl core::panic::PanicPayload for Payload::<_>}::get::<&'_ str>
+pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
+{
+    let _0: &'_ (dyn FakeTrait); // return
+    let self: &'_ mut Payload::<&'_ str>; // arg #1
+    let _2: isize; // anonymous local
+    let a: &'_ &'_ str; // local
+    let _4: !; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_4);
+        _2 = @discriminant((*self).inner);
+        switch move _2 -> 0isize: bb1, 1isize: bb4, otherwise: bb5;
+    }
+
+    bb1: {
+        _4 = std::process::abort() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3 (cleanup): {
+        unwind_continue;
+    }
+
+    bb4: {
+        storage_live(a);
+        a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
+        _0 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
+        storage_dead(a);
+        return;
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+}
+
+struct (_,)::<Layout> {
+  _0: Layout,
 }
 
 // Full name: core::panicking::panic_fmt::panic_impl
@@ -465,6 +593,97 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 }
 
+// Full name: alloc::alloc::handle_alloc_error::ct_error
+fn ct_error(_1: Layout) -> !
+{
+    let _0: !; // return
+    let _1: Layout; // arg #1
+    let _2: !; // anonymous local
+    let _3: Arguments::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        _3 = from_str::<'_>(const "allocation failed") -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3 (cleanup): {
+        unwind_continue;
+    }
+
+    bb4 (cleanup): {
+        unwind_continue;
+    }
+}
+
+// Full name: alloc::alloc::handle_alloc_error
+pub fn handle_alloc_error(layout: Layout) -> !
+{
+    let _0: !; // return
+    let layout: Layout; // arg #1
+    let _2: (Layout,); // anonymous local
+    let _3: Layout; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        _3 = copy layout;
+        _2 = (move _3,);
+        storage_dead(_3);
+        _0 = ct_error(move _2._0) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+// Full name: alloc::alloc::__rust_no_alloc_shim_is_unstable_v2
+extern fn __rust_no_alloc_shim_is_unstable_v2()
+= <extern:__rust_no_alloc_shim_is_unstable_v2>
+
+// Full name: alloc::alloc::__rust_alloc_zeroed
+extern fn __rust_alloc_zeroed(_1: usize, _2: Alignment) -> *mut u8
+= <extern:__rust_alloc_zeroed>
+
+// Full name: alloc::alloc::__rust_alloc
+extern fn __rust_alloc(_1: usize, _2: Alignment) -> *mut u8
+= <extern:__rust_alloc>
+
+// Full name: core::ptr::non_null::NonNull::<[u8]>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<[u8]> {
+  pointer: *const [u8] is !null,
+}
+
+// Full name: core::result::Result::<NonNull::<[u8]>, AllocError>
+#[diagnostic_item("Result")]
+pub enum Result::<NonNull::<[u8]>, AllocError> {
+  Ok { _0: NonNull::<[u8]> },
+  Err { _0: AllocError },
+}
+
+// Full name: core::result::Result::<NonNull::<u8>, AllocError>
+#[diagnostic_item("Result")]
+pub enum Result::<NonNull::<u8>, AllocError> {
+  Ok { _0: NonNull::<u8> },
+  Err { _0: AllocError },
+}
+
 struct (_, _)::<Arguments::<'_>, bool> {
   _0: Arguments::<'_>,
   _1: bool,
@@ -523,81 +742,6 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     bb2 (cleanup): {
         unwind_terminate;
     }
-}
-
-// Full name: core::panicking::panic
-#[track_caller]
-#[lang_item(Panic)]
-pub fn panic(expr: &'_ str) -> !
-{
-    let _0: !; // return
-    let expr: &'_ str; // arg #1
-    let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
-    }
-
-    bb1: {
-        storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3 (cleanup): {
-        unwind_continue;
-    }
-
-    bb4 (cleanup): {
-        unwind_continue;
-    }
-}
-
-// Full name: std::panicking::begin_panic::Payload::<&'_ str>
-struct Payload::<&'_ str> {
-  inner: Option::<&'_ str>,
-}
-
-// Full name: core::ptr::drop_glue::<Payload::<&'_ str>>
-#[lang_item(DropGlue)]
-fn drop_glue::<Payload::<&'_ str>>(_1: &'_ mut Payload::<&'_ str>)
-{
-    let _0: (); // return
-    let _1: &'_ mut Payload::<&'_ str>; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
-
-// Full name: core::ptr::non_null::NonNull::<[u8]>
-#[lang_item(NonNull)]
-pub struct NonNull::<[u8]> {
-  pointer: *const [u8] is !null,
-}
-
-// Full name: core::ptr::non_null::NonNull::<&'_ str>
-#[lang_item(NonNull)]
-pub struct NonNull::<&'_ str> {
-  pointer: *const &'_ str is !null,
-}
-
-// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
-#[lang_item(NonNull)]
-pub struct NonNull::<(dyn FakeTrait)> {
-  pointer: *const (dyn FakeTrait) is !null,
 }
 
 // Full name: core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check
@@ -685,250 +829,6 @@ fn precondition_check(ptr: *mut ())
     }
 }
 
-// Full name: core::ptr::unique::Unique::<&'_ str>
-pub struct Unique::<&'_ str> {
-  pointer: NonNull::<&'_ str>,
-  _marker: PhantomData::<&'_ str>,
-}
-
-// Full name: core::ptr::unique::Unique::<(dyn FakeTrait)>
-pub struct Unique::<(dyn FakeTrait)> {
-  pointer: NonNull::<(dyn FakeTrait)>,
-  _marker: PhantomData::<(dyn FakeTrait)>,
-}
-
-// Full name: core::result::Result::<NonNull::<u8>, AllocError>
-#[diagnostic_item("Result")]
-pub enum Result::<NonNull::<u8>, AllocError> {
-  Ok { _0: NonNull::<u8> },
-  Err { _0: AllocError },
-}
-
-// Full name: core::result::Result::<NonNull::<[u8]>, AllocError>
-#[diagnostic_item("Result")]
-pub enum Result::<NonNull::<[u8]>, AllocError> {
-  Ok { _0: NonNull::<[u8]> },
-  Err { _0: AllocError },
-}
-
-// Full name: alloc::panicking::PanicPayload::as_str::<Payload::<&'_ str>>
-pub fn as_str::<Payload::<&'_ str>>(self: &'_ mut Payload::<&'_ str>) -> Option::<&'_ str>
-{
-    let _0: Option::<&'_ str>; // return
-    let self: &'_ mut Payload::<&'_ str>; // arg #1
-    let _2: Option::<&'_ str>; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        _2 = Option::<&'_ str>::None {  };
-        _0 = move _2;
-        return;
-    }
-}
-
-// Full name: alloc::alloc::Global
-#[lang_item(GlobalAlloc)]
-pub struct Global {}
-
-// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
-#[fundamental]
-#[lang_item(OwnedBox)]
-pub struct Box::<(dyn FakeTrait), Global> {
-  _0: Unique::<(dyn FakeTrait)>,
-  _1: Global,
-}
-
-#[diagnostic_item("process_abort")]
-pub fn std::process::abort() -> !
-= <missing>
-
-// Full name: std::panicking::payload_as_str
-fn payload_as_str(_1: &'_ (dyn FakeTrait)) -> &'_ str
-= <missing>
-
-// Full name: std::panicking::begin_panic::{impl Display for Payload::<_>}::fmt::<&'_ str>
-pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-{
-    let _0: Result::<(), Error>; // return
-    let self: &'_ Payload::<&'_ str>; // arg #1
-    let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: isize; // anonymous local
-    let a: &'_ &'_ str; // local
-    let _5: &'_ str; // anonymous local
-    let _6: &'_ (dyn FakeTrait); // anonymous local
-    let _7: !; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_7);
-        _3 = @discriminant((*self).inner);
-        switch move _3 -> 0isize: bb1, 1isize: bb4, otherwise: bb9;
-    }
-
-    bb1: {
-        _7 = std::process::abort() -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3 (cleanup): {
-        unwind_continue;
-    }
-
-    bb4: {
-        storage_live(a);
-        a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
-        storage_live(_5);
-        storage_live(_6);
-        _6 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
-        _5 = payload_as_str(move _6) -> bb5 (unwind: bb8);
-    }
-
-    bb5: {
-        storage_dead(_6);
-        _0 = write_str::<'_>(move f, move _5) -> bb6 (unwind: bb7);
-    }
-
-    bb6: {
-        storage_dead(_5);
-        storage_dead(a);
-        return;
-    }
-
-    bb7 (cleanup): {
-        unwind_continue;
-    }
-
-    bb8 (cleanup): {
-        unwind_continue;
-    }
-
-    bb9: {
-        undefined_behavior;
-    }
-}
-
-// Full name: std::panicking::begin_panic::{impl alloc::panicking::PanicPayload for Payload::<_>}::get::<&'_ str>
-pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
-{
-    let _0: &'_ (dyn FakeTrait); // return
-    let self: &'_ mut Payload::<&'_ str>; // arg #1
-    let _2: isize; // anonymous local
-    let a: &'_ &'_ str; // local
-    let _4: !; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_4);
-        _2 = @discriminant((*self).inner);
-        switch move _2 -> 0isize: bb1, 1isize: bb4, otherwise: bb5;
-    }
-
-    bb1: {
-        _4 = std::process::abort() -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3 (cleanup): {
-        unwind_continue;
-    }
-
-    bb4: {
-        storage_live(a);
-        a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
-        _0 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
-        storage_dead(a);
-        return;
-    }
-
-    bb5: {
-        undefined_behavior;
-    }
-}
-
-struct (_,)::<Layout> {
-  _0: Layout,
-}
-
-// Full name: alloc::alloc::handle_alloc_error::ct_error
-fn ct_error(_1: Layout) -> !
-{
-    let _0: !; // return
-    let _1: Layout; // arg #1
-    let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _3 = from_str::<'_>(const "allocation failed") -> bb1 (unwind: bb4);
-    }
-
-    bb1: {
-        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3 (cleanup): {
-        unwind_continue;
-    }
-
-    bb4 (cleanup): {
-        unwind_continue;
-    }
-}
-
-// Full name: alloc::alloc::handle_alloc_error
-pub fn handle_alloc_error(layout: Layout) -> !
-{
-    let _0: !; // return
-    let layout: Layout; // arg #1
-    let _2: (Layout,); // anonymous local
-    let _3: Layout; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _3 = copy layout;
-        _2 = (move _3,);
-        storage_dead(_3);
-        _0 = ct_error(move _2._0) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2 (cleanup): {
-        unwind_continue;
-    }
-}
-
-// Full name: alloc::alloc::__rust_no_alloc_shim_is_unstable_v2
-extern fn __rust_no_alloc_shim_is_unstable_v2()
-= <extern:__rust_no_alloc_shim_is_unstable_v2>
-
-// Full name: alloc::alloc::__rust_alloc_zeroed
-extern fn __rust_alloc_zeroed(_1: usize, _2: Alignment) -> *mut u8
-= <extern:__rust_alloc_zeroed>
-
-// Full name: alloc::alloc::__rust_alloc
-extern fn __rust_alloc(_1: usize, _2: Alignment) -> *mut u8
-= <extern:__rust_alloc>
-
 // Full name: alloc::alloc::{Global}::alloc_impl_runtime
 fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>, AllocError>
 {
@@ -939,10 +839,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<!, AllocError>; // anonymous local
+    let _10: Result::<Infallible, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -1164,10 +1064,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);
@@ -1286,6 +1186,22 @@ fn box_new_uninit(layout: Layout) -> *mut u8
     }
 }
 
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: core::ptr::non_null::NonNull::<&'_ str>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<&'_ str> {
+  pointer: *const &'_ str is !null,
+}
+
+// Full name: core::ptr::unique::Unique::<&'_ str>
+pub struct Unique::<&'_ str> {
+  pointer: NonNull::<&'_ str>,
+  _marker: PhantomData::<&'_ str>,
+}
+
 // Full name: alloc::boxed::Box::<&'_ str, Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
@@ -1321,34 +1237,58 @@ pub fn alloc::boxed::{Box::<_, Global>}::new::<&'_ str>(x: &'_ str) -> Box::<&'_
     }
 }
 
-// Full name: std::panicking::begin_panic::{impl alloc::panicking::PanicPayload for Payload::<_>}::take_box::<&'_ str>
-pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeTrait), Global>
+// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<(dyn FakeTrait)> {
+  pointer: *const (dyn FakeTrait) is !null,
+}
+
+// Full name: core::ptr::unique::Unique::<(dyn FakeTrait)>
+pub struct Unique::<(dyn FakeTrait)> {
+  pointer: NonNull::<(dyn FakeTrait)>,
+  _marker: PhantomData::<(dyn FakeTrait)>,
+}
+
+// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub struct Box::<(dyn FakeTrait), Global> {
+  _0: Unique::<(dyn FakeTrait)>,
+  _1: Global,
+}
+
+// Full name: std::panicking::begin_panic::{impl core::panic::PanicPayload for Payload::<_>}::take_box::<&'_ str>
+pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> *mut (dyn FakeTrait)
 {
-    let _0: Box::<(dyn FakeTrait), Global>; // return
+    let _0: *mut (dyn FakeTrait); // return
     let self: &'_ mut Payload::<&'_ str>; // arg #1
     let _2: Option::<&'_ str>; // anonymous local
     let _3: isize; // anonymous local
     let a: &'_ str; // local
-    let _5: Box::<&'_ str, Global>; // anonymous local
-    let _6: !; // anonymous local
-    let _7: Option::<&'_ str>; // anonymous local
+    let _5: Box::<(dyn FakeTrait), Global>; // anonymous local
+    let _6: Box::<&'_ str, Global>; // anonymous local
+    let _7: !; // anonymous local
+    let _8: Option::<&'_ str>; // anonymous local
+    let _9: *const (dyn FakeTrait); // anonymous local
+    let data: Unique::<(dyn FakeTrait)>; // local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        storage_live(_6);
-        storage_live(_2);
         storage_live(_7);
-        _7 = Option::<&'_ str>::None {  };
+        storage_live(data);
+        storage_live(_2);
+        storage_live(_8);
+        _8 = Option::<&'_ str>::None {  };
         _2 = copy (*self).inner;
-        (*self).inner = move _7;
-        storage_dead(_7);
+        (*self).inner = move _8;
+        storage_dead(_8);
         _3 = @discriminant(_2);
         switch move _3 -> 0isize: bb1, 1isize: bb4, otherwise: bb7;
     }
 
     bb1: {
-        _6 = std::process::abort() -> bb2 (unwind: bb3);
+        _7 = std::process::abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -1363,14 +1303,22 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
         storage_live(a);
         a = move (_2 as variant Option::<&'_ str>::Some)._0;
         storage_live(_5);
-        _5 = alloc::boxed::{Box::<_, Global>}::new::<&'_ str>(move a) -> bb5 (unwind: bb6);
+        storage_live(_6);
+        _6 = alloc::boxed::{Box::<_, Global>}::new::<&'_ str>(move a) -> bb5 (unwind: bb6);
     }
 
     bb5: {
-        _0 = unsize_cast<Box::<&'_ str, Global>, Box::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(move _5);
+        _5 = unsize_cast<Box::<&'_ str, Global>, Box::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(move _6);
+        storage_dead(_6);
+        data = move _5._0;
         storage_dead(_5);
         storage_dead(a);
         storage_dead(_2);
+        storage_live(_9);
+        _9 = transmute<Unique::<(dyn FakeTrait)>, *const (dyn FakeTrait)>(copy data);
+        _0 = &raw mut (*_9) with_metadata(copy _9.metadata);
+        storage_dead(_9);
+        storage_dead(data);
         return;
     }
 
@@ -1383,7 +1331,75 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
     }
 }
 
-vtable {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>: [*const (); 7usize] = [cast<*const ()>(fnptr(drop_glue::<Payload::<&'_ str>>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(fmt::<&'_ str>)), cast<*const ()>(fnptr(take_box::<&'_ str>)), cast<*const ()>(fnptr(get::<&'_ str>)), cast<*const ()>(fnptr(as_str::<Payload::<&'_ str>>))]
+// Full name: core::ptr::drop_glue::<Payload::<&'_ str>>
+#[lang_item(DropGlue)]
+fn drop_glue::<Payload::<&'_ str>>(_1: &'_ mut Payload::<&'_ str>)
+{
+    let _0: (); // return
+    let _1: &'_ mut Payload::<&'_ str>; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
+    }
+}
+
+// Full name: core::panic::PanicPayload::as_str::<Payload::<&'_ str>>
+pub fn as_str::<Payload::<&'_ str>>(self: &'_ mut Payload::<&'_ str>) -> Option::<&'_ str>
+{
+    let _0: Option::<&'_ str>; // return
+    let self: &'_ mut Payload::<&'_ str>; // arg #1
+    let _2: Option::<&'_ str>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = Option::<&'_ str>::None {  };
+        _0 = move _2;
+        return;
+    }
+}
+
+vtable {vtable}::core::panic::PanicPayload::<Payload::<&'_ str>>: [*const (); 7usize] = [cast<*const ()>(fnptr(drop_glue::<Payload::<&'_ str>>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(fmt::<&'_ str>)), cast<*const ()>(fnptr(take_box::<&'_ str>)), cast<*const ()>(fnptr(get::<&'_ str>)), cast<*const ()>(fnptr(as_str::<Payload::<&'_ str>>))]
+
+// Full name: core::panicking::panic
+#[track_caller]
+#[lang_item(Panic)]
+pub fn panic(expr: &'_ str) -> !
+{
+    let _0: !; // return
+    let expr: &'_ str; // arg #1
+    let _2: !; // anonymous local
+    let _3: Arguments::<'_>; // anonymous local
+    let _4: &'_ str; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy expr;
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        storage_dead(_4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3 (cleanup): {
+        unwind_continue;
+    }
+
+    bb4 (cleanup): {
+        unwind_continue;
+    }
+}
 
 // Full name: std::panicking::panic_with_hook
 fn panic_with_hook(_1: &'_ mut (dyn FakeTrait), _2: &'_ Location::<'_>, _3: bool, _4: bool) -> !
@@ -1420,7 +1436,7 @@ fn std::panicking::begin_panic::{closure}::<&'_ str, i32, extern "rust-call" fn(
         _5 = Payload::<&'_ str> { inner: move _6 };
         storage_dead(_6);
         _4 = &mut _5;
-        _3 = unsize_cast<&'_ mut Payload::<&'_ str>, &'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>)>(copy _4);
+        _3 = unsize_cast<&'_ mut Payload::<&'_ str>, &'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::panic::PanicPayload::<Payload::<&'_ str>>)>(copy _4);
         _8 = copy _1.upvar_1;
         _0 = panic_with_hook(move _3, move _8, const true, const false) -> bb1 (unwind: bb2);
     }

@@ -89,7 +89,7 @@ pub fn in_toolchain(program: impl AsRef<OsStr>) -> Result<Command> {
     // is set up in `$PATH` and the driver should be correctly dynamically linked.
     let correct_toolchain_is_in_path = env::var("OBOL_TOOLCHAIN_IS_IN_PATH").is_ok();
 
-    let cmd = if correct_toolchain_is_in_path {
+    let mut cmd = if correct_toolchain_is_in_path {
         Command::new(program)
     } else {
         if !toolchain.is_installed()? {
@@ -98,6 +98,9 @@ pub fn in_toolchain(program: impl AsRef<OsStr>) -> Result<Command> {
         }
         toolchain.run(program)
     };
+    // Obol is pinned to a stable toolchain, but `obol-driver` and the way it compiles crates rely
+    // on unstable features and `-Z` flags, which stable rustc and cargo only accept with this.
+    cmd.env("RUSTC_BOOTSTRAP", "1");
     Ok(cmd)
 }
 

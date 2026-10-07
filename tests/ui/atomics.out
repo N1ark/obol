@@ -42,7 +42,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -64,13 +64,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -163,27 +163,27 @@ pub fn atomic_cxchg::<usize, AtomicOrdering::SeqCst {  }, AtomicOrdering::SeqCst
 = <intrinsic:atomic_cxchg>
 
 #[rustc_intrinsic]
-pub fn core::intrinsics::atomic_load::<usize, AtomicOrdering::Relaxed {  }, false>(src_1: *const usize) -> usize
+pub fn core::intrinsics::atomic_load::<usize, AtomicOrdering::Relaxed {  }>(src_1: *const usize) -> usize
 = <intrinsic:atomic_load>
 
 #[rustc_intrinsic]
-pub fn core::intrinsics::atomic_load::<usize, AtomicOrdering::Acquire {  }, false>(src_1: *const usize) -> usize
+pub fn core::intrinsics::atomic_load::<usize, AtomicOrdering::Acquire {  }>(src_1: *const usize) -> usize
 = <intrinsic:atomic_load>
 
 #[rustc_intrinsic]
-pub fn core::intrinsics::atomic_load::<usize, AtomicOrdering::SeqCst {  }, false>(src_1: *const usize) -> usize
+pub fn core::intrinsics::atomic_load::<usize, AtomicOrdering::SeqCst {  }>(src_1: *const usize) -> usize
 = <intrinsic:atomic_load>
 
 #[rustc_intrinsic]
-pub fn core::intrinsics::atomic_store::<usize, AtomicOrdering::Relaxed {  }, false>(dst_1: *mut usize, val_2: usize)
+pub fn core::intrinsics::atomic_store::<usize, AtomicOrdering::Relaxed {  }>(dst_1: *mut usize, val_2: usize)
 = <intrinsic:atomic_store>
 
 #[rustc_intrinsic]
-pub fn core::intrinsics::atomic_store::<usize, AtomicOrdering::Release {  }, false>(dst_1: *mut usize, val_2: usize)
+pub fn core::intrinsics::atomic_store::<usize, AtomicOrdering::Release {  }>(dst_1: *mut usize, val_2: usize)
 = <intrinsic:atomic_store>
 
 #[rustc_intrinsic]
-pub fn core::intrinsics::atomic_store::<usize, AtomicOrdering::SeqCst {  }, false>(dst_1: *mut usize, val_2: usize)
+pub fn core::intrinsics::atomic_store::<usize, AtomicOrdering::SeqCst {  }>(dst_1: *mut usize, val_2: usize)
 = <intrinsic:atomic_store>
 
 // Full name: core::intrinsics::atomic_xadd::<usize, usize, AtomicOrdering::Relaxed {  }>
@@ -221,7 +221,7 @@ struct str {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -407,7 +407,7 @@ pub fn core::sync::atomic::{Atomic::<usize>}::new(v: usize) -> Atomic::<usize>
     }
 }
 
-fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize, order: Ordering)
+fn core::sync::atomic::atomic_store::<usize>(dst: *mut usize, val: usize, order: Ordering)
 {
     let _0: (); // return
     let dst: *mut usize; // arg #1
@@ -448,7 +448,7 @@ fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize,
     }
 
     bb1: {
-        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Relaxed {  }, false>(move dst, move val) -> bb12 (unwind: bb2);
+        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Relaxed {  }>(move dst, move val) -> bb12 (unwind: bb2);
     }
 
     bb2 (cleanup): {
@@ -456,7 +456,7 @@ fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize,
     }
 
     bb3: {
-        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Release {  }, false>(move dst, move val) -> bb12 (unwind: bb4);
+        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Release {  }>(move dst, move val) -> bb12 (unwind: bb4);
     }
 
     bb4 (cleanup): {
@@ -546,7 +546,7 @@ fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize,
     }
 
     bb11: {
-        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::SeqCst {  }, false>(move dst, move val) -> bb12 (unwind: bb13);
+        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::SeqCst {  }>(move dst, move val) -> bb12 (unwind: bb13);
     }
 
     bb12: {
@@ -582,7 +582,7 @@ pub fn store(self: &'_ Atomic::<usize>, val: usize, order: Ordering)
         _6 = &raw const (*self).v;
         _5 = cast<*const UnsafeCell::<Align8::<usize>>, *mut usize>(copy _6);
         storage_dead(_6);
-        _4 = core::sync::atomic::atomic_store::<usize, false>(move _5, move val, move order) -> bb1 (unwind: bb2);
+        _4 = core::sync::atomic::atomic_store::<usize>(move _5, move val, move order) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -595,7 +595,7 @@ pub fn store(self: &'_ Atomic::<usize>, val: usize, order: Ordering)
     }
 }
 
-fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ordering) -> usize
+fn core::sync::atomic::atomic_load::<usize>(dst: *const usize, order: Ordering) -> usize
 {
     let _0: usize; // return
     let dst: *const usize; // arg #1
@@ -634,7 +634,7 @@ fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ord
     }
 
     bb1: {
-        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Relaxed {  }, false>(move dst) -> bb12 (unwind: bb2);
+        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Relaxed {  }>(move dst) -> bb12 (unwind: bb2);
     }
 
     bb2 (cleanup): {
@@ -683,7 +683,7 @@ fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ord
     }
 
     bb6: {
-        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Acquire {  }, false>(move dst) -> bb12 (unwind: bb7);
+        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Acquire {  }>(move dst) -> bb12 (unwind: bb7);
     }
 
     bb7 (cleanup): {
@@ -732,7 +732,7 @@ fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ord
     }
 
     bb11: {
-        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::SeqCst {  }, false>(move dst) -> bb12 (unwind: bb13);
+        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::SeqCst {  }>(move dst) -> bb12 (unwind: bb13);
     }
 
     bb12: {
@@ -763,7 +763,7 @@ pub fn load(self: &'_ Atomic::<usize>, order: Ordering) -> usize
         storage_live(_3);
         _4 = &raw const (*self).v;
         _3 = cast<*const UnsafeCell::<Align8::<usize>>, *const usize>(copy _4);
-        _0 = core::sync::atomic::atomic_load::<usize, false>(move _3, move order) -> bb1 (unwind: bb2);
+        _0 = core::sync::atomic::atomic_load::<usize>(move _3, move order) -> bb1 (unwind: bb2);
     }
 
     bb1: {

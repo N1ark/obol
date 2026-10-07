@@ -98,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -137,13 +137,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -594,6 +594,10 @@ pub struct LayoutError {}
 // Full name: core::alloc::AllocError
 pub struct AllocError {}
 
+// Full name: core::convert::Infallible
+pub enum Infallible {
+}
+
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
@@ -834,18 +838,18 @@ pub struct UsizeNoHighBit {
   _0: usize is 0usize..=9223372036854775807usize,
 }
 
-// Full name: core::result::Result::<!, AllocError>
+// Full name: core::result::Result::<Infallible, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<!, AllocError> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, AllocError> {
+  Ok { _0: Infallible },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<!, AllocError> },
+  Break { _0: Result::<Infallible, AllocError> },
 }
 
 // Full name: core::option::Option::<usize>
@@ -1797,7 +1801,7 @@ fn drop_glue::<String>(_1: &'_ mut String)
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
@@ -1954,10 +1958,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<!, AllocError>; // anonymous local
+    let _10: Result::<Infallible, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -2179,10 +2183,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);

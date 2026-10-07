@@ -98,7 +98,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -137,13 +137,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -161,7 +161,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -672,6 +672,10 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
 // Full name: core::alloc::AllocError
 pub struct AllocError {}
 
+// Full name: core::convert::Infallible
+pub enum Infallible {
+}
+
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
@@ -722,10 +726,16 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 pub fn assume(b_1: bool)
 = <intrinsic:assume>
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 1usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[u8; 1usize]> {
+  _0: [u8; 1usize],
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 1usize]> {
-  value: [u8; 1usize],
+  value: MaybeDangling::<[u8; 1usize]>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 1usize]>
@@ -865,18 +875,18 @@ pub struct UsizeNoHighBit {
   _0: usize is 0usize..=9223372036854775807usize,
 }
 
-// Full name: core::result::Result::<!, AllocError>
+// Full name: core::result::Result::<Infallible, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<!, AllocError> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, AllocError> {
+  Ok { _0: Infallible },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<!, AllocError> },
+  Break { _0: Result::<Infallible, AllocError> },
 }
 
 // Full name: alloc::alloc::Global
@@ -1361,7 +1371,7 @@ fn drop_glue::<Option::<Vec::<u8, Global>>>(_1: &'_ mut Option::<Vec::<u8, Globa
 }
 
 // Full name: core::ptr::non_null::NonNull::<MaybeUninit::<[u8; 1usize]>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<MaybeUninit::<[u8; 1usize]>> {
   pointer: *const MaybeUninit::<[u8; 1usize]> is !null,
 }
@@ -1531,13 +1541,13 @@ fn drop_glue::<Box::<MaybeUninit::<[u8; 1usize]>, Global>>(_1: &'_ mut Box::<May
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8; 1usize]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[u8; 1usize]> {
   pointer: *const [u8; 1usize] is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
@@ -1674,10 +1684,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<!, AllocError>; // anonymous local
+    let _10: Result::<Infallible, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -1899,10 +1909,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);
@@ -2371,7 +2381,7 @@ pub fn next(b: bool) -> Option::<Vec::<u8, Global>>
         _5 = const 42u8;
         storage_dead(_6);
         _8 = transmute<Unique::<MaybeUninit::<[u8; 1usize]>>, *const MaybeUninit::<[u8; 1usize]>>(copy _4._0);
-        (*_8).value.value = [move _5];
+        (*_8).value.value._0 = [move _5];
         storage_dead(_5);
         _3 = move _4;
         storage_dead(_4);

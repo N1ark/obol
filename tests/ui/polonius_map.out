@@ -279,7 +279,7 @@ pub enum Result::<(), Error> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<()> {
   pointer: *const () is !null,
 }
@@ -318,13 +318,13 @@ pub struct Argument::<'_> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<Argument::<'_>> {
   pointer: *const Argument::<'_> is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
@@ -342,7 +342,7 @@ struct (_, _)::<Arguments::<'_>, bool> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<str> {
   pointer: *const str is !null,
 }
@@ -1395,6 +1395,144 @@ pub fn borrow::<u32>(self: &'_ u32) -> &'_ u32
     }
 }
 
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
+pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
+{
+    let _0: bool; // return
+    let self: &'_ usize; // arg #1
+    let other: &'_ usize; // arg #2
+    let _3: usize; // anonymous local
+    let _4: usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
+
+// Full name: core::cmp::Ord::max::<usize>
+#[diagnostic_item("cmp_ord_max")]
+pub fn max::<usize>(self: usize, other: usize) -> usize
+{
+    let _0: usize; // return
+    let self: usize; // arg #1
+    let other: usize; // arg #2
+    let _3: bool; // anonymous local
+    let _4: &'_ usize; // anonymous local
+    let _5: &'_ usize; // anonymous local
+    let _6: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_6);
+        _6 = const true;
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &other;
+        storage_live(_5);
+        _5 = &self;
+        _3 = lt(move _4, move _5) -> bb1 (unwind: bb5);
+    }
+
+    bb1: {
+        if move _3 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _6 = const false;
+        _0 = move self;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = move other;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        if copy _6 -> bb6 else -> bb6;
+    }
+
+    bb6 (cleanup): {
+        unwind_continue;
+    }
+}
+
+// Full name: core::cmp::Ord::min::<usize>
+#[diagnostic_item("cmp_ord_min")]
+pub fn min::<usize>(self: usize, other: usize) -> usize
+{
+    let _0: usize; // return
+    let self: usize; // arg #1
+    let other: usize; // arg #2
+    let _3: bool; // anonymous local
+    let _4: &'_ usize; // anonymous local
+    let _5: &'_ usize; // anonymous local
+    let _6: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_6);
+        _6 = const true;
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &other;
+        storage_live(_5);
+        _5 = &self;
+        _3 = lt(move _4, move _5) -> bb1 (unwind: bb5);
+    }
+
+    bb1: {
+        if move _3 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = move other;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _6 = const false;
+        _0 = move self;
+        storage_dead(_3);
+        goto bb4;
+    }
+
+    bb4: {
+        return;
+    }
+
+    bb5 (cleanup): {
+        if copy _6 -> bb6 else -> bb6;
+    }
+
+    bb6 (cleanup): {
+        unwind_continue;
+    }
+}
+
 // Full name: core::cmp::impls::{impl PartialEq<u32> for u32}::eq
 pub fn eq(self: &'_ u32, other: &'_ u32) -> bool
 {
@@ -1415,6 +1553,10 @@ pub fn eq(self: &'_ u32, other: &'_ u32) -> bool
         storage_dead(_3);
         return;
     }
+}
+
+// Full name: core::convert::Infallible
+pub enum Infallible {
 }
 
 // Full name: core::fmt::{impl Display for str}::fmt
@@ -1476,12 +1618,6 @@ pub struct SipHasher13 {
 pub struct DefaultHasher {
   _0: SipHasher13,
 }
-
-// Full name: core::intrinsics::integer_min::<usize>
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn integer_min::<usize>(a_1: usize, b_2: usize) -> usize
-= <intrinsic:integer_min>
 
 // Full name: core::intrinsics::rotate_left::<u64>
 #[miri::intrinsic_fallback_is_spec]
@@ -2163,7 +2299,7 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
         storage_live(_9);
         storage_live(v2);
         v2 = copy needed;
-        _9 = integer_min::<usize>(copy length, move v2) -> bb3 (unwind: bb25);
+        _9 = min::<usize>(copy length, move v2) -> bb3 (unwind: bb25);
     }
 
     bb3: {
@@ -2351,7 +2487,7 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
     }
 
     bb25 (cleanup): {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 
@@ -3250,26 +3386,20 @@ pub fn hash_one::<RandomState, &'_ u32>(self: &'_ RandomState, x: &'_ u32) -> u6
     }
 }
 
-// Full name: core::intrinsics::integer_max::<usize>
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn integer_max::<usize>(a_1: usize, b_2: usize) -> usize
-= <intrinsic:integer_max>
-
 // Full name: core::intrinsics::ctlz::<u64>
 #[rustc_intrinsic]
 pub fn ctlz::<u64>(x_1: u64) -> u32
 = <intrinsic:ctlz>
 
+// Full name: core::intrinsics::ctlz_nonzero::<usize>
+#[rustc_intrinsic]
+pub fn ctlz_nonzero::<usize>(x_1: usize) -> u32
+= <intrinsic:ctlz_nonzero>
+
 // Full name: core::intrinsics::cttz_nonzero::<u16>
 #[rustc_intrinsic]
 pub fn cttz_nonzero::<u16>(x_1: u16) -> u32
 = <intrinsic:cttz_nonzero>
-
-// Full name: core::intrinsics::saturating_sub::<usize>
-#[rustc_intrinsic]
-pub fn saturating_sub::<usize>(a_1: usize, b_2: usize) -> usize
-= <intrinsic:saturating_sub>
 
 // Full name: hashbrown::raw::RawTableInner
 struct RawTableInner {
@@ -3299,10 +3429,16 @@ struct Tag {
 pub fn copy::<Tag>(src_1: *const Tag, dst_2: *mut Tag, count_3: usize)
 = <intrinsic:copy>
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<Tag>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<Tag> {
+  _0: Tag,
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<Tag>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<Tag> {
-  value: Tag,
+  value: MaybeDangling::<Tag>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<Tag>
@@ -3529,28 +3665,52 @@ fn core::iter::adapters::step_by::{StepBy::<_>}::new::<Range::<usize>>(iter_1: R
 #[lang_item(PhantomData)]
 pub struct PhantomData::<(u32, u32)> {}
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 1usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[u8; 1usize]> {
+  _0: [u8; 1usize],
+}
+
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 1usize]> {
-  value: [u8; 1usize],
+  value: MaybeDangling::<[u8; 1usize]>,
+}
+
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 2usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[u8; 2usize]> {
+  _0: [u8; 2usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 2usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 2usize]> {
-  value: [u8; 2usize],
+  value: MaybeDangling::<[u8; 2usize]>,
+}
+
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 4usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[u8; 4usize]> {
+  _0: [u8; 4usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
+  value: MaybeDangling::<[u8; 4usize]>,
+}
+
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[u8; 8usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[u8; 8usize]> {
+  _0: [u8; 8usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
 #[lang_item(ManuallyDrop)]
 pub struct ManuallyDrop::<[u8; 8usize]> {
-  value: [u8; 8usize],
+  value: MaybeDangling::<[u8; 8usize]>,
 }
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 1usize]>
@@ -3695,19 +3855,19 @@ pub struct NonZero::<u16> {
   _0: NonZeroU16Inner,
 }
 
-// Full name: core::option::Option::<!>
+// Full name: core::option::Option::<Infallible>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<!> {
+pub enum Option::<Infallible> {
   None,
-  Some { _0: ! },
+  Some { _0: Infallible },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Option::<!>, usize>
+// Full name: core::ops::control_flow::ControlFlow::<Option::<Infallible>, usize>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Option::<!>, usize> {
+pub enum ControlFlow::<Option::<Infallible>, usize> {
   Continue { _0: usize },
-  Break { _0: Option::<!> },
+  Break { _0: Option::<Infallible> },
 }
 
 // Full name: hashbrown::TryReserveError
@@ -3716,25 +3876,25 @@ pub enum TryReserveError {
   AllocError { layout: Layout },
 }
 
-// Full name: core::result::Result::<!, TryReserveError>
+// Full name: core::result::Result::<Infallible, TryReserveError>
 #[diagnostic_item("Result")]
-pub enum Result::<!, TryReserveError> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, TryReserveError> {
+  Ok { _0: Infallible },
   Err { _0: TryReserveError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, usize>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, usize>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, TryReserveError>, usize> {
+pub enum ControlFlow::<Result::<Infallible, TryReserveError>, usize> {
   Continue { _0: usize },
-  Break { _0: Result::<!, TryReserveError> },
+  Break { _0: Result::<Infallible, TryReserveError> },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, RawTableInner>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, TryReserveError>, RawTableInner> {
+pub enum ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner> {
   Continue { _0: RawTableInner },
-  Break { _0: Result::<!, TryReserveError> },
+  Break { _0: Result::<Infallible, TryReserveError> },
 }
 
 // Full name: hashbrown::raw::TableLayout
@@ -3758,25 +3918,25 @@ struct ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resi
   value: RawTableInner,
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>> {
+pub enum ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>> {
   Continue { _0: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}> },
-  Break { _0: Result::<!, TryReserveError> },
+  Break { _0: Result::<Infallible, TryReserveError> },
 }
 
-// Full name: core::result::Result::<!, AllocError>
+// Full name: core::result::Result::<Infallible, AllocError>
 #[diagnostic_item("Result")]
-pub enum Result::<!, AllocError> {
-  Ok { _0: ! },
+pub enum Result::<Infallible, AllocError> {
+  Ok { _0: Infallible },
   Err { _0: AllocError },
 }
 
-// Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
+// Full name: core::ops::control_flow::ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>
 #[diagnostic_item("ControlFlow")]
-pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<u8>> {
+pub enum ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>> {
   Continue { _0: NonNull::<u8> },
-  Break { _0: Result::<!, AllocError> },
+  Break { _0: Result::<Infallible, AllocError> },
 }
 
 struct hashbrown::map::make_hasher::{closure}::{closure} {
@@ -3835,7 +3995,7 @@ struct (_, _)::<&'_ mut RawTableInner, usize> {
 }
 
 // Full name: core::ptr::non_null::NonNull::<(u32, u32)>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<(u32, u32)> {
   pointer: *const (u32, u32) is !null,
 }
@@ -5127,20 +5287,20 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
     let size: usize; // local
     let ctrl_align: usize; // local
     let ctrl_offset: usize; // local
-    let _6: ControlFlow::<Option::<!>, usize>; // anonymous local
+    let _6: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
     let self_7: Option::<usize>; // local
-    let _8: ControlFlow::<Option::<!>, usize>; // anonymous local
+    let _8: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
     let self_9: Option::<usize>; // local
-    let _10: Option::<!>; // anonymous local
+    let _10: Option::<Infallible>; // anonymous local
     let val_11: usize; // local
     let rhs_12: usize; // local
-    let _13: Option::<!>; // anonymous local
+    let _13: Option::<Infallible>; // anonymous local
     let val_14: usize; // local
     let _15: usize; // anonymous local
-    let _16: ControlFlow::<Option::<!>, usize>; // anonymous local
+    let _16: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
     let self_17: Option::<usize>; // local
     let rhs_18: usize; // local
-    let _19: Option::<!>; // anonymous local
+    let _19: Option::<Infallible>; // anonymous local
     let len: usize; // local
     let _21: bool; // anonymous local
     let _22: usize; // anonymous local
@@ -5261,10 +5421,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(b_26);
         storage_live(v_32);
         v_32 = move (self_9 as variant Option::<usize>::Some)._0;
-        _8 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v_32 };
+        _8 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v_32 };
         storage_dead(v_32);
         storage_dead(self_9);
-        val_11 = copy (_8 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
+        val_11 = copy (_8 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
         rhs_12 = copy ctrl_align wrap.- const 1usize;
         storage_live(b_33);
         storage_live(_34);
@@ -5321,10 +5481,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(_35);
         storage_live(v_39);
         v_39 = move (self_7 as variant Option::<usize>::Some)._0;
-        _6 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v_39 };
+        _6 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v_39 };
         storage_dead(v_39);
         storage_dead(self_7);
-        val_14 = copy (_6 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
+        val_14 = copy (_6 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
         storage_live(_15);
         _15 = ~(copy rhs_12);
         ctrl_offset = copy val_14 & move _15;
@@ -5387,10 +5547,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(rhs_18);
         storage_live(v_46);
         v_46 = move (self_17 as variant Option::<usize>::Some)._0;
-        _16 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v_46 };
+        _16 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v_46 };
         storage_dead(v_46);
         storage_dead(self_17);
-        len = copy (_16 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
+        len = copy (_16 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
         storage_dead(_16);
         storage_live(_21);
         storage_live(_22);
@@ -6191,7 +6351,7 @@ fn swap_nonoverlapping_bytes(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
 }
 
 // Full name: core::ptr::non_null::NonNull::<[u8]>
-#[lang_item(NonNull)]
+#[diagnostic_item("NonNull")]
 pub struct NonNull::<[u8]> {
   pointer: *const [u8] is !null,
 }
@@ -6294,11 +6454,11 @@ pub enum Result::<usize, TryReserveError> {
   Err { _0: TryReserveError },
 }
 
-// Full name: core::result::Result::<usize, !>
+// Full name: core::result::Result::<usize, Infallible>
 #[diagnostic_item("Result")]
-pub enum Result::<usize, !> {
+pub enum Result::<usize, Infallible> {
   Ok { _0: usize },
-  Err { _0: ! },
+  Err { _0: Infallible },
 }
 
 // Full name: core::result::Result::<(), TryReserveError>
@@ -6415,7 +6575,7 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
     let _33: u16; // anonymous local
     let _34: i32; // anonymous local
     let self_35: Option::<usize>; // local
-    let _36: Option::<!>; // anonymous local
+    let _36: Option::<Infallible>; // anonymous local
     let _37: BitMask; // anonymous local
     let _38: Option::<NonZero::<u16>>; // anonymous local
     let _39: isize; // anonymous local
@@ -7620,7 +7780,7 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
     let _41: u16; // anonymous local
     let _42: i32; // anonymous local
     let self_43: Option::<usize>; // local
-    let _44: Option::<!>; // anonymous local
+    let _44: Option::<Infallible>; // anonymous local
     let _45: BitMask; // anonymous local
     let _46: Option::<NonZero::<u16>>; // anonymous local
     let _47: isize; // anonymous local
@@ -8118,7 +8278,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
     let dest_19: *mut Tag; // local
     let index: usize; // local
     let _21: usize; // anonymous local
-    let self_22: Result::<usize, !>; // local
+    let self_22: Result::<usize, Infallible>; // local
     let step: usize; // local
     let n_24: NonZero::<usize>; // local
     let remaining: usize; // local
@@ -8212,7 +8372,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_dead(n_29);
         step = transmute<NonZero::<usize>, usize>(copy n_24);
         storage_dead(n_24);
-        self_22 = Result::<usize, !>::Ok { _0: copy step };
+        self_22 = Result::<usize, Infallible>::Ok { _0: copy step };
         storage_dead(self_22);
         storage_live(remaining);
         remaining = copy iter.iter.end;
@@ -9273,7 +9433,7 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
     let self_13: *mut u8; // local
     let self_14: NonNull::<u8>; // local
     let self_15: Option::<usize>; // local
-    let _16: Option::<!>; // anonymous local
+    let _16: Option::<Infallible>; // anonymous local
     let _17: BitMask; // anonymous local
     let _18: Option::<NonZero::<u16>>; // anonymous local
     let _19: isize; // anonymous local
@@ -9494,10 +9654,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _4: NonNull::<[u8]>; // anonymous local
     let self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let _7: ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>; // anonymous local
     let self_8: Result::<NonNull::<u8>, AllocError>; // local
     let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<!, AllocError>; // anonymous local
+    let _10: Result::<Infallible, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
     let _12: NonNull::<[u8]>; // anonymous local
     let _13: Alignment; // anonymous local
@@ -9719,10 +9879,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_9);
         storage_live(v_28);
         v_28 = move (self_8 as variant Result::<NonNull::<u8>, AllocError>::Ok)._0;
-        _7 = ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
+        _7 = ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue { _0: copy v_28 };
         storage_dead(v_28);
         storage_dead(self_8);
-        ptr_11 = copy (_7 as variant ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>::Continue)._0;
+        ptr_11 = copy (_7 as variant ControlFlow::<Result::<Infallible, AllocError>, NonNull::<u8>>::Continue)._0;
         storage_dead(_7);
         storage_live(_12);
         storage_live(ptr_29);
@@ -10104,9 +10264,9 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     let _13: bool; // anonymous local
     let buckets_14: usize; // local
     let adjusted_cap: usize; // local
-    let _16: ControlFlow::<Option::<!>, usize>; // anonymous local
+    let _16: ControlFlow::<Option::<Infallible>, usize>; // anonymous local
     let self: Option::<usize>; // local
-    let _18: Option::<!>; // anonymous local
+    let _18: Option::<Infallible>; // anonymous local
     let val: usize; // local
     let buckets_20: usize; // local
     let _21: u64; // anonymous local
@@ -10125,26 +10285,24 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     let v: usize; // local
     let _35: isize; // anonymous local
     let _36: bool; // anonymous local
-    let m1: usize; // local
-    let _38: bool; // anonymous local
-    let _39: isize; // anonymous local
-    let exp: u32; // local
-    let buckets_41: usize; // local
-    let _42: u32; // anonymous local
-    let _43: u64; // anonymous local
-    let _44: u64; // anonymous local
-    let b_45: bool; // local
-    let _46: (u64, bool); // anonymous local
-    let _47: u64; // anonymous local
-    let _48: u64; // anonymous local
-    let prod_49: usize; // local
-    let _50: (); // anonymous local
+    let _37: usize; // anonymous local
+    let _38: usize; // anonymous local
+    let _39: bool; // anonymous local
+    let p: usize; // local
+    let z: u32; // local
+    let _42: u64; // anonymous local
+    let b_43: bool; // local
+    let _44: (u64, bool); // anonymous local
+    let _45: u64; // anonymous local
+    let _46: u64; // anonymous local
+    let prod_47: usize; // local
+    let _48: (); // anonymous local
+    let table_layout_49: usize; // local
+    let table_layout_50: usize; // local
     let table_layout_51: usize; // local
-    let table_layout_52: usize; // local
-    let table_layout_53: usize; // local
-    let _54: (); // anonymous local
-    let _55: Option::<usize>; // anonymous local
-    let _56: Option::<usize>; // anonymous local
+    let _52: (); // anonymous local
+    let _53: Option::<usize>; // anonymous local
+    let _54: Option::<usize>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -10159,9 +10317,8 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(val);
         storage_live(_27);
         storage_live(_33);
-        storage_live(buckets_41);
-        storage_live(_50);
-        storage_live(_54);
+        storage_live(_48);
+        storage_live(_52);
         storage_live(_3);
         _3 = copy cap_1 < const 15usize;
         if move _3 -> bb1 else -> bb23;
@@ -10205,7 +10362,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
 
     bb8: {
         storage_live(cap_10);
-        cap_10 = integer_max::<usize>(move min_cap, move cap_1) -> bb9 (unwind: bb22);
+        cap_10 = max::<usize>(move min_cap, move cap_1) -> bb9 (unwind: bb22);
     }
 
     bb9: {
@@ -10242,8 +10399,8 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
 
     bb15: {
         storage_dead(_12);
-        storage_live(table_layout_51);
-        table_layout_51 = copy table_layout_2.ctrl_align;
+        storage_live(table_layout_49);
+        table_layout_49 = copy table_layout_2.ctrl_align;
         storage_live(buckets_14);
         buckets_14 = copy buckets_11;
         storage_live(prod_26);
@@ -10291,15 +10448,15 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     bb21: {
         storage_dead(prod_26);
         storage_dead(buckets_14);
-        storage_dead(table_layout_51);
+        storage_dead(table_layout_49);
         _0 = Option::<usize>::Some { _0: move buckets_11 };
         storage_dead(cap_10);
         storage_dead(_3);
-        goto bb42;
+        goto bb40;
     }
 
     bb22 (cleanup): {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb23: {
@@ -10328,9 +10485,9 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     }
 
     bb25: {
-        storage_live(_55);
-        _55 = Option::<usize>::None {  };
-        self = move _55;
+        storage_live(_53);
+        _53 = Option::<usize>::None {  };
+        self = move _53;
         storage_dead(a);
         storage_dead(b_29);
         storage_dead(self);
@@ -10338,18 +10495,18 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(_36);
         _35 = @discriminant(_18);
         _36 = copy _35 == const 0isize;
-        _54 = assume(move _36) -> bb26 (unwind: bb27);
+        _52 = assume(move _36) -> bb26 (unwind: bb27);
     }
 
     bb26: {
-        storage_live(_56);
-        _56 = Option::<usize>::None {  };
-        _0 = move _56;
+        storage_live(_54);
+        _54 = Option::<usize>::None {  };
+        _0 = move _54;
         storage_dead(_36);
         storage_dead(_35);
         storage_dead(_16);
         storage_dead(adjusted_cap);
-        goto bb42;
+        goto bb40;
     }
 
     bb27 (cleanup): {
@@ -10366,121 +10523,107 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(b_29);
         storage_live(v);
         v = move (self as variant Option::<usize>::Some)._0;
-        _16 = ControlFlow::<Option::<!>, usize>::Continue { _0: copy v };
+        _16 = ControlFlow::<Option::<Infallible>, usize>::Continue { _0: copy v };
         storage_dead(v);
         storage_dead(self);
-        val = copy (_16 as variant ControlFlow::<Option::<!>, usize>::Continue)._0;
+        val = copy (_16 as variant ControlFlow::<Option::<Infallible>, usize>::Continue)._0;
         adjusted_cap = copy val ub./ const 7usize;
         storage_dead(_16);
-        storage_live(m1);
-        m1 = saturating_sub::<usize>(move adjusted_cap, const 1usize) -> bb30 (unwind: bb43);
+        storage_live(buckets_20);
+        storage_live(_38);
+        storage_live(_37);
+        storage_live(_39);
+        _39 = copy adjusted_cap <= const 1usize;
+        if move _39 -> bb30 else -> bb31;
     }
 
     bb30: {
-        storage_live(_38);
-        storage_live(_39);
-        _39 = cast<usize, isize>(copy m1);
-        _38 = move _39 >= const 0isize;
-        if move _38 -> bb31 else -> bb34;
+        _37 = const 0usize;
+        storage_dead(_39);
+        goto bb33;
     }
 
     bb31: {
         storage_dead(_39);
-        storage_live(exp);
-        storage_live(_42);
-        storage_live(_43);
-        _43 = cast<usize, u64>(copy m1);
-        _42 = ctlz::<u64>(move _43) -> bb32 (unwind: bb33);
+        storage_live(p);
+        p = copy adjusted_cap wrap.- const 1usize;
+        storage_live(z);
+        z = ctlz_nonzero::<usize>(move p) -> bb32 (unwind: bb41);
     }
 
     bb32: {
-        storage_dead(_43);
-        exp = const 64u32 wrap.- move _42;
-        storage_dead(_42);
-        buckets_41 = const 1usize wrap.<< copy exp;
-        storage_dead(exp);
-        storage_dead(_38);
-        storage_dead(m1);
-        goto bb35;
+        _37 = const 18446744073709551615usize wrap.>> copy z;
+        storage_dead(z);
+        storage_dead(p);
+        goto bb33;
     }
 
-    bb33 (cleanup): {
-        undefined_behavior;
+    bb33: {
+        _38 = copy _37 panic.+ const 1usize;
+        buckets_20 = move _38;
+        storage_dead(_37);
+        storage_dead(_38);
+        storage_live(table_layout_50);
+        storage_live(table_layout_51);
+        table_layout_50 = copy table_layout_2.size;
+        table_layout_51 = copy table_layout_2.ctrl_align;
+        storage_live(prod_47);
+        switch copy table_layout_50 -> 0usize: bb39, otherwise: bb34;
     }
 
     bb34: {
-        storage_dead(_39);
-        storage_dead(_38);
-        storage_dead(m1);
-        assert(const true == false) (overflow) else panic;
-        buckets_41 = const 0usize;
-        goto bb35;
+        storage_live(b_43);
+        storage_live(_44);
+        storage_live(_45);
+        _45 = cast<usize, u64>(copy table_layout_50);
+        storage_live(_46);
+        _46 = cast<usize, u64>(copy buckets_20);
+        _44 = move _45 checked.* move _46;
+        storage_dead(_46);
+        storage_dead(_45);
+        storage_live(_42);
+        _42 = copy _44._0;
+        b_43 = copy _44._1;
+        storage_dead(_44);
+        prod_47 = cast<u64, usize>(copy _42);
+        storage_dead(_42);
+        if copy b_43 -> bb35 else -> bb38;
     }
 
     bb35: {
-        storage_live(table_layout_52);
-        storage_live(table_layout_53);
-        table_layout_52 = copy table_layout_2.size;
-        table_layout_53 = copy table_layout_2.ctrl_align;
-        storage_live(buckets_20);
-        buckets_20 = copy buckets_41;
-        storage_live(prod_49);
-        switch copy table_layout_52 -> 0usize: bb41, otherwise: bb36;
+        _48 = cold_path() -> bb36 (unwind: bb37);
     }
 
     bb36: {
-        storage_live(b_45);
-        storage_live(_46);
-        storage_live(_47);
-        _47 = cast<usize, u64>(copy table_layout_52);
-        storage_live(_48);
-        _48 = cast<usize, u64>(copy buckets_20);
-        _46 = move _47 checked.* move _48;
-        storage_dead(_48);
-        storage_dead(_47);
-        storage_live(_44);
-        _44 = copy _46._0;
-        b_45 = copy _46._1;
-        storage_dead(_46);
-        prod_49 = cast<u64, usize>(copy _44);
-        storage_dead(_44);
-        if copy b_45 -> bb37 else -> bb40;
+        storage_dead(b_43);
+        prod_47 = const 18446744073709551615usize;
+        goto bb39;
     }
 
-    bb37: {
-        _50 = cold_path() -> bb38 (unwind: bb39);
-    }
-
-    bb38: {
-        storage_dead(b_45);
-        prod_49 = const 18446744073709551615usize;
-        goto bb41;
-    }
-
-    bb39 (cleanup): {
+    bb37 (cleanup): {
         undefined_behavior;
     }
 
-    bb40: {
-        storage_dead(b_45);
-        goto bb41;
+    bb38: {
+        storage_dead(b_43);
+        goto bb39;
     }
 
-    bb41: {
-        storage_dead(prod_49);
+    bb39: {
+        storage_dead(prod_47);
+        storage_dead(table_layout_50);
+        storage_dead(table_layout_51);
+        _0 = Option::<usize>::Some { _0: copy buckets_20 };
         storage_dead(buckets_20);
-        storage_dead(table_layout_52);
-        storage_dead(table_layout_53);
-        _0 = Option::<usize>::Some { _0: move buckets_41 };
         storage_dead(adjusted_cap);
-        goto bb42;
+        goto bb40;
     }
 
-    bb42: {
+    bb40: {
         return;
     }
 
-    bb43 (cleanup): {
+    bb41 (cleanup): {
         undefined_behavior;
     }
 }
@@ -10493,14 +10636,14 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
     let table_layout: TableLayout; // arg #2
     let capacity: usize; // arg #3
     let fallibility: Fallibility; // arg #4
-    let _5: ControlFlow::<Result::<!, TryReserveError>, usize>; // anonymous local
+    let _5: ControlFlow::<Result::<Infallible, TryReserveError>, usize>; // anonymous local
     let self_6: Result::<usize, TryReserveError>; // local
     let self_7: Option::<usize>; // local
-    let residual_8: Result::<!, TryReserveError>; // local
+    let residual_8: Result::<Infallible, TryReserveError>; // local
     let buckets: usize; // local
-    let _10: ControlFlow::<Result::<!, TryReserveError>, RawTableInner>; // anonymous local
+    let _10: ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>; // anonymous local
     let self_11: Result::<RawTableInner, TryReserveError>; // local
-    let residual_12: Result::<!, TryReserveError>; // local
+    let residual_12: Result::<Infallible, TryReserveError>; // local
     let result: RawTableInner; // local
     let self_14: &'_ mut [MaybeUninit::<Tag>]; // local
     let _15: isize; // anonymous local
@@ -10508,14 +10651,14 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
     let _17: TryReserveError; // anonymous local
     let v_18: usize; // local
     let e_19: TryReserveError; // local
-    let _20: Result::<!, TryReserveError>; // anonymous local
+    let _20: Result::<Infallible, TryReserveError>; // anonymous local
     let _21: isize; // anonymous local
     let e_22: TryReserveError; // local
     let _23: bool; // anonymous local
     let _24: isize; // anonymous local
     let v_25: RawTableInner; // local
     let e_26: TryReserveError; // local
-    let _27: Result::<!, TryReserveError>; // anonymous local
+    let _27: Result::<Infallible, TryReserveError>; // anonymous local
     let _28: *mut MaybeUninit::<Tag>; // anonymous local
     let _29: NonNull::<u8>; // anonymous local
     let count: usize; // local
@@ -10573,13 +10716,13 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_live(e_19);
         e_19 = move (self_6 as variant Result::<usize, TryReserveError>::Err)._0;
         storage_live(_20);
-        _20 = Result::<!, TryReserveError>::Err { _0: copy e_19 };
-        _5 = ControlFlow::<Result::<!, TryReserveError>, usize>::Break { _0: move _20 };
+        _20 = Result::<Infallible, TryReserveError>::Err { _0: copy e_19 };
+        _5 = ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Break { _0: move _20 };
         storage_dead(_20);
         storage_dead(e_19);
         storage_dead(self_6);
         storage_live(residual_8);
-        residual_8 = move (_5 as variant ControlFlow::<Result::<!, TryReserveError>, usize>::Break)._0;
+        residual_8 = move (_5 as variant ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Break)._0;
         storage_live(_21);
         storage_live(_23);
         _21 = @discriminant(residual_8);
@@ -10589,7 +10732,7 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
 
     bb6: {
         storage_live(e_22);
-        e_22 = copy (residual_8 as variant Result::<!, TryReserveError>::Err)._0;
+        e_22 = copy (residual_8 as variant Result::<Infallible, TryReserveError>::Err)._0;
         _0 = Result::<RawTableInner, TryReserveError>::Err { _0: copy e_22 };
         storage_dead(e_22);
         storage_dead(_23);
@@ -10616,10 +10759,10 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_dead(self_7);
         storage_live(v_18);
         v_18 = move (self_6 as variant Result::<usize, TryReserveError>::Ok)._0;
-        _5 = ControlFlow::<Result::<!, TryReserveError>, usize>::Continue { _0: copy v_18 };
+        _5 = ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Continue { _0: copy v_18 };
         storage_dead(v_18);
         storage_dead(self_6);
-        buckets = copy (_5 as variant ControlFlow::<Result::<!, TryReserveError>, usize>::Continue)._0;
+        buckets = copy (_5 as variant ControlFlow::<Result::<Infallible, TryReserveError>, usize>::Continue)._0;
         storage_dead(_5);
         storage_live(_10);
         storage_live(self_11);
@@ -10635,11 +10778,11 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
     bb11: {
         storage_live(v_25);
         v_25 = move (self_11 as variant Result::<RawTableInner, TryReserveError>::Ok)._0;
-        _10 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue { _0: copy v_25 };
+        _10 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue { _0: copy v_25 };
         storage_dead(v_25);
         storage_dead(_24);
         storage_dead(self_11);
-        result = move (_10 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue)._0;
+        result = move (_10 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue)._0;
         storage_dead(_10);
         storage_live(self_14);
         storage_live(_29);
@@ -10682,14 +10825,14 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_live(e_26);
         e_26 = move (self_11 as variant Result::<RawTableInner, TryReserveError>::Err)._0;
         storage_live(_27);
-        _27 = Result::<!, TryReserveError>::Err { _0: copy e_26 };
-        _10 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break { _0: move _27 };
+        _27 = Result::<Infallible, TryReserveError>::Err { _0: copy e_26 };
+        _10 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break { _0: move _27 };
         storage_dead(_27);
         storage_dead(e_26);
         storage_dead(_24);
         storage_dead(self_11);
         storage_live(residual_12);
-        residual_12 = move (_10 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break)._0;
+        residual_12 = move (_10 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break)._0;
         storage_live(_34);
         storage_live(_36);
         _34 = @discriminant(residual_12);
@@ -10699,7 +10842,7 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
 
     bb15: {
         storage_live(e_35);
-        e_35 = copy (residual_12 as variant Result::<!, TryReserveError>::Err)._0;
+        e_35 = copy (residual_12 as variant Result::<Infallible, TryReserveError>::Err)._0;
         _0 = Result::<RawTableInner, TryReserveError>::Err { _0: copy e_35 };
         storage_dead(e_35);
         storage_dead(_36);
@@ -10741,9 +10884,9 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     let fallibility: Fallibility; // arg #5
     let layout: TableLayout; // arg #6
     let new_table_7: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // local
-    let _8: ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>; // anonymous local
+    let _8: ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>; // anonymous local
     let self_9: Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>; // local
-    let residual_10: Result::<!, TryReserveError>; // local
+    let residual_10: Result::<Infallible, TryReserveError>; // local
     let val: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // local
     let self_12: FullBucketsIndices; // local
     let iter: FullBucketsIndices; // local
@@ -10760,22 +10903,22 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     let _24: usize; // anonymous local
     let _25: usize; // anonymous local
     let _26: (); // anonymous local
-    let _27: ControlFlow::<Result::<!, TryReserveError>, RawTableInner>; // anonymous local
+    let _27: ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>; // anonymous local
     let self_28: Result::<RawTableInner, TryReserveError>; // local
-    let residual_29: Result::<!, TryReserveError>; // local
+    let residual_29: Result::<Infallible, TryReserveError>; // local
     let new_table_30: RawTableInner; // local
     let _31: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // anonymous local
     let dropfn: hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}; // local
     let _33: isize; // anonymous local
     let v_34: RawTableInner; // local
     let e_35: TryReserveError; // local
-    let _36: Result::<!, TryReserveError>; // anonymous local
+    let _36: Result::<Infallible, TryReserveError>; // anonymous local
     let _37: isize; // anonymous local
     let e_38: TryReserveError; // local
     let _39: bool; // anonymous local
     let v_40: ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // local
     let e_41: TryReserveError; // local
-    let _42: Result::<!, TryReserveError>; // anonymous local
+    let _42: Result::<Infallible, TryReserveError>; // anonymous local
     let self_43: *mut Tag; // local
     let _44: BitMaskIter; // anonymous local
     let self_45: BitMask; // local
@@ -10873,11 +11016,11 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     bb2: {
         storage_live(v_34);
         v_34 = move (self_28 as variant Result::<RawTableInner, TryReserveError>::Ok)._0;
-        _27 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue { _0: copy v_34 };
+        _27 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue { _0: copy v_34 };
         storage_dead(v_34);
         storage_dead(_33);
         storage_dead(self_28);
-        new_table_30 = move (_27 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Continue)._0;
+        new_table_30 = move (_27 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Continue)._0;
         storage_dead(_27);
         storage_live(_31);
         storage_live(dropfn);
@@ -10889,11 +11032,11 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_dead(new_table_30);
         storage_live(v_40);
         v_40 = move (self_9 as variant Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>::Ok)._0;
-        _8 = ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Continue { _0: copy v_40 };
+        _8 = ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Continue { _0: copy v_40 };
         storage_dead(v_40);
         storage_dead(self_9);
         storage_live(val);
-        val = move (_8 as variant ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Continue)._0;
+        val = move (_8 as variant ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Continue)._0;
         new_table_7 = move val;
         storage_dead(val);
         storage_dead(_8);
@@ -11177,14 +11320,14 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(e_35);
         e_35 = move (self_28 as variant Result::<RawTableInner, TryReserveError>::Err)._0;
         storage_live(_36);
-        _36 = Result::<!, TryReserveError>::Err { _0: copy e_35 };
-        _27 = ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break { _0: move _36 };
+        _36 = Result::<Infallible, TryReserveError>::Err { _0: copy e_35 };
+        _27 = ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break { _0: move _36 };
         storage_dead(_36);
         storage_dead(e_35);
         storage_dead(_33);
         storage_dead(self_28);
         storage_live(residual_29);
-        residual_29 = move (_27 as variant ControlFlow::<Result::<!, TryReserveError>, RawTableInner>::Break)._0;
+        residual_29 = move (_27 as variant ControlFlow::<Result::<Infallible, TryReserveError>, RawTableInner>::Break)._0;
         storage_live(_37);
         storage_live(_39);
         _37 = @discriminant(residual_29);
@@ -11194,7 +11337,7 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
 
     bb23: {
         storage_live(e_38);
-        e_38 = copy (residual_29 as variant Result::<!, TryReserveError>::Err)._0;
+        e_38 = copy (residual_29 as variant Result::<Infallible, TryReserveError>::Err)._0;
         self_9 = Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>::Err { _0: copy e_38 };
         storage_dead(e_38);
         storage_dead(_39);
@@ -11205,13 +11348,13 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(e_41);
         e_41 = move (self_9 as variant Result::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>, TryReserveError>::Err)._0;
         storage_live(_42);
-        _42 = Result::<!, TryReserveError>::Err { _0: copy e_41 };
-        _8 = ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Break { _0: move _42 };
+        _42 = Result::<Infallible, TryReserveError>::Err { _0: copy e_41 };
+        _8 = ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Break { _0: move _42 };
         storage_dead(_42);
         storage_dead(e_41);
         storage_dead(self_9);
         storage_live(residual_10);
-        residual_10 = move (_8 as variant ControlFlow::<Result::<!, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Break)._0;
+        residual_10 = move (_8 as variant ControlFlow::<Result::<Infallible, TryReserveError>, ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>::Break)._0;
         storage_live(_55);
         storage_live(_57);
         _55 = @discriminant(residual_10);
@@ -11221,7 +11364,7 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
 
     bb24: {
         storage_live(e_56);
-        e_56 = copy (residual_10 as variant Result::<!, TryReserveError>::Err)._0;
+        e_56 = copy (residual_10 as variant Result::<Infallible, TryReserveError>::Err)._0;
         _0 = Result::<(), TryReserveError>::Err { _0: copy e_56 };
         storage_dead(e_56);
         storage_dead(_57);
@@ -11275,7 +11418,7 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
     let _16: (); // anonymous local
     let _17: usize; // anonymous local
     let _18: usize; // anonymous local
-    let other: usize; // local
+    let _19: usize; // anonymous local
     let b: bool; // local
     let _21: (usize, bool); // anonymous local
     let _22: usize; // anonymous local
@@ -11389,13 +11532,13 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
     bb12: {
         storage_dead(_14);
         storage_live(_18);
-        storage_live(other);
-        other = move full_capacity wrap.+ const 1usize;
-        _18 = integer_max::<usize>(move new_items, move other) -> bb13 (unwind: bb18);
+        storage_live(_19);
+        _19 = move full_capacity wrap.+ const 1usize;
+        _18 = max::<usize>(move new_items, move _19) -> bb13 (unwind: bb18);
     }
 
     bb13: {
-        storage_dead(other);
+        storage_dead(_19);
         _0 = resize_inner::<Global>(move self_1, move alloc, move _18, move hasher, move fallibility, move layout) -> bb14 (unwind: bb17);
     }
 
@@ -11419,7 +11562,7 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
     }
 
     bb18 (cleanup): {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 

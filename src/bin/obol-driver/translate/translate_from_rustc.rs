@@ -18,11 +18,16 @@ use crate::translate::translate_ctx::TranslateCtx;
 /// the match exhaustive, so a rustc bump that adds or renames a lang item fails to compile here
 /// instead of silently mistranslating. Regenerate the list from charon's
 /// `charon-driver/translate/translate_from_rustc.rs` when bumping charon.
+///
+/// Charon's list follows a newer rustc than the one Obol is pinned to: lang items that only exist
+/// in that newer rustc are simply never produced, and the few lang items of our rustc that charon
+/// doesn't know about (listed after `;`) translate to `None`.
 macro_rules! translate_lang_items {
-    ($($variant:ident),* $(,)?) => {
-        pub(crate) fn translate_lang_item(value: LangItem) -> from_rustc::LangItem {
+    ($($variant:ident),* $(,)?; $($unknown:ident),* $(,)?) => {
+        pub(crate) fn translate_lang_item(value: LangItem) -> Option<from_rustc::LangItem> {
             match value {
-                $(LangItem::$variant => from_rustc::LangItem::$variant,)*
+                $(LangItem::$variant => Some(from_rustc::LangItem::$variant),)*
+                $(LangItem::$unknown => None,)*
             }
         }
     };
@@ -48,13 +53,9 @@ translate_lang_items!(
     PointeeTrait,
     Metadata,
     DynMetadata,
-    NonNull,
     Freeze,
     UnsafeUnpin,
     FnPtrTrait,
-    FnPtrAsPtr,
-    FnPtrFromPtr,
-    Code,
     Drop,
     Destruct,
     AsyncDrop,
@@ -104,7 +105,6 @@ translate_lang_items!(
     Fn,
     FnMut,
     FnOnce,
-    FnStatic,
     AsyncFn,
     AsyncFnMut,
     AsyncFnOnce,
@@ -251,8 +251,9 @@ translate_lang_items!(
     FieldType,
     FieldOffset,
     From,
-    FromFn,
-    FnPtr,
+    FromFn;
+    // Replaced by `FnPtrAsPtr`/`FnPtrFromPtr` (with a different signature) in newer rustcs.
+    FnPtrAddr,
 );
 
 /// Charon models only a subset of rustc's *parsed* attributes as `from_rustc::AttributeKind`;
