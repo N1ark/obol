@@ -11,6 +11,8 @@ pub enum OutputFormat {
 }
 
 pub const OBOL_ARGS: &str = "OBOL_ARGS";
+/// The sysroot `obol-driver` should compile target crates against, if they don't specify one.
+pub const OBOL_SYSROOT: &str = "OBOL_SYSROOT";
 
 #[derive(Debug, clap::Parser)]
 #[clap(name = "Obol")]
@@ -19,6 +21,9 @@ pub enum ObolCli {
     Rustc(CliOpts),
     /// Runs obol on a cargo project.
     Cargo(CliOpts),
+    /// Build (or reuse the cached) sysroot that Obol compiles crates against: the standard library
+    /// built from the toolchain's sources with Obol's MIR options.
+    Setup(SetupOpts),
     /// List the targets (lib, bins, examples, tests) of a cargo project, as a
     /// JSON array of `{ "name": ..., "kind": ... }` objects. Run from within the
     /// crate directory.
@@ -69,9 +74,24 @@ pub struct CliOpts {
     /// Output serialization format (postcard or json).
     #[clap(long = "format", default_value = "postcard")]
     pub format: OutputFormat,
+    /// The sysroot to compile the crate (and its dependencies) against: `setup` (the default) for
+    /// the one built by `obol setup` (which is built if needed), `default` for the toolchain's own
+    /// sysroot, or a path. For `obol rustc`, a `--sysroot` rustc argument takes precedence.
+    #[clap(long = "sysroot")]
+    pub sysroot: Option<String>,
     /// Args that are passed to the underlying tool (`rustc` or `cargo` depending on `--cargo`).
     #[arg(last = true)]
     pub spread: Vec<String>,
+}
+
+#[derive(Debug, Default, Clone, clap::Parser, Serialize, Deserialize)]
+pub struct SetupOpts {
+    /// The target to build the sysroot for (defaults to the host).
+    #[clap(long = "target")]
+    pub target: Option<String>,
+    /// Print the path to the sysroot (and only that) on the last line of stdout.
+    #[clap(long = "print-sysroot")]
+    pub print_sysroot: bool,
 }
 
 #[derive(Debug, Default, Clone, clap::Parser, Serialize, Deserialize)]
