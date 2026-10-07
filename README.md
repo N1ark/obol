@@ -13,6 +13,11 @@ rustc only accepts with `RUSTC_BOOTSTRAP=1`; `.cargo/config.toml` sets it, so a 
 `target/release`, which must stay next to each other. `obol` sets `RUSTC_BOOTSTRAP=1` itself when
 running the toolchain.
 
+The driver builds with rustc 1.98 and 1.99 (one branch per toolchain, differing in
+`rust-toolchain.toml` and the expected UI-test outputs). `build.rs` detects the compiler and sets
+`cfg(rustc_1_98)`; the few rustc API differences are confined to
+`src/bin/obol-driver/rustc_compat.rs` and a handful of `#[cfg]`'d match arms and lang items.
+
 ## Usage
 
 ```sh

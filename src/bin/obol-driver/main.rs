@@ -14,6 +14,7 @@ extern crate rustc_span;
 
 pub mod driver;
 pub mod missing_mir;
+pub mod rustc_compat;
 pub mod transform;
 pub mod translate;
 

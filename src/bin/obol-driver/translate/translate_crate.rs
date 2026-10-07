@@ -142,6 +142,7 @@ impl TransItemSource {
                 mir::mono::InstanceKind::Intrinsic => 0,
                 mir::mono::InstanceKind::Item => 1,
                 mir::mono::InstanceKind::Shim => 2,
+                #[cfg(not(rustc_1_98))] // New in rustc 1.99.
                 mir::mono::InstanceKind::LlvmIntrinsic => 3,
                 mir::mono::InstanceKind::Virtual { idx } => 4 + *idx,
             }

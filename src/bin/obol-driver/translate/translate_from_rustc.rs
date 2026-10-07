@@ -2,12 +2,11 @@
 //! `charon_lib::ast::from_rustc`.
 
 extern crate rustc_ast;
-extern crate rustc_attr_ir;
 extern crate rustc_span;
 
+use crate::rustc_compat::LangItem;
 use charon_lib::ast::from_rustc::{self, FromRustcError};
 use rustc_ast::attr::version::RustcVersion;
-use rustc_attr_ir::lang_items::LangItem;
 use rustc_hir::attrs::{AttributeKind, DeprecatedSince, Deprecation, InlineAttr, OptimizeAttr};
 use rustc_span::symbol::Ident;
 
@@ -21,13 +20,14 @@ use crate::translate::translate_ctx::TranslateCtx;
 ///
 /// Charon's list follows a newer rustc than the one Obol is pinned to: lang items that only exist
 /// in that newer rustc are simply never produced, and the few lang items of our rustc that charon
-/// doesn't know about (listed after `;`) translate to `None`.
+/// doesn't know about (listed after `;`) translate to `None`. Lang items that only exist in some of
+/// the rustcs Obol supports are `#[cfg]`'d (see `rustc_compat`).
 macro_rules! translate_lang_items {
-    ($($variant:ident),* $(,)?; $($unknown:ident),* $(,)?) => {
+    ($($(#[$attr:meta])* $variant:ident),* $(,)?; $($(#[$uattr:meta])* $unknown:ident),* $(,)?) => {
         pub(crate) fn translate_lang_item(value: LangItem) -> Option<from_rustc::LangItem> {
             match value {
-                $(LangItem::$variant => Some(from_rustc::LangItem::$variant),)*
-                $(LangItem::$unknown => None,)*
+                $($(#[$attr])* LangItem::$variant => Some(from_rustc::LangItem::$variant),)*
+                $($(#[$uattr])* LangItem::$unknown => None,)*
             }
         }
     };
@@ -62,7 +62,7 @@ translate_lang_items!(
     AsyncDropInPlace,
     CoerceUnsized,
     DispatchFromDyn,
-    TryAsDyn,
+    #[cfg(not(rustc_1_98))]    TryAsDyn,
     TransmuteOpts,
     TransmuteTrait,
     Add,
@@ -90,11 +90,11 @@ translate_lang_items!(
     Index,
     IndexMut,
     UnsafeCell,
-    CovariantUnsafeCell,
+    #[cfg(not(rustc_1_98))]    CovariantUnsafeCell,
     UnsafePinned,
     VaArgSafe,
     VaList,
-    Complex,
+    #[cfg(not(rustc_1_98))]    Complex,
     Deref,
     DerefMut,
     DerefPure,
@@ -131,7 +131,7 @@ translate_lang_items!(
     PartialOrd,
     CVoid,
     Type,
-    TypeGeneric,
+    #[cfg(not(rustc_1_98))]    TypeGeneric,
     TypeId,
     Panic,
     PanicNounwind,
@@ -164,7 +164,7 @@ translate_lang_items!(
     PanicAsyncGenFnResumedPanic,
     PanicGenFnNonePanic,
     PanicNullPointerDereference,
-    PanicNullReferenceConstructed,
+    #[cfg(not(rustc_1_98))]    PanicNullReferenceConstructed,
     PanicInvalidEnumConstruction,
     PanicCoroutineResumedDrop,
     PanicAsyncFnResumedDrop,
@@ -251,9 +251,22 @@ translate_lang_items!(
     FieldType,
     FieldOffset,
     From,
-    FromFn;
+    #[cfg(not(rustc_1_98))]    FromFn;
     // Replaced by `FnPtrAsPtr`/`FnPtrFromPtr` (with a different signature) in newer rustcs.
     FnPtrAddr,
+    // Removed in rustc 1.99.
+    #[cfg(rustc_1_98)]
+    MemCmp,
+    #[cfg(rustc_1_98)]
+    Bcmp,
+    #[cfg(rustc_1_98)]
+    StrLen,
+    #[cfg(rustc_1_98)]
+    MemCpy,
+    #[cfg(rustc_1_98)]
+    MemMove,
+    #[cfg(rustc_1_98)]
+    MemSet,
 );
 
 /// Charon models only a subset of rustc's *parsed* attributes as `from_rustc::AttributeKind`;

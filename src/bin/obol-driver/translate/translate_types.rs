@@ -1,5 +1,4 @@
 extern crate rustc_abi;
-extern crate rustc_attr_ir;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
@@ -128,7 +127,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 
     pub fn maybe_uninit_bytes(&mut self, span: Span, len: usize) -> Result<Ty, Error> {
         let maybe_uninit = self.t_ctx.tcx.require_lang_item(
-            rustc_attr_ir::lang_items::LangItem::MaybeUninit,
+            crate::rustc_compat::LangItem::MaybeUninit,
             rustc_span::DUMMY_SP,
         );
         let u8_ty = ty::Ty::from_rigid_kind(ty::RigidTy::Uint(ty::UintTy::U8));
@@ -287,7 +286,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let id = self.register_type_decl_id(span, *item, generics.clone());
                 let def_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, item.def_id());
                 let builtin = (self.t_ctx.tcx.as_lang_item(def_id)
-                    == Some(rustc_attr_ir::LangItem::OwnedBox))
+                    == Some(crate::rustc_compat::LangItem::OwnedBox))
                 .then_some(BuiltinAdt::Box);
                 // no generics since it's monomorphic
                 let tref = TypeDeclRef::new(id, GenericArgs::empty(), builtin);

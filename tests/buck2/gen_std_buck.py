@@ -54,6 +54,10 @@ def main():
             "cargo", f"+{toolchain}", "check", "-v", "--offline",
             "-Zbuild-std=std,panic_abort,panic_unwind,proc_macro,test",
             "--target", host,
+            # Take std's dependencies from rust-src's `library/vendor` even if they aren't in the
+            # local registry cache (older cargos don't do that by themselves).
+            "--config", "source.crates-io.replace-with='rust-src-vendor'",
+            "--config", f"source.rust-src-vendor.directory='{lib}/vendor'",
         ],
         cwd=work, capture_output=True, text=True,
         # `-Zbuild-std` is unstable; Obol's toolchain may be a stable release.

@@ -1,5 +1,4 @@
 extern crate rustc_abi;
-extern crate rustc_attr_ir;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
@@ -893,9 +892,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         | mir::PointerCoercion::ReifyFnPointer(_),
                         ..,
                     ) => CastKind::FnPtr(src_ty, tgt_ty),
-                    mir::CastKind::Subtype
-                    | mir::CastKind::Transmute
-                    | mir::CastKind::BoxDerefTransmute => CastKind::Transmute(src_ty, tgt_ty),
+                    mir::CastKind::Subtype | mir::CastKind::Transmute => {
+                        CastKind::Transmute(src_ty, tgt_ty)
+                    }
+                    #[cfg(not(rustc_1_98))] // New in rustc 1.99.
+                    mir::CastKind::BoxDerefTransmute => CastKind::Transmute(src_ty, tgt_ty),
                     mir::CastKind::PointerCoercion(mir::PointerCoercion::Unsize) => {
                         let mir_src_ty = mir_operand.ty(self.local_decls)?;
                         let unsizing_meta =
@@ -1081,7 +1082,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         trace!("About to translate statement (MIR) {:?}", statement);
         let span = self
             .t_ctx
-            .translate_span_from_smir(&statement.source_info.span);
+            .translate_span_from_smir(crate::rustc_compat::statement_span(statement));
 
         let t_statement: Option<StatementKind> = match &statement.kind {
             mir::StatementKind::Assign(place, rvalue) => {
@@ -1206,7 +1207,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         trace!("About to translate terminator (MIR) {:?}", terminator);
         // Compute the span information beforehand (we might need it to introduce
         // intermediate statements - we desugar some terminators)
-        let span = self.translate_span_from_smir(&terminator.source_info.span);
+        let span = self.translate_span_from_smir(crate::rustc_compat::terminator_span(terminator));
 
         // Translate the terminator
         let t_terminator: TerminatorKind = match &terminator.kind {
@@ -1426,6 +1427,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             mir::AssertMessage::NullPointerDereference => {
                 Ok(BuiltinAssertKind::NullPointerDereference)
             }
+            #[cfg(not(rustc_1_98))] // New in rustc 1.99.
             mir::AssertMessage::NullReferenceConstructed => {
                 Ok(BuiltinAssertKind::NullReferenceCreated)
             }
@@ -1599,7 +1601,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         // Explicitly calling a `Drop` method is unsafe.
         let trait_id = tcx.trait_of_assoc(def_id);
         if let Some(trait_id) = trait_id
-            && tcx.is_lang_item(trait_id, rustc_attr_ir::LangItem::Drop)
+            && tcx.is_lang_item(trait_id, crate::rustc_compat::LangItem::Drop)
         {
             return CallSafety::Unsafe;
         }
