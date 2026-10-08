@@ -277,8 +277,22 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         })
                     }
                     _ => {
+                        let pointee_has_len_metadata = || {
+                            let tcx = self.t_ctx.tcx;
+                            let Some(pointee) = rty.kind().builtin_deref(true).map(|d| d.ty) else {
+                                return false;
+                            };
+                            let pointee: rustc_middle::ty::Ty<'_> =
+                                rustc_public::rustc_internal::internal(tcx, pointee);
+                            let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
+                            matches!(
+                                tcx.struct_tail_for_codegen(pointee, typing_env).kind(),
+                                rustc_middle::ty::Str | rustc_middle::ty::Slice(..)
+                            )
+                        };
                         let (metadata, dyn_self_ty) = match subty.kind() {
-                            TyKind::Slice(..) => {
+                            // Slices, and (e.g. `CStr`) structs with a slice or `str` tail.
+                            TyKind::Slice(..) | TyKind::Adt(..) if pointee_has_len_metadata() => {
                                 let meta_bytes =
                                     &alloc.bytes.as_slice()[offset + size / 2..offset + size];
                                 let len =

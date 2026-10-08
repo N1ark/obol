@@ -1,0 +1,78 @@
+
+// Final ULLBC:
+
+// Full name: core::slice::{[T]}::len::<u16>
+#[lang_item(SliceLen)]
+pub fn len::<u16>(self: &'_ [u16]) -> usize
+{
+    let _0: usize; // return
+    let self: &'_ [u16]; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy self.metadata;
+        return;
+    }
+}
+
+struct () {}
+
+// Full name: test_crate::W::<[u16]>
+struct W::<[u16]> {
+  tag: u8,
+  data: [u16],
+}
+
+// Full name: anon_const_0
+const anon_const_0: W::<[u16]> = W::<[u16]> { tag: 1u8, data: [1u16, 2u16, 3u16] }
+
+struct (_, _)::<u8, usize> {
+  _0: u8,
+  _1: usize,
+}
+
+// Full name: test_crate::A
+const A: &'_ W::<[u16]> = &anon_const_0 with_metadata(3usize)
+
+// Full name: test_crate::main
+fn main()
+{
+    let _0: (); // return
+    let a: &'_ W::<[u16]>; // local
+    let _2: (u8, usize); // anonymous local
+    let _3: u8; // anonymous local
+    let _4: usize; // anonymous local
+    let _5: &'_ [u16]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(a);
+        a = copy A;
+        storage_live(_2);
+        storage_live(_3);
+        _3 = copy (*a).tag;
+        storage_live(_4);
+        storage_live(_5);
+        _5 = &(*a).data with_metadata(copy a.metadata);
+        _4 = len::<u16>(move _5) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_5);
+        _2 = (move _3, move _4);
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_dead(_2);
+        _0 = ();
+        storage_dead(a);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+
+
