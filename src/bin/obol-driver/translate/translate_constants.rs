@@ -60,6 +60,24 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             .ok_or_else(|| format!("Found uninitialized bytes when reading {bytes:?}").into())
     }
 
+    /// Register a fn pointer's target, mapping closure `call_once` shims to the closure-as-fn item.
+    fn register_fn_ptr_target(
+        &mut self,
+        span: Span,
+        instance: mir::mono::Instance,
+        expected_inputs: Option<usize>,
+    ) -> FunDeclId {
+        if let Ok(fn_abi) = instance.fn_abi()
+            && expected_inputs.is_none_or(|n| fn_abi.args.len() == n + 1)
+            && let Some(closure_arg) = fn_abi.args.first()
+            && closure_arg.mode == abi::PassMode::Ignore
+            && let ty::TyKind::RigidTy(ty::RigidTy::Closure(closure, args)) = closure_arg.ty.kind()
+        {
+            return self.register_closure_as_fn_id(span, closure, args);
+        }
+        self.register_fun_decl_id(span, instance)
+    }
+
     pub fn as_charon_bytes(
         &mut self,
         span: Span,
@@ -80,7 +98,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             let prov_alloc: mir::alloc::GlobalAlloc = prov.0.into();
             let prov = match prov_alloc {
                 mir::alloc::GlobalAlloc::Function(fun) => {
-                    let id = self.register_fun_decl_id(span, fun);
+                    let id = self.register_fn_ptr_target(span, fun, None);
                     Provenance::Function(FnPtr {
                         kind: Box::new(FnPtrKind::Fun(id)),
                         generics: Box::new(GenericArgs::empty()),
@@ -251,7 +269,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     }
                     // The pointer points directly at a function (e.g. `f as *mut ()`
                     GlobalAlloc::Function(instance) => {
-                        let id = self.register_fun_decl_id(span, instance);
+                        let id = self.register_fn_ptr_target(span, instance, None);
                         let generics = self.translate_generic_args(span, &instance.args())?;
                         ConstantExprKind::FnPtr(FnPtr {
                             generics: Box::new(generics),
@@ -567,17 +585,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 
                         // special-case: if the first argument is ignored, because the signature
                         // is shorter, we do a closure_as_fn conversion
-                        let abi = instance.fn_abi()?;
-                        let id = if abi.args.len() == sig.skip_binder.inputs.len() + 1
-                            && let Some(closure_arg) = abi.args.get(0)
-                            && closure_arg.mode == rustc_public::abi::PassMode::Ignore
-                            && let ty::TyKind::RigidTy(ty::RigidTy::Closure(closure, args)) =
-                                closure_arg.ty.kind()
-                        {
-                            self.register_closure_as_fn_id(span, closure, args)
-                        } else {
-                            self.register_fun_decl_id(span, instance)
-                        };
+                        let id = self.register_fn_ptr_target(
+                            span,
+                            instance,
+                            Some(sig.skip_binder.inputs.len()),
+                        );
 
                         let generics = self.translate_generic_args(span, &instance.args())?;
                         let fn_ptr = FnPtr {
