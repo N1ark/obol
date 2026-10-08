@@ -853,10 +853,17 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         ));
                         CastKind::FnPtr(src_ty, tgt_ty)
                     }
+                    mir::CastKind::PointerExposeAddress => {
+                        CastKind::PtrExposeProvenance(src_ty, *tgt_ty.kind().as_scalar().unwrap())
+                    }
+                    mir::CastKind::PointerWithExposedProvenance => {
+                        CastKind::PtrWithExposedProvenance(
+                            *src_ty.kind().as_scalar().unwrap(),
+                            tgt_ty,
+                        )
+                    }
                     mir::CastKind::PtrToPtr
                     | mir::CastKind::FnPtrToPtr
-                    | mir::CastKind::PointerExposeAddress
-                    | mir::CastKind::PointerWithExposedProvenance
                     | mir::CastKind::PointerCoercion(
                         mir::PointerCoercion::MutToConstPointer
                         | mir::PointerCoercion::ArrayToPointer,
