@@ -252,6 +252,23 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
 }
 
 impl ItemTransCtx<'_, '_> {
+    /// The kind of a static global: its mutability, safety and thread-locality.
+    pub(crate) fn translate_static_kind(&self, def: mir::mono::StaticDef) -> GlobalKind {
+        let tcx = self.t_ctx.tcx;
+        let def_id = rustc_public::rustc_internal::internal(tcx, def.def_id());
+        let rustc_hir::def::DefKind::Static {
+            safety, mutability, ..
+        } = tcx.def_kind(def_id)
+        else {
+            unreachable!("not a static: {def_id:?}")
+        };
+        GlobalKind::Static {
+            is_mut: mutability.is_mut(),
+            is_safe: matches!(safety, rustc_hir::Safety::Safe),
+            is_thread_local: tcx.is_thread_local_static(def_id),
+        }
+    }
+
     /// Translate a type definition.
     ///
     /// Note that we translate the types one by one: we don't need to take into
@@ -550,12 +567,7 @@ impl ItemTransCtx<'_, '_> {
                 } else {
                     self.translate_global_alloc_value(def, ty)?
                 };
-                let global_kind = GlobalKind::Static {
-                    is_mut: false,
-                    is_safe: true,
-                    is_thread_local: false,
-                };
-                (global_kind, value)
+                (self.translate_static_kind(static_def), value)
             }
             mir::alloc::GlobalAlloc::Memory(..) | mir::alloc::GlobalAlloc::TypeId { .. } => {
                 let value = self.translate_global_alloc_value(def, ty)?;
@@ -646,11 +658,7 @@ impl ItemTransCtx<'_, '_> {
             self.translate_alloc_to_const(span, &alloc, Some(def.ty()))?
         };
 
-        let global_kind = GlobalKind::Static {
-            is_mut: self.t_ctx.tcx.is_mutable_static(internal_def_id),
-            is_safe: true,
-            is_thread_local: self.t_ctx.tcx.is_thread_local_static(internal_def_id),
-        };
+        let global_kind = self.translate_static_kind(def);
 
         Ok(GlobalDecl {
             def_id,
