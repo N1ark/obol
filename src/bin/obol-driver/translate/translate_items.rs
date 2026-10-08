@@ -192,11 +192,11 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let decl = bt_ctx.translate_named_const(id, item_meta, *def, args.clone())?;
                 self.translated.global_decls.set_slot(id, decl);
             }
-            TransItemSource::TraitDecl(_) => {
+            TransItemSource::TraitDecl(trait_def_id) => {
                 let Some(ItemId::TraitDecl(id)) = trans_id else {
                     unreachable!()
                 };
-                let decl = bt_ctx.translate_trait_decl(id, item_meta)?;
+                let decl = bt_ctx.translate_trait_decl(id, item_meta, *trait_def_id)?;
                 self.translated.trait_decls.set_slot(id, decl);
             }
             TransItemSource::TraitImpl(impl_def_id) => {
@@ -803,12 +803,15 @@ impl ItemTransCtx<'_, '_> {
         self,
         trans_id: TraitDeclId,
         item_meta: ItemMeta,
+        trait_def_id: rustc_public::DefId,
     ) -> Result<TraitDecl, Error> {
+        let internal = rustc_public::rustc_internal::internal(self.t_ctx.tcx, trait_def_id);
+        let is_unsafe = self.t_ctx.tcx.trait_def(internal).safety.is_unsafe();
         Ok(TraitDecl {
             def_id: trans_id,
             item_meta,
             src: TraitDeclSource::Normal,
-            is_unsafe: false,
+            is_unsafe,
             generics: GenericParams::empty(),
             implied_clauses: vec![].into(),
             consts: IndexMap::new(),
@@ -838,6 +841,10 @@ impl ItemTransCtx<'_, '_> {
             .translate_generic_args(span, &trait_ref.args())
             .unwrap_or_else(|_| GenericArgs::empty());
 
+        let header = self.t_ctx.tcx.impl_trait_header(internal);
+        let is_negative = matches!(header.polarity, rustc_middle::ty::ImplPolarity::Negative);
+        let is_unsafe = header.safety.is_unsafe();
+
         Ok(TraitImpl {
             def_id: trans_id,
             item_meta,
@@ -846,8 +853,8 @@ impl ItemTransCtx<'_, '_> {
                 id: trait_decl_id,
                 generics: Box::new(generics),
             },
-            is_negative: false,
-            is_unsafe: false,
+            is_negative,
+            is_unsafe,
             generics: self.translate_def_generic_params(impl_def_id),
             implied_trait_refs: vec![].into(),
             consts: IndexMap::new(),
