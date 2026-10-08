@@ -815,6 +815,11 @@ pub fn translate<'tcx, 'ctx>(
         translated: TranslatedCrate {
             crate_name: krate.name,
             options: charon_opts.clone(),
+            runtime_checks: RuntimeChecks {
+                ub_checks: tcx.sess.ub_checks(),
+                overflow_checks: tcx.sess.overflow_checks(),
+                contract_checks: tcx.sess.contract_checks(),
+            },
             ..TranslatedCrate::default()
         },
         id_map: Default::default(),
