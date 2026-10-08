@@ -559,6 +559,10 @@ impl ItemTransCtx<'_, '_> {
             None => TyKind::Error("Untype global".into()).into_ty(),
         };
         let alloc: mir::alloc::GlobalAlloc = def.clone().into();
+        let (mut size, mut align) = (
+            Size::from_expr(SizeExpr::size_of(&translated_ty)),
+            Size::from_expr(SizeExpr::align_of(&translated_ty)),
+        );
         let (global_kind, value) = match alloc {
             mir::alloc::GlobalAlloc::Static(static_def) => {
                 let instance: mir::mono::Instance = static_def.into();
@@ -575,7 +579,15 @@ impl ItemTransCtx<'_, '_> {
                 };
                 (self.translate_static_kind(static_def), value)
             }
-            mir::alloc::GlobalAlloc::Memory(..) | mir::alloc::GlobalAlloc::TypeId { .. } => {
+            mir::alloc::GlobalAlloc::Memory(ref mem) => {
+                // Like charon, an anonymous allocation has the size and alignment of the
+                // allocation itself.
+                size = Size::new(mem.bytes.len() as u64);
+                align = Size::new(mem.align);
+                let value = self.translate_global_alloc_value(def, ty)?;
+                (GlobalKind::AnonConst, value)
+            }
+            mir::alloc::GlobalAlloc::TypeId { .. } => {
                 let value = self.translate_global_alloc_value(def, ty)?;
                 (GlobalKind::AnonConst, value)
             }
@@ -592,8 +604,8 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics: GenericParams::empty(),
             ty: translated_ty,
-            size: Size::new(None),
-            align: Size::new(None),
+            size,
+            align,
             ptr_metadata: ConstantExpr::mk_unit(),
             src: item_kind,
             global_kind,
@@ -670,9 +682,9 @@ impl ItemTransCtx<'_, '_> {
             def_id,
             item_meta,
             generics: GenericParams::empty(),
+            size: Size::from_expr(SizeExpr::size_of(&ty)),
+            align: Size::from_expr(SizeExpr::align_of(&ty)),
             ty,
-            size: Size::new(None),
-            align: Size::new(None),
             ptr_metadata: ConstantExpr::mk_unit(),
             src: item_kind,
             global_kind,
@@ -719,9 +731,9 @@ impl ItemTransCtx<'_, '_> {
             def_id,
             item_meta,
             generics: GenericParams::empty(),
+            size: Size::from_expr(SizeExpr::size_of(&ty)),
+            align: Size::from_expr(SizeExpr::align_of(&ty)),
             ty,
-            size: Size::new(None),
-            align: Size::new(None),
             ptr_metadata: ConstantExpr::mk_unit(),
             src: GlobalSource::Normal,
             global_kind: GlobalKind::NamedConst,
