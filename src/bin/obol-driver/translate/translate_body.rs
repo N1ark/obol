@@ -846,13 +846,16 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         CastKind::FnPtr(src_ty, tgt_ty)
                     }
                     mir::CastKind::PointerExposeAddress => {
-                        CastKind::PtrExposeProvenance(src_ty, *tgt_ty.kind().as_scalar().unwrap())
+                        let Some(tgt_scalar) = tgt_ty.kind().as_scalar().copied() else {
+                            raise_error!(self, span, "Pointer exposed to a non-scalar type")
+                        };
+                        CastKind::PtrExposeProvenance(src_ty, tgt_scalar)
                     }
                     mir::CastKind::PointerWithExposedProvenance => {
-                        CastKind::PtrWithExposedProvenance(
-                            *src_ty.kind().as_scalar().unwrap(),
-                            tgt_ty,
-                        )
+                        let Some(src_scalar) = src_ty.kind().as_scalar().copied() else {
+                            raise_error!(self, span, "Pointer built from a non-scalar type")
+                        };
+                        CastKind::PtrWithExposedProvenance(src_scalar, tgt_ty)
                     }
                     mir::CastKind::PtrToPtr
                     | mir::CastKind::FnPtrToPtr
