@@ -590,12 +590,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             None => Span::dummy(),
         };
         let attr_info = self.translate_attr_info(span, item_src);
-        let is_local = match item_src.as_def_id() {
+        let (is_local, is_extern) = match item_src.as_def_id() {
             Some(def_id) => {
                 let internal = rustc_public::rustc_internal::internal(self.tcx, def_id);
-                internal.is_local()
+                (internal.is_local(), self.tcx.is_foreign_item(internal))
             }
-            None => false,
+            None => (false, false),
         };
 
         let (lang_item, diagnostic_item) = if let Some(def_id) = item_src.as_def_id() {
@@ -628,7 +628,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             attr_info,
             is_local,
             started_from: false,
-            is_extern: false,
+            is_extern,
             opacity,
             lang_item,
             diagnostic_item,

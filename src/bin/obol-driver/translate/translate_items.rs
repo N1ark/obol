@@ -53,20 +53,26 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 }
             };
             match res {
-                Ok(Ok(())) => return,
+                Ok(Ok(())) => {}
                 // Translation error
                 Ok(Err(msg)) => {
                     trace!("Item {name} caused errors; ignoring. {msg:?}");
                     sanitize_name(&mut ctx);
-                    register_error!(ctx, span, "Item `{name}` caused errors; ignoring.")
+                    register_error!(ctx, span, "Item `{name}` caused errors; ignoring.");
                 }
                 // Panic
                 Err(msg) => {
                     trace!("Item {name} caused errors; ignoring. {msg:?}");
                     sanitize_name(&mut ctx);
-                    register_error!(ctx, span, "Thread panicked when extracting item `{name}`.")
+                    register_error!(ctx, span, "Thread panicked when extracting item `{name}`.");
                 }
             };
+            if let Some(trans_id) = trans_id
+                && ctx.errors.borrow().item_has_errors(trans_id)
+                && let Some(mut item) = ctx.translated.get_item_mut(trans_id)
+            {
+                item.item_meta().has_errors = true;
+            }
         })
     }
 
