@@ -533,8 +533,12 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     }
 
     /// Which built-in marker traits the given (monomorphic) type implements.
-    pub fn translate_marker_traits(&self, ty: ty::Ty) -> Box<ImplementsMarkerTraits> {
+    pub fn translate_marker_traits(&self, ty: ty::Ty) -> Option<Box<ImplementsMarkerTraits>> {
         use rustc_trait_selection::infer::{InferCtxtExt, TyCtxtInferExt};
+        // The queries below assume a monomorphic type.
+        if self.t_ctx.ty_has_params(ty) {
+            return None;
+        }
         let tcx = self.t_ctx.tcx;
         let ty = rustc_public::rustc_internal::internal(tcx, ty);
         let typing_env = rustc_ty::TypingEnv::fully_monomorphized();
@@ -544,7 +548,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 .type_implements_trait(trait_id, [ty], param_env)
                 .must_apply_modulo_regions()
         };
-        Box::new(ImplementsMarkerTraits {
+        Some(Box::new(ImplementsMarkerTraits {
             is_sized: ty.is_sized(tcx, typing_env),
             is_send: tcx
                 .get_diagnostic_item(rustc_span::sym::Send)
@@ -552,7 +556,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             is_sync: tcx.lang_items().sync_trait().is_some_and(implements),
             is_freeze: ty.is_freeze(tcx, typing_env),
             is_unpin: ty.is_unpin(tcx, typing_env),
-        })
+        }))
     }
 
     /// Translate the layout of an arbitrary (monomorphic) type. Used both for ADTs and for the

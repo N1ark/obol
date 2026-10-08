@@ -300,7 +300,7 @@ impl ItemTransCtx<'_, '_> {
             .map(|l| (self.t_ctx.get_target_triple(), l))
             .collect();
         let ptr_metadata = self.translate_ptr_metadata();
-        let marker_traits = Some(self.translate_marker_traits(def.ty_with_args(genargs)));
+        let marker_traits = self.translate_marker_traits(def.ty_with_args(genargs));
         let type_def = TypeDecl {
             def_id: trans_id,
             item_meta,
@@ -334,9 +334,8 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Normal,
             layout: Default::default(),
             ptr_metadata: PtrMetadata::None,
-            marker_traits: Some(
-                self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Foreign(*def))),
-            ),
+            marker_traits: self
+                .translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Foreign(*def))),
         };
 
         Ok(type_def)
@@ -375,7 +374,11 @@ impl ItemTransCtx<'_, '_> {
             .into_iter()
             .map(|l| (self.t_ctx.get_target_triple(), l))
             .collect();
-        let marker_traits = (!tuple.is_generic()).then(|| self.translate_marker_traits(tuple.rty));
+        let marker_traits = if tuple.is_generic() {
+            None
+        } else {
+            self.translate_marker_traits(tuple.rty)
+        };
         let mut generics = GenericParams::empty();
         if tuple.is_generic() {
             generics.types = (0..fields.len())
@@ -431,9 +434,7 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Builtin(BuiltinAdt::Str),
             layout,
             ptr_metadata: PtrMetadata::Length,
-            marker_traits: Some(
-                self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Str)),
-            ),
+            marker_traits: self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Str)),
         })
     }
 
@@ -633,9 +634,9 @@ impl ItemTransCtx<'_, '_> {
             src,
             layout: Default::default(),
             ptr_metadata,
-            marker_traits: Some(self.translate_marker_traits(ty::Ty::from_rigid_kind(
+            marker_traits: self.translate_marker_traits(ty::Ty::from_rigid_kind(
                 ty::RigidTy::Closure(*def, genargs.clone()),
-            ))),
+            )),
         };
 
         Ok(type_def)
