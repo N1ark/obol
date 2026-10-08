@@ -602,7 +602,7 @@ impl<'tcx> TranslateCtx<'tcx> {
         self.tcx.is_intrinsic(def_id, name).then_some(def_id)
     }
 
-    /// When building a test binary (OBOL_BUILDING_TEST is set), scan all local const items for
+    /// When building a test binary (OBOL_BUILDING_TEST is set), scan all local const/static items for
     /// the `#[rustc_test_marker = "path"]` attribute that rustc adds when expanding `#[test]`.
     /// Returns a set of test function paths (e.g. "my_test" or "submod::my_test") that can be
     /// matched against instance names.
@@ -612,8 +612,11 @@ impl<'tcx> TranslateCtx<'tcx> {
             .free_items()
             .filter_map(|item_id| {
                 let item = self.tcx.hir_item(item_id);
-                // rustc_test_marker is placed on generated const items
-                if !matches!(item.kind, rustc_hir::ItemKind::Const(..)) {
+                // rustc_test_marker is placed on generated const items (static on newer nightlies)
+                if !matches!(
+                    item.kind,
+                    rustc_hir::ItemKind::Const(..) | rustc_hir::ItemKind::Static(..)
+                ) {
                     return None;
                 }
                 let def_id = item_id.owner_id.def_id.to_def_id();
@@ -630,7 +633,7 @@ impl<'tcx> TranslateCtx<'tcx> {
 
     fn collect_entrypoints(&mut self, options: &CliOpts) -> Vec<FunDeclId> {
         // When compiling a test binary, detect #[test] functions via the rustc_test_marker
-        // attribute that rustc adds to the generated TestDescAndFn consts during #[test] expansion.
+        // attribute that rustc adds to the generated TestDescAndFn consts/statics during #[test] expansion.
         // If any test markers are found, use them exclusively as entry points (the normal
         // start_from / start_from_attribute logic would otherwise pick up the generated `main`).
         let use_test_markers = !self.test_fn_paths.is_empty();
