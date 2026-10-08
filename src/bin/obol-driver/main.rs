@@ -10,6 +10,7 @@ extern crate rustc_interface;
 extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_session;
+extern crate rustc_span;
 
 pub mod driver;
 pub mod transform;

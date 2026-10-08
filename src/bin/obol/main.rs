@@ -2,11 +2,12 @@
 
 use anyhow::Result;
 use clap::Parser;
-use obol_lib::args::{CliOpts, OBOL_ARGS, ObolCli};
-use std::{env, process::ExitStatus};
+use obol_lib::args::{CliOpts, OBOL_ARGS, OBOL_SYSROOT, ObolCli};
+use std::{env, path::PathBuf, process::ExitStatus};
 
 use crate::toolchain::{toolchain_path, toolchain_version};
 
+mod sysroot;
 mod toolchain;
 
 fn main() -> Result<()> {
@@ -17,6 +18,16 @@ fn main() -> Result<()> {
         ObolCli::Cargo(opts) => translate_with_cargo(opts)?,
         ObolCli::ListTargets => {
             list_targets()?;
+            ExitStatus::default()
+        }
+        ObolCli::PrintSysroot(opts) => {
+            ensure_rustup();
+            let sysroot =
+                match resolve_sysroot_value(opts.sysroot.as_deref(), opts.target.as_deref())? {
+                    Some(path) => path,
+                    None => toolchain_path()?,
+                };
+            println!("{}", sysroot.display());
             ExitStatus::default()
         }
         ObolCli::ToolchainPath => {
@@ -87,6 +98,12 @@ fn translate_with_cargo(mut options: CliOpts) -> Result<ExitStatus> {
         cmd.arg(&get_rustc_version()?.host);
     }
 
+    // `obol-driver` compiles the crates for the target against this sysroot.
+    match resolve_sysroot(&options)? {
+        Some(sysroot) => cmd.env(OBOL_SYSROOT, sysroot),
+        None => cmd.env_remove(OBOL_SYSROOT),
+    };
+
     cmd.args(std::mem::take(&mut options.spread));
     cmd.env(OBOL_ARGS, serde_json::to_string(&options).unwrap());
 
@@ -109,6 +126,15 @@ fn translate_without_cargo(mut options: CliOpts) -> Result<ExitStatus> {
         // proc-macro/build-script in `obol-driver`.
         cmd.arg("--target");
         cmd.arg(&get_rustc_version()?.host);
+    }
+    // The sysroot is passed explicitly here; an explicit `--sysroot` rustc argument takes
+    // precedence.
+    cmd.env_remove(OBOL_SYSROOT);
+    if !is_specified("--sysroot")
+        && let Some(sysroot) = resolve_sysroot(&options)?
+    {
+        cmd.arg("--sysroot");
+        cmd.arg(sysroot);
     }
 
     cmd.args(std::mem::take(&mut options.spread));
@@ -159,6 +185,41 @@ fn list_targets() -> Result<()> {
 
     println!("{}", serde_json::Value::Array(targets));
     Ok(())
+}
+
+/// The sysroot to compile the crate against, as selected by `--sysroot`: by default the one built
+/// automatically for the requested target (built if needed, then cached). `None` means the
+/// toolchain's own sysroot.
+fn resolve_sysroot(options: &CliOpts) -> Result<Option<PathBuf>> {
+    resolve_sysroot_value(
+        options.sysroot.as_deref(),
+        arg_value(&options.spread, "--target"),
+    )
+}
+
+/// Resolve a `--sysroot` value (same semantics as Charon's): `None` means Obol's full-MIR sysroot
+/// for `target` (the host by default), built if needed; `default` means the toolchain's own
+/// sysroot (returned as `None`); anything else is a path.
+fn resolve_sysroot_value(sysroot: Option<&str>, target: Option<&str>) -> Result<Option<PathBuf>> {
+    match sysroot {
+        Some("default") => Ok(None),
+        None => Ok(Some(sysroot::ensure_sysroot(target)?)),
+        Some(path) => Ok(Some(PathBuf::from(path))),
+    }
+}
+
+/// The value of the `--arg value` or `--arg=value` command-line argument, if present.
+fn arg_value<'a>(args: &'a [String], arg: &str) -> Option<&'a str> {
+    let mut iter = args.iter();
+    while let Some(a) = iter.next() {
+        if a == arg {
+            return iter.next().map(String::as_str);
+        }
+        if let Some(value) = a.strip_prefix(arg).and_then(|v| v.strip_prefix('=')) {
+            return Some(value);
+        }
+    }
+    None
 }
 
 fn get_rustc_version() -> Result<rustc_version::VersionMeta> {

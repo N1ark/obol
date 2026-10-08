@@ -2,13 +2,14 @@
 use crate::ObolError;
 use crate::translate::translate_crate;
 use charon_lib::transform::TransformCtx;
-use obol_lib::args::CliOpts;
+use obol_lib::args::{self, CliOpts};
 use obol_lib::mir_options;
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::Config;
 use rustc_interface::interface::Compiler;
 use rustc_middle::ty::TyCtxt;
 use rustc_session::config::{OutputType, OutputTypes};
+use rustc_span::Symbol;
 use std::ops::Deref;
 use std::{env, fmt};
 
@@ -35,6 +36,16 @@ fn setup_compiler(config: &mut Config, do_translate: bool) {
     if do_translate {
         set_no_codegen(config);
     }
+    // Tell cargo (through the dep-info file) that the output depends on the sysroot chosen by
+    // `obol`, so that switching sysroots rebuilds the dependencies instead of reusing artifacts
+    // compiled against another standard library.
+    let sysroot = env::var(args::OBOL_SYSROOT).ok();
+    config.track_state = Some(Box::new(move |sess| {
+        sess.env_depinfo.lock().insert((
+            Symbol::intern(args::OBOL_SYSROOT),
+            sysroot.as_deref().map(Symbol::intern),
+        ));
+    }));
 }
 
 /// Run the rustc driver with our custom hooks. Returns `None` if the crate was not compiled with
@@ -69,6 +80,17 @@ pub fn run_rustc_driver(options: &CliOpts) -> Result<Option<TransformCtx>, ObolE
     // Whether this is the crate we want to translate.
     let is_selected_crate =
         !is_workspace_dependency && is_target && (!is_building_test_target || is_test_binary);
+
+    // Crates for the target are compiled against the sysroot chosen by `obol` (Obol's full-MIR
+    // sysroot by default), unless the command line already specifies one. Host crates (build
+    // scripts and proc-macros) keep the toolchain's sysroot, like `cargo miri` does.
+    if is_target
+        && arg_values(&compiler_args, "--sysroot").next().is_none()
+        && let Some(sysroot) = env::var_os(args::OBOL_SYSROOT)
+    {
+        compiler_args.push("--sysroot".to_owned());
+        compiler_args.push(sysroot.into_string().expect("non-UTF-8 sysroot path"));
+    }
 
     let output = if !is_selected_crate {
         // Tweak options to get usable MIR even for foreign crates.
@@ -125,7 +147,8 @@ impl<'a> Callbacks for ObolCallbacks<'a> {
             translate_crate::translate(
                 &self.options,
                 tcx,
-                compiler.sess.opts.sysroot.path().to_owned(),
+                // The toolchain's own sysroot, where the standard library sources live.
+                compiler.sess.opts.sysroot.default.clone(),
             )
         });
         if let Ok(transform_ctx) = transform_ctx {

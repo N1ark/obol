@@ -190,6 +190,9 @@ fn perform_test(test_case: &Case) -> anyhow::Result<()> {
 
     // Charon args
     cmd.arg("--print-ullbc");
+    // Compile against the toolchain's own sysroot rather than Obol's implicit full-MIR one: this
+    // keeps the tests self-contained, and the auxiliary crates above are compiled against it.
+    cmd.arg("--sysroot=default");
     if matches!(
         test_case.magic_comments.test_kind,
         TestKind::KnownPanic | TestKind::KnownFailure

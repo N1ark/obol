@@ -11,6 +11,8 @@ pub enum OutputFormat {
 }
 
 pub const OBOL_ARGS: &str = "OBOL_ARGS";
+/// The sysroot `obol-driver` should compile target crates against, if they don't specify one.
+pub const OBOL_SYSROOT: &str = "OBOL_SYSROOT";
 
 #[derive(Debug, clap::Parser)]
 #[clap(name = "Obol")]
@@ -25,6 +27,10 @@ pub enum ObolCli {
     ListTargets,
     /// Print the path to the rustc toolchain used by obol.
     ToolchainPath,
+    /// Print the sysroot `obol cargo`/`obol rustc` compile against, building Obol's full-MIR
+    /// sysroot first if needed. The path is the last line of stdout. Use it to build crates that
+    /// are linked into analysed code (e.g. with `--extern`) against the same standard library.
+    PrintSysroot(PrintSysrootOpts),
     /// Print the version of the rustc toolchain used by obol.
     ToolchainVersion,
     /// Print the version of Obol (or Charon, if flag provided)
@@ -69,9 +75,29 @@ pub struct CliOpts {
     /// Output serialization format (postcard or json).
     #[clap(long = "format", default_value = "postcard")]
     pub format: OutputFormat,
+    /// Sysroot to compile the crate (and its dependencies) against. By default Obol builds (once,
+    /// then caches) a sysroot whose standard library has full MIR: the production standard
+    /// library compiled from the toolchain's `rust-src` with Obol's MIR options. Pass a path to
+    /// use another sysroot, or `default` for the toolchain's distributed sysroot, which lacks MIR
+    /// bodies for many standard library functions. (Same semantics as Charon's `--sysroot`.)
+    /// For `obol rustc`, a rustc `--sysroot` argument takes precedence.
+    #[clap(long = "sysroot")]
+    pub sysroot: Option<String>,
     /// Args that are passed to the underlying tool (`rustc` or `cargo` depending on `--cargo`).
     #[arg(last = true)]
     pub spread: Vec<String>,
+}
+
+/// Options of `obol print-sysroot`.
+#[derive(Debug, Default, Clone, clap::Parser)]
+pub struct PrintSysrootOpts {
+    /// The target to get the sysroot for (defaults to the host).
+    #[clap(long = "target")]
+    pub target: Option<String>,
+    /// Resolve this `--sysroot` value as `obol cargo`/`obol rustc` would: `default` prints the
+    /// toolchain's distributed sysroot, a path is printed as is.
+    #[clap(long = "sysroot")]
+    pub sysroot: Option<String>,
 }
 
 #[derive(Debug, Default, Clone, clap::Parser, Serialize, Deserialize)]
