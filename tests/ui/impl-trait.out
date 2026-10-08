@@ -1,16 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::clone::Clone
-#[lang_item(Clone)]
-#[diagnostic_item("Clone")]
-trait Clone
-
-// Full name: core::clone::impls::{impl Clone for u32}
-impl "impl_Clone_for_u32" Clone for u32 {
-    non-dyn-compatible
-}
-
 // Full name: core::clone::impls::{impl Clone for u32}::clone
 pub fn clone(self: &'_ u32) -> u32
 {
@@ -26,9 +16,6 @@ pub fn clone(self: &'_ u32) -> u32
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: anon_const_0
 const anon_const_0: u32 = 42u32
 
@@ -37,14 +24,6 @@ const anon_const_1: u32 = 42u32
 
 struct (_,)::<&'_ u32> {
   _0: &'_ u32,
-}
-
-// Full name: test_crate::Foo
-trait Foo
-
-// Full name: test_crate::{impl Foo for ()}
-impl "impl_Foo_for_unit" Foo for () {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl Foo for ()}::get_ty
@@ -97,7 +76,7 @@ fn use_foo()
         storage_live(_0);
         _0 = ();
         storage_live(foo);
-        foo = mk_foo() -> bb1 (unwind: bb2);
+        foo = mk_foo() -> bb1 (unwind: bb5);
     }
 
     bb1: {
@@ -106,24 +85,16 @@ fn use_foo()
         storage_live(_4);
         storage_live(_5);
         _5 = &foo;
-        _4 = get_ty(move _5) -> bb3 (unwind: bb4);
+        _4 = get_ty(move _5) -> bb2 (unwind: bb4);
     }
 
     bb2: {
-        unwind_continue;
+        _3 = &(*_4);
+        storage_dead(_5);
+        _2 = clone(move _3) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        _3 = &(*_4);
-        storage_dead(_5);
-        _2 = clone(move _3) -> bb5 (unwind: bb4);
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
         storage_dead(_3);
         storage_dead(_4);
         storage_dead(_2);
@@ -131,14 +102,14 @@ fn use_foo()
         storage_dead(foo);
         return;
     }
-}
 
-// Full name: test_crate::RPITIT
-trait RPITIT
+    bb4: {
+        unwind_continue;
+    }
 
-// Full name: test_crate::{impl RPITIT for ()}
-impl "impl_RPITIT_for_unit" RPITIT for () {
-    non-dyn-compatible
+    bb5: {
+        unwind_continue;
+    }
 }
 
 // Full name: test_crate::{impl RPITIT for ()}::make_foo
@@ -211,7 +182,7 @@ pub fn use_wrap()
         storage_live(_7);
         _0 = ();
         storage_live(f);
-        f = wrap::<u32>() -> bb1 (unwind: bb2);
+        f = wrap::<u32>() -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -227,14 +198,10 @@ pub fn use_wrap()
         _6 = &(*_7);
         _5 = &(*_6);
         _4 = (move _5,);
-        _2 = test_crate::wrap::{closure}::<u32, i32, extern "rust-call" fn((&'_ u32,)) -> WrapClone::<&'_ u32>, ()>(move _3, move _4) -> bb3 (unwind: bb4);
+        _2 = test_crate::wrap::{closure}::<u32, i32, extern "rust-call" fn((&'_ u32,)) -> WrapClone::<&'_ u32>, ()>(move _3, move _4) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         storage_dead(_3);
@@ -243,6 +210,10 @@ pub fn use_wrap()
         _0 = ();
         storage_dead(f);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {

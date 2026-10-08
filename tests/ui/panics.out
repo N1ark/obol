@@ -84,9 +84,6 @@ pub struct Layout {
 // Full name: core::alloc::AllocError
 pub struct AllocError {}
 
-#[diagnostic_item("Any")]
-trait core::any::Any
-
 struct () {}
 
 struct str {
@@ -157,12 +154,7 @@ fn {vtable}::core::any::Any::<&'_ str>() -> *const ()
 }
 
 #[diagnostic_item("Any")]
-static {vtable}::core::any::Any::<&'_ str>: *const () = {vtable}::core::any::Any::<&'_ str>()
-
-// Full name: core::any::{impl core::any::Any for T}
-impl<T> "impl_Any_for_T" core::any::Any for T {
-    non-dyn-compatible
-}
+vtable {vtable}::core::any::Any::<&'_ str>: *const () = {vtable}::core::any::Any::<&'_ str>()
 
 // Full name: core::fmt::Error
 pub struct Error {}
@@ -176,13 +168,6 @@ pub struct FormattingOptions {
 
 // Full name: FakeTrait
 trait FakeTrait
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
-}
 
 // Full name: core::fmt::Formatter::<'_>
 #[diagnostic_item("Formatter")]
@@ -230,13 +215,6 @@ pub struct NonNull::<Argument::<'_>> {
 #[lang_item(NonNull)]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -310,10 +288,6 @@ pub fn from_str_nonconst::<'_>(s: &'_ str) -> Arguments::<'_>
         unwind_continue;
     }
 }
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
 
 // Full name: core::fmt::{Formatter::<'_>}::write_str::<'_>
 pub fn write_str::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str) -> Result::<(), Error>
@@ -394,15 +368,6 @@ pub enum Option::<&'_ str> {
   Some { _0: &'_ str },
 }
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
@@ -421,15 +386,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     bb2: {
         undefined_behavior;
     }
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -480,23 +436,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = core::intrinsics::abort() -> bb3 (unwind: bb4);
+        _3 = core::intrinsics::abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -504,18 +453,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -523,7 +475,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -531,7 +487,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -616,20 +572,20 @@ pub fn panic(expr: &'_ str) -> !
         storage_live(_3);
         storage_live(_4);
         _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb3 (unwind: bb4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
@@ -711,7 +667,7 @@ fn precondition_check(ptr: *mut ())
         storage_dead(_15);
         _2 = move _6 == const 0usize;
         storage_dead(_6);
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -742,12 +698,11 @@ fn precondition_check(ptr: *mut ())
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
         storage_dead(_7);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -755,7 +710,8 @@ fn precondition_check(ptr: *mut ())
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        return;
     }
 }
 
@@ -826,37 +782,39 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
         storage_live(_3);
         storage_live(_7);
         _3 = @discriminant((*self).inner);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _3 -> 0isize: bb1, 1isize: bb4, otherwise: bb9;
     }
 
     bb1: {
-        _7 = std::process::abort() -> bb4 (unwind: bb5);
+        _7 = std::process::abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_live(a);
         a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
         storage_live(_5);
         storage_live(_6);
         _6 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), {vtable}::core::any::Any::<&'_ str>>(copy a);
-        _5 = payload_as_str(move _6) -> bb6 (unwind: bb7);
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        undefined_behavior;
+        _5 = payload_as_str(move _6) -> bb5 (unwind: bb8);
     }
 
     bb5: {
-        unwind_continue;
+        storage_dead(_6);
+        _0 = write_str::<'_>(move f, move _5) -> bb6 (unwind: bb7);
     }
 
     bb6: {
-        storage_dead(_6);
-        _0 = write_str::<'_>(move f, move _5) -> bb8 (unwind: bb9);
+        storage_dead(_5);
+        storage_dead(a);
+        return;
     }
 
     bb7: {
@@ -864,13 +822,11 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
     }
 
     bb8: {
-        storage_dead(_5);
-        storage_dead(a);
-        return;
+        unwind_continue;
     }
 
     bb9: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
 
@@ -888,14 +844,22 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
         storage_live(_2);
         storage_live(_4);
         _2 = @discriminant((*self).inner);
-        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _2 -> 0isize: bb1, 1isize: bb4, otherwise: bb5;
     }
 
     bb1: {
-        _4 = std::process::abort() -> bb4 (unwind: bb5);
+        _4 = std::process::abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_live(a);
         a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
         _0 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), {vtable}::core::any::Any::<&'_ str>>(copy a);
@@ -903,16 +867,8 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
         return;
     }
 
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        undefined_behavior;
-    }
-
     bb5: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
 
@@ -932,19 +888,19 @@ fn ct_error(_1: Layout) -> !
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = from_str::<'_>(const "allocation failed") -> bb1 (unwind: bb2);
+        _3 = from_str::<'_>(const "allocation failed") -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _2 = panic_fmt(move _3) -> bb3 (unwind: bb4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
@@ -1055,7 +1011,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_36);
         storage_live(size);
         size = copy layout.size;
-        switch copy size -> 0usize: bb1, otherwise: bb2;
+        switch copy size -> 0usize: bb1, otherwise: bb6;
     }
 
     bb1: {
@@ -1070,54 +1026,54 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_15);
         storage_live(_35);
         _35 = ub_checks;
-        if move _35 -> bb3 else -> bb4;
+        if move _35 -> bb2 else -> bb5;
     }
 
     bb2: {
-        if copy zeroed -> bb5 else -> bb6;
+        storage_live(_17);
+        _17 = transmute<Alignment, *mut ()>(copy _13);
+        _16 = precondition_check(move _17) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_live(_17);
-        _17 = transmute<Alignment, *mut ()>(copy _13);
-        _16 = precondition_check(move _17) -> bb7 (unwind: bb8);
+        storage_dead(_17);
+        goto bb5;
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         _4 = transmute<*mut [u8], NonNull::<[u8]>>(copy ptr_14);
         storage_dead(ptr_14);
         storage_dead(self_5);
         _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { _0: move _4 };
         storage_dead(_4);
-        goto bb9;
-    }
-
-    bb5: {
-        _18 = __rust_no_alloc_shim_is_unstable_v2() -> bb10 (unwind: bb11);
+        goto bb28;
     }
 
     bb6: {
-        _20 = __rust_no_alloc_shim_is_unstable_v2() -> bb12 (unwind: bb13);
+        if copy zeroed -> bb7 else -> bb12;
     }
 
     bb7: {
-        storage_dead(_17);
-        goto bb4;
+        _18 = __rust_no_alloc_shim_is_unstable_v2() -> bb8 (unwind: bb11);
     }
 
     bb8: {
-        undefined_behavior;
+        storage_live(_19);
+        _19 = copy layout.align;
+        raw_ptr = __rust_alloc_zeroed(copy size, move _19) -> bb9 (unwind: bb10);
     }
 
     bb9: {
-        storage_dead(size);
-        goto bb14;
+        storage_dead(_19);
+        goto bb15;
     }
 
     bb10: {
-        storage_live(_19);
-        _19 = copy layout.align;
-        raw_ptr = __rust_alloc_zeroed(copy size, move _19) -> bb15 (unwind: bb16);
+        undefined_behavior;
     }
 
     bb11: {
@@ -1125,38 +1081,21 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb12: {
-        storage_live(_21);
-        _21 = copy layout.align;
-        raw_ptr = __rust_alloc(copy size, move _21) -> bb17 (unwind: bb18);
+        _20 = __rust_no_alloc_shim_is_unstable_v2() -> bb13 (unwind: bb31);
     }
 
     bb13: {
-        undefined_behavior;
+        storage_live(_21);
+        _21 = copy layout.align;
+        raw_ptr = __rust_alloc(copy size, move _21) -> bb14 (unwind: bb30);
     }
 
     bb14: {
-        return;
+        storage_dead(_21);
+        goto bb15;
     }
 
     bb15: {
-        storage_dead(_19);
-        goto bb19;
-    }
-
-    bb16: {
-        undefined_behavior;
-    }
-
-    bb17: {
-        storage_dead(_21);
-        goto bb19;
-    }
-
-    bb18: {
-        undefined_behavior;
-    }
-
-    bb19: {
         storage_live(_7);
         storage_live(self_8);
         storage_live(self_9);
@@ -1170,10 +1109,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(_39);
         _22 = move _24 == const 0usize;
         storage_dead(_24);
-        if move _22 -> bb20 else -> bb21;
+        if move _22 -> bb16 else -> bb19;
     }
 
-    bb20: {
+    bb16: {
         storage_live(_41);
         _41 = Option::<NonNull::<u8>>::None {  };
         self_9 = move _41;
@@ -1189,17 +1128,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_34);
         _33 = @discriminant(_10);
         _34 = copy _33 == const 1isize;
-        _36 = assume(move _34) -> bb22 (unwind: bb23);
+        _36 = assume(move _34) -> bb17 (unwind: bb18);
     }
 
-    bb21: {
-        storage_live(_23);
-        storage_live(_37);
-        _37 = ub_checks;
-        if move _37 -> bb24 else -> bb25;
-    }
-
-    bb22: {
+    bb17: {
         storage_live(_44);
         _44 = AllocError {  };
         storage_live(_45);
@@ -1209,20 +1141,36 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(_33);
         storage_dead(_7);
         storage_dead(size);
-        goto bb14;
+        goto bb29;
     }
 
-    bb23: {
+    bb18: {
         undefined_behavior;
     }
 
-    bb24: {
-        storage_live(_26);
-        _26 = cast<*mut u8, *mut ()>(copy raw_ptr);
-        _25 = precondition_check(move _26) -> bb26 (unwind: bb27);
+    bb19: {
+        storage_live(_23);
+        storage_live(_37);
+        _37 = ub_checks;
+        if move _37 -> bb20 else -> bb23;
     }
 
-    bb25: {
+    bb20: {
+        storage_live(_26);
+        _26 = cast<*mut u8, *mut ()>(copy raw_ptr);
+        _25 = precondition_check(move _26) -> bb21 (unwind: bb22);
+    }
+
+    bb21: {
+        storage_dead(_26);
+        goto bb23;
+    }
+
+    bb22: {
+        undefined_behavior;
+    }
+
+    bb23: {
         _23 = transmute<*mut u8, NonNull::<u8>>(copy raw_ptr);
         self_9 = Option::<NonNull::<u8>>::Some { _0: move _23 };
         storage_dead(_23);
@@ -1247,35 +1195,43 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_dead(self_30);
         storage_live(_38);
         _38 = ub_checks;
-        if move _38 -> bb28 else -> bb29;
+        if move _38 -> bb24 else -> bb27;
+    }
+
+    bb24: {
+        storage_live(_32);
+        _32 = transmute<NonNull::<u8>, *mut ()>(copy ptr_11);
+        _31 = precondition_check(move _32) -> bb25 (unwind: bb26);
+    }
+
+    bb25: {
+        storage_dead(_32);
+        goto bb27;
     }
 
     bb26: {
-        storage_dead(_26);
-        goto bb25;
-    }
-
-    bb27: {
         undefined_behavior;
     }
 
-    bb28: {
-        storage_live(_32);
-        _32 = transmute<NonNull::<u8>, *mut ()>(copy ptr_11);
-        _31 = precondition_check(move _32) -> bb30 (unwind: bb31);
-    }
-
-    bb29: {
+    bb27: {
         _12 = transmute<*mut [u8], NonNull::<[u8]>>(copy ptr_29);
         storage_dead(ptr_29);
         _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { _0: move _12 };
         storage_dead(_12);
-        goto bb9;
+        goto bb28;
+    }
+
+    bb28: {
+        storage_dead(size);
+        goto bb29;
+    }
+
+    bb29: {
+        return;
     }
 
     bb30: {
-        storage_dead(_32);
-        goto bb29;
+        undefined_behavior;
     }
 
     bb31: {
@@ -1301,19 +1257,15 @@ fn box_new_uninit(layout: Layout) -> *mut u8
         storage_live(_3);
         storage_live(_5);
         storage_live(_2);
-        _2 = alloc_impl_runtime(copy layout, const false) -> bb1 (unwind: bb2);
+        _2 = alloc_impl_runtime(copy layout, const false) -> bb1 (unwind: bb7);
     }
 
     bb1: {
         _3 = @discriminant(_2);
-        switch move _3 -> 0isize: bb3, 1isize: bb4, otherwise: bb5;
+        switch move _3 -> 0isize: bb2, 1isize: bb3, otherwise: bb6;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(ptr);
         ptr = copy (_2 as variant Result::<NonNull::<[u8]>, AllocError>::Ok)._0;
         storage_live(_6);
@@ -1331,12 +1283,16 @@ fn box_new_uninit(layout: Layout) -> *mut u8
         return;
     }
 
+    bb3: {
+        _5 = handle_alloc_error(move layout) -> bb4 (unwind: bb5);
+    }
+
     bb4: {
-        _5 = handle_alloc_error(move layout) -> bb6 (unwind: bb7);
+        undefined_behavior;
     }
 
     bb5: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb6: {
@@ -1418,33 +1374,29 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
         (*self).inner = move _7;
         storage_dead(_7);
         _3 = @discriminant(_2);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _3 -> 0isize: bb1, 1isize: bb4, otherwise: bb7;
     }
 
     bb1: {
-        _6 = std::process::abort() -> bb4 (unwind: bb5);
+        _6 = std::process::abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_live(a);
-        a = move (_2 as variant Option::<&'_ str>::Some)._0;
-        storage_live(_5);
-        _5 = alloc::boxed::{Box::<_, Global>}::new::<&'_ str>(move a) -> bb6 (unwind: bb7);
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        undefined_behavior;
-    }
-
-    bb5: {
         unwind_continue;
     }
 
-    bb6: {
+    bb4: {
+        storage_live(a);
+        a = move (_2 as variant Option::<&'_ str>::Some)._0;
+        storage_live(_5);
+        _5 = alloc::boxed::{Box::<_, Global>}::new::<&'_ str>(move a) -> bb5 (unwind: bb6);
+    }
+
+    bb5: {
         _0 = unsize_cast<Box::<&'_ str, Global>, Box::<(dyn FakeTrait), Global>, {vtable}::core::any::Any::<&'_ str>>(move _5);
         storage_dead(_5);
         storage_dead(a);
@@ -1452,8 +1404,12 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
         return;
     }
 
-    bb7: {
+    bb6: {
         unwind_continue;
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 }
 
@@ -1495,7 +1451,7 @@ fn {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>() -> *const ()
     }
 }
 
-static {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>: *const () = {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>()
+vtable {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>: *const () = {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>()
 
 // Full name: std::panicking::panic_with_hook
 fn panic_with_hook(_1: &'_ mut (dyn FakeTrait), _2: &'_ Location::<'_>, _3: bool, _4: bool) -> !
@@ -1556,23 +1512,23 @@ pub fn __rust_end_short_backtrace::<std::panicking::begin_panic::{closure}::{clo
     bb0: {
         storage_live(result);
         storage_live(_2);
-        result = std::panicking::begin_panic::{closure}::<&'_ str, i32, extern "rust-call" fn(()) -> !, (&'_ str, &'_ Location::<'_>)>(move f, const ()) -> bb1 (unwind: bb2);
+        result = std::panicking::begin_panic::{closure}::<&'_ str, i32, extern "rust-call" fn(()) -> !, (&'_ str, &'_ Location::<'_>)>(move f, const ()) -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _2 = black_box::<()>(const ()) -> bb3 (unwind: bb4);
+        _2 = black_box::<()>(const ()) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         return;
     }
 
-    bb4: {
+    bb3: {
         undefined_behavior;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -1589,13 +1545,13 @@ pub fn begin_panic::<&'_ str>(msg: &'_ str) -> !
     bb0: {
         storage_live(_0);
         storage_live(loc);
-        loc = caller_location() -> bb1 (unwind: bb2);
+        loc = caller_location() -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_live(_3);
         _3 = std::panicking::begin_panic::{closure}::{closure} { upvar_0: move msg, upvar_1: copy loc };
-        _0 = __rust_end_short_backtrace::<std::panicking::begin_panic::{closure}::{closure}, !>(move _3) -> bb3 (unwind: bb4);
+        _0 = __rust_end_short_backtrace::<std::panicking::begin_panic::{closure}::{closure}, !>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -1603,24 +1559,12 @@ pub fn begin_panic::<&'_ str>(msg: &'_ str) -> !
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
-        unwind_continue;
+        undefined_behavior;
     }
-}
-
-trait alloc::panicking::PanicPayload
-
-// Full name: std::panicking::begin_panic::{impl alloc::panicking::PanicPayload for Payload::<_>}
-impl<A> alloc::panicking::PanicPayload for Payload::<_> {
-    non-dyn-compatible
-}
-
-// Full name: std::panicking::begin_panic::{impl Display for Payload::<_>}
-impl<A> Display for Payload::<_> {
-    non-dyn-compatible
 }
 
 struct (_, _)::<&'_ str, &'_ Location::<'_>> {
@@ -1662,19 +1606,19 @@ fn panic2()
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = from_str::<'_>(const "O no!") -> bb1 (unwind: bb2);
+        _2 = from_str::<'_>(const "O no!") -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _1 = panic_fmt(move _2) -> bb3 (unwind: bb4);
+        _1 = panic_fmt(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
@@ -1694,19 +1638,19 @@ fn panic3()
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = from_str_nonconst::<'_>(const "O no!") -> bb1 (unwind: bb2);
+        _2 = from_str_nonconst::<'_>(const "O no!") -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _1 = panic_fmt(move _2) -> bb3 (unwind: bb4);
+        _1 = panic_fmt(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
@@ -1774,19 +1718,19 @@ fn panic5()
     bb2: {
         storage_live(_2);
         storage_live(_3);
-        _3 = from_str::<'_>(const "assert failed") -> bb3 (unwind: bb4);
+        _3 = from_str::<'_>(const "assert failed") -> bb3 (unwind: bb6);
     }
 
     bb3: {
-        _2 = panic_fmt(move _3) -> bb5 (unwind: bb6);
+        _2 = panic_fmt(move _3) -> bb4 (unwind: bb5);
     }
 
     bb4: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb5: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb6: {
@@ -1828,19 +1772,19 @@ fn panic7()
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = from_str_nonconst::<'_>(const "internal error: entered unreachable code: can't reach this") -> bb1 (unwind: bb2);
+        _2 = from_str_nonconst::<'_>(const "internal error: entered unreachable code: can't reach this") -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _1 = panic_fmt(move _2) -> bb3 (unwind: bb4);
+        _1 = panic_fmt(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {

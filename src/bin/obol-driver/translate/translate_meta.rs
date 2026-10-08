@@ -627,9 +627,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             source_text: None,
             attr_info,
             is_local,
+            started_from: false,
+            is_extern: false,
             opacity,
             lang_item,
             diagnostic_item,
+            has_errors: false,
         };
         self.cached_item_metas
             .insert(item_src.clone(), item_meta.clone());

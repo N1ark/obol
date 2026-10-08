@@ -71,15 +71,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::num::imp::{impl Display for usize}
-impl "impl_Display_for_usize" Display for usize {
-    non-dyn-compatible
-}
-
 // Full name: core::fmt::num::imp::{impl Display for usize}::fmt
 pub fn fmt(_1: &'_ usize, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 = <missing>
@@ -117,10 +108,6 @@ pub struct Location::<'_> {
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
-// Full name: core::ops::index::Index
-#[lang_item(Index)]
-trait Index
-
 // Full name: core::ops::range::RangeInclusive::<usize>
 #[lang_item(RangeInclusiveStruct)]
 pub struct RangeInclusive::<usize> {
@@ -151,15 +138,6 @@ pub enum Option::<usize> {
   Some { _0: usize },
 }
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
@@ -178,15 +156,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     bb2: {
         undefined_behavior;
     }
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -237,23 +206,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -261,18 +223,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -280,7 +245,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -288,17 +257,12 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
         unwind_continue;
     }
-}
-
-// Full name: core::slice::index::{impl Index<I> for [T]}
-impl<T, I> "impl_Index_for_slice" Index<I> for [T] {
-    non-dyn-compatible
 }
 
 // Full name: anon_const_1
@@ -847,7 +811,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_6);
         _6 = copy len;
         _4 = move _5 > move _6;
-        if move _4 -> bb1 else -> bb2;
+        if move _4 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -858,10 +822,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _8 = copy start;
         storage_live(_9);
         _9 = copy len;
-        _7 = core::slice::index::slice_index_fail::do_panic(move _8, move _9) -> bb3 (unwind: bb4);
+        _7 = core::slice::index::slice_index_fail::do_panic(move _8, move _9) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
@@ -871,15 +843,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_12);
         _12 = copy len;
         _10 = move _11 > move _12;
-        if move _10 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        unwind_continue;
+        if move _10 -> bb5 else -> bb8;
     }
 
     bb5: {
@@ -890,10 +854,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _14 = copy end;
         storage_live(_15);
         _15 = copy len;
-        _13 = core::slice::index::slice_index_fail::do_panic#1(move _14, move _15) -> bb7 (unwind: bb8);
+        _13 = core::slice::index::slice_index_fail::do_panic#1(move _14, move _15) -> bb6 (unwind: bb7);
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         storage_dead(_12);
         storage_dead(_11);
         storage_dead(_10);
@@ -903,15 +875,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_18);
         _18 = copy end;
         _16 = move _17 > move _18;
-        if move _16 -> bb9 else -> bb10;
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        unwind_continue;
+        if move _16 -> bb9 else -> bb12;
     }
 
     bb9: {
@@ -922,10 +886,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _20 = copy start;
         storage_live(_21);
         _21 = copy end;
-        _19 = core::slice::index::slice_index_fail::do_panic#2(move _20, move _21) -> bb11 (unwind: bb12);
+        _19 = core::slice::index::slice_index_fail::do_panic#2(move _20, move _21) -> bb10 (unwind: bb11);
     }
 
     bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
         storage_dead(_18);
         storage_dead(_17);
         storage_dead(_16);
@@ -934,14 +906,6 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_23);
         _23 = copy len;
         _0 = core::slice::index::slice_index_fail::do_panic#3(move _22, move _23) -> bb13 (unwind: bb14);
-    }
-
-    bb11: {
-        undefined_behavior;
-    }
-
-    bb12: {
-        unwind_continue;
     }
 
     bb13: {
@@ -993,7 +957,7 @@ pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: R
         storage_live(_8);
         _8 = copy end;
         _7 = move _8 < copy len;
-        if move _7 -> bb1 else -> bb2;
+        if move _7 -> bb1 else -> bb6;
     }
 
     bb1: {
@@ -1002,25 +966,15 @@ pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: R
         _9 = copy end;
         end = move _9 wrap.+ const 1usize;
         storage_dead(_9);
-        if copy exhausted -> bb3 else -> bb5;
+        if copy exhausted -> bb2 else -> bb3;
     }
 
     bb2: {
-        storage_dead(_8);
-        goto bb4;
+        start = copy end;
+        goto bb3;
     }
 
     bb3: {
-        start = copy end;
-        goto bb5;
-    }
-
-    bb4: {
-        storage_dead(_7);
-        _16 = slice_index_fail(move start, move end, move len) -> bb6 (unwind: bb7);
-    }
-
-    bb5: {
         storage_live(_10);
         storage_live(self_11);
         self_11 = copy end;
@@ -1028,26 +982,18 @@ pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: R
         rhs = copy start;
         storage_live(_17);
         _17 = copy self_11 < copy rhs;
-        if move _17 -> bb8 else -> bb9;
+        if move _17 -> bb4 else -> bb5;
     }
 
-    bb6: {
-        undefined_behavior;
-    }
-
-    bb7: {
-        unwind_continue;
-    }
-
-    bb8: {
+    bb4: {
         storage_dead(_17);
         storage_dead(rhs);
         storage_dead(self_11);
         storage_dead(_10);
-        goto bb4;
+        goto bb7;
     }
 
-    bb9: {
+    bb5: {
         storage_live(_18);
         _18 = copy self_11 ub.- copy rhs;
         _10 = Option::<usize>::Some { _0: move _18 };
@@ -1077,6 +1023,24 @@ pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: R
         storage_dead(exhausted);
         return;
     }
+
+    bb6: {
+        storage_dead(_8);
+        goto bb7;
+    }
+
+    bb7: {
+        storage_dead(_7);
+        _16 = slice_index_fail(move start, move end, move len) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
 }
 
 // Full name: core::slice::index::{impl Index<I> for [T]}::index::<u8, RangeInclusive::<usize>>
@@ -1100,15 +1064,6 @@ pub fn impl_Index_for_slice::index::<u8, RangeInclusive::<usize>>(self: &'_ [u8]
     }
 }
 
-// Full name: core::slice::index::SliceIndex
-#[diagnostic_item("SliceIndex")]
-trait SliceIndex
-
-// Full name: core::slice::index::{impl SliceIndex<[T]> for RangeInclusive::<usize>}
-impl<T> SliceIndex<[T]> for RangeInclusive::<usize> {
-    non-dyn-compatible
-}
-
 // Full name: test_crate::slice_index_range
 pub fn slice_index_range(slice: &'_ [u8]) -> &'_ [u8]
 {
@@ -1126,18 +1081,14 @@ pub fn slice_index_range(slice: &'_ [u8]) -> &'_ [u8]
         storage_live(_4);
         _4 = &(*slice) with_metadata(copy slice.metadata);
         storage_live(_5);
-        _5 = core::ops::range::{RangeInclusive::<_>}::new::<usize>(const 0usize, const 10usize) -> bb1 (unwind: bb2);
+        _5 = core::ops::range::{RangeInclusive::<_>}::new::<usize>(const 0usize, const 10usize) -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _3 = impl_Index_for_slice::index::<u8, RangeInclusive::<usize>>(move _4, move _5) -> bb3 (unwind: bb4);
+        _3 = impl_Index_for_slice::index::<u8, RangeInclusive::<usize>>(move _4, move _5) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         _2 = &(*_3) with_metadata(copy _3.metadata);
@@ -1145,6 +1096,10 @@ pub fn slice_index_range(slice: &'_ [u8]) -> &'_ [u8]
         storage_dead(_3);
         storage_dead(_2);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {

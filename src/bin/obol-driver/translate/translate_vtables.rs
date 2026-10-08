@@ -178,6 +178,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     comments_before: vec![],
                     kind: TerminatorKind::Return,
                 },
+                kind: UnwindKind::Regular,
             }]),
             bound_body_regions: 0,
             locals,
@@ -211,6 +212,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         from_ty: ty::Ty,
         principal: Option<ty::TraitRef>,
     ) -> Result<GlobalDecl, Error> {
+        let self_ty = self.translate_ty(Span::dummy(), from_ty)?;
         let init = self.register_vtable_init(Span::dummy(), from_ty, principal);
         let ty = TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty();
         let value = self.call_initializer(init, ty.clone());
@@ -218,9 +220,15 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             def_id,
             item_meta,
             generics: GenericParams::empty(),
-            global_kind: GlobalKind::Static,
-            src: GlobalSource::VTableInstance { impl_ref: None },
+            global_kind: GlobalKind::VTable,
+            src: GlobalSource::VTableInstance {
+                self_ty,
+                impl_ref: None,
+            },
             ty,
+            size: Size::new(None),
+            align: Size::new(None),
+            ptr_metadata: ConstantExpr::mk_unit(),
             value,
         })
     }

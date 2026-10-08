@@ -1,27 +1,12 @@
 
 // Final ULLBC:
 
-// Full name: core::cmp::PartialEq
-#[lang_item(PartialEq)]
-#[diagnostic_item("PartialEq")]
-trait PartialEq
-
 // Full name: core::cmp::Ordering
 #[lang_item(OrderingEnum)]
 pub enum Ordering {
   Less,
   Equal,
   Greater,
-}
-
-// Full name: core::cmp::PartialOrd
-#[lang_item(PartialOrd)]
-#[diagnostic_item("PartialOrd")]
-trait PartialOrd
-
-// Full name: core::cmp::impls::{impl PartialEq<i32> for i32}
-impl "impl_PartialEq_i32_for_i32" PartialEq<i32> for i32 {
-    non-dyn-compatible
 }
 
 // Full name: core::cmp::impls::{impl PartialEq<i32> for i32}::eq
@@ -44,11 +29,6 @@ pub fn impl_PartialEq_i32_for_i32::eq(self: &'_ i32, other: &'_ i32) -> bool
         storage_dead(_3);
         return;
     }
-}
-
-// Full name: core::cmp::impls::{impl PartialOrd<u32> for u32}
-impl "impl_PartialOrd_u32_for_u32" PartialOrd<u32> for u32 {
-    non-dyn-compatible
 }
 
 // Full name: core::option::Option::<Ordering>
@@ -93,11 +73,6 @@ pub enum Option::<i32> {
   Some { _0: i32 },
 }
 
-// Full name: core::option::{impl PartialEq<Option::<_>> for Option::<_>}
-impl<T> PartialEq<Option::<_>> for Option::<_> {
-    non-dyn-compatible
-}
-
 struct () {}
 
 // Full name: core::option::{impl PartialEq<Option::<_>> for Option::<_>}::eq::<i32>
@@ -118,54 +93,51 @@ pub fn {impl PartialEq<Option::<_>> for Option::<_>}::eq::<i32>(self: &'_ Option
         storage_live(_4);
         storage_live(_5);
         _5 = @discriminant((*self));
-        switch move _5 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _5 -> 0isize: bb1, 1isize: bb2, otherwise: bb8;
     }
 
     bb1: {
         _4 = @discriminant((*other));
         _0 = copy _4 == const 0isize;
-        goto bb4;
+        goto bb6;
     }
 
     bb2: {
         _3 = @discriminant((*other));
-        switch move _3 -> 0isize: bb5, 1isize: bb6, otherwise: bb3;
+        switch move _3 -> 0isize: bb3, 1isize: bb4, otherwise: bb8;
     }
 
     bb3: {
-        undefined_behavior;
+        _0 = const false;
+        goto bb6;
     }
 
     bb4: {
-        return;
-    }
-
-    bb5: {
-        _0 = const false;
-        goto bb4;
-    }
-
-    bb6: {
         storage_live(l);
         l = &((*self) as variant Option::<i32>::Some)._0;
         storage_live(r);
         r = &((*other) as variant Option::<i32>::Some)._0;
-        _0 = impl_PartialEq_i32_for_i32::eq(move l, move r) -> bb7 (unwind: bb8);
+        _0 = impl_PartialEq_i32_for_i32::eq(move l, move r) -> bb5 (unwind: bb7);
+    }
+
+    bb5: {
+        storage_dead(r);
+        storage_dead(l);
+        goto bb6;
+    }
+
+    bb6: {
+        return;
     }
 
     bb7: {
-        storage_dead(r);
-        storage_dead(l);
-        goto bb4;
+        unwind_continue;
     }
 
     bb8: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
-
-// Full name: FakeTrait
-trait FakeTrait
 
 // Full name: anon_const_0
 const anon_const_0: Option::<i32> = Option::<i32>::Some { _0: 1i32 }
@@ -222,11 +194,6 @@ struct Foo {
   _0: u32,
 }
 
-// Full name: test_crate::{impl PartialEq<Foo> for Foo}
-impl "impl_PartialEq_Foo_for_Foo" PartialEq<Foo> for Foo {
-    non-dyn-compatible
-}
-
 // Full name: test_crate::{impl PartialEq<Foo> for Foo}::eq
 #[inline(hint)]
 pub fn impl_PartialEq_Foo_for_Foo::eq(self: &'_ Foo, other: &'_ Foo) -> bool
@@ -248,11 +215,6 @@ pub fn impl_PartialEq_Foo_for_Foo::eq(self: &'_ Foo, other: &'_ Foo) -> bool
         storage_dead(_3);
         return;
     }
-}
-
-// Full name: test_crate::{impl PartialOrd<Foo> for Foo}
-impl "impl_PartialOrd_Foo_for_Foo" PartialOrd<Foo> for Foo {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl PartialOrd<Foo> for Foo}::partial_cmp

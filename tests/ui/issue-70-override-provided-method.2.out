@@ -3,12 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
-// Full name: test_crate::Trait
-trait Trait
-
 // Full name: test_crate::Foo
 struct Foo {}
 
@@ -27,7 +21,7 @@ fn test_crate::Trait::provided1::<Foo>(self: &'_ Foo)
         storage_live(_2);
         storage_live(_3);
         _3 = &(*self);
-        _2 = impl_Trait_for_Foo::required(move _3) -> bb1 (unwind: bb2);
+        _2 = impl_Trait_for_Foo::required(move _3) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -36,18 +30,18 @@ fn test_crate::Trait::provided1::<Foo>(self: &'_ Foo)
         storage_live(_4);
         storage_live(_5);
         _5 = &(*self);
-        _4 = provided2::<Foo>(move _5) -> bb3 (unwind: bb4);
+        _4 = provided2::<Foo>(move _5) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -71,7 +65,7 @@ fn provided2::<Foo>(self: &'_ Foo)
         storage_live(_2);
         storage_live(_3);
         _3 = &(*self);
-        _2 = impl_Trait_for_Foo::required(move _3) -> bb1 (unwind: bb2);
+        _2 = impl_Trait_for_Foo::required(move _3) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -80,18 +74,18 @@ fn provided2::<Foo>(self: &'_ Foo)
         storage_live(_4);
         storage_live(_5);
         _5 = &(*self);
-        _4 = test_crate::Trait::provided1::<Foo>(move _5) -> bb3 (unwind: bb4);
+        _4 = test_crate::Trait::provided1::<Foo>(move _5) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -147,7 +141,7 @@ fn provided2::<Bar>(self: &'_ Bar)
         storage_live(_2);
         storage_live(_3);
         _3 = &(*self);
-        _2 = impl_Trait_for_Bar::required(move _3) -> bb1 (unwind: bb2);
+        _2 = impl_Trait_for_Bar::required(move _3) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -156,18 +150,18 @@ fn provided2::<Bar>(self: &'_ Bar)
         storage_live(_4);
         storage_live(_5);
         _5 = &(*self);
-        _4 = impl_Trait_for_Bar::provided1(move _5) -> bb3 (unwind: bb4);
+        _4 = impl_Trait_for_Bar::provided1(move _5) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -231,16 +225,6 @@ fn impl_Trait_for_Bar::provided1(self: &'_ Bar)
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: test_crate::{impl Trait for Foo}
-impl "impl_Trait_for_Foo" Trait for Foo {
-    non-dyn-compatible
-}
-
-// Full name: test_crate::{impl Trait for Bar}
-impl "impl_Trait_for_Bar" Trait for Bar {
-    non-dyn-compatible
 }
 
 

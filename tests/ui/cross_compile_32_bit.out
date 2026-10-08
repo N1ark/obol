@@ -107,15 +107,6 @@ pub fn caller_location() -> &'_ Location::<'_>
 // Full name: core::num::{usize}::MAX
 pub const MAX: usize = 4294967295usize
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
@@ -134,15 +125,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     bb2: {
         undefined_behavior;
     }
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -194,23 +176,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -218,18 +193,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -237,7 +215,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -245,7 +227,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -356,7 +338,7 @@ fn precondition_check(ptr: *mut ())
         storage_dead(_15);
         _2 = move _6 == const 0usize;
         storage_dead(_6);
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -387,12 +369,11 @@ fn precondition_check(ptr: *mut ())
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
         storage_dead(_7);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -400,7 +381,8 @@ fn precondition_check(ptr: *mut ())
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        return;
     }
 }
 
@@ -419,27 +401,27 @@ pub fn new_unchecked::<usize>(ptr: *mut usize) -> NonNull::<usize>
         storage_live(_2);
         storage_live(_4);
         _4 = ub_checks;
-        if move _4 -> bb1 else -> bb2;
+        if move _4 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
         _3 = cast<*mut usize, *mut ()>(copy ptr);
-        _2 = precondition_check(move _3) -> bb3 (unwind: bb4);
+        _2 = precondition_check(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        _0 = transmute<*mut usize, NonNull::<usize>>(copy ptr);
-        return;
+        storage_dead(_3);
+        goto bb4;
     }
 
     bb3: {
-        storage_dead(_3);
-        goto bb2;
+        undefined_behavior;
     }
 
     bb4: {
-        undefined_behavior;
+        _0 = transmute<*mut usize, NonNull::<usize>>(copy ptr);
+        return;
     }
 }
 

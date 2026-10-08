@@ -95,9 +95,6 @@ pub fn call_once::<test_crate::main::{closure}::{closure}, (u8, u8)>(_1: test_cr
     }
 }
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_, _)::<u8, bool> {
   _0: u8,
   _1: bool,
@@ -233,7 +230,7 @@ fn main()
         _7 = &f;
         storage_live(_8);
         _8 = (const 10u8, const 20u8);
-        _6 = test_crate::main::{closure}::<i8, extern "rust-call" fn((u8, u8)) -> u8, (&'_ u8, &'_ u8)>(move _7, move _8) -> bb1 (unwind: bb2);
+        _6 = test_crate::main::{closure}::<i8, extern "rust-call" fn((u8, u8)) -> u8, (&'_ u8, &'_ u8)>(move _7, move _8) -> bb1 (unwind: bb8);
     }
 
     bb1: {
@@ -245,14 +242,10 @@ fn main()
         storage_live(_11);
         _11 = &f;
         _10 = &(*_11);
-        _9 = apply_to::<test_crate::main::{closure}::{closure}>(move _10) -> bb3 (unwind: bb4);
+        _9 = apply_to::<test_crate::main::{closure}::{closure}>(move _10) -> bb2 (unwind: bb7);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_10);
         storage_dead(_11);
         storage_dead(_9);
@@ -261,28 +254,20 @@ fn main()
         storage_live(_14);
         _14 = &mut f;
         _13 = &two-phase-mut (*_14);
-        _12 = apply_to_mut::<test_crate::main::{closure}::{closure}>(move _13) -> bb5 (unwind: bb6);
+        _12 = apply_to_mut::<test_crate::main::{closure}::{closure}>(move _13) -> bb3 (unwind: bb6);
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_dead(_13);
         storage_dead(_14);
         storage_dead(_12);
         storage_live(_15);
         storage_live(_16);
         _16 = copy f;
-        _15 = apply_to_once::<test_crate::main::{closure}::{closure}>(move _16) -> bb7 (unwind: bb8);
+        _15 = apply_to_once::<test_crate::main::{closure}::{closure}>(move _16) -> bb4 (unwind: bb5);
     }
 
-    bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
+    bb4: {
         storage_dead(_16);
         storage_dead(_15);
         _0 = ();
@@ -290,6 +275,18 @@ fn main()
         storage_dead(z);
         storage_dead(v);
         return;
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        unwind_continue;
     }
 
     bb8: {

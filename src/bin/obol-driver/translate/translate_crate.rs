@@ -628,7 +628,7 @@ impl<'tcx> TranslateCtx<'tcx> {
             .collect()
     }
 
-    fn collect_entrypoints(&mut self, options: &CliOpts) {
+    fn collect_entrypoints(&mut self, options: &CliOpts) -> Vec<FunDeclId> {
         // When compiling a test binary, detect #[test] functions via the rustc_test_marker
         // attribute that rustc adds to the generated TestDescAndFn consts during #[test] expansion.
         // If any test markers are found, use them exclusively as entry points (the normal
@@ -702,9 +702,8 @@ impl<'tcx> TranslateCtx<'tcx> {
                 None
             })
             .sorted_by_key(|i| i.def.def_id().to_index())
-            .for_each(|instance| {
-                self.register_fun_decl_id(&None, instance);
-            })
+            .map(|instance| self.register_fun_decl_id(&None, instance))
+            .collect()
     }
 }
 
@@ -842,7 +841,7 @@ pub fn translate<'tcx, 'ctx>(
     ctx.reserve_unit_decl();
     ctx.translate_fake_dyn_trait();
 
-    ctx.collect_entrypoints(options);
+    let entrypoints = ctx.collect_entrypoints(options);
 
     // Translate.
     //
@@ -881,6 +880,13 @@ pub fn translate<'tcx, 'ctx>(
                 name: vec![PathElem::Ident("unknown".into(), Disambiguator::ZERO)],
             });
             ctx.translated.item_names.insert(id, name);
+        }
+    }
+
+    // Later passes (e.g. `reorder_decls`) keep only the items reachable from these.
+    for id in entrypoints {
+        if let Some(decl) = ctx.translated.fun_decls.get_mut(id) {
+            decl.item_meta.started_from = true;
         }
     }
 

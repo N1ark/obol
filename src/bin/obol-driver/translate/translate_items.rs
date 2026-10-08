@@ -233,10 +233,14 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 source_text: None,
                 attr_info: AttrInfo::default(),
                 is_local: false,
+                started_from: false,
+                is_extern: false,
                 opacity: ItemOpacity::Transparent,
                 lang_item: None,
                 diagnostic_item: None,
+                has_errors: false,
             },
+            is_unsafe: false,
             generics: GenericParams::empty(),
             implied_clauses: vec![].into(),
             consts: IndexMap::new(),
@@ -283,6 +287,7 @@ impl ItemTransCtx<'_, '_> {
             .map(|l| (self.t_ctx.get_target_triple(), l))
             .collect();
         let ptr_metadata = self.translate_ptr_metadata();
+        let marker_traits = Some(self.translate_marker_traits(def.ty_with_args(genargs)));
         let type_def = TypeDecl {
             def_id: trans_id,
             item_meta,
@@ -291,6 +296,7 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Normal,
             layout,
             ptr_metadata,
+            marker_traits,
         };
 
         Ok(type_def)
@@ -300,7 +306,7 @@ impl ItemTransCtx<'_, '_> {
         self,
         trans_id: TypeDeclId,
         item_meta: ItemMeta,
-        _def: &ty::ForeignDef,
+        def: &ty::ForeignDef,
     ) -> Result<TypeDecl, Error> {
         // Translate generics and predicates
         // self.translate_def_generics(span, def)?;
@@ -315,6 +321,9 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Normal,
             layout: Default::default(),
             ptr_metadata: PtrMetadata::None,
+            marker_traits: Some(
+                self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Foreign(*def))),
+            ),
         };
 
         Ok(type_def)
@@ -353,6 +362,7 @@ impl ItemTransCtx<'_, '_> {
             .into_iter()
             .map(|l| (self.t_ctx.get_target_triple(), l))
             .collect();
+        let marker_traits = (!tuple.is_generic()).then(|| self.translate_marker_traits(tuple.rty));
         let mut generics = GenericParams::empty();
         if tuple.is_generic() {
             generics.types = (0..fields.len())
@@ -371,6 +381,7 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Builtin(BuiltinAdt::Tuple),
             layout,
             ptr_metadata,
+            marker_traits,
         })
     }
 
@@ -407,6 +418,9 @@ impl ItemTransCtx<'_, '_> {
             src: TypeSource::Builtin(BuiltinAdt::Str),
             layout,
             ptr_metadata: PtrMetadata::Length,
+            marker_traits: Some(
+                self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Str)),
+            ),
         })
     }
 
@@ -536,7 +550,12 @@ impl ItemTransCtx<'_, '_> {
                 } else {
                     self.translate_global_alloc_value(def, ty)?
                 };
-                (GlobalKind::Static, value)
+                let global_kind = GlobalKind::Static {
+                    is_mut: false,
+                    is_safe: true,
+                    is_thread_local: false,
+                };
+                (global_kind, value)
             }
             mir::alloc::GlobalAlloc::Memory(..) | mir::alloc::GlobalAlloc::TypeId { .. } => {
                 let value = self.translate_global_alloc_value(def, ty)?;
@@ -555,6 +574,9 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics: GenericParams::empty(),
             ty: translated_ty,
+            size: Size::new(None),
+            align: Size::new(None),
+            ptr_metadata: ConstantExpr::mk_unit(),
             src: item_kind,
             global_kind,
             value,
@@ -591,6 +613,9 @@ impl ItemTransCtx<'_, '_> {
             src,
             layout: Default::default(),
             ptr_metadata,
+            marker_traits: Some(self.translate_marker_traits(ty::Ty::from_rigid_kind(
+                ty::RigidTy::Closure(*def, genargs.clone()),
+            ))),
         };
 
         Ok(type_def)
@@ -621,11 +646,10 @@ impl ItemTransCtx<'_, '_> {
             self.translate_alloc_to_const(span, &alloc, Some(def.ty()))?
         };
 
-        // Distinguish thread-local statics (`#[thread_local]`) from regular ones.
-        let global_kind = if self.t_ctx.tcx.is_thread_local_static(internal_def_id) {
-            GlobalKind::ThreadLocal
-        } else {
-            GlobalKind::Static
+        let global_kind = GlobalKind::Static {
+            is_mut: self.t_ctx.tcx.is_mutable_static(internal_def_id),
+            is_safe: true,
+            is_thread_local: self.t_ctx.tcx.is_thread_local_static(internal_def_id),
         };
 
         Ok(GlobalDecl {
@@ -633,6 +657,9 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics: GenericParams::empty(),
             ty,
+            size: Size::new(None),
+            align: Size::new(None),
+            ptr_metadata: ConstantExpr::mk_unit(),
             src: item_kind,
             global_kind,
             value,
@@ -679,6 +706,9 @@ impl ItemTransCtx<'_, '_> {
             item_meta,
             generics: GenericParams::empty(),
             ty,
+            size: Size::new(None),
+            align: Size::new(None),
+            ptr_metadata: ConstantExpr::mk_unit(),
             src: GlobalSource::Normal,
             global_kind: GlobalKind::NamedConst,
             value,
@@ -770,6 +800,7 @@ impl ItemTransCtx<'_, '_> {
             def_id: trans_id,
             item_meta,
             src: TraitDeclSource::Normal,
+            is_unsafe: false,
             generics: GenericParams::empty(),
             implied_clauses: vec![].into(),
             consts: IndexMap::new(),
@@ -807,12 +838,14 @@ impl ItemTransCtx<'_, '_> {
                 id: trait_decl_id,
                 generics: Box::new(generics),
             },
+            is_negative: false,
+            is_unsafe: false,
             generics: self.translate_def_generic_params(impl_def_id),
             implied_trait_refs: vec![].into(),
             consts: IndexMap::new(),
             types: IndexMap::new(),
             methods: IndexMap::new(),
-            vtable: None,
+            vtable: VTableDecl::Unknown("obol doesn't translate trait impl vtables".into()),
         })
     }
 }

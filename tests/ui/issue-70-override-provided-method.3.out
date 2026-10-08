@@ -1,16 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::cmp::PartialEq
-#[lang_item(PartialEq)]
-#[diagnostic_item("PartialEq")]
-trait PartialEq
-
-// Full name: core::cmp::impls::{impl PartialEq<u32> for u32}
-impl "impl_PartialEq_u32_for_u32" PartialEq<u32> for u32 {
-    non-dyn-compatible
-}
-
 // Full name: core::cmp::impls::{impl PartialEq<u32> for u32}::eq
 pub fn impl_PartialEq_u32_for_u32::eq(self: &'_ u32, other: &'_ u32) -> bool
 {
@@ -41,11 +31,6 @@ pub enum Option::<u32> {
   Some { _0: u32 },
 }
 
-// Full name: core::option::{impl PartialEq<Option::<_>> for Option::<_>}
-impl<T> PartialEq<Option::<_>> for Option::<_> {
-    non-dyn-compatible
-}
-
 struct () {}
 
 // Full name: core::option::{impl PartialEq<Option::<_>> for Option::<_>}::eq::<u32>
@@ -66,57 +51,51 @@ pub fn {impl PartialEq<Option::<_>> for Option::<_>}::eq::<u32>(self: &'_ Option
         storage_live(_4);
         storage_live(_5);
         _5 = @discriminant((*self));
-        switch move _5 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _5 -> 0isize: bb1, 1isize: bb2, otherwise: bb8;
     }
 
     bb1: {
         _4 = @discriminant((*other));
         _0 = copy _4 == const 0isize;
-        goto bb4;
+        goto bb6;
     }
 
     bb2: {
         _3 = @discriminant((*other));
-        switch move _3 -> 0isize: bb5, 1isize: bb6, otherwise: bb3;
+        switch move _3 -> 0isize: bb3, 1isize: bb4, otherwise: bb8;
     }
 
     bb3: {
-        undefined_behavior;
+        _0 = const false;
+        goto bb6;
     }
 
     bb4: {
-        return;
-    }
-
-    bb5: {
-        _0 = const false;
-        goto bb4;
-    }
-
-    bb6: {
         storage_live(l);
         l = &((*self) as variant Option::<u32>::Some)._0;
         storage_live(r);
         r = &((*other) as variant Option::<u32>::Some)._0;
-        _0 = impl_PartialEq_u32_for_u32::eq(move l, move r) -> bb7 (unwind: bb8);
+        _0 = impl_PartialEq_u32_for_u32::eq(move l, move r) -> bb5 (unwind: bb7);
+    }
+
+    bb5: {
+        storage_dead(r);
+        storage_dead(l);
+        goto bb6;
+    }
+
+    bb6: {
+        return;
     }
 
     bb7: {
-        storage_dead(r);
-        storage_dead(l);
-        goto bb4;
+        unwind_continue;
     }
 
     bb8: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
-
-// Full name: FakeTrait
-trait FakeTrait
-
-// Full name: test_crate::GenericTrait
-trait GenericTrait
 
 // Full name: test_crate::{impl GenericTrait<Option::<_>> for NoOverride::<_>}::other_method::<u32>
 fn {impl GenericTrait<Option::<_>> for NoOverride::<_>}::other_method::<u32>()
@@ -148,39 +127,34 @@ fn test_crate::GenericTrait::provided::<NoOverride::<u32>, Option::<u32>, Option
         _4 = &y;
         storage_live(_5);
         _5 = &x;
-        _3 = {impl PartialEq<Option::<_>> for Option::<_>}::eq::<u32>(move _4, move _5) -> bb1 (unwind: bb2);
+        _3 = {impl PartialEq<Option::<_>> for Option::<_>}::eq::<u32>(move _4, move _5) -> bb1 (unwind: bb5);
     }
 
     bb1: {
-        if move _3 -> bb3 else -> bb4;
+        if move _3 -> bb2 else -> bb3;
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = {impl GenericTrait<Option::<_>> for NoOverride::<_>}::other_method::<u32>() -> bb4 (unwind: bb5);
     }
 
     bb3: {
         storage_dead(_5);
         storage_dead(_4);
-        _0 = {impl GenericTrait<Option::<_>> for NoOverride::<_>}::other_method::<u32>() -> bb5 (unwind: bb2);
+        _0 = ();
+        goto bb4;
     }
 
     bb4: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = ();
-        goto bb5;
-    }
-
-    bb5: {
         storage_dead(_3);
         return;
     }
-}
 
-// Full name: test_crate::{impl GenericTrait<Option::<_>> for Override::<_>}
-impl<T> GenericTrait<Option::<_>> for Override::<_> {
-    non-dyn-compatible
+    bb5: {
+        unwind_continue;
+    }
 }
 
 // Full name: test_crate::{impl GenericTrait<Option::<_>> for Override::<_>}::other_method::<u32>
@@ -214,44 +188,34 @@ fn {impl GenericTrait<Option::<_>> for Override::<_>}::provided::<u32, Option::<
         _4 = &y;
         storage_live(_5);
         _5 = &x;
-        _3 = {impl PartialEq<Option::<_>> for Option::<_>}::eq::<u32>(move _4, move _5) -> bb1 (unwind: bb2);
+        _3 = {impl PartialEq<Option::<_>> for Option::<_>}::eq::<u32>(move _4, move _5) -> bb1 (unwind: bb5);
     }
 
     bb1: {
-        if move _3 -> bb3 else -> bb4;
+        if move _3 -> bb2 else -> bb3;
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = {impl GenericTrait<Option::<_>> for Override::<_>}::other_method::<u32>() -> bb4 (unwind: bb5);
     }
 
     bb3: {
         storage_dead(_5);
         storage_dead(_4);
-        _0 = {impl GenericTrait<Option::<_>> for Override::<_>}::other_method::<u32>() -> bb5 (unwind: bb2);
+        _0 = ();
+        goto bb4;
     }
 
     bb4: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = ();
-        goto bb5;
-    }
-
-    bb5: {
         storage_dead(_3);
         return;
     }
-}
 
-// Full name: test_crate::NoOverride::<u32>
-struct NoOverride::<u32> {
-  _0: u32,
-}
-
-// Full name: test_crate::{impl GenericTrait<Option::<_>> for NoOverride::<_>}
-impl<T> GenericTrait<Option::<_>> for NoOverride::<_> {
-    non-dyn-compatible
+    bb5: {
+        unwind_continue;
+    }
 }
 
 // Full name: test_crate::main
@@ -273,7 +237,7 @@ fn main()
         _2 = Option::<u32>::Some { _0: const 42u32 };
         storage_live(_3);
         _3 = Option::<u32>::Some { _0: const 42u32 };
-        _1 = {impl GenericTrait<Option::<_>> for Override::<_>}::provided::<u32, Option::<u32>>(move _2, move _3) -> bb1 (unwind: bb2);
+        _1 = {impl GenericTrait<Option::<_>> for Override::<_>}::provided::<u32, Option::<u32>>(move _2, move _3) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -285,19 +249,19 @@ fn main()
         _5 = Option::<u32>::Some { _0: const 42u32 };
         storage_live(_6);
         _6 = Option::<u32>::Some { _0: const 42u32 };
-        _4 = test_crate::GenericTrait::provided::<NoOverride::<u32>, Option::<u32>, Option::<u32>>(move _5, move _6) -> bb3 (unwind: bb4);
+        _4 = test_crate::GenericTrait::provided::<NoOverride::<u32>, Option::<u32>, Option::<u32>>(move _5, move _6) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {

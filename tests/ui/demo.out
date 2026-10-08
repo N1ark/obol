@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_, _)::<i32, bool> {
   _0: i32,
   _1: bool,
@@ -130,7 +127,7 @@ pub fn use_incr()
         storage_live(_4);
         _4 = &mut x;
         _3 = &two-phase-mut (*_4);
-        _2 = test_crate::incr(move _3) -> bb1 (unwind: bb2);
+        _2 = test_crate::incr(move _3) -> bb1 (unwind: bb6);
     }
 
     bb1: {
@@ -142,14 +139,10 @@ pub fn use_incr()
         storage_live(_7);
         _7 = &mut x;
         _6 = &two-phase-mut (*_7);
-        _5 = test_crate::incr(move _6) -> bb3 (unwind: bb4);
+        _5 = test_crate::incr(move _6) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_6);
         storage_dead(_7);
         storage_dead(_5);
@@ -158,7 +151,16 @@ pub fn use_incr()
         storage_live(_10);
         _10 = &mut x;
         _9 = &two-phase-mut (*_10);
-        _8 = test_crate::incr(move _9) -> bb5 (unwind: bb6);
+        _8 = test_crate::incr(move _9) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        storage_dead(_9);
+        storage_dead(_10);
+        storage_dead(_8);
+        _0 = ();
+        storage_dead(x);
+        return;
     }
 
     bb4: {
@@ -166,12 +168,7 @@ pub fn use_incr()
     }
 
     bb5: {
-        storage_dead(_9);
-        storage_dead(_10);
-        storage_dead(_8);
-        _0 = ();
-        storage_dead(x);
-        return;
+        unwind_continue;
     }
 
     bb6: {
@@ -206,7 +203,7 @@ pub fn i32_id(i: i32) -> i32
     bb1: {
         storage_dead(_3);
         _0 = const 0i32;
-        goto bb3;
+        goto bb4;
     }
 
     bb2: {
@@ -218,33 +215,25 @@ pub fn i32_id(i: i32) -> i32
         _7 = copy _6 panic.- const 1i32;
         _5 = move _7;
         storage_dead(_6);
-        _4 = i32_id(move _5) -> bb4 (unwind: bb5);
+        _4 = i32_id(move _5) -> bb3 (unwind: bb5);
     }
 
     bb3: {
-        storage_dead(_2);
-        return;
-    }
-
-    bb4: {
         storage_dead(_5);
         _8 = copy _4 panic.+ const 1i32;
         _0 = move _8;
         storage_dead(_4);
-        goto bb3;
+        goto bb4;
+    }
+
+    bb4: {
+        storage_dead(_2);
+        return;
     }
 
     bb5: {
         unwind_continue;
     }
-}
-
-// Full name: test_crate::Counter
-trait Counter
-
-// Full name: test_crate::{impl Counter for usize}
-impl "impl_Counter_for_usize" Counter for usize {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl Counter for usize}::incr

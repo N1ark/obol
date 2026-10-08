@@ -1,16 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::cmp::PartialOrd
-#[lang_item(PartialOrd)]
-#[diagnostic_item("PartialOrd")]
-trait PartialOrd
-
-// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}
-impl "impl_PartialOrd_usize_for_usize" PartialOrd<usize> for usize {
-    non-dyn-compatible
-}
-
 // Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
 pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
 {
@@ -136,15 +126,6 @@ pub struct Location::<'_> {
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
-// Full name: core::iter::range::Step
-#[diagnostic_item("range_step")]
-trait Step
-
-// Full name: core::iter::range::{impl Step for usize}
-impl "impl_Step_for_usize" Step for usize {
-    non-dyn-compatible
-}
-
 struct (_, _)::<u64, bool> {
   _0: u64,
   _1: bool,
@@ -224,23 +205,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -248,18 +222,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -267,7 +244,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -275,7 +256,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -377,7 +358,7 @@ fn precondition_check(lhs: usize, rhs: usize)
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb2;
+        if copy _6 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -408,11 +389,11 @@ fn precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -420,7 +401,7 @@ fn precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
-        undefined_behavior;
+        return;
     }
 }
 
@@ -438,29 +419,21 @@ pub fn forward_unchecked(start: usize, n: usize) -> usize
         storage_live(_3);
         storage_live(_4);
         _4 = ub_checks;
-        if move _4 -> bb1 else -> bb2;
+        if move _4 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _3 = precondition_check(copy start, copy n) -> bb2 (unwind: bb3);
+        _3 = precondition_check(copy start, copy n) -> bb3 (unwind: bb2);
     }
 
     bb2: {
-        _0 = copy start ub.+ copy n;
-        return;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        _0 = copy start ub.+ copy n;
+        return;
     }
-}
-
-// Full name: core::iter::range::RangeIteratorImpl
-trait RangeIteratorImpl
-
-// Full name: core::iter::range::{impl RangeIteratorImpl for Range::<_>}
-impl<T> RangeIteratorImpl for Range::<_> {
-    non-dyn-compatible
 }
 
 // Full name: core::option::Option::<usize>
@@ -496,59 +469,49 @@ fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
         _3 = &(*self).start;
         storage_live(_4);
         _4 = &(*self).end;
-        _2 = lt(move _3, move _4) -> bb1 (unwind: bb2);
+        _2 = lt(move _3, move _4) -> bb1 (unwind: bb7);
     }
 
     bb1: {
-        if move _2 -> bb3 else -> bb4;
+        if move _2 -> bb2 else -> bb5;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_4);
         storage_dead(_3);
         storage_live(old);
         old = copy (*self).start;
         storage_live(_6);
-        _6 = forward_unchecked(copy old, const 1usize) -> bb5 (unwind: bb6);
+        _6 = forward_unchecked(copy old, const 1usize) -> bb3 (unwind: bb4);
     }
 
-    bb4: {
-        storage_dead(_4);
-        storage_dead(_3);
-        _0 = Option::<usize>::None {  };
-        goto bb7;
-    }
-
-    bb5: {
+    bb3: {
         (*self).start = move _6;
         storage_dead(_6);
         _0 = Option::<usize>::Some { _0: copy old };
         storage_dead(old);
-        goto bb7;
+        goto bb6;
     }
 
-    bb6: {
+    bb4: {
         unwind_continue;
     }
 
-    bb7: {
+    bb5: {
+        storage_dead(_4);
+        storage_dead(_3);
+        _0 = Option::<usize>::None {  };
+        goto bb6;
+    }
+
+    bb6: {
         storage_dead(_2);
         return;
     }
-}
 
-// Full name: core::iter::traits::iterator::Iterator
-#[lang_item(Iterator)]
-#[diagnostic_item("Iterator")]
-trait Iterator
-
-// Full name: core::iter::range::{impl Iterator for Range::<_>}
-impl<A> Iterator for Range::<_> {
-    non-dyn-compatible
+    bb7: {
+        unwind_continue;
+    }
 }
 
 // Full name: core::iter::range::{impl Iterator for Range::<_>}::next::<usize>
@@ -571,15 +534,6 @@ pub fn next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
     }
 }
 
-// Full name: core::iter::traits::collect::IntoIterator
-#[diagnostic_item("IntoIterator")]
-trait IntoIterator
-
-// Full name: core::iter::traits::collect::{impl IntoIterator for I}
-impl<I> "impl_IntoIterator_for_T" IntoIterator for I {
-    non-dyn-compatible
-}
-
 // Full name: core::iter::traits::collect::{impl IntoIterator for I}::into_iter::<Range::<usize>>
 pub fn into_iter::<Range::<usize>>(self: Range::<usize>) -> Range::<usize>
 {
@@ -591,24 +545,6 @@ pub fn into_iter::<Range::<usize>>(self: Range::<usize>) -> Range::<usize>
         _0 = move self;
         return;
     }
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: test_crate::iter
@@ -636,40 +572,32 @@ fn iter(n: usize)
         _4 = copy n;
         _3 = Range::<usize> { start: const 0usize, end: move _4 };
         storage_dead(_4);
-        _2 = into_iter::<Range::<usize>>(move _3) -> bb1 (unwind: bb2);
+        _2 = into_iter::<Range::<usize>>(move _3) -> bb1 (unwind: bb8);
     }
 
     bb1: {
         storage_dead(_3);
         storage_live(iter);
         iter = move _2;
-        goto bb3;
+        goto bb2;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
         _8 = &mut iter;
         _7 = &two-phase-mut (*_8);
-        _6 = next::<usize>(move _7) -> bb4 (unwind: bb5);
+        _6 = next::<usize>(move _7) -> bb3 (unwind: bb7);
+    }
+
+    bb3: {
+        storage_dead(_7);
+        _9 = @discriminant(_6);
+        switch move _9 -> 0isize: bb4, 1isize: bb5, otherwise: bb6;
     }
 
     bb4: {
-        storage_dead(_7);
-        _9 = @discriminant(_6);
-        switch move _9 -> 0isize: bb6, 1isize: bb7, otherwise: bb8;
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
         _0 = ();
         storage_dead(_8);
         storage_dead(_6);
@@ -678,17 +606,25 @@ fn iter(n: usize)
         return;
     }
 
-    bb7: {
+    bb5: {
         storage_live(i);
         i = copy (_6 as variant Option::<usize>::Some)._0;
         storage_dead(i);
         storage_dead(_8);
         storage_dead(_6);
-        goto bb3;
+        goto bb2;
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        unwind_continue;
     }
 
     bb8: {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 

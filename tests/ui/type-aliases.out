@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_, _)::<u8, u8> {
   _0: u8,
   _1: u8,
@@ -14,14 +11,6 @@ struct (_, _)::<u8, u8> {
 // Full name: test_crate::Holder::<u32>
 pub struct Holder::<u32> {
   _0: u32,
-}
-
-// Full name: test_crate::Sink
-trait Sink
-
-// Full name: test_crate::{impl Sink<u8> for Holder::<u32>}
-impl Sink<u8> for Holder::<u32> {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl Sink<u8> for Holder::<u32>}::sink
@@ -41,11 +30,6 @@ pub fn {impl Sink<u8> for Holder::<u32>}::sink(self: Holder::<u32>)
 // Full name: test_crate::PolyWrap::<u32>
 pub struct PolyWrap::<u32> {
   _0: u32,
-}
-
-// Full name: test_crate::{impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}
-impl<T> Sink<type_error("unsupported alias type")> for PolyWrap::<_> {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>
@@ -101,7 +85,7 @@ pub fn main()
         storage_live(_4);
         storage_live(_5);
         _5 = Holder::<u32> { _0: const 5u32 };
-        _4 = {impl Sink<u8> for Holder::<u32>}::sink(move _5) -> bb1 (unwind: bb2);
+        _4 = {impl Sink<u8> for Holder::<u32>}::sink(move _5) -> bb1 (unwind: bb6);
     }
 
     bb1: {
@@ -110,18 +94,23 @@ pub fn main()
         storage_live(_6);
         storage_live(_7);
         _7 = PolyWrap::<u32> { _0: const 9u32 };
-        _6 = {impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>(move _7) -> bb3 (unwind: bb4);
+        _6 = {impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>(move _7) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(_8);
-        _8 = feed::<u32>(const 7u8) -> bb5 (unwind: bb6);
+        _8 = feed::<u32>(const 7u8) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        storage_dead(_8);
+        _0 = ();
+        storage_dead(_buf);
+        storage_dead(_bytes);
+        storage_dead(_len);
+        return;
     }
 
     bb4: {
@@ -129,12 +118,7 @@ pub fn main()
     }
 
     bb5: {
-        storage_dead(_8);
-        _0 = ();
-        storage_dead(_buf);
-        storage_dead(_bytes);
-        storage_dead(_len);
-        return;
+        unwind_continue;
     }
 
     bb6: {

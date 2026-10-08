@@ -1,15 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::ops::arith::Add
-#[lang_item(Add)]
-trait Add
-
-// Full name: core::ops::arith::{impl Add<i32> for &'_ i32}
-impl<'_> Add<i32> for &'_ i32 {
-    non-dyn-compatible
-}
-
 // Full name: core::ops::arith::{impl Add<i32> for &'_ i32}::add::<'_>
 #[track_caller]
 pub fn add::<'_>(self_1: &'_ i32, other: i32) -> i32
@@ -64,8 +55,6 @@ struct (_, _)::<i32, bool> {
   _0: i32,
   _1: bool,
 }
-
-trait test_crate::Super
 
 // Full name: test_crate::{impl test_crate::Super<i32> for i32}::super_method
 fn super_method(self: &'_ i32, arg: i32) -> i32
@@ -125,15 +114,7 @@ fn {vtable}::test_crate::Super::<i32, i32>() -> *const ()
     }
 }
 
-static {vtable}::test_crate::Super::<i32, i32>: *const () = {vtable}::test_crate::Super::<i32, i32>()
-
-// Full name: test_crate::Internal
-trait Internal
-
-// Full name: test_crate::Left
-trait Left
-
-trait test_crate::Right
+vtable {vtable}::test_crate::Super::<i32, i32>: *const () = {vtable}::test_crate::Super::<i32, i32>()
 
 // Full name: test_crate::{impl Internal for i32}::internal_method
 fn internal_method(self: &'_ i32) -> i32
@@ -186,7 +167,7 @@ fn right_method(self: &'_ i32) -> i32
         storage_live(_6);
         storage_live(_7);
         _7 = &(*self);
-        _6 = internal_method(move _7) -> bb1 (unwind: bb2);
+        _6 = internal_method(move _7) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -198,20 +179,20 @@ fn right_method(self: &'_ i32) -> i32
         storage_live(_9);
         storage_live(_10);
         _10 = &(*self);
-        _9 = super_method(move _10, const 10i32) -> bb3 (unwind: bb4);
+        _9 = super_method(move _10, const 10i32) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_10);
         _11 = copy _2 panic.+ copy _9;
         _0 = move _11;
         storage_dead(_9);
         storage_dead(_2);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -254,9 +235,7 @@ fn {vtable}::test_crate::Right::<i32, i32>() -> *const ()
     }
 }
 
-static {vtable}::test_crate::Right::<i32, i32>: *const () = {vtable}::test_crate::Right::<i32, i32>()
-
-trait test_crate::Join
+vtable {vtable}::test_crate::Right::<i32, i32>: *const () = {vtable}::test_crate::Right::<i32, i32>()
 
 // Full name: test_crate::{impl Left for i32}::left_method
 fn left_method(self: &'_ i32) -> i32
@@ -293,7 +272,7 @@ fn impl_Join_i32_for_i32::join_method(self: &'_ i32) -> (i32, i32)
         storage_live(_2);
         storage_live(_3);
         _3 = &(*self);
-        _2 = left_method(move _3) -> bb1 (unwind: bb2);
+        _2 = left_method(move _3) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -301,19 +280,19 @@ fn impl_Join_i32_for_i32::join_method(self: &'_ i32) -> (i32, i32)
         storage_live(_4);
         storage_live(_5);
         _5 = &(*self);
-        _4 = right_method(move _5) -> bb3 (unwind: bb4);
+        _4 = right_method(move _5) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         _0 = (move _2, move _4);
         storage_dead(_4);
         storage_dead(_2);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -362,35 +341,7 @@ fn {vtable}::test_crate::Join::<i32, i32>() -> *const ()
     }
 }
 
-static {vtable}::test_crate::Join::<i32, i32>: *const () = {vtable}::test_crate::Join::<i32, i32>()
-
-fn test_crate::Join::join_method::<(dyn FakeTrait), i32>(_1: &'_ (dyn FakeTrait)) -> (i32, i32)
-= <opaque>
-
-// Full name: test_crate::{impl test_crate::Super<i32> for i32}
-impl "impl_Super_i32_for_i32" test_crate::Super<i32> for i32 {
-    non-dyn-compatible
-}
-
-// Full name: test_crate::{impl Internal for i32}
-impl "impl_Internal_for_i32" Internal for i32 {
-    non-dyn-compatible
-}
-
-// Full name: test_crate::{impl Left for i32}
-impl "impl_Left_for_i32" Left for i32 {
-    non-dyn-compatible
-}
-
-// Full name: test_crate::{impl test_crate::Right<i32> for i32}
-impl "impl_Right_i32_for_i32" test_crate::Right<i32> for i32 {
-    non-dyn-compatible
-}
-
-// Full name: test_crate::{impl test_crate::Join<i32> for i32}
-impl "impl_Join_i32_for_i32" test_crate::Join<i32> for i32 {
-    non-dyn-compatible
-}
+vtable {vtable}::test_crate::Join::<i32, i32>: *const () = {vtable}::test_crate::Join::<i32, i32>()
 
 // Full name: test_crate::main
 fn main()

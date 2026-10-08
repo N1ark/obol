@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 fn test_crate::nonzero_disambiguator::my_function#1()
 {
     let _0: (); // return
@@ -41,24 +38,24 @@ fn nonzero_disambiguator()
         _0 = ();
         storage_live(_1);
         _1 = const true;
-        if move _1 -> bb1 else -> bb2;
+        if move _1 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = test_crate::nonzero_disambiguator::my_function() -> bb3 (unwind: bb4);
+        _0 = test_crate::nonzero_disambiguator::my_function() -> bb4 (unwind: bb2);
     }
 
     bb2: {
-        _0 = test_crate::nonzero_disambiguator::my_function#1() -> bb3 (unwind: bb5);
+        unwind_continue;
     }
 
     bb3: {
-        storage_dead(_1);
-        return;
+        _0 = test_crate::nonzero_disambiguator::my_function#1() -> bb4 (unwind: bb5);
     }
 
     bb4: {
-        unwind_continue;
+        storage_dead(_1);
+        return;
     }
 
     bb5: {

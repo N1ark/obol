@@ -82,15 +82,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::intrinsics::AtomicOrdering
-pub enum AtomicOrdering {
-  Relaxed,
-  Release,
-  Acquire,
-  AcqRel,
-  SeqCst,
-}
-
 struct (_, _)::<usize, bool> {
   _0: usize,
   _1: bool,
@@ -253,15 +244,6 @@ pub struct Location::<'_> {
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
@@ -280,15 +262,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     bb2: {
         undefined_behavior;
     }
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -339,23 +312,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -363,18 +329,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -382,7 +351,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -390,7 +363,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -471,18 +444,26 @@ fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize,
         storage_live(_7);
         _0 = ();
         _4 = @discriminant(order);
-        switch move _4 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, 3isize: bb4, 4isize: bb5, otherwise: bb6;
+        switch move _4 -> 0isize: bb1, 1isize: bb3, 2isize: bb5, 3isize: bb8, 4isize: bb11, otherwise: bb14;
     }
 
     bb1: {
-        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Relaxed {  }, false>(move dst, move val) -> bb7 (unwind: bb8);
+        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Relaxed {  }, false>(move dst, move val) -> bb12 (unwind: bb2);
     }
 
     bb2: {
-        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Release {  }, false>(move dst, move val) -> bb7 (unwind: bb9);
+        undefined_behavior;
     }
 
     bb3: {
+        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::Release {  }, false>(move dst, move val) -> bb12 (unwind: bb4);
+    }
+
+    bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         storage_live(_6);
         storage_live(s_18);
         s_18 = const "there is no such thing as an acquire store";
@@ -512,10 +493,18 @@ fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize,
         storage_dead(_21);
         storage_dead(_19);
         storage_dead(s_18);
-        _5 = panic_fmt(move _6) -> bb10 (unwind: bb11);
+        _5 = panic_fmt(move _6) -> bb6 (unwind: bb7);
     }
 
-    bb4: {
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         storage_live(_8);
         storage_live(s_9);
         s_9 = const "there is no such thing as an acquire-release store";
@@ -545,23 +534,7 @@ fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize,
         storage_dead(_12);
         storage_dead(_10);
         storage_dead(s_9);
-        _7 = panic_fmt(move _8) -> bb12 (unwind: bb13);
-    }
-
-    bb5: {
-        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::SeqCst {  }, false>(move dst, move val) -> bb7 (unwind: bb14);
-    }
-
-    bb6: {
-        undefined_behavior;
-    }
-
-    bb7: {
-        return;
-    }
-
-    bb8: {
-        undefined_behavior;
+        _7 = panic_fmt(move _8) -> bb9 (unwind: bb10);
     }
 
     bb9: {
@@ -569,19 +542,19 @@ fn core::sync::atomic::atomic_store::<usize, false>(dst: *mut usize, val: usize,
     }
 
     bb10: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb11: {
-        unwind_continue;
+        _0 = core::intrinsics::atomic_store::<usize, AtomicOrdering::SeqCst {  }, false>(move dst, move val) -> bb12 (unwind: bb13);
     }
 
     bb12: {
-        undefined_behavior;
+        return;
     }
 
     bb13: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb14: {
@@ -657,14 +630,18 @@ fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ord
         storage_live(_4);
         storage_live(_6);
         _3 = @discriminant(order);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, 3isize: bb4, 4isize: bb5, otherwise: bb6;
+        switch move _3 -> 0isize: bb1, 1isize: bb3, 2isize: bb6, 3isize: bb8, 4isize: bb11, otherwise: bb14;
     }
 
     bb1: {
-        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Relaxed {  }, false>(move dst) -> bb7 (unwind: bb8);
+        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Relaxed {  }, false>(move dst) -> bb12 (unwind: bb2);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
         storage_live(_5);
         storage_live(s_17);
         s_17 = const "there is no such thing as a release load";
@@ -694,14 +671,26 @@ fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ord
         storage_dead(_20);
         storage_dead(_18);
         storage_dead(s_17);
-        _4 = panic_fmt(move _5) -> bb9 (unwind: bb10);
-    }
-
-    bb3: {
-        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Acquire {  }, false>(move dst) -> bb7 (unwind: bb11);
+        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::Acquire {  }, false>(move dst) -> bb12 (unwind: bb7);
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
         storage_live(_7);
         storage_live(s_8);
         s_8 = const "there is no such thing as an acquire-release load";
@@ -731,23 +720,7 @@ fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ord
         storage_dead(_11);
         storage_dead(_9);
         storage_dead(s_8);
-        _6 = panic_fmt(move _7) -> bb12 (unwind: bb13);
-    }
-
-    bb5: {
-        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::SeqCst {  }, false>(move dst) -> bb7 (unwind: bb14);
-    }
-
-    bb6: {
-        undefined_behavior;
-    }
-
-    bb7: {
-        return;
-    }
-
-    bb8: {
-        undefined_behavior;
+        _6 = panic_fmt(move _7) -> bb9 (unwind: bb10);
     }
 
     bb9: {
@@ -759,15 +732,15 @@ fn core::sync::atomic::atomic_load::<usize, false>(dst: *const usize, order: Ord
     }
 
     bb11: {
-        undefined_behavior;
+        _0 = core::intrinsics::atomic_load::<usize, AtomicOrdering::SeqCst {  }, false>(move dst) -> bb12 (unwind: bb13);
     }
 
     bb12: {
-        undefined_behavior;
+        return;
     }
 
     bb13: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb14: {
@@ -823,27 +796,27 @@ pub fn fetch_add(self: &'_ Atomic::<usize>, val: usize, order: Ordering) -> usiz
         storage_dead(_5);
         storage_live(_6);
         _6 = @discriminant(order);
-        switch move _6 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, 3isize: bb4, 4isize: bb5, otherwise: bb6;
+        switch move _6 -> 0isize: bb1, 1isize: bb3, 2isize: bb5, 3isize: bb7, 4isize: bb9, otherwise: bb12;
     }
 
     bb1: {
-        _0 = atomic_xadd::<usize, usize, AtomicOrdering::Relaxed {  }>(move dst, move val) -> bb7 (unwind: bb8);
+        _0 = atomic_xadd::<usize, usize, AtomicOrdering::Relaxed {  }>(move dst, move val) -> bb10 (unwind: bb2);
     }
 
     bb2: {
-        _0 = atomic_xadd::<usize, usize, AtomicOrdering::Release {  }>(move dst, move val) -> bb7 (unwind: bb9);
+        undefined_behavior;
     }
 
     bb3: {
-        _0 = atomic_xadd::<usize, usize, AtomicOrdering::Acquire {  }>(move dst, move val) -> bb7 (unwind: bb10);
+        _0 = atomic_xadd::<usize, usize, AtomicOrdering::Release {  }>(move dst, move val) -> bb10 (unwind: bb4);
     }
 
     bb4: {
-        _0 = atomic_xadd::<usize, usize, AtomicOrdering::AcqRel {  }>(move dst, move val) -> bb7 (unwind: bb11);
+        undefined_behavior;
     }
 
     bb5: {
-        _0 = atomic_xadd::<usize, usize, AtomicOrdering::SeqCst {  }>(move dst, move val) -> bb7 (unwind: bb12);
+        _0 = atomic_xadd::<usize, usize, AtomicOrdering::Acquire {  }>(move dst, move val) -> bb10 (unwind: bb6);
     }
 
     bb6: {
@@ -851,9 +824,7 @@ pub fn fetch_add(self: &'_ Atomic::<usize>, val: usize, order: Ordering) -> usiz
     }
 
     bb7: {
-        storage_dead(_6);
-        storage_dead(dst);
-        return;
+        _0 = atomic_xadd::<usize, usize, AtomicOrdering::AcqRel {  }>(move dst, move val) -> bb10 (unwind: bb8);
     }
 
     bb8: {
@@ -861,11 +832,13 @@ pub fn fetch_add(self: &'_ Atomic::<usize>, val: usize, order: Ordering) -> usiz
     }
 
     bb9: {
-        undefined_behavior;
+        _0 = atomic_xadd::<usize, usize, AtomicOrdering::SeqCst {  }>(move dst, move val) -> bb10 (unwind: bb11);
     }
 
     bb10: {
-        undefined_behavior;
+        storage_dead(_6);
+        storage_dead(dst);
+        return;
     }
 
     bb11: {
@@ -932,110 +905,103 @@ pub fn atomic_compare_exchange::<usize>(dst: *mut usize, old: usize, new: usize,
         storage_live(_18);
         storage_live(_8);
         _14 = @discriminant(success);
-        switch move _14 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, 3isize: bb4, 4isize: bb5, otherwise: bb6;
+        switch move _14 -> 0isize: bb1, 1isize: bb8, 2isize: bb15, 3isize: bb22, 4isize: bb29, otherwise: bb47;
     }
 
     bb1: {
         _9 = @discriminant(failure);
-        switch move _9 -> 0isize: bb7, 2isize: bb8, 4isize: bb9, otherwise: bb10;
+        switch move _9 -> 0isize: bb2, 2isize: bb4, 4isize: bb6, otherwise: bb40;
     }
 
     bb2: {
-        _11 = @discriminant(failure);
-        switch move _11 -> 0isize: bb11, 2isize: bb12, 4isize: bb13, otherwise: bb10;
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Relaxed {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb35 (unwind: bb3);
     }
 
     bb3: {
-        _10 = @discriminant(failure);
-        switch move _10 -> 0isize: bb14, 2isize: bb15, 4isize: bb16, otherwise: bb10;
-    }
-
-    bb4: {
-        _12 = @discriminant(failure);
-        switch move _12 -> 0isize: bb17, 2isize: bb18, 4isize: bb19, otherwise: bb10;
-    }
-
-    bb5: {
-        _13 = @discriminant(failure);
-        switch move _13 -> 0isize: bb20, 2isize: bb21, 4isize: bb22, otherwise: bb10;
-    }
-
-    bb6: {
         undefined_behavior;
     }
 
+    bb4: {
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Relaxed {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb35 (unwind: bb5);
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+
+    bb6: {
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Relaxed {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb35 (unwind: bb7);
+    }
+
     bb7: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Relaxed {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb23 (unwind: bb24);
+        undefined_behavior;
     }
 
     bb8: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Relaxed {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb23 (unwind: bb25);
+        _11 = @discriminant(failure);
+        switch move _11 -> 0isize: bb9, 2isize: bb11, 4isize: bb13, otherwise: bb40;
     }
 
     bb9: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Relaxed {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb23 (unwind: bb26);
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Release {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb35 (unwind: bb10);
     }
 
     bb10: {
-        _15 = @discriminant(failure);
-        switch move _15 -> 1isize: bb27, 3isize: bb28, otherwise: bb6;
+        undefined_behavior;
     }
 
     bb11: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Release {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb23 (unwind: bb29);
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Release {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb35 (unwind: bb12);
     }
 
     bb12: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Release {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb23 (unwind: bb30);
+        undefined_behavior;
     }
 
     bb13: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Release {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb23 (unwind: bb31);
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Release {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb35 (unwind: bb14);
     }
 
     bb14: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Acquire {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb23 (unwind: bb32);
+        undefined_behavior;
     }
 
     bb15: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Acquire {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb23 (unwind: bb33);
+        _10 = @discriminant(failure);
+        switch move _10 -> 0isize: bb16, 2isize: bb18, 4isize: bb20, otherwise: bb40;
     }
 
     bb16: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::Acquire {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb23 (unwind: bb34);
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Acquire {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb35 (unwind: bb17);
     }
 
     bb17: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::AcqRel {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb23 (unwind: bb35);
+        undefined_behavior;
     }
 
     bb18: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::AcqRel {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb23 (unwind: bb36);
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Acquire {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb35 (unwind: bb19);
     }
 
     bb19: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::AcqRel {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb23 (unwind: bb37);
+        undefined_behavior;
     }
 
     bb20: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::SeqCst {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb23 (unwind: bb38);
+        _8 = atomic_cxchg::<usize, AtomicOrdering::Acquire {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb35 (unwind: bb21);
     }
 
     bb21: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::SeqCst {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb23 (unwind: bb39);
+        undefined_behavior;
     }
 
     bb22: {
-        _8 = atomic_cxchg::<usize, AtomicOrdering::SeqCst {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb23 (unwind: bb40);
+        _12 = @discriminant(failure);
+        switch move _12 -> 0isize: bb23, 2isize: bb25, 4isize: bb27, otherwise: bb40;
     }
 
     bb23: {
-        storage_live(val);
-        val = copy _8._0;
-        storage_live(ok);
-        ok = copy _8._1;
-        storage_dead(_8);
-        if copy ok -> bb41 else -> bb42;
+        _8 = atomic_cxchg::<usize, AtomicOrdering::AcqRel {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb35 (unwind: bb24);
     }
 
     bb24: {
@@ -1043,7 +1009,7 @@ pub fn atomic_compare_exchange::<usize>(dst: *mut usize, old: usize, new: usize,
     }
 
     bb25: {
-        undefined_behavior;
+        _8 = atomic_cxchg::<usize, AtomicOrdering::AcqRel {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb35 (unwind: bb26);
     }
 
     bb26: {
@@ -1051,6 +1017,73 @@ pub fn atomic_compare_exchange::<usize>(dst: *mut usize, old: usize, new: usize,
     }
 
     bb27: {
+        _8 = atomic_cxchg::<usize, AtomicOrdering::AcqRel {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb35 (unwind: bb28);
+    }
+
+    bb28: {
+        undefined_behavior;
+    }
+
+    bb29: {
+        _13 = @discriminant(failure);
+        switch move _13 -> 0isize: bb30, 2isize: bb32, 4isize: bb34, otherwise: bb40;
+    }
+
+    bb30: {
+        _8 = atomic_cxchg::<usize, AtomicOrdering::SeqCst {  }, AtomicOrdering::Relaxed {  }>(move dst, move old, move new) -> bb35 (unwind: bb31);
+    }
+
+    bb31: {
+        undefined_behavior;
+    }
+
+    bb32: {
+        _8 = atomic_cxchg::<usize, AtomicOrdering::SeqCst {  }, AtomicOrdering::Acquire {  }>(move dst, move old, move new) -> bb35 (unwind: bb33);
+    }
+
+    bb33: {
+        undefined_behavior;
+    }
+
+    bb34: {
+        _8 = atomic_cxchg::<usize, AtomicOrdering::SeqCst {  }, AtomicOrdering::SeqCst {  }>(move dst, move old, move new) -> bb35 (unwind: bb39);
+    }
+
+    bb35: {
+        storage_live(val);
+        val = copy _8._0;
+        storage_live(ok);
+        ok = copy _8._1;
+        storage_dead(_8);
+        if copy ok -> bb36 else -> bb37;
+    }
+
+    bb36: {
+        _0 = Result::<usize, usize>::Ok { _0: copy val };
+        goto bb38;
+    }
+
+    bb37: {
+        _0 = Result::<usize, usize>::Err { _0: copy val };
+        goto bb38;
+    }
+
+    bb38: {
+        storage_dead(ok);
+        storage_dead(val);
+        return;
+    }
+
+    bb39: {
+        undefined_behavior;
+    }
+
+    bb40: {
+        _15 = @discriminant(failure);
+        switch move _15 -> 1isize: bb41, 3isize: bb44, otherwise: bb47;
+    }
+
+    bb41: {
         storage_live(_19);
         storage_live(s_20);
         s_20 = const "there is no such thing as a release failure ordering";
@@ -1080,10 +1113,18 @@ pub fn atomic_compare_exchange::<usize>(dst: *mut usize, old: usize, new: usize,
         storage_dead(_23);
         storage_dead(_21);
         storage_dead(s_20);
-        _18 = panic_fmt(move _19) -> bb43 (unwind: bb44);
+        _18 = panic_fmt(move _19) -> bb42 (unwind: bb43);
     }
 
-    bb28: {
+    bb42: {
+        undefined_behavior;
+    }
+
+    bb43: {
+        unwind_continue;
+    }
+
+    bb44: {
         storage_live(_17);
         storage_live(s_29);
         s_29 = const "there is no such thing as an acquire-release failure ordering";
@@ -1116,72 +1157,6 @@ pub fn atomic_compare_exchange::<usize>(dst: *mut usize, old: usize, new: usize,
         _16 = panic_fmt(move _17) -> bb45 (unwind: bb46);
     }
 
-    bb29: {
-        undefined_behavior;
-    }
-
-    bb30: {
-        undefined_behavior;
-    }
-
-    bb31: {
-        undefined_behavior;
-    }
-
-    bb32: {
-        undefined_behavior;
-    }
-
-    bb33: {
-        undefined_behavior;
-    }
-
-    bb34: {
-        undefined_behavior;
-    }
-
-    bb35: {
-        undefined_behavior;
-    }
-
-    bb36: {
-        undefined_behavior;
-    }
-
-    bb37: {
-        undefined_behavior;
-    }
-
-    bb38: {
-        undefined_behavior;
-    }
-
-    bb39: {
-        undefined_behavior;
-    }
-
-    bb40: {
-        undefined_behavior;
-    }
-
-    bb41: {
-        _0 = Result::<usize, usize>::Ok { _0: copy val };
-        goto bb47;
-    }
-
-    bb42: {
-        _0 = Result::<usize, usize>::Err { _0: copy val };
-        goto bb47;
-    }
-
-    bb43: {
-        undefined_behavior;
-    }
-
-    bb44: {
-        unwind_continue;
-    }
-
     bb45: {
         undefined_behavior;
     }
@@ -1191,9 +1166,7 @@ pub fn atomic_compare_exchange::<usize>(dst: *mut usize, old: usize, new: usize,
     }
 
     bb47: {
-        storage_dead(ok);
-        storage_dead(val);
-        return;
+        undefined_behavior;
     }
 }
 
@@ -1252,7 +1225,7 @@ pub fn main()
         storage_live(_0);
         _0 = ();
         storage_live(a);
-        a = core::sync::atomic::{Atomic::<usize>}::new(const 0usize) -> bb1 (unwind: bb2);
+        a = core::sync::atomic::{Atomic::<usize>}::new(const 0usize) -> bb1 (unwind: bb10);
     }
 
     bb1: {
@@ -1261,14 +1234,10 @@ pub fn main()
         _3 = &a;
         storage_live(_4);
         _4 = Ordering::SeqCst {  };
-        _2 = store(move _3, const 1usize, move _4) -> bb3 (unwind: bb4);
+        _2 = store(move _3, const 1usize, move _4) -> bb2 (unwind: bb9);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_4);
         storage_dead(_3);
         storage_dead(_2);
@@ -1277,14 +1246,10 @@ pub fn main()
         _6 = &a;
         storage_live(_7);
         _7 = Ordering::Acquire {  };
-        _5 = load(move _6, move _7) -> bb5 (unwind: bb6);
+        _5 = load(move _6, move _7) -> bb3 (unwind: bb8);
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_dead(_7);
         storage_dead(_6);
         storage_dead(_5);
@@ -1293,14 +1258,10 @@ pub fn main()
         _9 = &a;
         storage_live(_10);
         _10 = Ordering::Relaxed {  };
-        _8 = fetch_add(move _9, const 1usize, move _10) -> bb7 (unwind: bb8);
+        _8 = fetch_add(move _9, const 1usize, move _10) -> bb4 (unwind: bb7);
     }
 
-    bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
+    bb4: {
         storage_dead(_10);
         storage_dead(_9);
         storage_dead(_8);
@@ -1311,14 +1272,10 @@ pub fn main()
         _13 = Ordering::AcqRel {  };
         storage_live(_14);
         _14 = Ordering::Relaxed {  };
-        _11 = compare_exchange(move _12, const 1usize, const 2usize, move _13, move _14) -> bb9 (unwind: bb10);
+        _11 = compare_exchange(move _12, const 1usize, const 2usize, move _13, move _14) -> bb5 (unwind: bb6);
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
+    bb5: {
         storage_dead(_14);
         storage_dead(_13);
         storage_dead(_12);
@@ -1326,6 +1283,22 @@ pub fn main()
         _0 = ();
         storage_dead(a);
         return;
+    }
+
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
     }
 
     bb10: {

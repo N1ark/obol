@@ -5,6 +5,7 @@ extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_public_bridge;
 extern crate rustc_span;
+extern crate rustc_trait_selection;
 
 use crate::translate::translate_crate::{FAKE_DYN_TRAIT, TupleTy};
 
@@ -529,6 +530,29 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     ) -> Option<Layout> {
         let repr = self.translate_repr_options(def.repr());
         self.translate_layout_of_ty(def.ty_with_args(genargs), repr)
+    }
+
+    /// Which built-in marker traits the given (monomorphic) type implements.
+    pub fn translate_marker_traits(&self, ty: ty::Ty) -> Box<ImplementsMarkerTraits> {
+        use rustc_trait_selection::infer::{InferCtxtExt, TyCtxtInferExt};
+        let tcx = self.t_ctx.tcx;
+        let ty = rustc_public::rustc_internal::internal(tcx, ty);
+        let typing_env = rustc_ty::TypingEnv::fully_monomorphized();
+        let (infcx, param_env) = tcx.infer_ctxt().build_with_typing_env(typing_env);
+        let implements = |trait_id| {
+            infcx
+                .type_implements_trait(trait_id, [ty], param_env)
+                .must_apply_modulo_regions()
+        };
+        Box::new(ImplementsMarkerTraits {
+            is_sized: ty.is_sized(tcx, typing_env),
+            is_send: tcx
+                .get_diagnostic_item(rustc_span::sym::Send)
+                .is_some_and(implements),
+            is_sync: tcx.lang_items().sync_trait().is_some_and(implements),
+            is_freeze: ty.is_freeze(tcx, typing_env),
+            is_unpin: ty.is_unpin(tcx, typing_env),
+        })
     }
 
     /// Translate the layout of an arbitrary (monomorphic) type. Used both for ADTs and for the

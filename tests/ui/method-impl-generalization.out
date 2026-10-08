@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: anon_const_0
 const anon_const_0: u32 = 1u32
 
@@ -17,14 +14,6 @@ const anon_const_2: () = ()
 
 // Full name: anon_const_3
 const anon_const_3: () = ()
-
-// Full name: test_crate::Trait
-trait Trait
-
-// Full name: test_crate::{impl Trait for ()}
-impl "impl_Trait_for_unit" Trait for () {
-    non-dyn-compatible
-}
 
 // Full name: test_crate::{impl Trait for ()}::method1
 fn method1(self: (), _other: &'_ u32) -> bool
@@ -38,14 +27,6 @@ fn method1(self: (), _other: &'_ u32) -> bool
         _0 = const true;
         return;
     }
-}
-
-// Full name: test_crate::MyCompare
-trait MyCompare
-
-// Full name: test_crate::{impl MyCompare<&'_ ()> for &'_ ()}
-impl<'a> MyCompare<&'_ ()> for &'_ () {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl MyCompare<&'_ ()> for &'_ ()}::compare::<'_>
@@ -97,7 +78,7 @@ fn main()
         _11 = move _12;
         _4 = &(*_11);
         _3 = &(*_4);
-        _1 = method1(move _2, move _3) -> bb1 (unwind: bb2);
+        _1 = method1(move _2, move _3) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -118,14 +99,10 @@ fn main()
         _9 = move _14;
         _8 = &(*_9);
         _7 = &(*_8);
-        _5 = compare::<'_>(move _6, move _7) -> bb3 (unwind: bb4);
+        _5 = compare::<'_>(move _6, move _7) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_7);
         storage_dead(_6);
         storage_dead(_8);
@@ -134,17 +111,13 @@ fn main()
         return;
     }
 
+    bb3: {
+        unwind_continue;
+    }
+
     bb4: {
         unwind_continue;
     }
-}
-
-// Full name: test_crate::Foo
-trait Foo
-
-// Full name: test_crate::{impl Foo for ()}
-impl "impl_Foo_for_unit" Foo for () {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl Foo for ()}::foo

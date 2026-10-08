@@ -1,19 +1,10 @@
 
 // Final ULLBC:
 
-// Full name: core::ops::index::Index
-#[lang_item(Index)]
-trait Index
-
-// Full name: core::array::{impl Index<I> for [T; N]}
-impl<T, I, const _ : type_error("const generic param type"), const _ : type_error("const generic param type"), const N : type_error("const generic param type")> "impl_Index_for_array" Index<I> for [T; N] {
-    non-dyn-compatible
-}
+struct () {}
 
 // Full name: anon_const_3
 const anon_const_3: [u8; 55usize] = [16u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 101u8, 110u8, 100u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 192u8, 34u8, 32u8, 111u8, 117u8, 116u8, 32u8, 111u8, 102u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 111u8, 102u8, 32u8, 108u8, 101u8, 110u8, 103u8, 116u8, 104u8, 32u8, 192u8, 0u8]
-
-struct () {}
 
 // Full name: core::fmt::Error
 pub struct Error {}
@@ -185,23 +176,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -209,18 +193,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -228,7 +215,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -236,7 +227,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -791,7 +782,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_6);
         _6 = copy len;
         _4 = move _5 > move _6;
-        if move _4 -> bb1 else -> bb2;
+        if move _4 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -802,10 +793,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _8 = copy start;
         storage_live(_9);
         _9 = copy len;
-        _7 = core::slice::index::slice_index_fail::do_panic(move _8, move _9) -> bb3 (unwind: bb4);
+        _7 = core::slice::index::slice_index_fail::do_panic(move _8, move _9) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
@@ -815,15 +814,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_12);
         _12 = copy len;
         _10 = move _11 > move _12;
-        if move _10 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        unwind_continue;
+        if move _10 -> bb5 else -> bb8;
     }
 
     bb5: {
@@ -834,10 +825,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _14 = copy end;
         storage_live(_15);
         _15 = copy len;
-        _13 = core::slice::index::slice_index_fail::do_panic#1(move _14, move _15) -> bb7 (unwind: bb8);
+        _13 = core::slice::index::slice_index_fail::do_panic#1(move _14, move _15) -> bb6 (unwind: bb7);
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         storage_dead(_12);
         storage_dead(_11);
         storage_dead(_10);
@@ -847,15 +846,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_18);
         _18 = copy end;
         _16 = move _17 > move _18;
-        if move _16 -> bb9 else -> bb10;
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        unwind_continue;
+        if move _16 -> bb9 else -> bb12;
     }
 
     bb9: {
@@ -866,10 +857,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _20 = copy start;
         storage_live(_21);
         _21 = copy end;
-        _19 = core::slice::index::slice_index_fail::do_panic#2(move _20, move _21) -> bb11 (unwind: bb12);
+        _19 = core::slice::index::slice_index_fail::do_panic#2(move _20, move _21) -> bb10 (unwind: bb11);
     }
 
     bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
         storage_dead(_18);
         storage_dead(_17);
         storage_dead(_16);
@@ -878,14 +877,6 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_23);
         _23 = copy len;
         _0 = core::slice::index::slice_index_fail::do_panic#3(move _22, move _23) -> bb13 (unwind: bb14);
-    }
-
-    bb11: {
-        undefined_behavior;
-    }
-
-    bb12: {
-        unwind_continue;
     }
 
     bb13: {
@@ -948,7 +939,7 @@ pub fn {impl SliceIndex<[T]> for Range::<usize>}::index::<u32>(self_1: Range::<u
 
     bb1: {
         storage_dead(_13);
-        goto bb3;
+        goto bb5;
     }
 
     bb2: {
@@ -963,17 +954,10 @@ pub fn {impl SliceIndex<[T]> for Range::<usize>}::index::<u32>(self_1: Range::<u
         storage_live(_8);
         _8 = copy slice.metadata;
         _7 = copy self_4 <= move _8;
-        if move _7 -> bb4 else -> bb5;
+        if move _7 -> bb3 else -> bb4;
     }
 
     bb3: {
-        storage_dead(_3);
-        storage_live(_12);
-        _12 = copy slice.metadata;
-        _11 = slice_index_fail(move rhs, move self_4, move _12) -> bb6 (unwind: bb7);
-    }
-
-    bb4: {
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
@@ -994,10 +978,17 @@ pub fn {impl SliceIndex<[T]> for Range::<usize>}::index::<u32>(self_1: Range::<u
         return;
     }
 
-    bb5: {
+    bb4: {
         storage_dead(_8);
         storage_dead(new_len);
-        goto bb3;
+        goto bb5;
+    }
+
+    bb5: {
+        storage_dead(_3);
+        storage_live(_12);
+        _12 = copy slice.metadata;
+        _11 = slice_index_fail(move rhs, move self_4, move _12) -> bb6 (unwind: bb7);
     }
 
     bb6: {
@@ -1055,15 +1046,6 @@ pub fn impl_Index_for_array::index::<u32, Range::<usize>, 32usize>(self: &'_ [u3
     }
 }
 
-// Full name: core::ops::index::IndexMut
-#[lang_item(IndexMut)]
-trait IndexMut
-
-// Full name: core::array::{impl IndexMut<I> for [T; N]}
-impl<T, I, const _ : type_error("const generic param type"), const _ : type_error("const generic param type"), const N : type_error("const generic param type")> "impl_IndexMut_for_array" IndexMut<I> for [T; N] {
-    non-dyn-compatible
-}
-
 // Full name: core::slice::index::{impl SliceIndex<[T]> for Range::<usize>}::index_mut::<u32>
 pub fn {impl SliceIndex<[T]> for Range::<usize>}::index_mut::<u32>(self_1: Range::<usize>, slice: &'_ mut [u32]) -> &'_ mut [u32]
 {
@@ -1100,7 +1082,7 @@ pub fn {impl SliceIndex<[T]> for Range::<usize>}::index_mut::<u32>(self_1: Range
 
     bb1: {
         storage_dead(_13);
-        goto bb3;
+        goto bb5;
     }
 
     bb2: {
@@ -1115,17 +1097,10 @@ pub fn {impl SliceIndex<[T]> for Range::<usize>}::index_mut::<u32>(self_1: Range
         storage_live(_8);
         _8 = copy slice.metadata;
         _7 = copy self_4 <= move _8;
-        if move _7 -> bb4 else -> bb5;
+        if move _7 -> bb3 else -> bb4;
     }
 
     bb3: {
-        storage_dead(_3);
-        storage_live(_12);
-        _12 = copy slice.metadata;
-        _11 = slice_index_fail(move rhs, move self_4, move _12) -> bb6 (unwind: bb7);
-    }
-
-    bb4: {
         storage_dead(_8);
         storage_live(_9);
         storage_live(ptr);
@@ -1146,10 +1121,17 @@ pub fn {impl SliceIndex<[T]> for Range::<usize>}::index_mut::<u32>(self_1: Range
         return;
     }
 
-    bb5: {
+    bb4: {
         storage_dead(_8);
         storage_dead(new_len);
-        goto bb3;
+        goto bb5;
+    }
+
+    bb5: {
+        storage_dead(_3);
+        storage_live(_12);
+        _12 = copy slice.metadata;
+        _11 = slice_index_fail(move rhs, move self_4, move _12) -> bb6 (unwind: bb7);
     }
 
     bb6: {
@@ -1232,13 +1214,6 @@ pub fn impl_IndexMut_for_array::index_mut::<u32, Range::<usize>, 32usize>(self: 
     }
 }
 
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
@@ -1284,33 +1259,6 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
     }
 }
 
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::num::imp::{impl Display for usize}
-impl "impl_Display_for_usize" Display for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
 // Full name: core::panicking::panic
 #[track_caller]
 #[lang_item(Panic)]
@@ -1328,44 +1276,25 @@ pub fn panic(expr: &'_ str) -> !
         storage_live(_3);
         storage_live(_4);
         _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb3 (unwind: bb4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
         unwind_continue;
     }
-}
-
-// Full name: core::slice::index::{impl Index<I> for [T]}
-impl<T, I> "impl_Index_for_slice" Index<I> for [T] {
-    non-dyn-compatible
-}
-
-// Full name: core::slice::index::{impl IndexMut<I> for [T]}
-impl<T, I> "impl_IndexMut_for_slice" IndexMut<I> for [T] {
-    non-dyn-compatible
-}
-
-// Full name: core::slice::index::SliceIndex
-#[diagnostic_item("SliceIndex")]
-trait SliceIndex
-
-// Full name: core::slice::index::{impl SliceIndex<[T]> for Range::<usize>}
-impl<T> SliceIndex<[T]> for Range::<usize> {
-    non-dyn-compatible
 }
 
 // Full name: core::slice::{[T]}::len::<u8>
@@ -1936,7 +1865,7 @@ pub fn take_all()
         storage_live(_2);
         storage_live(_3);
         _3 = copy x;
-        _2 = take_array(move _3) -> bb1 (unwind: bb2);
+        _2 = take_array(move _3) -> bb1 (unwind: bb10);
     }
 
     bb1: {
@@ -1945,14 +1874,10 @@ pub fn take_all()
         storage_live(_4);
         storage_live(_5);
         _5 = copy x;
-        _4 = take_array(move _5) -> bb3 (unwind: bb4);
+        _4 = take_array(move _5) -> bb2 (unwind: bb9);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         storage_live(_6);
@@ -1960,14 +1885,10 @@ pub fn take_all()
         storage_live(_8);
         _8 = &x;
         _7 = &(*_8);
-        _6 = take_array_borrow(move _7) -> bb5 (unwind: bb6);
+        _6 = take_array_borrow(move _7) -> bb3 (unwind: bb8);
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_dead(_7);
         storage_dead(_8);
         storage_dead(_6);
@@ -1979,14 +1900,10 @@ pub fn take_all()
         _11 = &(*_12);
         _10 = unsize_cast<&'_ [u32; 2usize], &'_ [u32], 2usize>(move _11);
         storage_dead(_11);
-        _9 = take_slice(move _10) -> bb7 (unwind: bb8);
+        _9 = take_slice(move _10) -> bb4 (unwind: bb7);
     }
 
-    bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
+    bb4: {
         storage_dead(_10);
         storage_dead(_12);
         storage_dead(_9);
@@ -1998,7 +1915,24 @@ pub fn take_all()
         _15 = &mut (*_16);
         _14 = unsize_cast<&'_ mut [u32; 2usize], &'_ mut [u32], 2usize>(move _15);
         storage_dead(_15);
-        _13 = take_mut_slice(move _14) -> bb9 (unwind: bb10);
+        _13 = take_mut_slice(move _14) -> bb5 (unwind: bb6);
+    }
+
+    bb5: {
+        storage_dead(_14);
+        storage_dead(_16);
+        storage_dead(_13);
+        _0 = ();
+        storage_dead(x);
+        return;
+    }
+
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        unwind_continue;
     }
 
     bb8: {
@@ -2006,12 +1940,7 @@ pub fn take_all()
     }
 
     bb9: {
-        storage_dead(_14);
-        storage_dead(_16);
-        storage_dead(_13);
-        _0 = ();
-        storage_dead(x);
-        return;
+        unwind_continue;
     }
 
     bb10: {
@@ -2153,7 +2082,7 @@ pub fn index_all() -> u32
         storage_live(_8);
         storage_live(_9);
         _9 = copy x;
-        _8 = index_array(move _9) -> bb4 (unwind: bb5);
+        _8 = index_array(move _9) -> bb4 (unwind: bb13);
     }
 
     bb4: {
@@ -2161,14 +2090,10 @@ pub fn index_all() -> u32
         storage_live(_10);
         storage_live(_11);
         _11 = copy x;
-        _10 = index_array(move _11) -> bb6 (unwind: bb7);
+        _10 = index_array(move _11) -> bb5 (unwind: bb12);
     }
 
     bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
         storage_dead(_11);
         _12 = copy _8 panic.+ copy _10;
         _7 = move _12;
@@ -2179,14 +2104,10 @@ pub fn index_all() -> u32
         storage_live(_15);
         _15 = &x;
         _14 = &(*_15);
-        _13 = index_array_borrow(move _14) -> bb8 (unwind: bb9);
+        _13 = index_array_borrow(move _14) -> bb6 (unwind: bb11);
     }
 
-    bb7: {
-        unwind_continue;
-    }
-
-    bb8: {
+    bb6: {
         storage_dead(_14);
         _16 = copy _7 panic.+ copy _13;
         _6 = move _16;
@@ -2200,14 +2121,10 @@ pub fn index_all() -> u32
         _19 = &(*_20);
         _18 = unsize_cast<&'_ [u32; 2usize], &'_ [u32], 2usize>(move _19);
         storage_dead(_19);
-        _17 = index_slice_u32_0(move _18) -> bb10 (unwind: bb11);
+        _17 = index_slice_u32_0(move _18) -> bb7 (unwind: bb10);
     }
 
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
+    bb7: {
         storage_dead(_18);
         _21 = copy _6 panic.+ copy _17;
         _5 = move _21;
@@ -2221,14 +2138,10 @@ pub fn index_all() -> u32
         _24 = &mut (*_25);
         _23 = unsize_cast<&'_ mut [u32; 2usize], &'_ mut [u32], 2usize>(move _24);
         storage_dead(_24);
-        _22 = index_mut_slice_u32_0(move _23) -> bb12 (unwind: bb13);
+        _22 = index_mut_slice_u32_0(move _23) -> bb8 (unwind: bb9);
     }
 
-    bb11: {
-        unwind_continue;
-    }
-
-    bb12: {
+    bb8: {
         storage_dead(_23);
         _26 = copy _5 panic.+ copy _22;
         _0 = move _26;
@@ -2239,6 +2152,22 @@ pub fn index_all() -> u32
         storage_dead(_20);
         storage_dead(_15);
         return;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
+        unwind_continue;
     }
 
     bb13: {
@@ -2328,7 +2257,7 @@ pub fn update_all()
         storage_live(_2);
         storage_live(_3);
         _3 = copy x;
-        _2 = update_array(move _3) -> bb1 (unwind: bb2);
+        _2 = update_array(move _3) -> bb1 (unwind: bb8);
     }
 
     bb1: {
@@ -2337,14 +2266,10 @@ pub fn update_all()
         storage_live(_4);
         storage_live(_5);
         _5 = copy x;
-        _4 = update_array(move _5) -> bb3 (unwind: bb4);
+        _4 = update_array(move _5) -> bb2 (unwind: bb7);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         storage_live(_6);
@@ -2352,14 +2277,10 @@ pub fn update_all()
         storage_live(_8);
         _8 = &mut x;
         _7 = &two-phase-mut (*_8);
-        _6 = update_array_mut_borrow(move _7) -> bb5 (unwind: bb6);
+        _6 = update_array_mut_borrow(move _7) -> bb3 (unwind: bb6);
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_dead(_7);
         storage_dead(_8);
         storage_dead(_6);
@@ -2371,7 +2292,20 @@ pub fn update_all()
         _11 = &mut (*_12);
         _10 = unsize_cast<&'_ mut [u32; 2usize], &'_ mut [u32], 2usize>(move _11);
         storage_dead(_11);
-        _9 = update_mut_slice(move _10) -> bb7 (unwind: bb8);
+        _9 = update_mut_slice(move _10) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
+        storage_dead(_10);
+        storage_dead(_12);
+        storage_dead(_9);
+        _0 = ();
+        storage_dead(x);
+        return;
+    }
+
+    bb5: {
+        unwind_continue;
     }
 
     bb6: {
@@ -2379,12 +2313,7 @@ pub fn update_all()
     }
 
     bb7: {
-        storage_dead(_10);
-        storage_dead(_12);
-        storage_dead(_9);
-        _0 = ();
-        storage_dead(x);
-        return;
+        unwind_continue;
     }
 
     bb8: {
@@ -2417,7 +2346,7 @@ pub fn range_all()
         _6 = &mut x;
         storage_live(_7);
         _7 = Range::<usize> { start: const 1usize, end: const 3usize };
-        _5 = impl_IndexMut_for_array::index_mut::<u32, Range::<usize>, 4usize>(move _6, move _7) -> bb1 (unwind: bb2);
+        _5 = impl_IndexMut_for_array::index_mut::<u32, Range::<usize>, 4usize>(move _6, move _7) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -2425,14 +2354,10 @@ pub fn range_all()
         storage_dead(_6);
         _4 = &mut (*_5) with_metadata(copy _5.metadata);
         _3 = &two-phase-mut (*_4) with_metadata(copy _4.metadata);
-        _2 = update_mut_slice(move _3) -> bb3 (unwind: bb4);
+        _2 = update_mut_slice(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_3);
         storage_dead(_5);
         storage_dead(_4);
@@ -2440,6 +2365,10 @@ pub fn range_all()
         _0 = ();
         storage_dead(x);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -2577,20 +2506,16 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_6);
         storage_live(_7);
         _7 = &(*s) with_metadata(copy s.metadata);
-        _6 = len::<u32>(move _7) -> bb2 (unwind: bb3);
+        _6 = len::<u32>(move _7) -> bb2 (unwind: bb5);
     }
 
     bb2: {
         storage_dead(_7);
         _4 = move _5 < move _6;
-        if move _4 -> bb4 else -> bb5;
+        if move _4 -> bb3 else -> bb4;
     }
 
     bb3: {
-        unwind_continue;
-    }
-
-    bb4: {
         storage_dead(_6);
         storage_dead(_5);
         storage_live(_8);
@@ -2607,7 +2532,7 @@ pub fn sum(s: &'_ [u32]) -> u32
         goto bb1;
     }
 
-    bb5: {
+    bb4: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
@@ -2615,6 +2540,10 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_dead(i);
         storage_dead(sum);
         return;
+    }
+
+    bb5: {
+        unwind_continue;
     }
 }
 
@@ -2656,7 +2585,7 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         storage_live(_5);
         storage_live(_6);
         _6 = &(*s) with_metadata(copy s.metadata);
-        _5 = len::<u32>(move _6) -> bb1 (unwind: bb2);
+        _5 = len::<u32>(move _6) -> bb1 (unwind: bb13);
     }
 
     bb1: {
@@ -2664,68 +2593,41 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         storage_live(_7);
         storage_live(_8);
         _8 = &(*s2) with_metadata(copy s2.metadata);
-        _7 = len::<u32>(move _8) -> bb3 (unwind: bb4);
+        _7 = len::<u32>(move _8) -> bb2 (unwind: bb12);
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_8);
+        _4 = move _5 == move _7;
+        if move _4 -> bb3 else -> bb9;
     }
 
     bb3: {
-        storage_dead(_8);
-        _4 = move _5 == move _7;
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_4);
         storage_live(i);
         i = const 0usize;
-        goto bb7;
+        goto bb4;
     }
 
-    bb6: {
-        storage_dead(_7);
-        storage_dead(_5);
-        storage_live(_9);
-        _9 = panic(const "assertion failed: s.len() == s2.len()") -> bb8 (unwind: bb9);
-    }
-
-    bb7: {
+    bb4: {
         storage_live(_11);
         storage_live(_12);
         _12 = copy i;
         storage_live(_13);
         storage_live(_14);
         _14 = &(*s) with_metadata(copy s.metadata);
-        _13 = len::<u32>(move _14) -> bb10 (unwind: bb11);
+        _13 = len::<u32>(move _14) -> bb5 (unwind: bb8);
     }
 
-    bb8: {
-        undefined_behavior;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
+    bb5: {
         storage_dead(_14);
         _11 = move _12 < move _13;
-        if move _11 -> bb12 else -> bb13;
+        if move _11 -> bb6 else -> bb7;
     }
 
-    bb11: {
-        unwind_continue;
-    }
-
-    bb12: {
+    bb6: {
         storage_dead(_13);
         storage_dead(_12);
         storage_live(_15);
@@ -2749,10 +2651,10 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         _22 = copy i panic.+ const 1usize;
         i = move _22;
         storage_dead(_11);
-        goto bb7;
+        goto bb4;
     }
 
-    bb13: {
+    bb7: {
         storage_dead(_13);
         storage_dead(_12);
         storage_dead(_11);
@@ -2760,6 +2662,33 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         storage_dead(i);
         storage_dead(sum);
         return;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        storage_dead(_7);
+        storage_dead(_5);
+        storage_live(_9);
+        _9 = panic(const "assertion failed: s.len() == s2.len()") -> bb10 (unwind: bb11);
+    }
+
+    bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
+        unwind_continue;
     }
 }
 
@@ -2905,7 +2834,7 @@ pub fn f3() -> u32
         storage_live(_4);
         _4 = const 0usize;
         _3 = copy a[copy _4];
-        _2 = f2(move _3) -> bb1 (unwind: bb2);
+        _2 = f2(move _3) -> bb1 (unwind: bb6);
     }
 
     bb1: {
@@ -2927,24 +2856,16 @@ pub fn f3() -> u32
         storage_live(_12);
         _12 = &b;
         _11 = &(*_12);
-        _10 = f4(move _11, const 16usize, const 18usize) -> bb3 (unwind: bb4);
+        _10 = f4(move _11, const 16usize, const 18usize) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
+        _9 = &(*_10) with_metadata(copy _10.metadata);
+        storage_dead(_11);
+        _0 = sum2(move _6, move _9) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        _9 = &(*_10) with_metadata(copy _10.metadata);
-        storage_dead(_11);
-        _0 = sum2(move _6, move _9) -> bb5 (unwind: bb6);
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
         storage_dead(_9);
         storage_dead(_6);
         storage_dead(b);
@@ -2953,6 +2874,14 @@ pub fn f3() -> u32
         storage_dead(_10);
         storage_dead(_8);
         return;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        unwind_continue;
     }
 
     bb6: {
@@ -3000,7 +2929,7 @@ pub fn ite()
         x = [const 0u32, const 0u32];
         storage_live(_2);
         _2 = const true;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb6;
     }
 
     bb1: {
@@ -3014,15 +2943,10 @@ pub fn ite()
         _6 = &mut (*_7);
         _5 = unsize_cast<&'_ mut [u32; 2usize], &'_ mut [u32], 2usize>(move _6);
         storage_dead(_6);
-        _4 = index_mut_slice_u32_0(move _5) -> bb3 (unwind: bb4);
+        _4 = index_mut_slice_u32_0(move _5) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        _0 = ();
-        goto bb5;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_7);
         storage_dead(_4);
@@ -3034,7 +2958,16 @@ pub fn ite()
         _10 = &mut (*_11);
         _9 = unsize_cast<&'_ mut [u32; 2usize], &'_ mut [u32], 2usize>(move _10);
         storage_dead(_10);
-        _8 = index_mut_slice_u32_0(move _9) -> bb6 (unwind: bb7);
+        _8 = index_mut_slice_u32_0(move _9) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        storage_dead(_9);
+        storage_dead(_11);
+        storage_dead(_8);
+        _0 = ();
+        storage_dead(y);
+        goto bb7;
     }
 
     bb4: {
@@ -3042,22 +2975,18 @@ pub fn ite()
     }
 
     bb5: {
-        storage_dead(_2);
-        storage_dead(x);
-        return;
+        unwind_continue;
     }
 
     bb6: {
-        storage_dead(_9);
-        storage_dead(_11);
-        storage_dead(_8);
         _0 = ();
-        storage_dead(y);
-        goto bb5;
+        goto bb7;
     }
 
     bb7: {
-        unwind_continue;
+        storage_dead(_2);
+        storage_dead(x);
+        return;
     }
 }
 
@@ -3084,29 +3013,25 @@ pub fn zero_slice(a: &'_ mut [u8])
         storage_live(len);
         storage_live(_4);
         _4 = &(*a) with_metadata(copy a.metadata);
-        len = len::<u8>(move _4) -> bb1 (unwind: bb2);
+        len = len::<u8>(move _4) -> bb1 (unwind: bb5);
     }
 
     bb1: {
         storage_dead(_4);
-        goto bb3;
+        goto bb2;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_5);
         storage_live(_6);
         _6 = copy i;
         storage_live(_7);
         _7 = copy len;
         _5 = move _6 < move _7;
-        if move _5 -> bb4 else -> bb5;
+        if move _5 -> bb3 else -> bb4;
     }
 
-    bb4: {
+    bb3: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(_8);
@@ -3116,10 +3041,10 @@ pub fn zero_slice(a: &'_ mut [u8])
         _9 = copy i panic.+ const 1usize;
         i = move _9;
         storage_dead(_5);
-        goto bb3;
+        goto bb2;
     }
 
-    bb5: {
+    bb4: {
         storage_dead(_7);
         storage_dead(_6);
         _0 = ();
@@ -3127,6 +3052,10 @@ pub fn zero_slice(a: &'_ mut [u8])
         storage_dead(len);
         storage_dead(i);
         return;
+    }
+
+    bb5: {
+        unwind_continue;
     }
 }
 
@@ -3150,40 +3079,36 @@ pub fn iter_mut_slice(a: &'_ mut [u8])
         storage_live(len);
         storage_live(_3);
         _3 = &(*a) with_metadata(copy a.metadata);
-        len = len::<u8>(move _3) -> bb1 (unwind: bb2);
+        len = len::<u8>(move _3) -> bb1 (unwind: bb5);
     }
 
     bb1: {
         storage_dead(_3);
         storage_live(i);
         i = const 0usize;
-        goto bb3;
+        goto bb2;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_5);
         storage_live(_6);
         _6 = copy i;
         storage_live(_7);
         _7 = copy len;
         _5 = move _6 < move _7;
-        if move _5 -> bb4 else -> bb5;
+        if move _5 -> bb3 else -> bb4;
     }
 
-    bb4: {
+    bb3: {
         storage_dead(_7);
         storage_dead(_6);
         _8 = copy i panic.+ const 1usize;
         i = move _8;
         storage_dead(_5);
-        goto bb3;
+        goto bb2;
     }
 
-    bb5: {
+    bb4: {
         storage_dead(_7);
         storage_dead(_6);
         _0 = ();
@@ -3191,6 +3116,10 @@ pub fn iter_mut_slice(a: &'_ mut [u8])
         storage_dead(i);
         storage_dead(len);
         return;
+    }
+
+    bb5: {
+        unwind_continue;
     }
 }
 
@@ -3228,20 +3157,16 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
         storage_live(_6);
         storage_live(_7);
         _7 = &(*a) with_metadata(copy a.metadata);
-        _6 = len::<u32>(move _7) -> bb2 (unwind: bb3);
+        _6 = len::<u32>(move _7) -> bb2 (unwind: bb5);
     }
 
     bb2: {
         storage_dead(_7);
         _4 = move _5 < move _6;
-        if move _4 -> bb4 else -> bb5;
+        if move _4 -> bb3 else -> bb4;
     }
 
     bb3: {
-        unwind_continue;
-    }
-
-    bb4: {
         storage_dead(_6);
         storage_dead(_5);
         storage_live(_8);
@@ -3258,7 +3183,7 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
         goto bb1;
     }
 
-    bb5: {
+    bb4: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
@@ -3266,6 +3191,10 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
         storage_dead(s);
         storage_dead(i);
         return;
+    }
+
+    bb5: {
+        unwind_continue;
     }
 }
 

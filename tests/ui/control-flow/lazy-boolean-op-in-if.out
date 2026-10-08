@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: test_crate::foo
 fn foo() -> bool
 {
@@ -82,28 +79,28 @@ fn main()
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = foo() -> bb1 (unwind: bb2);
+        _2 = foo() -> bb1 (unwind: bb12);
     }
 
     bb1: {
-        if move _2 -> bb3 else -> bb4;
+        if move _2 -> bb2 else -> bb7;
     }
 
     bb2: {
-        unwind_continue;
+        storage_live(_3);
+        _3 = bar() -> bb3 (unwind: bb6);
     }
 
     bb3: {
-        storage_live(_3);
-        _3 = bar() -> bb5 (unwind: bb6);
+        if move _3 -> bb4 else -> bb7;
     }
 
     bb4: {
-        _1 = do_something_else() -> bb7 (unwind: bb8);
+        _1 = do_something() -> bb8 (unwind: bb5);
     }
 
     bb5: {
-        if move _3 -> bb9 else -> bb4;
+        unwind_continue;
     }
 
     bb6: {
@@ -111,22 +108,22 @@ fn main()
     }
 
     bb7: {
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_dead(_1);
-        _0 = do_something_at_the_end() -> bb10 (unwind: bb11);
+        _1 = do_something_else() -> bb8 (unwind: bb11);
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_dead(_1);
+        _0 = do_something_at_the_end() -> bb9 (unwind: bb10);
     }
 
     bb9: {
-        _1 = do_something() -> bb7 (unwind: bb12);
+        return;
     }
 
     bb10: {
-        return;
+        unwind_continue;
     }
 
     bb11: {
@@ -167,30 +164,30 @@ fn main2()
         d = const true;
         storage_live(_6);
         _6 = copy a;
-        if move _6 -> bb1 else -> bb2;
+        if move _6 -> bb2 else -> bb1;
     }
 
     bb1: {
-        storage_live(_8);
-        _8 = copy c;
-        if move _8 -> bb3 else -> bb4;
+        storage_live(_7);
+        _7 = copy b;
+        if move _7 -> bb2 else -> bb6;
     }
 
     bb2: {
-        storage_live(_7);
-        _7 = copy b;
-        if move _7 -> bb1 else -> bb6;
+        storage_live(_8);
+        _8 = copy c;
+        if move _8 -> bb4 else -> bb3;
     }
 
     bb3: {
-        x = const 1i32;
-        goto bb5;
+        storage_live(_9);
+        _9 = copy d;
+        if move _9 -> bb4 else -> bb5;
     }
 
     bb4: {
-        storage_live(_9);
-        _9 = copy d;
-        if move _9 -> bb3 else -> bb5;
+        x = const 1i32;
+        goto bb5;
     }
 
     bb5: {

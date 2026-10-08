@@ -99,10 +99,7 @@ fn run_passes(ctx: &mut TransformCtx) {
         CowBox::Borrowed(&simplify_output::remove_unit_locals::Transform),
         // Another round.
         CowBox::Borrowed(&control_flow::merge_goto_chains::Transform),
-        // Filter the "dangling" blocks. Those might have been introduced by, for instance,
-        // [`merge_goto_chains`].
-        CowBox::Borrowed(&normalize::filter_unreachable_blocks::Transform),
-        // Make sure the block ids used in the ULLBC are consecutive
+        // Renumber reachable blocks to be consecutive and in topological order.
         CowBox::Borrowed(&simplify_output::update_block_indices::Transform),
     ]));
     ctx.run_pass(pass);
@@ -153,6 +150,7 @@ fn run_obol(options: args::CliOpts) -> Result<usize, ObolError> {
             let extension = match serial_fmt {
                 SerializationFormat::Json => "ullbc",
                 SerializationFormat::Postcard => "ullbc.postcard",
+                SerializationFormat::MiniRust => unreachable!(),
             };
             PathBuf::from(format!("{crate_name}.{extension}"))
         });

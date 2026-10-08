@@ -37,9 +37,6 @@ pub fn null::<u32>() -> *const u32
     }
 }
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_, _)::<usize, bool> {
   _0: usize,
   _1: bool,
@@ -57,26 +54,26 @@ fn call_unsafe_fn()
         storage_live(_0);
         _0 = ();
         storage_live(x);
-        x = null::<u32>() -> bb1 (unwind: bb2);
+        x = null::<u32>() -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_live(_2);
         storage_live(_3);
         _3 = copy x;
-        _2 = read::<u32>(move _3) -> bb3 (unwind: bb4);
+        _2 = read::<u32>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
         storage_dead(x);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {

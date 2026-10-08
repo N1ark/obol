@@ -71,13 +71,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
 struct str {
   _0: [u8],
 }
@@ -126,9 +119,6 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         return;
     }
 }
-
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
 
 // Full name: core::ptr::drop_glue::<&'_ i32>
 #[lang_item(DropGlue)]
@@ -179,14 +169,18 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_6);
         _3 = move _5 != const 0u32;
         storage_dead(_5);
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb3 (unwind: bb4);
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
     }
 
     bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
         storage_live(_4);
         storage_live(_7);
         storage_live(_8);
@@ -195,20 +189,15 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_8);
         _4 = move _7 != const 0u32;
         storage_dead(_7);
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_3);
-        return;
+        if move _4 -> bb4 else -> bb6;
     }
 
     bb4: {
-        unwind_continue;
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb8);
+        unwind_continue;
     }
 
     bb6: {
@@ -217,11 +206,12 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
 
     bb7: {
         storage_dead(_4);
-        goto bb3;
+        goto bb8;
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb9: {
@@ -284,42 +274,7 @@ fn {vtable}::core::fmt::Debug::<&'_ i32>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<&'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ i32>()
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::LowerHex
-trait LowerHex
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
-impl<'_, _, T> core::fmt::Debug for &'_ T {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl LowerHex for i32}
-impl "impl_LowerHex_for_i32" LowerHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl UpperHex for i32}
-impl "impl_UpperHex_for_i32" UpperHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for i32}
-impl "impl_Debug_for_i32" core::fmt::Debug for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for i32}
-impl "impl_Display_for_i32" Display for i32 {
-    non-dyn-compatible
-}
+vtable {vtable}::core::fmt::Debug::<&'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ i32>()
 
 // Full name: core::intrinsics::abort
 #[rustc_intrinsic]
@@ -389,15 +344,6 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
@@ -416,15 +362,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     bb2: {
         undefined_behavior;
     }
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -476,23 +413,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -500,18 +430,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -519,7 +452,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -527,7 +464,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -611,16 +548,16 @@ pub fn panic_nounwind(expr: &'_ str) -> !
         storage_live(_3);
         storage_live(_4);
         _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_4);
-        _2 = panic_nounwind_fmt(move _3, const false) -> bb3 (unwind: bb4);
+        _2 = panic_nounwind_fmt(move _3, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_terminate;
+        undefined_behavior;
     }
 
     bb3: {
@@ -628,7 +565,7 @@ pub fn panic_nounwind(expr: &'_ str) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        unwind_terminate;
     }
 }
 
@@ -709,20 +646,16 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_4);
         storage_live(_3);
         storage_live(_9);
-        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb2);
+        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         _3 = move _9 == const 1u32;
         storage_dead(_9);
-        if move _3 -> bb3 else -> bb4;
+        if move _3 -> bb2 else -> bb3;
     }
 
     bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
         storage_dead(_3);
         storage_live(_6);
         storage_live(_7);
@@ -740,7 +673,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         return;
     }
 
-    bb4: {
+    bb3: {
         storage_live(_5);
         storage_live(s);
         s = const "is_aligned_to: align is not a power-of-two";
@@ -770,15 +703,19 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_dead(_14);
         storage_dead(_12);
         storage_dead(s);
-        _4 = panic_fmt(move _5) -> bb5 (unwind: bb6);
+        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
     }
 
-    bb5: {
+    bb4: {
         undefined_behavior;
     }
 
-    bb6: {
+    bb5: {
         unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -836,14 +773,33 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_13);
         a = cast<u64, usize>(copy _11);
         storage_dead(_11);
-        if copy b -> bb1 else -> bb2;
+        if copy b -> bb1 else -> bb6;
     }
 
     bb1: {
-        _17 = cold_path() -> bb3 (unwind: bb4);
+        _17 = cold_path() -> bb2 (unwind: bb5);
     }
 
     bb2: {
+        storage_dead(a);
+        storage_dead(b);
+        storage_dead(_9);
+        _7 = panic_nounwind(const "is_nonoverlapping: `size_of::<T>() * count` overflows a usize") -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+
+    bb6: {
         _9 = Option::<usize>::Some { _0: copy a };
         storage_dead(a);
         storage_dead(b);
@@ -852,36 +808,17 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_9);
         storage_live(_18);
         _18 = copy src_usize < copy dst_usize;
-        if move _18 -> bb5 else -> bb6;
+        if move _18 -> bb7 else -> bb8;
     }
 
-    bb3: {
-        storage_dead(a);
-        storage_dead(b);
-        storage_dead(_9);
-        _7 = panic_nounwind(const "is_nonoverlapping: `size_of::<T>() * count` overflows a usize") -> bb7 (unwind: bb8);
-    }
-
-    bb4: {
-        undefined_behavior;
-    }
-
-    bb5: {
+    bb7: {
         diff = copy dst_usize wrap.- copy src_usize;
         goto bb9;
     }
 
-    bb6: {
+    bb8: {
         diff = copy src_usize wrap.- copy dst_usize;
         goto bb9;
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        undefined_behavior;
     }
 
     bb9: {
@@ -958,32 +895,23 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
         storage_live(is_zst);
         is_zst = copy zero_size;
         storage_live(_15);
-        _15 = is_aligned_to::<()>(copy src, copy align) -> bb4 (unwind: bb5);
+        _15 = is_aligned_to::<()>(copy src, copy align) -> bb4 (unwind: bb25);
     }
 
     bb4: {
-        if move _15 -> bb6 else -> bb7;
+        if move _15 -> bb5 else -> bb19;
     }
 
     bb5: {
-        unwind_terminate;
+        if copy is_zst -> bb6 else -> bb7;
     }
 
     bb6: {
-        if copy is_zst -> bb8 else -> bb9;
+        storage_dead(_15);
+        goto bb8;
     }
 
     bb7: {
-        storage_dead(_15);
-        goto bb10;
-    }
-
-    bb8: {
-        storage_dead(_15);
-        goto bb11;
-    }
-
-    bb9: {
         storage_live(_16);
         storage_live(_17);
         storage_live(_29);
@@ -997,37 +925,92 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
         _8 = ~(move _16);
         storage_dead(_16);
         storage_dead(_15);
-        if move _8 -> bb11 else -> bb10;
+        if move _8 -> bb8 else -> bb20;
     }
 
-    bb10: {
-        storage_dead(is_zst);
-        goto bb12;
-    }
-
-    bb11: {
+    bb8: {
         storage_dead(is_zst);
         storage_live(_10);
         ptr = cast<*mut (), *const ()>(copy dst);
         storage_live(_18);
-        _18 = is_aligned_to::<()>(copy ptr, move align) -> bb13 (unwind: bb14);
+        _18 = is_aligned_to::<()>(copy ptr, move align) -> bb9 (unwind: bb18);
+    }
+
+    bb9: {
+        if move _18 -> bb10 else -> bb17;
+    }
+
+    bb10: {
+        if copy zero_size -> bb11 else -> bb12;
+    }
+
+    bb11: {
+        storage_dead(_18);
+        goto bb13;
     }
 
     bb12: {
-        storage_dead(_10);
-        storage_dead(_8);
-        goto bb15;
+        storage_live(_19);
+        storage_live(_20);
+        storage_live(_30);
+        storage_live(_32);
+        _32 = cast<usize, *mut ()>(const 0usize);
+        _30 = copy dst != move _32;
+        _20 = cast<bool, usize>(move _30);
+        storage_dead(_30);
+        _19 = move _20 == const 0usize;
+        storage_dead(_20);
+        _10 = ~(move _19);
+        storage_dead(_19);
+        storage_dead(_18);
+        if move _10 -> bb13 else -> bb21;
     }
 
     bb13: {
-        if move _18 -> bb16 else -> bb17;
+        _6 = runtime(move src, move ptr, move size, move count) -> bb14 (unwind: bb16);
     }
 
     bb14: {
-        unwind_terminate;
+        storage_dead(_10);
+        storage_dead(_8);
+        if move _6 -> bb15 else -> bb22;
     }
 
     bb15: {
+        storage_dead(_6);
+        return;
+    }
+
+    bb16: {
+        unwind_terminate;
+    }
+
+    bb17: {
+        storage_dead(_18);
+        goto bb21;
+    }
+
+    bb18: {
+        unwind_terminate;
+    }
+
+    bb19: {
+        storage_dead(_15);
+        goto bb20;
+    }
+
+    bb20: {
+        storage_dead(is_zst);
+        goto bb21;
+    }
+
+    bb21: {
+        storage_dead(_10);
+        storage_dead(_8);
+        goto bb22;
+    }
+
+    bb22: {
         msg = const "unsafe precondition(s) violated: ptr::copy_nonoverlapping requires that both pointer arguments are aligned and non-null and the specified memory ranges do not overlap\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_14);
         storage_live(_21);
@@ -1055,65 +1038,19 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
         _14 = Arguments::<'_> { template: move _21, args: move _23 };
         storage_dead(_23);
         storage_dead(_21);
-        _13 = panic_nounwind_fmt(move _14, const false) -> bb18 (unwind: bb19);
-    }
-
-    bb16: {
-        if copy zero_size -> bb20 else -> bb21;
-    }
-
-    bb17: {
-        storage_dead(_18);
-        goto bb12;
-    }
-
-    bb18: {
-        undefined_behavior;
-    }
-
-    bb19: {
-        undefined_behavior;
-    }
-
-    bb20: {
-        storage_dead(_18);
-        goto bb22;
-    }
-
-    bb21: {
-        storage_live(_19);
-        storage_live(_20);
-        storage_live(_30);
-        storage_live(_32);
-        _32 = cast<usize, *mut ()>(const 0usize);
-        _30 = copy dst != move _32;
-        _20 = cast<bool, usize>(move _30);
-        storage_dead(_30);
-        _19 = move _20 == const 0usize;
-        storage_dead(_20);
-        _10 = ~(move _19);
-        storage_dead(_19);
-        storage_dead(_18);
-        if move _10 -> bb22 else -> bb12;
-    }
-
-    bb22: {
-        _6 = runtime(move src, move ptr, move size, move count) -> bb23 (unwind: bb24);
+        _13 = panic_nounwind_fmt(move _14, const false) -> bb23 (unwind: bb24);
     }
 
     bb23: {
-        storage_dead(_10);
-        storage_dead(_8);
-        if move _6 -> bb25 else -> bb15;
+        undefined_behavior;
     }
 
     bb24: {
-        unwind_terminate;
+        undefined_behavior;
     }
 
     bb25: {
-        storage_dead(_6);
-        return;
+        unwind_terminate;
     }
 }
 
@@ -1137,7 +1074,7 @@ pub fn core::ptr::copy_nonoverlapping::<i32>(src: *const i32, dst: *mut i32, cou
         _0 = ();
         storage_live(_7);
         _7 = ub_checks;
-        if move _7 -> bb1 else -> bb2;
+        if move _7 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -1145,21 +1082,21 @@ pub fn core::ptr::copy_nonoverlapping::<i32>(src: *const i32, dst: *mut i32, cou
         _5 = cast<*const i32, *const ()>(copy src);
         storage_live(_6);
         _6 = cast<*mut i32, *mut ()>(copy dst);
-        _4 = precondition_check(move _5, move _6, copy SIZE::<i32>, copy ALIGN::<i32>, copy count) -> bb3 (unwind: bb4);
+        _4 = precondition_check(move _5, move _6, copy SIZE::<i32>, copy ALIGN::<i32>, copy count) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        _8 = core::intrinsics::copy_nonoverlapping::<i32>(copy src, copy dst, copy count) -> bb5 (unwind: bb6);
+        storage_dead(_6);
+        storage_dead(_5);
+        goto bb4;
     }
 
     bb3: {
-        storage_dead(_6);
-        storage_dead(_5);
-        goto bb2;
+        undefined_behavior;
     }
 
     bb4: {
-        undefined_behavior;
+        _8 = core::intrinsics::copy_nonoverlapping::<i32>(copy src, copy dst, copy count) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -1266,7 +1203,7 @@ fn main()
         _24 = move _25;
         _6 = &(*_24);
         _5 = &(*_6);
-        _2 = write::<i32>(move _3, move _5) -> bb1 (unwind: bb2);
+        _2 = write::<i32>(move _3, move _5) -> bb1 (unwind: bb6);
     }
 
     bb1: {
@@ -1296,14 +1233,10 @@ fn main()
         storage_live(_14);
         _14 = copy (*right_val);
         _12 = move _13 == move _14;
-        if move _12 -> bb3 else -> bb4;
+        if move _12 -> bb2 else -> bb3;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_14);
         storage_dead(_13);
         storage_dead(_12);
@@ -1315,7 +1248,7 @@ fn main()
         return;
     }
 
-    bb4: {
+    bb3: {
         storage_dead(_14);
         storage_dead(_13);
         storage_live(kind);
@@ -1333,11 +1266,15 @@ fn main()
         _20 = &(*_21);
         storage_live(_22);
         _22 = Option::<Arguments::<'_>>::None {  };
-        _16 = assert_failed::<i32, i32>(move _17, move _18, move _20, move _22) -> bb5 (unwind: bb6);
+        _16 = assert_failed::<i32, i32>(move _17, move _18, move _20, move _22) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 
     bb5: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb6: {

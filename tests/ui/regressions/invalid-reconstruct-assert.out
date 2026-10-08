@@ -9,15 +9,6 @@ pub enum Ordering {
   Greater,
 }
 
-// Full name: core::cmp::Ord
-#[diagnostic_item("Ord")]
-trait Ord
-
-// Full name: core::cmp::impls::{impl Ord for u32}
-impl "impl_Ord_for_u32" Ord for u32 {
-    non-dyn-compatible
-}
-
 // Full name: core::cmp::impls::{impl Ord for u32}::cmp
 pub fn cmp(self: &'_ u32, other: &'_ u32) -> Ordering
 {
@@ -217,23 +208,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -241,18 +225,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -260,7 +247,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -268,7 +259,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -558,30 +549,22 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
         false_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _18);
         storage_dead(_18);
         storage_live(guard_8);
-        guard_8 = core::intrinsics::select_unpredictable::<*mut usize>(copy condition, copy true_ptr, copy false_ptr) -> bb1 (unwind: bb2);
+        guard_8 = core::intrinsics::select_unpredictable::<*mut usize>(copy condition, copy true_ptr, copy false_ptr) -> bb1 (unwind: bb12);
     }
 
     bb1: {
-        drop = core::intrinsics::select_unpredictable::<*mut usize>(copy condition, move false_ptr, move true_ptr) -> bb3 (unwind: bb4);
+        drop = core::intrinsics::select_unpredictable::<*mut usize>(copy condition, move false_ptr, move true_ptr) -> bb2 (unwind: bb11);
     }
 
     bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
         storage_live(guard_10);
         guard_10 = DropOnPanic::<usize> { inner: copy guard_8 };
         storage_live(_19);
         _19 = &mut (*drop);
-        _11 = drop_glue::<usize>(move _19) -> bb5 (unwind: bb6);
+        _11 = drop_glue::<usize>(move _19) -> bb3 (unwind: bb8);
     }
 
-    bb4: {
-        undefined_behavior;
-    }
-
-    bb5: {
+    bb3: {
         storage_dead(_19);
         storage_live(t);
         t = move guard_10.inner;
@@ -591,33 +574,16 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
         _13 = move true_val_4;
         storage_live(_14);
         _14 = move false_val_5;
-        self = core::intrinsics::select_unpredictable::<MaybeUninit::<usize>>(move condition, move _13, move _14) -> bb7 (unwind: bb8);
+        self = core::intrinsics::select_unpredictable::<MaybeUninit::<usize>>(move condition, move _13, move _14) -> bb4 (unwind: bb7);
     }
 
-    bb6: {
-        _22 = &raw mut guard_10;
-        _23 = drop_glue::<DropOnPanic::<usize>>(move _22) -> bb9 (unwind: bb10);
-    }
-
-    bb7: {
+    bb4: {
         storage_dead(_14);
         storage_dead(_13);
-        _20 = assert_inhabited::<usize>() -> bb11 (unwind: bb12);
+        _20 = assert_inhabited::<usize>() -> bb5 (unwind: bb6);
     }
 
-    bb8: {
-        undefined_behavior;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
-        unwind_terminate;
-    }
-
-    bb11: {
+    bb5: {
         _0 = transmute<MaybeUninit::<usize>, usize>(copy self);
         storage_dead(self);
         storage_dead(guard_10);
@@ -629,18 +595,34 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
         return;
     }
 
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        _22 = &raw mut guard_10;
+        _23 = drop_glue::<DropOnPanic::<usize>>(move _22) -> bb9 (unwind: bb10);
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_terminate;
+    }
+
+    bb11: {
+        undefined_behavior;
+    }
+
     bb12: {
         undefined_behavior;
     }
-}
-
-// Full name: core::ops::drop::Drop
-#[lang_item(Drop)]
-trait Drop
-
-// Full name: core::hint::select_unpredictable::{impl Drop for DropOnPanic::<_>}
-impl<T> Drop for DropOnPanic::<_> {
-    non-dyn-compatible
 }
 
 // Full name: core::intrinsics::assume
@@ -648,38 +630,11 @@ impl<T> Drop for DropOnPanic::<_> {
 pub fn assume(b_1: bool)
 = <intrinsic:assume>
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
 // Full name: core::result::Result::<usize, usize>
 #[diagnostic_item("Result")]
 pub enum Result::<usize, usize> {
   Ok { _0: usize },
   Err { _0: usize },
-}
-
-// Full name: core::slice::index::SliceIndex
-#[diagnostic_item("SliceIndex")]
-trait SliceIndex
-
-// Full name: core::slice::index::{impl SliceIndex<[T]> for usize}
-impl<T> "impl_SliceIndex_slice_for_usize" SliceIndex<[T]> for usize {
-    non-dyn-compatible
 }
 
 // Full name: core::slice::index::{impl SliceIndex<[T]> for usize}::get_unchecked::precondition_check
@@ -891,28 +846,24 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
         _51 = Result::<usize, usize>::Err { _0: const 0usize };
         _0 = move _51;
         storage_dead(size);
-        goto bb3;
+        goto bb32;
     }
 
     bb2: {
         storage_dead(_4);
         base = const 0usize;
-        goto bb4;
+        goto bb3;
     }
 
     bb3: {
-        return;
-    }
-
-    bb4: {
         storage_live(_6);
         storage_live(_7);
         _7 = copy size;
         _6 = move _7 > const 1usize;
-        if move _6 -> bb5 else -> bb6;
+        if move _6 -> bb4 else -> bb13;
     }
 
-    bb5: {
+    bb4: {
         storage_dead(_7);
         storage_live(half);
         storage_live(_9);
@@ -931,10 +882,71 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
         storage_live(_29);
         storage_live(_43);
         _43 = ub_checks;
-        if move _43 -> bb7 else -> bb8;
+        if move _43 -> bb5 else -> bb8;
+    }
+
+    bb5: {
+        storage_live(_31);
+        _31 = copy self.metadata;
+        _30 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy mid, move _31) -> bb6 (unwind: bb7);
     }
 
     bb6: {
+        storage_dead(_31);
+        goto bb8;
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        storage_live(_32);
+        storage_live(_33);
+        _33 = copy self.metadata;
+        _32 = copy mid < move _33;
+        storage_dead(_33);
+        _45 = assume(move _32) -> bb9 (unwind: bb12);
+    }
+
+    bb9: {
+        storage_dead(_32);
+        _29 = &raw const (*self)[copy mid];
+        _15 = &(*_29);
+        storage_dead(_29);
+        _14 = (copy _15,);
+        cmp_12 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _13, move _14) -> bb10 (unwind: bb34);
+    }
+
+    bb10: {
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_live(_16);
+        storage_live(_17);
+        storage_live(_34);
+        _34 = @discriminant(cmp_12);
+        _17 = copy _34 == const 1i8;
+        storage_dead(_34);
+        _16 = core::hint::select_unpredictable::<usize>(move _17, move base, move mid) -> bb11 (unwind: bb34);
+    }
+
+    bb11: {
+        storage_dead(_17);
+        base = move _16;
+        storage_dead(_16);
+        size = copy size wrap.- copy half;
+        storage_dead(cmp_12);
+        storage_dead(mid);
+        storage_dead(half);
+        storage_dead(_6);
+        goto bb3;
+    }
+
+    bb12: {
+        undefined_behavior;
+    }
+
+    bb13: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(cmp_18);
@@ -946,118 +958,49 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
         storage_live(_35);
         storage_live(_44);
         _44 = ub_checks;
-        if move _44 -> bb9 else -> bb10;
-    }
-
-    bb7: {
-        storage_live(_31);
-        _31 = copy self.metadata;
-        _30 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy mid, move _31) -> bb11 (unwind: bb12);
-    }
-
-    bb8: {
-        storage_live(_32);
-        storage_live(_33);
-        _33 = copy self.metadata;
-        _32 = copy mid < move _33;
-        storage_dead(_33);
-        _45 = assume(move _32) -> bb13 (unwind: bb14);
-    }
-
-    bb9: {
-        storage_live(_37);
-        _37 = copy self.metadata;
-        _36 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy index, move _37) -> bb17 (unwind: bb18);
-    }
-
-    bb10: {
-        storage_live(_38);
-        _39 = copy self.metadata;
-        _38 = copy index < copy _39;
-        _46 = assume(move _38) -> bb19 (unwind: bb20);
-    }
-
-    bb11: {
-        storage_dead(_31);
-        goto bb8;
-    }
-
-    bb12: {
-        undefined_behavior;
-    }
-
-    bb13: {
-        storage_dead(_32);
-        _29 = &raw const (*self)[copy mid];
-        _15 = &(*_29);
-        storage_dead(_29);
-        _14 = (copy _15,);
-        cmp_12 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _13, move _14) -> bb15 (unwind: bb16);
+        if move _44 -> bb14 else -> bb17;
     }
 
     bb14: {
-        undefined_behavior;
+        storage_live(_37);
+        _37 = copy self.metadata;
+        _36 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy index, move _37) -> bb15 (unwind: bb16);
     }
 
     bb15: {
-        storage_dead(_14);
-        storage_dead(_13);
-        storage_live(_16);
-        storage_live(_17);
-        storage_live(_34);
-        _34 = @discriminant(cmp_12);
-        _17 = copy _34 == const 1i8;
-        storage_dead(_34);
-        _16 = core::hint::select_unpredictable::<usize>(move _17, move base, move mid) -> bb22 (unwind: bb16);
+        storage_dead(_37);
+        goto bb17;
     }
 
     bb16: {
-        unwind_continue;
-    }
-
-    bb17: {
-        storage_dead(_37);
-        goto bb10;
-    }
-
-    bb18: {
         undefined_behavior;
     }
 
-    bb19: {
+    bb17: {
+        storage_live(_38);
+        _39 = copy self.metadata;
+        _38 = copy index < copy _39;
+        _46 = assume(move _38) -> bb18 (unwind: bb35);
+    }
+
+    bb18: {
         storage_dead(_38);
         _35 = &raw const (*self)[copy index];
         _21 = &(*_35);
         storage_dead(_35);
         storage_dead(index);
         _20 = (copy _21,);
-        cmp_18 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _19, move _20) -> bb21 (unwind: bb16);
+        cmp_18 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Ordering, ()>(move _19, move _20) -> bb19 (unwind: bb34);
     }
 
-    bb20: {
-        undefined_behavior;
-    }
-
-    bb21: {
+    bb19: {
         storage_dead(_20);
         storage_dead(_19);
         _40 = @discriminant(cmp_18);
-        switch copy _40 -> 0i8: bb23, otherwise: bb24;
+        switch copy _40 -> 0i8: bb20, otherwise: bb26;
     }
 
-    bb22: {
-        storage_dead(_17);
-        base = move _16;
-        storage_dead(_16);
-        size = copy size wrap.- copy half;
-        storage_dead(cmp_12);
-        storage_dead(mid);
-        storage_dead(half);
-        storage_dead(_6);
-        goto bb4;
-    }
-
-    bb23: {
+    bb20: {
         storage_live(cond_23);
         storage_live(_24);
         _24 = copy base;
@@ -1065,10 +1008,32 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
         storage_dead(_24);
         storage_live(_47);
         _47 = ub_checks;
-        if move _47 -> bb25 else -> bb26;
+        if move _47 -> bb21 else -> bb23;
+    }
+
+    bb21: {
+        _41 = core::hint::assert_unchecked::precondition_check(copy cond_23) -> bb23 (unwind: bb22);
+    }
+
+    bb22: {
+        undefined_behavior;
+    }
+
+    bb23: {
+        _49 = assume(copy cond_23) -> bb24 (unwind: bb25);
     }
 
     bb24: {
+        storage_dead(cond_23);
+        _0 = Result::<usize, usize>::Ok { _0: move base };
+        goto bb31;
+    }
+
+    bb25: {
+        undefined_behavior;
+    }
+
+    bb26: {
         storage_live(result);
         storage_live(_26);
         storage_live(_27);
@@ -1081,43 +1046,36 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
         cond_28 = copy result <= copy _39;
         storage_live(_48);
         _48 = ub_checks;
-        if move _48 -> bb27 else -> bb28;
-    }
-
-    bb25: {
-        _41 = core::hint::assert_unchecked::precondition_check(copy cond_23) -> bb26 (unwind: bb29);
-    }
-
-    bb26: {
-        _49 = assume(copy cond_23) -> bb30 (unwind: bb31);
+        if move _48 -> bb27 else -> bb29;
     }
 
     bb27: {
-        _42 = core::hint::assert_unchecked::precondition_check(copy cond_28) -> bb28 (unwind: bb33);
+        _42 = core::hint::assert_unchecked::precondition_check(copy cond_28) -> bb29 (unwind: bb28);
     }
 
     bb28: {
-        _50 = assume(copy cond_28) -> bb34 (unwind: bb35);
+        undefined_behavior;
     }
 
     bb29: {
-        undefined_behavior;
+        _50 = assume(copy cond_28) -> bb30 (unwind: bb33);
     }
 
     bb30: {
-        storage_dead(cond_23);
-        _0 = Result::<usize, usize>::Ok { _0: move base };
-        goto bb32;
+        storage_dead(cond_28);
+        _0 = Result::<usize, usize>::Err { _0: copy result };
+        storage_dead(result);
+        goto bb31;
     }
 
     bb31: {
-        undefined_behavior;
+        storage_dead(cmp_18);
+        storage_dead(size);
+        goto bb32;
     }
 
     bb32: {
-        storage_dead(cmp_18);
-        storage_dead(size);
-        goto bb3;
+        return;
     }
 
     bb33: {
@@ -1125,10 +1083,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
     }
 
     bb34: {
-        storage_dead(cond_28);
-        _0 = Result::<usize, usize>::Err { _0: copy result };
-        storage_dead(result);
-        goto bb32;
+        unwind_continue;
     }
 
     bb35: {

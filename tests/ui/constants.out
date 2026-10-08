@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_, _)::<i32, bool> {
   _0: i32,
   _1: bool,
@@ -172,20 +169,21 @@ pub fn get_z2() -> i32
         storage_live(_0);
         storage_live(_1);
         storage_live(_2);
-        _2 = get_z1() -> bb1 (unwind: bb2);
+        _2 = get_z1() -> bb1 (unwind: bb6);
     }
 
     bb1: {
-        _1 = add(move _2, copy Q3) -> bb3 (unwind: bb4);
+        _1 = add(move _2, copy Q3) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_2);
+        _0 = add(copy Q1, move _1) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_dead(_2);
-        _0 = add(copy Q1, move _1) -> bb5 (unwind: bb6);
+        storage_dead(_1);
+        return;
     }
 
     bb4: {
@@ -193,8 +191,7 @@ pub fn get_z2() -> i32
     }
 
     bb5: {
-        storage_dead(_1);
-        return;
+        unwind_continue;
     }
 
     bb6: {

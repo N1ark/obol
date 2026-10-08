@@ -115,15 +115,6 @@ pub fn integer_min::<usize>(a_1: usize, b_2: usize) -> usize
 pub fn ctpop::<usize>(x_1: usize) -> u32
 = <intrinsic:ctpop>
 
-// Full name: core::iter::traits::collect::IntoIterator
-#[diagnostic_item("IntoIterator")]
-trait IntoIterator
-
-// Full name: core::iter::traits::collect::{impl IntoIterator for I}
-impl<I> "impl_IntoIterator_for_T" IntoIterator for I {
-    non-dyn-compatible
-}
-
 // Full name: core::slice::iter::Chunks::<'_, u8>
 pub struct Chunks::<'_, u8> {
   v: &'_ [u8],
@@ -142,11 +133,6 @@ pub fn into_iter::<Chunks::<'_, u8>>(self: Chunks::<'_, u8>) -> Chunks::<'_, u8>
         return;
     }
 }
-
-// Full name: core::iter::traits::iterator::Iterator
-#[lang_item(Iterator)]
-#[diagnostic_item("Iterator")]
-trait Iterator
 
 // Full name: core::mem::SizedTypeProperties::SIZE::<u8>
 #[lang_item(SizeOf)]
@@ -177,15 +163,6 @@ pub enum Option::<&'_ [u8]> {
   Some { _0: &'_ [u8] },
 }
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
@@ -204,15 +181,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     bb2: {
         undefined_behavior;
     }
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -264,23 +232,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -288,18 +249,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -307,7 +271,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -315,7 +283,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -412,20 +380,16 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_4);
         storage_live(_3);
         storage_live(_9);
-        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb2);
+        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         _3 = move _9 == const 1u32;
         storage_dead(_9);
-        if move _3 -> bb3 else -> bb4;
+        if move _3 -> bb2 else -> bb3;
     }
 
     bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
         storage_dead(_3);
         storage_live(_6);
         storage_live(_7);
@@ -443,7 +407,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         return;
     }
 
-    bb4: {
+    bb3: {
         storage_live(_5);
         storage_live(s);
         s = const "is_aligned_to: align is not a power-of-two";
@@ -473,21 +437,20 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_dead(_14);
         storage_dead(_12);
         storage_dead(s);
-        _4 = panic_fmt(move _5) -> bb5 (unwind: bb6);
+        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
     }
 
-    bb5: {
+    bb4: {
         undefined_behavior;
     }
 
-    bb6: {
+    bb5: {
         unwind_continue;
     }
-}
 
-// Full name: core::slice::iter::{impl Iterator for Chunks::<'_, _>}
-impl<'a, _, T> Iterator for Chunks::<'_, _> {
-    non-dyn-compatible
+    bb6: {
+        undefined_behavior;
+    }
 }
 
 #[track_caller]
@@ -528,18 +491,14 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         storage_live(ptr);
         ptr = cast<*mut (), *const ()>(copy data);
         storage_live(_11);
-        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb2);
+        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb13);
     }
 
     bb1: {
-        if move _11 -> bb3 else -> bb4;
+        if move _11 -> bb2 else -> bb8;
     }
 
     bb2: {
-        unwind_terminate;
-    }
-
-    bb3: {
         storage_live(_12);
         storage_live(_13);
         storage_live(_23);
@@ -553,37 +512,49 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         _5 = ~(move _12);
         storage_dead(_12);
         storage_dead(_11);
-        if move _5 -> bb5 else -> bb6;
+        if move _5 -> bb3 else -> bb9;
+    }
+
+    bb3: {
+        storage_dead(ptr);
+        storage_live(_7);
+        storage_live(max_len);
+        switch copy size -> 0usize: bb4, otherwise: bb5;
     }
 
     bb4: {
-        storage_dead(_11);
+        max_len = const 18446744073709551615usize;
         goto bb6;
     }
 
     bb5: {
-        storage_dead(ptr);
-        storage_live(_7);
-        storage_live(max_len);
-        switch copy size -> 0usize: bb7, otherwise: bb8;
+        max_len = const 9223372036854775807usize ub./ copy size;
+        goto bb6;
     }
 
     bb6: {
-        storage_dead(ptr);
-        goto bb9;
+        _7 = copy len <= move max_len;
+        storage_dead(max_len);
+        if move _7 -> bb7 else -> bb10;
     }
 
     bb7: {
-        max_len = const 18446744073709551615usize;
-        goto bb10;
+        storage_dead(_7);
+        storage_dead(_5);
+        return;
     }
 
     bb8: {
-        max_len = const 9223372036854775807usize ub./ copy size;
-        goto bb10;
+        storage_dead(_11);
+        goto bb9;
     }
 
     bb9: {
+        storage_dead(ptr);
+        goto bb10;
+    }
+
+    bb10: {
         msg = const "unsafe precondition(s) violated: slice::from_raw_parts requires the pointer to be aligned and non-null, and the total size of the slice not to exceed `isize::MAX`\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_10);
         storage_live(_15);
@@ -614,12 +585,6 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         _9 = panic_nounwind_fmt(move _10, const false) -> bb11 (unwind: bb12);
     }
 
-    bb10: {
-        _7 = copy len <= move max_len;
-        storage_dead(max_len);
-        if move _7 -> bb13 else -> bb9;
-    }
-
     bb11: {
         undefined_behavior;
     }
@@ -629,9 +594,7 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
     }
 
     bb13: {
-        storage_dead(_7);
-        storage_dead(_5);
-        return;
+        unwind_terminate;
     }
 }
 
@@ -747,31 +710,40 @@ pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u
         ptr = cast<*const [u8], *const u8>(copy _10);
         storage_live(_17);
         _17 = ub_checks;
-        if move _17 -> bb1 else -> bb2;
+        if move _17 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _5 = core::slice::{[T]}::split_at_unchecked::precondition_check(copy mid, copy len_3) -> bb2 (unwind: bb3);
+        _5 = core::slice::{[T]}::split_at_unchecked::precondition_check(copy mid, copy len_3) -> bb3 (unwind: bb2);
     }
 
     bb2: {
-        storage_live(_6);
-        storage_live(_18);
-        _18 = ub_checks;
-        if move _18 -> bb4 else -> bb5;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        storage_live(_6);
+        storage_live(_18);
+        _18 = ub_checks;
+        if move _18 -> bb4 else -> bb7;
     }
 
     bb4: {
         storage_live(_12);
         _12 = cast<*const [u8], *mut ()>(copy _10);
-        _11 = core::slice::raw::from_raw_parts::precondition_check(move _12, copy SIZE::<u8>, copy ALIGN::<u8>, copy mid) -> bb6 (unwind: bb7);
+        _11 = core::slice::raw::from_raw_parts::precondition_check(move _12, copy SIZE::<u8>, copy ALIGN::<u8>, copy mid) -> bb5 (unwind: bb6);
     }
 
     bb5: {
+        storage_dead(_12);
+        goto bb7;
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         storage_live(_13);
         _13 = *const (copy ptr, copy mid);
         _6 = &(*_13) with_metadata(copy _13.metadata);
@@ -783,25 +755,25 @@ pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u
         len_9 = copy len_3 ub.- copy mid;
         storage_live(_19);
         _19 = ub_checks;
-        if move _19 -> bb8 else -> bb9;
-    }
-
-    bb6: {
-        storage_dead(_12);
-        goto bb5;
-    }
-
-    bb7: {
-        undefined_behavior;
+        if move _19 -> bb8 else -> bb11;
     }
 
     bb8: {
         storage_live(_15);
         _15 = cast<*const u8, *mut ()>(copy data);
-        _14 = core::slice::raw::from_raw_parts::precondition_check(move _15, copy SIZE::<u8>, copy ALIGN::<u8>, copy len_9) -> bb10 (unwind: bb11);
+        _14 = core::slice::raw::from_raw_parts::precondition_check(move _15, copy SIZE::<u8>, copy ALIGN::<u8>, copy len_9) -> bb9 (unwind: bb10);
     }
 
     bb9: {
+        storage_dead(_15);
+        goto bb11;
+    }
+
+    bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
         storage_live(_16);
         _16 = *const (copy data, copy len_9);
         _7 = &(*_16) with_metadata(copy _16.metadata);
@@ -814,15 +786,6 @@ pub fn split_at_unchecked::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u
         storage_dead(ptr);
         storage_dead(len_3);
         return;
-    }
-
-    bb10: {
-        storage_dead(_15);
-        goto bb9;
-    }
-
-    bb11: {
-        undefined_behavior;
     }
 }
 
@@ -857,16 +820,29 @@ pub fn split_at::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u8])
         storage_live(_7);
         _7 = copy self.metadata;
         _6 = copy mid <= move _7;
-        if move _6 -> bb1 else -> bb2;
+        if move _6 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_dead(_7);
         storage_live(_8);
-        _8 = split_at_unchecked::<u8>(move self, move mid) -> bb3 (unwind: bb4);
+        _8 = split_at_unchecked::<u8>(move self, move mid) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        _3 = Option::<(&'_ [u8], &'_ [u8])>::Some { _0: move _8 };
+        storage_dead(_8);
+        storage_dead(_6);
+        pair = copy (_3 as variant Option::<(&'_ [u8], &'_ [u8])>::Some)._0;
+        storage_dead(_3);
+        return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(_5);
@@ -899,19 +875,6 @@ pub fn split_at::<u8>(self: &'_ [u8], mid: usize) -> (&'_ [u8], &'_ [u8])
         storage_dead(_10);
         storage_dead(s);
         _4 = panic_fmt(move _5) -> bb5 (unwind: bb6);
-    }
-
-    bb3: {
-        _3 = Option::<(&'_ [u8], &'_ [u8])>::Some { _0: move _8 };
-        storage_dead(_8);
-        storage_dead(_6);
-        pair = copy (_3 as variant Option::<(&'_ [u8], &'_ [u8])>::Some)._0;
-        storage_dead(_3);
-        return;
-    }
-
-    bb4: {
-        unwind_continue;
     }
 
     bb5: {
@@ -959,7 +922,7 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         storage_live(_13);
         _13 = Option::<&'_ [u8]>::None {  };
         _0 = move _13;
-        goto bb3;
+        goto bb5;
     }
 
     bb2: {
@@ -969,27 +932,18 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         v1 = copy _10.metadata;
         storage_live(v2);
         v2 = copy (*self_1).chunk_size;
-        chunksz = integer_min::<usize>(move v1, move v2) -> bb4 (unwind: bb5);
+        chunksz = integer_min::<usize>(move v1, move v2) -> bb3 (unwind: bb7);
     }
 
     bb3: {
-        storage_dead(_2);
-        return;
-    }
-
-    bb4: {
         storage_dead(v2);
         storage_dead(v1);
         storage_live(_8);
         _11 = copy (*self_1).v;
-        _8 = split_at::<u8>(move _11, move chunksz) -> bb6 (unwind: bb7);
+        _8 = split_at::<u8>(move _11, move chunksz) -> bb4 (unwind: bb6);
     }
 
-    bb5: {
-        undefined_behavior;
-    }
-
-    bb6: {
+    bb4: {
         storage_live(fst);
         fst = copy _8._0;
         storage_live(snd);
@@ -1000,11 +954,20 @@ pub fn next::<'_, u8>(self_1: &'_ mut Chunks::<'_, u8>) -> Option::<&'_ [u8]>
         storage_dead(snd);
         storage_dead(fst);
         storage_dead(chunksz);
-        goto bb3;
+        goto bb5;
+    }
+
+    bb5: {
+        storage_dead(_2);
+        return;
+    }
+
+    bb6: {
+        unwind_continue;
     }
 
     bb7: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
 
@@ -1030,7 +993,7 @@ pub fn chunks::<u8>(self: &'_ [u8], chunk_size: usize) -> Chunks::<'_, u8>
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        switch copy chunk_size -> 0usize: bb1, otherwise: bb2;
+        switch copy chunk_size -> 0usize: bb1, otherwise: bb4;
     }
 
     bb1: {
@@ -1063,20 +1026,20 @@ pub fn chunks::<u8>(self: &'_ [u8], chunk_size: usize) -> Chunks::<'_, u8>
         storage_dead(_8);
         storage_dead(_6);
         storage_dead(s);
-        _3 = panic_fmt(move _4) -> bb3 (unwind: bb4);
+        _3 = panic_fmt(move _4) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        _0 = Chunks::<'_, u8> { v: copy self, chunk_size: copy chunk_size };
-        return;
-    }
-
-    bb3: {
         undefined_behavior;
     }
 
-    bb4: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        _0 = Chunks::<'_, u8> { v: copy self, chunk_size: copy chunk_size };
+        return;
     }
 }
 
@@ -1112,7 +1075,7 @@ fn f1(a: &'_ [u8]) -> usize
         _5 = const 0usize;
         _4 = copy (*a)[copy _5];
         _3 = move _4 < const 42u8;
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -1124,16 +1087,10 @@ fn f1(a: &'_ [u8]) -> usize
         _8 = const 1usize;
         _7 = copy (*a)[copy _8];
         _6 = move _7 < const 16u8;
-        if move _6 -> bb3 else -> bb4;
+        if move _6 -> bb2 else -> bb3;
     }
 
     bb2: {
-        storage_dead(_5);
-        storage_dead(_4);
-        goto bb5;
-    }
-
-    bb3: {
         storage_dead(_8);
         storage_dead(_7);
         _9 = copy sampled panic.+ const 100usize;
@@ -1141,9 +1098,15 @@ fn f1(a: &'_ [u8]) -> usize
         goto bb5;
     }
 
-    bb4: {
+    bb3: {
         storage_dead(_8);
         storage_dead(_7);
+        goto bb5;
+    }
+
+    bb4: {
+        storage_dead(_5);
+        storage_dead(_4);
         goto bb5;
     }
 
@@ -1222,49 +1185,37 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_live(_5);
         storage_live(_6);
         _6 = &(*a) with_metadata(copy a.metadata);
-        _5 = chunks::<u8>(move _6, const 3usize) -> bb1 (unwind: bb2);
+        _5 = chunks::<u8>(move _6, const 3usize) -> bb1 (unwind: bb20);
     }
 
     bb1: {
         storage_dead(_6);
-        _4 = into_iter::<Chunks::<'_, u8>>(move _5) -> bb3 (unwind: bb4);
+        _4 = into_iter::<Chunks::<'_, u8>>(move _5) -> bb2 (unwind: bb19);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_live(iter);
         iter = move _4;
-        goto bb5;
+        goto bb3;
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_live(_8);
         storage_live(_9);
         storage_live(_10);
         _10 = &mut iter;
         _9 = &two-phase-mut (*_10);
-        _8 = next::<'_, u8>(move _9) -> bb6 (unwind: bb7);
+        _8 = next::<'_, u8>(move _9) -> bb4 (unwind: bb18);
     }
 
-    bb6: {
+    bb4: {
         storage_dead(_9);
         _11 = @discriminant(_8);
-        switch move _11 -> 0isize: bb8, 1isize: bb9, otherwise: bb10;
+        switch move _11 -> 0isize: bb5, 1isize: bb6, otherwise: bb17;
     }
 
-    bb7: {
-        unwind_continue;
-    }
-
-    bb8: {
+    bb5: {
         storage_dead(_10);
         storage_dead(_8);
         storage_dead(iter);
@@ -1274,7 +1225,7 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         return;
     }
 
-    bb9: {
+    bb6: {
         storage_live(bytes);
         bytes = copy (_8 as variant Option::<&'_ [u8]>::Some)._0;
         storage_live(b1);
@@ -1333,28 +1284,19 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_live(_33);
         _33 = copy d1;
         _32 = move _33 < copy FIELD_MODULUS;
-        if move _32 -> bb11 else -> bb12;
+        if move _32 -> bb7 else -> bb10;
     }
 
-    bb10: {
-        undefined_behavior;
-    }
-
-    bb11: {
+    bb7: {
         storage_dead(_33);
         storage_live(_34);
         storage_live(_35);
         _35 = copy sampled;
         _34 = move _35 < const 16usize;
-        if move _34 -> bb13 else -> bb14;
+        if move _34 -> bb8 else -> bb9;
     }
 
-    bb12: {
-        storage_dead(_33);
-        goto bb15;
-    }
-
-    bb13: {
+    bb8: {
         storage_dead(_35);
         storage_live(_36);
         _36 = copy d1;
@@ -1365,39 +1307,39 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_dead(_37);
         _38 = copy sampled panic.+ const 1usize;
         sampled = move _38;
-        goto bb15;
+        goto bb11;
     }
 
-    bb14: {
+    bb9: {
         storage_dead(_35);
-        goto bb15;
+        goto bb11;
     }
 
-    bb15: {
+    bb10: {
+        storage_dead(_33);
+        goto bb11;
+    }
+
+    bb11: {
         storage_dead(_34);
         storage_dead(_32);
         storage_live(_39);
         storage_live(_40);
         _40 = copy d2;
         _39 = move _40 < copy FIELD_MODULUS;
-        if move _39 -> bb16 else -> bb17;
+        if move _39 -> bb12 else -> bb15;
     }
 
-    bb16: {
+    bb12: {
         storage_dead(_40);
         storage_live(_41);
         storage_live(_42);
         _42 = copy sampled;
         _41 = move _42 < const 16usize;
-        if move _41 -> bb18 else -> bb19;
+        if move _41 -> bb13 else -> bb14;
     }
 
-    bb17: {
-        storage_dead(_40);
-        goto bb20;
-    }
-
-    bb18: {
+    bb13: {
         storage_dead(_42);
         storage_live(_43);
         _43 = copy d2;
@@ -1408,15 +1350,20 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_dead(_44);
         _45 = copy sampled panic.+ const 1usize;
         sampled = move _45;
-        goto bb20;
+        goto bb16;
     }
 
-    bb19: {
+    bb14: {
         storage_dead(_42);
-        goto bb20;
+        goto bb16;
     }
 
-    bb20: {
+    bb15: {
+        storage_dead(_40);
+        goto bb16;
+    }
+
+    bb16: {
         storage_dead(_41);
         storage_dead(_39);
         storage_dead(d2);
@@ -1427,7 +1374,23 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_dead(bytes);
         storage_dead(_10);
         storage_dead(_8);
-        goto bb5;
+        goto bb3;
+    }
+
+    bb17: {
+        undefined_behavior;
+    }
+
+    bb18: {
+        unwind_continue;
+    }
+
+    bb19: {
+        unwind_continue;
+    }
+
+    bb20: {
+        unwind_continue;
     }
 }
 

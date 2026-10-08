@@ -1,14 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::array::iter::iter_inner::PartialDrop
-trait PartialDrop
-
-// Full name: core::array::iter::iter_inner::{impl PartialDrop for [MaybeUninit::<_>]}
-impl<T> "impl_PartialDrop_for_slice" PartialDrop for [MaybeUninit::<_>] {
-    non-dyn-compatible
-}
-
 struct () {}
 
 struct str {
@@ -185,23 +177,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -209,18 +194,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -228,7 +216,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -236,7 +228,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -440,7 +432,7 @@ fn impl_PartialDrop_for_slice::partial_drop::<i32>(self_1: &'_ mut [MaybeUninit:
         slice = &raw mut (*self_1) with_metadata(copy self_1.metadata);
         storage_live(_17);
         _17 = ub_checks;
-        if move _17 -> bb1 else -> bb2;
+        if move _17 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -448,10 +440,20 @@ fn impl_PartialDrop_for_slice::partial_drop::<i32>(self_1: &'_ mut [MaybeUninit:
         _7 = copy alive.end;
         storage_live(_8);
         _8 = copy self_1.metadata;
-        _6 = impl_SliceIndex_slice_for_IndexRange::get_unchecked_mut::precondition_check(move _7, move _8) -> bb3 (unwind: bb4);
+        _6 = impl_SliceIndex_slice_for_IndexRange::get_unchecked_mut::precondition_check(move _7, move _8) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        storage_dead(_8);
+        storage_dead(_7);
+        goto bb4;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
         storage_live(offset);
         offset = copy alive.start;
         storage_live(_11);
@@ -470,48 +472,33 @@ fn impl_PartialDrop_for_slice::partial_drop::<i32>(self_1: &'_ mut [MaybeUninit:
         self_3 = &mut (*_4) with_metadata(copy _4.metadata);
         storage_dead(_4);
         storage_live(to_drop);
-        switch copy len -> 0usize: bb5, otherwise: bb6;
-    }
-
-    bb3: {
-        storage_dead(_8);
-        storage_dead(_7);
-        goto bb2;
-    }
-
-    bb4: {
-        undefined_behavior;
+        switch copy len -> 0usize: bb7, otherwise: bb5;
     }
 
     bb5: {
-        storage_dead(to_drop);
-        storage_dead(self_3);
-        return;
-    }
-
-    bb6: {
         storage_live(_15);
         _15 = &raw mut (*self_3) with_metadata(copy self_3.metadata);
         to_drop = cast<*mut [MaybeUninit::<i32>], *mut [i32]>(copy _15);
         storage_live(_16);
         _16 = &mut (*to_drop) with_metadata(copy to_drop.metadata);
-        _0 = drop_glue::<[i32]>(move _16) -> bb7 (unwind: bb8);
+        _0 = drop_glue::<[i32]>(move _16) -> bb6 (unwind: bb8);
+    }
+
+    bb6: {
+        storage_dead(_16);
+        storage_dead(_15);
+        goto bb7;
     }
 
     bb7: {
-        storage_dead(_16);
-        storage_dead(_15);
-        goto bb5;
+        storage_dead(to_drop);
+        storage_dead(self_3);
+        return;
     }
 
     bb8: {
         unwind_continue;
     }
-}
-
-// Full name: core::array::iter::iter_inner::{impl PartialDrop for [MaybeUninit::<_>; N]}
-impl<T, const _ : type_error("const generic param type"), const N : type_error("const generic param type")> "impl_PartialDrop_for_array" PartialDrop for [MaybeUninit::<_>; N] {
-    non-dyn-compatible
 }
 
 // Full name: core::array::iter::iter_inner::{impl PartialDrop for [MaybeUninit::<_>; N]}::partial_drop::<i32, 7usize>
@@ -550,15 +537,6 @@ struct PolymorphicIter::<[MaybeUninit::<i32>; 7usize]> {
 struct PolymorphicIter::<[MaybeUninit::<i32>]> {
   alive: IndexRange,
   data: [MaybeUninit::<i32>],
-}
-
-// Full name: core::ops::drop::Drop
-#[lang_item(Drop)]
-trait Drop
-
-// Full name: core::array::iter::iter_inner::{impl Drop for PolymorphicIter::<_>}
-impl<DATA> Drop for PolymorphicIter::<_> {
-    non-dyn-compatible
 }
 
 // Full name: core::array::iter::iter_inner::{impl Drop for PolymorphicIter::<_>}::drop::<[MaybeUninit::<i32>; 7usize]>
@@ -724,7 +702,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb2;
+        if copy _6 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -755,11 +733,11 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -767,7 +745,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
-        undefined_behavior;
+        return;
     }
 }
 
@@ -829,7 +807,7 @@ fn core::array::iter::iter_inner::{PolymorphicIter::<[MaybeUninit::<_>]>}::next:
         storage_dead(_8);
         storage_dead(_7);
         _4 = move _5 > const 0usize;
-        if move _4 -> bb1 else -> bb2;
+        if move _4 -> bb1 else -> bb13;
     }
 
     bb1: {
@@ -839,24 +817,15 @@ fn core::array::iter::iter_inner::{PolymorphicIter::<[MaybeUninit::<_>]>}::next:
         storage_live(_9);
         storage_live(_23);
         _23 = ub_checks;
-        if move _23 -> bb3 else -> bb4;
+        if move _23 -> bb2 else -> bb4;
     }
 
     bb2: {
-        storage_dead(_5);
-        storage_live(_26);
-        _26 = Option::<usize>::None {  };
-        self_2 = move _26;
-        storage_dead(_4);
-        storage_live(f);
-        _3 = &(*self_1).data with_metadata(copy self_1.metadata);
-        f = copy _3;
-        _0 = Option::<i32>::None {  };
-        goto bb5;
+        _10 = core::num::{usize}::unchecked_add::precondition_check(copy value, const 1usize) -> bb4 (unwind: bb3);
     }
 
     bb3: {
-        _10 = core::num::{usize}::unchecked_add::precondition_check(copy value, const 1usize) -> bb4 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb4: {
@@ -879,23 +848,22 @@ fn core::array::iter::iter_inner::{PolymorphicIter::<[MaybeUninit::<_>]>}::next:
         self_13 = copy _3;
         storage_live(_24);
         _24 = ub_checks;
-        if move _24 -> bb7 else -> bb8;
+        if move _24 -> bb5 else -> bb8;
     }
 
     bb5: {
-        storage_dead(f);
-        storage_dead(self_2);
-        return;
+        storage_live(_16);
+        _16 = copy _3.metadata;
+        _15 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy x, move _16) -> bb6 (unwind: bb7);
     }
 
     bb6: {
-        undefined_behavior;
+        storage_dead(_16);
+        goto bb8;
     }
 
     bb7: {
-        storage_live(_16);
-        _16 = copy _3.metadata;
-        _15 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy x, move _16) -> bb9 (unwind: bb10);
+        undefined_behavior;
     }
 
     bb8: {
@@ -904,29 +872,16 @@ fn core::array::iter::iter_inner::{PolymorphicIter::<[MaybeUninit::<_>]>}::next:
         _18 = copy _3.metadata;
         _17 = copy x < move _18;
         storage_dead(_18);
-        _25 = assume(move _17) -> bb11 (unwind: bb12);
+        _25 = assume(move _17) -> bb9 (unwind: bb12);
     }
 
     bb9: {
-        storage_dead(_16);
-        goto bb8;
+        storage_dead(_17);
+        self_14 = &raw const (*_3)[copy x];
+        _19 = assert_inhabited::<i32>() -> bb10 (unwind: bb11);
     }
 
     bb10: {
-        undefined_behavior;
-    }
-
-    bb11: {
-        storage_dead(_17);
-        self_14 = &raw const (*_3)[copy x];
-        _19 = assert_inhabited::<i32>() -> bb13 (unwind: bb14);
-    }
-
-    bb12: {
-        undefined_behavior;
-    }
-
-    bb13: {
         storage_live(self_20);
         self_20 = cast<*const MaybeUninit::<i32>, *const i32>(copy self_14);
         _12 = copy (*self_20);
@@ -937,11 +892,34 @@ fn core::array::iter::iter_inner::{PolymorphicIter::<[MaybeUninit::<_>]>}::next:
         _0 = Option::<i32>::Some { _0: move _12 };
         storage_dead(_12);
         storage_dead(x);
-        goto bb5;
+        goto bb14;
+    }
+
+    bb11: {
+        undefined_behavior;
+    }
+
+    bb12: {
+        undefined_behavior;
+    }
+
+    bb13: {
+        storage_dead(_5);
+        storage_live(_26);
+        _26 = Option::<usize>::None {  };
+        self_2 = move _26;
+        storage_dead(_4);
+        storage_live(f);
+        _3 = &(*self_1).data with_metadata(copy self_1.metadata);
+        f = copy _3;
+        _0 = Option::<i32>::None {  };
+        goto bb14;
     }
 
     bb14: {
-        undefined_behavior;
+        storage_dead(f);
+        storage_dead(self_2);
+        return;
     }
 }
 
@@ -955,15 +933,6 @@ pub struct ManuallyDrop::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>> {
 #[diagnostic_item("ArrayIntoIter")]
 pub struct IntoIter::<i32, 7usize> {
   inner: ManuallyDrop::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>,
-}
-
-// Full name: core::iter::traits::collect::IntoIterator
-#[diagnostic_item("IntoIterator")]
-trait IntoIterator
-
-// Full name: core::array::iter::{impl IntoIterator for [T; N]}
-impl<T, const _ : type_error("const generic param type"), const N : type_error("const generic param type")> "impl_IntoIterator_for_array" IntoIterator for [T; N] {
-    non-dyn-compatible
 }
 
 // Full name: core::array::iter::{impl IntoIterator for [T; N]}::into_iter::<i32, 7usize>
@@ -995,16 +964,6 @@ pub fn impl_IntoIterator_for_array::into_iter::<i32, 7usize>(self: [i32; 7usize]
     }
 }
 
-// Full name: core::iter::traits::iterator::Iterator
-#[lang_item(Iterator)]
-#[diagnostic_item("Iterator")]
-trait Iterator
-
-// Full name: core::array::iter::{impl Iterator for IntoIter::<_, _>}
-impl<T, const _ : type_error("const generic param type"), const N : type_error("const generic param type")> Iterator for IntoIter::<_, _> {
-    non-dyn-compatible
-}
-
 // Full name: core::array::iter::{impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>
 pub fn {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(self: &'_ mut IntoIter::<i32, 7usize>) -> Option::<i32>
 {
@@ -1031,11 +990,6 @@ pub fn {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(self: &'_ mut I
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: core::array::iter::{impl Drop for IntoIter::<_, _>}
-impl<T, const _ : type_error("const generic param type"), const N : type_error("const generic param type")> Drop for IntoIter::<_, _> {
-    non-dyn-compatible
 }
 
 // Full name: core::ptr::drop_glue::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>
@@ -1075,31 +1029,28 @@ pub fn {impl Drop for IntoIter::<_, _>}::drop::<i32, 7usize>(self: &'_ mut IntoI
     bb0: {
         storage_live(_0);
         _0 = ();
-        if const false -> bb1 else -> bb2;
+        if const false -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_2);
         _2 = &mut (*self).inner.value;
-        _0 = drop_glue::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>(move _2) -> bb3 (unwind: bb4);
+        _0 = drop_glue::<PolymorphicIter::<[MaybeUninit::<i32>; 7usize]>>(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        return;
+        storage_dead(_2);
+        goto bb4;
     }
 
     bb3: {
-        storage_dead(_2);
-        goto bb2;
+        unwind_continue;
     }
 
     bb4: {
-        unwind_continue;
+        return;
     }
 }
-
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
 
 // Full name: core::ptr::drop_glue::<&'_ i32>
 #[lang_item(DropGlue)]
@@ -1150,14 +1101,18 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_6);
         _3 = move _5 != const 0u32;
         storage_dead(_5);
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb3 (unwind: bb4);
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
     }
 
     bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
         storage_live(_4);
         storage_live(_7);
         storage_live(_8);
@@ -1166,20 +1121,15 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_8);
         _4 = move _7 != const 0u32;
         storage_dead(_7);
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_3);
-        return;
+        if move _4 -> bb4 else -> bb6;
     }
 
     bb4: {
-        unwind_continue;
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb8);
+        unwind_continue;
     }
 
     bb6: {
@@ -1188,11 +1138,12 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
 
     bb7: {
         storage_dead(_4);
-        goto bb3;
+        goto bb8;
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb9: {
@@ -1255,42 +1206,7 @@ fn {vtable}::core::fmt::Debug::<&'_ i32>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<&'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ i32>()
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::LowerHex
-trait LowerHex
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
-impl<'_, _, T> core::fmt::Debug for &'_ T {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl LowerHex for i32}
-impl "impl_LowerHex_for_i32" LowerHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl UpperHex for i32}
-impl "impl_UpperHex_for_i32" UpperHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for i32}
-impl "impl_Debug_for_i32" core::fmt::Debug for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for i32}
-impl "impl_Display_for_i32" Display for i32 {
-    non-dyn-compatible
-}
+vtable {vtable}::core::fmt::Debug::<&'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ i32>()
 
 // Full name: core::intrinsics::integer_min::<usize>
 #[miri::intrinsic_fallback_is_spec]
@@ -1302,11 +1218,6 @@ pub fn integer_min::<usize>(a_1: usize, b_2: usize) -> usize
 #[rustc_intrinsic]
 pub fn ctpop::<usize>(x_1: usize) -> u32
 = <intrinsic:ctpop>
-
-// Full name: core::iter::traits::collect::{impl IntoIterator for I}
-impl<I> "impl_IntoIterator_for_T" IntoIterator for I {
-    non-dyn-compatible
-}
 
 // Full name: core::iter::traits::collect::{impl IntoIterator for I}::into_iter::<IntoIter::<i32, 7usize>>
 pub fn impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(self: IntoIter::<i32, 7usize>) -> IntoIter::<i32, 7usize>
@@ -1440,7 +1351,7 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb2;
+        if copy _6 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -1471,11 +1382,11 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -1483,17 +1394,8 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
-        undefined_behavior;
+        return;
     }
-}
-
-// Full name: core::ops::arith::AddAssign
-#[lang_item(AddAssign)]
-trait AddAssign
-
-// Full name: core::ops::arith::{impl AddAssign<&'_ i32> for i32}
-impl<'_> "impl_AddAssign_for_i32" AddAssign<&'_ i32> for i32 {
-    non-dyn-compatible
 }
 
 // Full name: core::ops::arith::{impl AddAssign<&'_ i32> for i32}::add_assign::<'_>
@@ -1555,24 +1457,6 @@ pub enum Option::<&'_ i32> {
 pub enum Option::<&'_ [i32]> {
   None,
   Some { _0: &'_ [i32] },
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panicking::AssertKind
@@ -1652,20 +1536,16 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_4);
         storage_live(_3);
         storage_live(_9);
-        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb2);
+        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         _3 = move _9 == const 1u32;
         storage_dead(_9);
-        if move _3 -> bb3 else -> bb4;
+        if move _3 -> bb2 else -> bb3;
     }
 
     bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
         storage_dead(_3);
         storage_live(_6);
         storage_live(_7);
@@ -1683,7 +1563,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         return;
     }
 
-    bb4: {
+    bb3: {
         storage_live(_5);
         storage_live(s);
         s = const "is_aligned_to: align is not a power-of-two";
@@ -1713,15 +1593,19 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_dead(_14);
         storage_dead(_12);
         storage_dead(s);
-        _4 = panic_fmt(move _5) -> bb5 (unwind: bb6);
+        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
     }
 
-    bb5: {
+    bb4: {
         undefined_behavior;
     }
 
-    bb6: {
+    bb5: {
         unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -1756,20 +1640,6 @@ fn drop_glue::<IntoIter::<i32, 7usize>>(_1: &'_ mut IntoIter::<i32, 7usize>)
 #[lang_item(NonNull)]
 pub struct NonNull::<[i32]> {
   pointer: *const [i32] is !null,
-}
-
-// Full name: core::slice::index::SliceIndex
-#[diagnostic_item("SliceIndex")]
-trait SliceIndex
-
-// Full name: core::slice::index::{impl SliceIndex<[T]> for usize}
-impl<T> "impl_SliceIndex_slice_for_usize" SliceIndex<[T]> for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::slice::index::{impl SliceIndex<[T]> for IndexRange}
-impl<T> "impl_SliceIndex_slice_for_IndexRange" SliceIndex<[T]> for IndexRange {
-    non-dyn-compatible
 }
 
 fn core::slice::iter::{Iter::<'_, _>}::new::<'_, i32>(slice: &'_ [i32]) -> Iter::<'_, i32>
@@ -1835,11 +1705,6 @@ fn core::slice::iter::{Iter::<'_, _>}::new::<'_, i32>(slice: &'_ [i32]) -> Iter:
     }
 }
 
-// Full name: core::slice::iter::{impl Iterator for Iter::<'_, _>}
-impl<'a, _, T> Iterator for Iter::<'_, _> {
-    non-dyn-compatible
-}
-
 // Full name: core::slice::iter::{impl Iterator for Iter::<'_, _>}::next::<'_, i32>
 pub fn {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
 {
@@ -1871,16 +1736,45 @@ pub fn {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(self: &'_ mut Iter::<'
         ptr = copy (*self).ptr;
         storage_live(end_or_len);
         end_or_len = copy (*self).end_or_len;
-        if copy IS_ZST::<i32> -> bb1 else -> bb2;
+        if copy IS_ZST::<i32> -> bb1 else -> bb7;
     }
 
     bb1: {
         storage_live(len);
         len = transmute<*const i32, usize>(copy end_or_len);
-        switch copy len -> 0usize: bb3, otherwise: bb4;
+        switch copy len -> 0usize: bb2, otherwise: bb3;
     }
 
     bb2: {
+        storage_live(_16);
+        _16 = Option::<&'_ i32>::None {  };
+        _0 = move _16;
+        storage_dead(len);
+        goto bb9;
+    }
+
+    bb3: {
+        storage_live(_15);
+        _15 = ub_checks;
+        if move _15 -> bb4 else -> bb6;
+    }
+
+    bb4: {
+        _10 = core::num::{usize}::unchecked_sub::precondition_check(copy len, const 1usize) -> bb6 (unwind: bb5);
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+
+    bb6: {
+        addr = copy len ub.- const 1usize;
+        (*self).end_or_len = transmute<usize, *const i32>(copy addr);
+        storage_dead(len);
+        goto bb11;
+    }
+
+    bb7: {
         storage_live(_6);
         storage_live(_7);
         _7 = transmute<*const i32, NonNull::<i32>>(copy end_or_len);
@@ -1889,33 +1783,25 @@ pub fn {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(self: &'_ mut Iter::<'
         _12 = transmute<NonNull::<i32>, *mut i32>(copy _7);
         _6 = copy _11 == copy _12;
         storage_dead(_12);
-        if move _6 -> bb5 else -> bb6;
+        if move _6 -> bb8 else -> bb10;
     }
 
-    bb3: {
-        storage_live(_16);
-        _16 = Option::<&'_ i32>::None {  };
-        _0 = move _16;
-        storage_dead(len);
-        goto bb7;
-    }
-
-    bb4: {
-        storage_live(_15);
-        _15 = ub_checks;
-        if move _15 -> bb8 else -> bb9;
-    }
-
-    bb5: {
+    bb8: {
         storage_dead(_7);
         storage_live(_17);
         _17 = Option::<&'_ i32>::None {  };
         _0 = move _17;
         storage_dead(_6);
-        goto bb7;
+        goto bb9;
     }
 
-    bb6: {
+    bb9: {
+        storage_dead(end_or_len);
+        storage_dead(ptr);
+        goto bb12;
+    }
+
+    bb10: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(_8);
@@ -1925,27 +1811,10 @@ pub fn {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(self: &'_ mut Iter::<'
         storage_dead(_13);
         (*self).ptr = move _8;
         storage_dead(_8);
-        goto bb10;
-    }
-
-    bb7: {
-        storage_dead(end_or_len);
-        storage_dead(ptr);
         goto bb11;
     }
 
-    bb8: {
-        _10 = core::num::{usize}::unchecked_sub::precondition_check(copy len, const 1usize) -> bb9 (unwind: bb12);
-    }
-
-    bb9: {
-        addr = copy len ub.- const 1usize;
-        (*self).end_or_len = transmute<usize, *const i32>(copy addr);
-        storage_dead(len);
-        goto bb10;
-    }
-
-    bb10: {
+    bb11: {
         storage_live(_9);
         storage_live(_14);
         _14 = transmute<NonNull::<i32>, *const i32>(copy ptr);
@@ -1955,21 +1824,12 @@ pub fn {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(self: &'_ mut Iter::<'
         storage_dead(_9);
         storage_dead(end_or_len);
         storage_dead(ptr);
-        goto bb11;
-    }
-
-    bb11: {
-        return;
+        goto bb12;
     }
 
     bb12: {
-        undefined_behavior;
+        return;
     }
-}
-
-// Full name: core::slice::iter::{impl Iterator for Chunks::<'_, _>}
-impl<'a, _, T> Iterator for Chunks::<'_, _> {
-    non-dyn-compatible
 }
 
 #[track_caller]
@@ -2010,18 +1870,14 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         storage_live(ptr);
         ptr = cast<*mut (), *const ()>(copy data);
         storage_live(_11);
-        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb2);
+        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb13);
     }
 
     bb1: {
-        if move _11 -> bb3 else -> bb4;
+        if move _11 -> bb2 else -> bb8;
     }
 
     bb2: {
-        unwind_terminate;
-    }
-
-    bb3: {
         storage_live(_12);
         storage_live(_13);
         storage_live(_23);
@@ -2035,37 +1891,49 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         _5 = ~(move _12);
         storage_dead(_12);
         storage_dead(_11);
-        if move _5 -> bb5 else -> bb6;
+        if move _5 -> bb3 else -> bb9;
+    }
+
+    bb3: {
+        storage_dead(ptr);
+        storage_live(_7);
+        storage_live(max_len);
+        switch copy size -> 0usize: bb4, otherwise: bb5;
     }
 
     bb4: {
-        storage_dead(_11);
+        max_len = const 18446744073709551615usize;
         goto bb6;
     }
 
     bb5: {
-        storage_dead(ptr);
-        storage_live(_7);
-        storage_live(max_len);
-        switch copy size -> 0usize: bb7, otherwise: bb8;
+        max_len = const 9223372036854775807usize ub./ copy size;
+        goto bb6;
     }
 
     bb6: {
-        storage_dead(ptr);
-        goto bb9;
+        _7 = copy len <= move max_len;
+        storage_dead(max_len);
+        if move _7 -> bb7 else -> bb10;
     }
 
     bb7: {
-        max_len = const 18446744073709551615usize;
-        goto bb10;
+        storage_dead(_7);
+        storage_dead(_5);
+        return;
     }
 
     bb8: {
-        max_len = const 9223372036854775807usize ub./ copy size;
-        goto bb10;
+        storage_dead(_11);
+        goto bb9;
     }
 
     bb9: {
+        storage_dead(ptr);
+        goto bb10;
+    }
+
+    bb10: {
         msg = const "unsafe precondition(s) violated: slice::from_raw_parts requires the pointer to be aligned and non-null, and the total size of the slice not to exceed `isize::MAX`\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_10);
         storage_live(_15);
@@ -2096,12 +1964,6 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         _9 = panic_nounwind_fmt(move _10, const false) -> bb11 (unwind: bb12);
     }
 
-    bb10: {
-        _7 = copy len <= move max_len;
-        storage_dead(max_len);
-        if move _7 -> bb13 else -> bb9;
-    }
-
     bb11: {
         undefined_behavior;
     }
@@ -2111,9 +1973,7 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
     }
 
     bb13: {
-        storage_dead(_7);
-        storage_dead(_5);
-        return;
+        unwind_terminate;
     }
 }
 
@@ -2229,31 +2089,40 @@ pub fn split_at_unchecked::<i32>(self: &'_ [i32], mid: usize) -> (&'_ [i32], &'_
         ptr = cast<*const [i32], *const i32>(copy _10);
         storage_live(_17);
         _17 = ub_checks;
-        if move _17 -> bb1 else -> bb2;
+        if move _17 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _5 = core::slice::{[T]}::split_at_unchecked::precondition_check(copy mid, copy len_3) -> bb2 (unwind: bb3);
+        _5 = core::slice::{[T]}::split_at_unchecked::precondition_check(copy mid, copy len_3) -> bb3 (unwind: bb2);
     }
 
     bb2: {
-        storage_live(_6);
-        storage_live(_18);
-        _18 = ub_checks;
-        if move _18 -> bb4 else -> bb5;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        storage_live(_6);
+        storage_live(_18);
+        _18 = ub_checks;
+        if move _18 -> bb4 else -> bb7;
     }
 
     bb4: {
         storage_live(_12);
         _12 = cast<*const [i32], *mut ()>(copy _10);
-        _11 = core::slice::raw::from_raw_parts::precondition_check(move _12, copy SIZE::<i32>, copy ALIGN::<i32>, copy mid) -> bb6 (unwind: bb7);
+        _11 = core::slice::raw::from_raw_parts::precondition_check(move _12, copy SIZE::<i32>, copy ALIGN::<i32>, copy mid) -> bb5 (unwind: bb6);
     }
 
     bb5: {
+        storage_dead(_12);
+        goto bb7;
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         storage_live(_13);
         _13 = *const (copy ptr, copy mid);
         _6 = &(*_13) with_metadata(copy _13.metadata);
@@ -2265,25 +2134,25 @@ pub fn split_at_unchecked::<i32>(self: &'_ [i32], mid: usize) -> (&'_ [i32], &'_
         len_9 = copy len_3 ub.- copy mid;
         storage_live(_19);
         _19 = ub_checks;
-        if move _19 -> bb8 else -> bb9;
-    }
-
-    bb6: {
-        storage_dead(_12);
-        goto bb5;
-    }
-
-    bb7: {
-        undefined_behavior;
+        if move _19 -> bb8 else -> bb11;
     }
 
     bb8: {
         storage_live(_15);
         _15 = cast<*const i32, *mut ()>(copy data);
-        _14 = core::slice::raw::from_raw_parts::precondition_check(move _15, copy SIZE::<i32>, copy ALIGN::<i32>, copy len_9) -> bb10 (unwind: bb11);
+        _14 = core::slice::raw::from_raw_parts::precondition_check(move _15, copy SIZE::<i32>, copy ALIGN::<i32>, copy len_9) -> bb9 (unwind: bb10);
     }
 
     bb9: {
+        storage_dead(_15);
+        goto bb11;
+    }
+
+    bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
         storage_live(_16);
         _16 = *const (copy data, copy len_9);
         _7 = &(*_16) with_metadata(copy _16.metadata);
@@ -2296,15 +2165,6 @@ pub fn split_at_unchecked::<i32>(self: &'_ [i32], mid: usize) -> (&'_ [i32], &'_
         storage_dead(ptr);
         storage_dead(len_3);
         return;
-    }
-
-    bb10: {
-        storage_dead(_15);
-        goto bb9;
-    }
-
-    bb11: {
-        undefined_behavior;
     }
 }
 
@@ -2339,16 +2199,29 @@ pub fn split_at::<i32>(self: &'_ [i32], mid: usize) -> (&'_ [i32], &'_ [i32])
         storage_live(_7);
         _7 = copy self.metadata;
         _6 = copy mid <= move _7;
-        if move _6 -> bb1 else -> bb2;
+        if move _6 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_dead(_7);
         storage_live(_8);
-        _8 = split_at_unchecked::<i32>(move self, move mid) -> bb3 (unwind: bb4);
+        _8 = split_at_unchecked::<i32>(move self, move mid) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        _3 = Option::<(&'_ [i32], &'_ [i32])>::Some { _0: move _8 };
+        storage_dead(_8);
+        storage_dead(_6);
+        pair = copy (_3 as variant Option::<(&'_ [i32], &'_ [i32])>::Some)._0;
+        storage_dead(_3);
+        return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(_5);
@@ -2381,19 +2254,6 @@ pub fn split_at::<i32>(self: &'_ [i32], mid: usize) -> (&'_ [i32], &'_ [i32])
         storage_dead(_10);
         storage_dead(s);
         _4 = panic_fmt(move _5) -> bb5 (unwind: bb6);
-    }
-
-    bb3: {
-        _3 = Option::<(&'_ [i32], &'_ [i32])>::Some { _0: move _8 };
-        storage_dead(_8);
-        storage_dead(_6);
-        pair = copy (_3 as variant Option::<(&'_ [i32], &'_ [i32])>::Some)._0;
-        storage_dead(_3);
-        return;
-    }
-
-    bb4: {
-        unwind_continue;
     }
 
     bb5: {
@@ -2441,7 +2301,7 @@ pub fn {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(self_1: &'_ mut Chun
         storage_live(_13);
         _13 = Option::<&'_ [i32]>::None {  };
         _0 = move _13;
-        goto bb3;
+        goto bb5;
     }
 
     bb2: {
@@ -2451,27 +2311,18 @@ pub fn {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(self_1: &'_ mut Chun
         v1 = copy _10.metadata;
         storage_live(v2);
         v2 = copy (*self_1).chunk_size;
-        chunksz = integer_min::<usize>(move v1, move v2) -> bb4 (unwind: bb5);
+        chunksz = integer_min::<usize>(move v1, move v2) -> bb3 (unwind: bb7);
     }
 
     bb3: {
-        storage_dead(_2);
-        return;
-    }
-
-    bb4: {
         storage_dead(v2);
         storage_dead(v1);
         storage_live(_8);
         _11 = copy (*self_1).v;
-        _8 = split_at::<i32>(move _11, move chunksz) -> bb6 (unwind: bb7);
+        _8 = split_at::<i32>(move _11, move chunksz) -> bb4 (unwind: bb6);
     }
 
-    bb5: {
-        undefined_behavior;
-    }
-
-    bb6: {
+    bb4: {
         storage_live(fst);
         fst = copy _8._0;
         storage_live(snd);
@@ -2482,17 +2333,21 @@ pub fn {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(self_1: &'_ mut Chun
         storage_dead(snd);
         storage_dead(fst);
         storage_dead(chunksz);
-        goto bb3;
+        goto bb5;
+    }
+
+    bb5: {
+        storage_dead(_2);
+        return;
+    }
+
+    bb6: {
+        unwind_continue;
     }
 
     bb7: {
-        unwind_continue;
+        undefined_behavior;
     }
-}
-
-// Full name: core::slice::iter::{impl Iterator for ChunksExact::<'_, _>}
-impl<'a, _, T> Iterator for ChunksExact::<'_, _> {
-    non-dyn-compatible
 }
 
 // Full name: core::slice::iter::{impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>
@@ -2525,30 +2380,16 @@ pub fn {impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>(self_1: &'_ mut
         storage_live(_7);
         _7 = copy self_5.metadata;
         _6 = copy mid <= move _7;
-        if move _6 -> bb1 else -> bb2;
+        if move _6 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_dead(_7);
         storage_live(_8);
-        _8 = split_at_unchecked::<i32>(move self_5, move mid) -> bb3 (unwind: bb4);
+        _8 = split_at_unchecked::<i32>(move self_5, move mid) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_7);
-        self_2 = Option::<(&'_ [i32], &'_ [i32])>::None {  };
-        storage_dead(_6);
-        storage_dead(mid);
-        storage_live(f);
-        _4 = &uniq (*self_1).v;
-        f = copy _4;
-        storage_live(_13);
-        _13 = Option::<&'_ [i32]>::None {  };
-        _0 = move _13;
-        goto bb5;
-    }
-
-    bb3: {
         self_2 = Option::<(&'_ [i32], &'_ [i32])>::Some { _0: move _8 };
         storage_dead(_8);
         storage_dead(_6);
@@ -2570,8 +2411,22 @@ pub fn {impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>(self_1: &'_ mut
         goto bb5;
     }
 
-    bb4: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        storage_dead(_7);
+        self_2 = Option::<(&'_ [i32], &'_ [i32])>::None {  };
+        storage_dead(_6);
+        storage_dead(mid);
+        storage_live(f);
+        _4 = &uniq (*self_1).v;
+        f = copy _4;
+        storage_live(_13);
+        _13 = Option::<&'_ [i32]>::None {  };
+        _0 = move _13;
+        goto bb5;
     }
 
     bb5: {
@@ -2624,7 +2479,7 @@ pub fn chunks::<i32>(self: &'_ [i32], chunk_size: usize) -> Chunks::<'_, i32>
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        switch copy chunk_size -> 0usize: bb1, otherwise: bb2;
+        switch copy chunk_size -> 0usize: bb1, otherwise: bb4;
     }
 
     bb1: {
@@ -2657,20 +2512,20 @@ pub fn chunks::<i32>(self: &'_ [i32], chunk_size: usize) -> Chunks::<'_, i32>
         storage_dead(_8);
         storage_dead(_6);
         storage_dead(s);
-        _3 = panic_fmt(move _4) -> bb3 (unwind: bb4);
+        _3 = panic_fmt(move _4) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        _0 = Chunks::<'_, i32> { v: copy self, chunk_size: copy chunk_size };
-        return;
-    }
-
-    bb3: {
         undefined_behavior;
     }
 
-    bb4: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        _0 = Chunks::<'_, i32> { v: copy self, chunk_size: copy chunk_size };
+        return;
     }
 }
 
@@ -2702,7 +2557,7 @@ pub fn chunks_exact::<i32>(self: &'_ [i32], chunk_size: usize) -> ChunksExact::<
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        switch copy chunk_size -> 0usize: bb1, otherwise: bb2;
+        switch copy chunk_size -> 0usize: bb1, otherwise: bb4;
     }
 
     bb1: {
@@ -2735,10 +2590,18 @@ pub fn chunks_exact::<i32>(self: &'_ [i32], chunk_size: usize) -> ChunksExact::<
         storage_dead(_14);
         storage_dead(_12);
         storage_dead(s);
-        _3 = panic_fmt(move _4) -> bb3 (unwind: bb4);
+        _3 = panic_fmt(move _4) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_live(_6);
         storage_live(rem);
         _6 = copy self.metadata;
@@ -2747,14 +2610,6 @@ pub fn chunks_exact::<i32>(self: &'_ [i32], chunk_size: usize) -> ChunksExact::<
         fst_len = copy _6 wrap.- copy rem;
         storage_live(_10);
         _10 = split_at_unchecked::<i32>(move self, move fst_len) -> bb5 (unwind: bb6);
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        unwind_continue;
     }
 
     bb5: {
@@ -2881,79 +2736,44 @@ fn main()
         storage_live(_4);
         storage_live(_5);
         _5 = copy a;
-        _4 = impl_IntoIterator_for_array::into_iter::<i32, 7usize>(move _5) -> bb1 (unwind: bb2);
+        _4 = impl_IntoIterator_for_array::into_iter::<i32, 7usize>(move _5) -> bb1 (unwind: bb45);
     }
 
     bb1: {
         storage_dead(_5);
-        _3 = impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(move _4) -> bb3 (unwind: bb4);
+        _3 = impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(move _4) -> bb2 (unwind: bb44);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_4);
         storage_live(iter_6);
         iter_6 = move _3;
-        goto bb5;
+        goto bb3;
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_live(_7);
         storage_live(_8);
         storage_live(_9);
         _9 = &mut iter_6;
         _8 = &two-phase-mut (*_9);
-        _7 = {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(move _8) -> bb6 (unwind: bb7);
+        _7 = {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(move _8) -> bb4 (unwind: bb42);
     }
 
-    bb6: {
+    bb4: {
         storage_dead(_8);
         _10 = @discriminant(_7);
-        switch move _10 -> 0isize: bb8, 1isize: bb9, otherwise: bb10;
+        switch move _10 -> 0isize: bb5, 1isize: bb40, otherwise: bb41;
     }
 
-    bb7: {
-        _64 = &raw mut iter_6;
-        _65 = drop_glue::<IntoIter::<i32, 7usize>>(move _64) -> bb4 (unwind: bb11);
-    }
-
-    bb8: {
+    bb5: {
         storage_dead(_9);
         storage_dead(_7);
         _66 = &raw mut iter_6;
-        _67 = drop_glue::<IntoIter::<i32, 7usize>>(move _66) -> bb12 (unwind: bb4);
+        _67 = drop_glue::<IntoIter::<i32, 7usize>>(move _66) -> bb6 (unwind: bb44);
     }
 
-    bb9: {
-        storage_live(v_11);
-        v_11 = copy (_7 as variant Option::<i32>::Some)._0;
-        storage_live(_12);
-        _12 = copy v_11;
-        _13 = copy i panic.+ copy _12;
-        i = move _13;
-        storage_dead(_12);
-        storage_dead(v_11);
-        storage_dead(_9);
-        storage_dead(_7);
-        goto bb5;
-    }
-
-    bb10: {
-        undefined_behavior;
-    }
-
-    bb11: {
-        unwind_terminate;
-    }
-
-    bb12: {
+    bb6: {
         storage_dead(iter_6);
         storage_dead(_3);
         storage_live(_14);
@@ -2963,49 +2783,37 @@ fn main()
         _17 = &a;
         _16 = unsize_cast<&'_ [i32; 7usize], &'_ [i32], 7usize>(move _17);
         storage_dead(_17);
-        _15 = iter::<i32>(move _16) -> bb13 (unwind: bb14);
+        _15 = iter::<i32>(move _16) -> bb7 (unwind: bb39);
     }
 
-    bb13: {
+    bb7: {
         storage_dead(_16);
-        _14 = impl_IntoIterator_for_T::into_iter::<Iter::<'_, i32>>(move _15) -> bb15 (unwind: bb16);
+        _14 = impl_IntoIterator_for_T::into_iter::<Iter::<'_, i32>>(move _15) -> bb8 (unwind: bb38);
     }
 
-    bb14: {
-        unwind_continue;
-    }
-
-    bb15: {
+    bb8: {
         storage_dead(_15);
         storage_live(iter_18);
         iter_18 = move _14;
-        goto bb17;
+        goto bb9;
     }
 
-    bb16: {
-        unwind_continue;
-    }
-
-    bb17: {
+    bb9: {
         storage_live(_19);
         storage_live(_20);
         storage_live(_21);
         _21 = &mut iter_18;
         _20 = &two-phase-mut (*_21);
-        _19 = {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(move _20) -> bb18 (unwind: bb19);
+        _19 = {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(move _20) -> bb10 (unwind: bb37);
     }
 
-    bb18: {
+    bb10: {
         storage_dead(_20);
         _22 = @discriminant(_19);
-        switch move _22 -> 0isize: bb20, 1isize: bb21, otherwise: bb10;
+        switch move _22 -> 0isize: bb11, 1isize: bb34, otherwise: bb41;
     }
 
-    bb19: {
-        unwind_continue;
-    }
-
-    bb20: {
+    bb11: {
         storage_dead(_21);
         storage_dead(_19);
         storage_dead(iter_18);
@@ -3017,74 +2825,37 @@ fn main()
         _30 = &a;
         _29 = unsize_cast<&'_ [i32; 7usize], &'_ [i32], 7usize>(move _30);
         storage_dead(_30);
-        _28 = chunks::<i32>(move _29, const 2usize) -> bb22 (unwind: bb23);
+        _28 = chunks::<i32>(move _29, const 2usize) -> bb12 (unwind: bb33);
     }
 
-    bb21: {
-        storage_live(v_23);
-        v_23 = copy (_19 as variant Option::<&'_ i32>::Some)._0;
-        storage_live(_24);
-        storage_live(_25);
-        _25 = &two-phase-mut i;
-        storage_live(_26);
-        _26 = copy v_23;
-        _24 = add_assign::<'_>(move _25, move _26) -> bb24 (unwind: bb25);
-    }
-
-    bb22: {
+    bb12: {
         storage_dead(_29);
-        _27 = impl_IntoIterator_for_T::into_iter::<Chunks::<'_, i32>>(move _28) -> bb26 (unwind: bb27);
+        _27 = impl_IntoIterator_for_T::into_iter::<Chunks::<'_, i32>>(move _28) -> bb13 (unwind: bb32);
     }
 
-    bb23: {
-        unwind_continue;
-    }
-
-    bb24: {
-        storage_dead(_26);
-        storage_dead(_25);
-        storage_dead(_24);
-        storage_dead(v_23);
-        storage_dead(_21);
-        storage_dead(_19);
-        goto bb17;
-    }
-
-    bb25: {
-        unwind_continue;
-    }
-
-    bb26: {
+    bb13: {
         storage_dead(_28);
         storage_live(iter_31);
         iter_31 = move _27;
-        goto bb28;
+        goto bb14;
     }
 
-    bb27: {
-        unwind_continue;
-    }
-
-    bb28: {
+    bb14: {
         storage_live(_32);
         storage_live(_33);
         storage_live(_34);
         _34 = &mut iter_31;
         _33 = &two-phase-mut (*_34);
-        _32 = {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(move _33) -> bb29 (unwind: bb30);
+        _32 = {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(move _33) -> bb15 (unwind: bb31);
     }
 
-    bb29: {
+    bb15: {
         storage_dead(_33);
         _35 = @discriminant(_32);
-        switch move _35 -> 0isize: bb31, 1isize: bb32, otherwise: bb10;
+        switch move _35 -> 0isize: bb16, 1isize: bb30, otherwise: bb41;
     }
 
-    bb30: {
-        unwind_continue;
-    }
-
-    bb31: {
+    bb16: {
         storage_dead(_34);
         storage_dead(_32);
         storage_dead(iter_31);
@@ -3096,57 +2867,37 @@ fn main()
         _40 = &a;
         _39 = unsize_cast<&'_ [i32; 7usize], &'_ [i32], 7usize>(move _40);
         storage_dead(_40);
-        _38 = chunks_exact::<i32>(move _39, const 2usize) -> bb33 (unwind: bb34);
+        _38 = chunks_exact::<i32>(move _39, const 2usize) -> bb17 (unwind: bb29);
     }
 
-    bb32: {
-        _36 = copy i panic.+ const 1i32;
-        i = move _36;
-        storage_dead(_34);
-        storage_dead(_32);
-        goto bb28;
-    }
-
-    bb33: {
+    bb17: {
         storage_dead(_39);
-        _37 = impl_IntoIterator_for_T::into_iter::<ChunksExact::<'_, i32>>(move _38) -> bb35 (unwind: bb36);
+        _37 = impl_IntoIterator_for_T::into_iter::<ChunksExact::<'_, i32>>(move _38) -> bb18 (unwind: bb28);
     }
 
-    bb34: {
-        unwind_continue;
-    }
-
-    bb35: {
+    bb18: {
         storage_dead(_38);
         storage_live(iter_41);
         iter_41 = move _37;
-        goto bb37;
+        goto bb19;
     }
 
-    bb36: {
-        unwind_continue;
-    }
-
-    bb37: {
+    bb19: {
         storage_live(_42);
         storage_live(_43);
         storage_live(_44);
         _44 = &mut iter_41;
         _43 = &two-phase-mut (*_44);
-        _42 = {impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>(move _43) -> bb38 (unwind: bb39);
+        _42 = {impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>(move _43) -> bb20 (unwind: bb27);
     }
 
-    bb38: {
+    bb20: {
         storage_dead(_43);
         _45 = @discriminant(_42);
-        switch move _45 -> 0isize: bb40, 1isize: bb41, otherwise: bb10;
+        switch move _45 -> 0isize: bb21, 1isize: bb26, otherwise: bb41;
     }
 
-    bb39: {
-        unwind_continue;
-    }
-
-    bb40: {
+    bb21: {
         storage_dead(_44);
         storage_dead(_42);
         storage_dead(iter_41);
@@ -3171,18 +2922,10 @@ fn main()
         storage_live(_55);
         _55 = copy (*right_val);
         _53 = move _54 == move _55;
-        if move _53 -> bb42 else -> bb43;
+        if move _53 -> bb22 else -> bb23;
     }
 
-    bb41: {
-        _46 = copy i panic.+ const 1i32;
-        i = move _46;
-        storage_dead(_44);
-        storage_dead(_42);
-        goto bb37;
-    }
-
-    bb42: {
+    bb22: {
         storage_dead(_55);
         storage_dead(_54);
         storage_dead(_53);
@@ -3196,7 +2939,7 @@ fn main()
         return;
     }
 
-    bb43: {
+    bb23: {
         storage_dead(_55);
         storage_dead(_54);
         storage_live(kind);
@@ -3214,11 +2957,123 @@ fn main()
         _61 = &(*_62);
         storage_live(_63);
         _63 = Option::<Arguments::<'_>>::None {  };
-        _57 = assert_failed::<i32, i32>(move _58, move _59, move _61, move _63) -> bb44 (unwind: bb45);
+        _57 = assert_failed::<i32, i32>(move _58, move _59, move _61, move _63) -> bb24 (unwind: bb25);
+    }
+
+    bb24: {
+        undefined_behavior;
+    }
+
+    bb25: {
+        unwind_continue;
+    }
+
+    bb26: {
+        _46 = copy i panic.+ const 1i32;
+        i = move _46;
+        storage_dead(_44);
+        storage_dead(_42);
+        goto bb19;
+    }
+
+    bb27: {
+        unwind_continue;
+    }
+
+    bb28: {
+        unwind_continue;
+    }
+
+    bb29: {
+        unwind_continue;
+    }
+
+    bb30: {
+        _36 = copy i panic.+ const 1i32;
+        i = move _36;
+        storage_dead(_34);
+        storage_dead(_32);
+        goto bb14;
+    }
+
+    bb31: {
+        unwind_continue;
+    }
+
+    bb32: {
+        unwind_continue;
+    }
+
+    bb33: {
+        unwind_continue;
+    }
+
+    bb34: {
+        storage_live(v_23);
+        v_23 = copy (_19 as variant Option::<&'_ i32>::Some)._0;
+        storage_live(_24);
+        storage_live(_25);
+        _25 = &two-phase-mut i;
+        storage_live(_26);
+        _26 = copy v_23;
+        _24 = add_assign::<'_>(move _25, move _26) -> bb35 (unwind: bb36);
+    }
+
+    bb35: {
+        storage_dead(_26);
+        storage_dead(_25);
+        storage_dead(_24);
+        storage_dead(v_23);
+        storage_dead(_21);
+        storage_dead(_19);
+        goto bb9;
+    }
+
+    bb36: {
+        unwind_continue;
+    }
+
+    bb37: {
+        unwind_continue;
+    }
+
+    bb38: {
+        unwind_continue;
+    }
+
+    bb39: {
+        unwind_continue;
+    }
+
+    bb40: {
+        storage_live(v_11);
+        v_11 = copy (_7 as variant Option::<i32>::Some)._0;
+        storage_live(_12);
+        _12 = copy v_11;
+        _13 = copy i panic.+ copy _12;
+        i = move _13;
+        storage_dead(_12);
+        storage_dead(v_11);
+        storage_dead(_9);
+        storage_dead(_7);
+        goto bb3;
+    }
+
+    bb41: {
+        undefined_behavior;
+    }
+
+    bb42: {
+        _64 = &raw mut iter_6;
+        _65 = drop_glue::<IntoIter::<i32, 7usize>>(move _64) -> bb44 (unwind: bb43);
+    }
+
+    bb43: {
+        unwind_terminate;
     }
 
     bb44: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb45: {

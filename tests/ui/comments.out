@@ -1,15 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::default::Default
-#[diagnostic_item("Default")]
-trait Default
-
-// Full name: core::default::{impl Default for u32}
-impl "impl_Default_for_u32" Default for u32 {
-    non-dyn-compatible
-}
-
 // Full name: core::default::{impl Default for u32}::default
 pub fn impl_Default_for_u32::default() -> u32
 {
@@ -92,9 +83,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
-
 // Full name: core::ptr::drop_glue::<&'_ u32>
 #[lang_item(DropGlue)]
 fn drop_glue::<&'_ u32>(_1: &'_ mut &'_ u32)
@@ -144,14 +132,18 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_6);
         _3 = move _5 != const 0u32;
         storage_dead(_5);
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb3 (unwind: bb4);
+        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb8 (unwind: bb2);
     }
 
     bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
         storage_live(_4);
         storage_live(_7);
         storage_live(_8);
@@ -160,20 +152,15 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_8);
         _4 = move _7 != const 0u32;
         storage_dead(_7);
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_3);
-        return;
+        if move _4 -> bb4 else -> bb6;
     }
 
     bb4: {
-        unwind_continue;
+        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
-        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb7 (unwind: bb8);
+        unwind_continue;
     }
 
     bb6: {
@@ -182,11 +169,12 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
 
     bb7: {
         storage_dead(_4);
-        goto bb3;
+        goto bb8;
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb9: {
@@ -249,42 +237,7 @@ fn {vtable}::core::fmt::Debug::<&'_ u32>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<&'_ u32>: *const () = {vtable}::core::fmt::Debug::<&'_ u32>()
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::LowerHex
-trait LowerHex
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
-impl<'_, _, T> core::fmt::Debug for &'_ T {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl LowerHex for u32}
-impl "impl_LowerHex_for_u32" LowerHex for u32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl UpperHex for u32}
-impl "impl_UpperHex_for_u32" UpperHex for u32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for u32}
-impl "impl_Debug_for_u32" core::fmt::Debug for u32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for u32}
-impl "impl_Display_for_u32" Display for u32 {
-    non-dyn-compatible
-}
+vtable {vtable}::core::fmt::Debug::<&'_ u32>: *const () = {vtable}::core::fmt::Debug::<&'_ u32>()
 
 // Full name: core::option::Option::<Arguments::<'_>>
 #[lang_item(Option)]
@@ -439,40 +392,32 @@ pub fn sum(s: &'_ [u32]) -> u32
         _7 = copy _6 panic.+ const 2u32;
         _5 = move _7;
         storage_dead(_6);
-        _4 = function_call(move _5) -> bb1 (unwind: bb2);
+        _4 = function_call(move _5) -> bb1 (unwind: bb12);
     }
 
     bb1: {
         storage_dead(_5);
         storage_dead(_4);
-        goto bb3;
+        goto bb2;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_8);
         storage_live(_9);
         _9 = copy i;
         storage_live(_10);
         storage_live(_11);
         _11 = &(*s) with_metadata(copy s.metadata);
-        _10 = len::<u32>(move _11) -> bb4 (unwind: bb5);
+        _10 = len::<u32>(move _11) -> bb3 (unwind: bb11);
+    }
+
+    bb3: {
+        storage_dead(_11);
+        _8 = move _9 < move _10;
+        if move _8 -> bb4 else -> bb5;
     }
 
     bb4: {
-        storage_dead(_11);
-        _8 = move _9 < move _10;
-        if move _8 -> bb6 else -> bb7;
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
         storage_dead(_10);
         storage_dead(_9);
         storage_live(_12);
@@ -486,10 +431,10 @@ pub fn sum(s: &'_ [u32]) -> u32
         _15 = copy i panic.+ const 1usize;
         i = move _15;
         storage_dead(_8);
-        goto bb3;
+        goto bb2;
     }
 
-    bb7: {
+    bb5: {
         storage_dead(_10);
         storage_dead(_9);
         storage_dead(_8);
@@ -498,26 +443,26 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_18);
         _18 = copy sum;
         _17 = move _18 > const 10u32;
-        if move _17 -> bb8 else -> bb9;
+        if move _17 -> bb6 else -> bb7;
     }
 
-    bb8: {
+    bb6: {
         storage_dead(_18);
         storage_live(_19);
         _19 = copy sum;
         _20 = copy _19 panic.+ const 100u32;
         _16 = move _20;
         storage_dead(_19);
-        goto bb10;
+        goto bb8;
     }
 
-    bb9: {
+    bb7: {
         storage_dead(_18);
         _16 = copy sum;
-        goto bb10;
+        goto bb8;
     }
 
-    bb10: {
+    bb8: {
         storage_dead(_17);
         sum = move _16;
         storage_dead(_16);
@@ -528,16 +473,24 @@ pub fn sum(s: &'_ [u32]) -> u32
         _24 = copy _23 panic.+ const 2u32;
         _22 = move _24;
         storage_dead(_23);
-        _21 = function_call(move _22) -> bb11 (unwind: bb12);
+        _21 = function_call(move _22) -> bb9 (unwind: bb10);
     }
 
-    bb11: {
+    bb9: {
         storage_dead(_22);
         storage_dead(_21);
         _0 = copy sum;
         storage_dead(i);
         storage_dead(sum);
         return;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+
+    bb11: {
+        unwind_continue;
     }
 
     bb12: {
@@ -551,11 +504,6 @@ struct Foo {
   y: u32,
 }
 
-// Full name: test_crate::{impl Default for Foo}
-impl "impl_Default_for_Foo" Default for Foo {
-    non-dyn-compatible
-}
-
 // Full name: test_crate::{impl Default for Foo}::default
 #[inline(hint)]
 pub fn impl_Default_for_Foo::default() -> Foo
@@ -567,23 +515,23 @@ pub fn impl_Default_for_Foo::default() -> Foo
     bb0: {
         storage_live(_0);
         storage_live(_1);
-        _1 = impl_Default_for_u32::default() -> bb1 (unwind: bb2);
+        _1 = impl_Default_for_u32::default() -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_live(_2);
-        _2 = impl_Default_for_u32::default() -> bb3 (unwind: bb4);
+        _2 = impl_Default_for_u32::default() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         _0 = Foo { x: move _1, y: move _2 };
         storage_dead(_2);
         storage_dead(_1);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -597,11 +545,6 @@ struct Bar {
   super_long_field_name: u32,
 }
 
-// Full name: test_crate::{impl Default for Bar}
-impl "impl_Default_for_Bar" Default for Bar {
-    non-dyn-compatible
-}
-
 // Full name: test_crate::{impl Default for Bar}::default
 #[inline(hint)]
 pub fn impl_Default_for_Bar::default() -> Bar
@@ -613,23 +556,23 @@ pub fn impl_Default_for_Bar::default() -> Bar
     bb0: {
         storage_live(_0);
         storage_live(_1);
-        _1 = impl_Default_for_u32::default() -> bb1 (unwind: bb2);
+        _1 = impl_Default_for_u32::default() -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_live(_2);
-        _2 = impl_Default_for_u32::default() -> bb3 (unwind: bb4);
+        _2 = impl_Default_for_u32::default() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         _0 = Bar { x: move _1, super_long_field_name: move _2 };
         storage_dead(_2);
         storage_dead(_1);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -709,7 +652,7 @@ fn foo()
         storage_live(_33);
         _0 = ();
         storage_live(_3);
-        _3 = impl_Default_for_Foo::default() -> bb1 (unwind: bb2);
+        _3 = impl_Default_for_Foo::default() -> bb1 (unwind: bb12);
     }
 
     bb1: {
@@ -727,25 +670,17 @@ fn foo()
         _5 = Foo { x: move _6, y: move _7 };
         storage_dead(_7);
         storage_dead(_6);
-        _4 = eat::<Foo>(move _5) -> bb3 (unwind: bb4);
+        _4 = eat::<Foo>(move _5) -> bb2 (unwind: bb11);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_5);
         storage_dead(_4);
         storage_live(_10);
-        _10 = impl_Default_for_Bar::default() -> bb5 (unwind: bb6);
+        _10 = impl_Default_for_Bar::default() -> bb3 (unwind: bb10);
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_live(x_8);
         x_8 = copy _10.x;
         storage_live(super_long_field_name);
@@ -760,14 +695,10 @@ fn foo()
         _12 = Bar { x: move _13, super_long_field_name: move _14 };
         storage_dead(_14);
         storage_dead(_13);
-        _11 = eat::<Bar>(move _12) -> bb7 (unwind: bb8);
+        _11 = eat::<Bar>(move _12) -> bb4 (unwind: bb9);
     }
 
-    bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
+    bb4: {
         storage_dead(_12);
         storage_dead(_11);
         storage_live(a);
@@ -795,14 +726,10 @@ fn foo()
         storage_live(_24);
         _24 = copy (*right_val);
         _22 = move _23 == move _24;
-        if move _22 -> bb9 else -> bb10;
+        if move _22 -> bb5 else -> bb6;
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
+    bb5: {
         storage_dead(_24);
         storage_dead(_23);
         storage_dead(_22);
@@ -819,7 +746,7 @@ fn foo()
         return;
     }
 
-    bb10: {
+    bb6: {
         storage_dead(_24);
         storage_dead(_23);
         storage_live(kind);
@@ -837,11 +764,27 @@ fn foo()
         _30 = &(*_31);
         storage_live(_32);
         _32 = Option::<Arguments::<'_>>::None {  };
-        _26 = assert_failed::<u32, u32>(move _27, move _28, move _30, move _32) -> bb11 (unwind: bb12);
+        _26 = assert_failed::<u32, u32>(move _27, move _28, move _30, move _32) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
     }
 
     bb11: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb12: {

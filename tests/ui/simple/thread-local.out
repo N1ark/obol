@@ -209,23 +209,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = core::intrinsics::abort() -> bb3 (unwind: bb4);
+        _3 = core::intrinsics::abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -233,18 +226,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -252,7 +248,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -260,7 +260,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -302,20 +302,16 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_4);
         storage_live(_3);
         storage_live(_9);
-        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb2);
+        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         _3 = move _9 == const 1u32;
         storage_dead(_9);
-        if move _3 -> bb3 else -> bb4;
+        if move _3 -> bb2 else -> bb3;
     }
 
     bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
         storage_dead(_3);
         storage_live(_6);
         storage_live(_7);
@@ -333,7 +329,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         return;
     }
 
-    bb4: {
+    bb3: {
         storage_live(_5);
         storage_live(s);
         s = const "is_aligned_to: align is not a power-of-two";
@@ -363,15 +359,19 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_dead(_14);
         storage_dead(_12);
         storage_dead(s);
-        _4 = panic_fmt(move _5) -> bb5 (unwind: bb6);
+        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
     }
 
-    bb5: {
+    bb4: {
         undefined_behavior;
     }
 
-    bb6: {
+    bb5: {
         unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -473,18 +473,14 @@ fn core::slice::raw::from_raw_parts_mut::precondition_check(data: *mut (), size:
         storage_live(ptr);
         ptr = cast<*mut (), *const ()>(copy data);
         storage_live(_11);
-        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb2);
+        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb13);
     }
 
     bb1: {
-        if move _11 -> bb3 else -> bb4;
+        if move _11 -> bb2 else -> bb8;
     }
 
     bb2: {
-        unwind_terminate;
-    }
-
-    bb3: {
         storage_live(_12);
         storage_live(_13);
         storage_live(_23);
@@ -498,37 +494,49 @@ fn core::slice::raw::from_raw_parts_mut::precondition_check(data: *mut (), size:
         _5 = ~(move _12);
         storage_dead(_12);
         storage_dead(_11);
-        if move _5 -> bb5 else -> bb6;
+        if move _5 -> bb3 else -> bb9;
+    }
+
+    bb3: {
+        storage_dead(ptr);
+        storage_live(_7);
+        storage_live(max_len);
+        switch copy size -> 0usize: bb4, otherwise: bb5;
     }
 
     bb4: {
-        storage_dead(_11);
+        max_len = const 18446744073709551615usize;
         goto bb6;
     }
 
     bb5: {
-        storage_dead(ptr);
-        storage_live(_7);
-        storage_live(max_len);
-        switch copy size -> 0usize: bb7, otherwise: bb8;
+        max_len = const 9223372036854775807usize ub./ copy size;
+        goto bb6;
     }
 
     bb6: {
-        storage_dead(ptr);
-        goto bb9;
+        _7 = copy len <= move max_len;
+        storage_dead(max_len);
+        if move _7 -> bb7 else -> bb10;
     }
 
     bb7: {
-        max_len = const 18446744073709551615usize;
-        goto bb10;
+        storage_dead(_7);
+        storage_dead(_5);
+        return;
     }
 
     bb8: {
-        max_len = const 9223372036854775807usize ub./ copy size;
-        goto bb10;
+        storage_dead(_11);
+        goto bb9;
     }
 
     bb9: {
+        storage_dead(ptr);
+        goto bb10;
+    }
+
+    bb10: {
         msg = const "unsafe precondition(s) violated: slice::from_raw_parts_mut requires the pointer to be aligned and non-null, and the total size of the slice not to exceed `isize::MAX`\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_10);
         storage_live(_15);
@@ -559,12 +567,6 @@ fn core::slice::raw::from_raw_parts_mut::precondition_check(data: *mut (), size:
         _9 = panic_nounwind_fmt(move _10, const false) -> bb11 (unwind: bb12);
     }
 
-    bb10: {
-        _7 = copy len <= move max_len;
-        storage_dead(max_len);
-        if move _7 -> bb13 else -> bb9;
-    }
-
     bb11: {
         undefined_behavior;
     }
@@ -574,9 +576,7 @@ fn core::slice::raw::from_raw_parts_mut::precondition_check(data: *mut (), size:
     }
 
     bb13: {
-        storage_dead(_7);
-        storage_dead(_5);
-        return;
+        unwind_terminate;
     }
 }
 
@@ -630,7 +630,7 @@ pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
         storage_dead(_27);
         storage_dead(_26);
         (*dst) = cast<u32, u8>(copy code);
-        goto bb5;
+        goto bb13;
     }
 
     bb2: {
@@ -640,19 +640,25 @@ pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
 
     bb3: {
         len = const 2usize;
-        goto bb6;
+        goto bb7;
     }
 
     bb4: {
         _28 = copy code < const 65536u32;
-        if move _28 -> bb7 else -> bb8;
+        if move _28 -> bb5 else -> bb6;
     }
 
     bb5: {
-        return;
+        len = const 3usize;
+        goto bb7;
     }
 
     bb6: {
+        len = const 4usize;
+        goto bb7;
+    }
+
+    bb7: {
         storage_dead(_28);
         storage_dead(_27);
         storage_dead(_26);
@@ -699,20 +705,10 @@ pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
         storage_dead(_16);
         storage_live(_19);
         _19 = copy len;
-        switch copy _19 -> 2usize: bb9, otherwise: bb10;
-    }
-
-    bb7: {
-        len = const 3usize;
-        goto bb6;
+        switch copy _19 -> 2usize: bb8, otherwise: bb9;
     }
 
     bb8: {
-        len = const 4usize;
-        goto bb6;
-    }
-
-    bb9: {
         storage_dead(_19);
         (*dst) = copy last2 | const 192u8;
         storage_live(_20);
@@ -722,20 +718,12 @@ pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
         goto bb11;
     }
 
-    bb10: {
+    bb9: {
         storage_dead(_19);
-        switch copy len -> 3usize: bb12, otherwise: bb13;
+        switch copy len -> 3usize: bb10, otherwise: bb12;
     }
 
-    bb11: {
-        storage_dead(last4);
-        storage_dead(last3);
-        storage_dead(last2);
-        storage_dead(last1);
-        goto bb5;
-    }
-
-    bb12: {
+    bb10: {
         (*dst) = copy last3 | const 224u8;
         storage_live(_21);
         _21 = copy dst offset const 1usize;
@@ -748,7 +736,15 @@ pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
         goto bb11;
     }
 
-    bb13: {
+    bb11: {
+        storage_dead(last4);
+        storage_dead(last3);
+        storage_dead(last2);
+        storage_dead(last1);
+        goto bb13;
+    }
+
+    bb12: {
         (*dst) = copy last4;
         storage_live(_23);
         _23 = copy dst offset const 1usize;
@@ -766,7 +762,11 @@ pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
         storage_dead(last3);
         storage_dead(last2);
         storage_dead(last1);
-        goto bb5;
+        goto bb13;
+    }
+
+    bb13: {
+        return;
     }
 }
 
@@ -957,15 +957,35 @@ pub fn encode_utf8_raw(code: u32, dst: &'_ mut [u8]) -> &'_ mut [u8]
 
     bb1: {
         len = const 1usize;
-        goto bb3;
+        goto bb7;
     }
 
     bb2: {
         _12 = copy code < const 2048u32;
-        if move _12 -> bb4 else -> bb5;
+        if move _12 -> bb3 else -> bb4;
     }
 
     bb3: {
+        len = const 2usize;
+        goto bb7;
+    }
+
+    bb4: {
+        _13 = copy code < const 65536u32;
+        if move _13 -> bb5 else -> bb6;
+    }
+
+    bb5: {
+        len = const 3usize;
+        goto bb7;
+    }
+
+    bb6: {
+        len = const 4usize;
+        goto bb7;
+    }
+
+    bb7: {
         storage_dead(_13);
         storage_dead(_12);
         storage_dead(_11);
@@ -974,25 +994,23 @@ pub fn encode_utf8_raw(code: u32, dst: &'_ mut [u8]) -> &'_ mut [u8]
         storage_live(_6);
         _6 = copy len;
         _4 = copy dst_len < move _6;
-        if move _4 -> bb6 else -> bb7;
+        if move _4 -> bb8 else -> bb11;
     }
 
-    bb4: {
-        len = const 2usize;
-        goto bb3;
-    }
-
-    bb5: {
-        _13 = copy code < const 65536u32;
-        if move _13 -> bb8 else -> bb9;
-    }
-
-    bb6: {
+    bb8: {
         storage_dead(_6);
-        _7 = core::char::methods::encode_utf8_raw::do_panic::runtime(move code, move len, move dst_len) -> bb10 (unwind: bb11);
+        _7 = core::char::methods::encode_utf8_raw::do_panic::runtime(move code, move len, move dst_len) -> bb9 (unwind: bb10);
     }
 
-    bb7: {
+    bb9: {
+        undefined_behavior;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+
+    bb11: {
         storage_dead(_6);
         storage_dead(_4);
         storage_live(_9);
@@ -1000,25 +1018,7 @@ pub fn encode_utf8_raw(code: u32, dst: &'_ mut [u8]) -> &'_ mut [u8]
         _14 = &raw mut (*dst) with_metadata(copy dst.metadata);
         _9 = cast<*mut [u8], *mut u8>(copy _14);
         storage_dead(_14);
-        _8 = encode_utf8_raw_unchecked(move code, move _9) -> bb12 (unwind: bb13);
-    }
-
-    bb8: {
-        len = const 3usize;
-        goto bb3;
-    }
-
-    bb9: {
-        len = const 4usize;
-        goto bb3;
-    }
-
-    bb10: {
-        undefined_behavior;
-    }
-
-    bb11: {
-        unwind_continue;
+        _8 = encode_utf8_raw_unchecked(move code, move _9) -> bb12 (unwind: bb17);
     }
 
     bb12: {
@@ -1028,20 +1028,25 @@ pub fn encode_utf8_raw(code: u32, dst: &'_ mut [u8]) -> &'_ mut [u8]
         data = cast<*mut [u8], *mut u8>(copy _15);
         storage_live(_19);
         _19 = ub_checks;
-        if move _19 -> bb14 else -> bb15;
+        if move _19 -> bb13 else -> bb16;
     }
 
     bb13: {
-        unwind_continue;
+        storage_live(_17);
+        _17 = cast<*mut [u8], *mut ()>(copy _15);
+        _16 = core::slice::raw::from_raw_parts_mut::precondition_check(move _17, const 1usize, const 1usize, copy len) -> bb14 (unwind: bb15);
     }
 
     bb14: {
-        storage_live(_17);
-        _17 = cast<*mut [u8], *mut ()>(copy _15);
-        _16 = core::slice::raw::from_raw_parts_mut::precondition_check(move _17, const 1usize, const 1usize, copy len) -> bb16 (unwind: bb17);
+        storage_dead(_17);
+        goto bb16;
     }
 
     bb15: {
+        undefined_behavior;
+    }
+
+    bb16: {
         storage_live(_18);
         _18 = *mut  (copy data, copy len);
         _0 = &mut (*_18) with_metadata(copy _18.metadata);
@@ -1050,18 +1055,10 @@ pub fn encode_utf8_raw(code: u32, dst: &'_ mut [u8]) -> &'_ mut [u8]
         return;
     }
 
-    bb16: {
-        storage_dead(_17);
-        goto bb15;
-    }
-
     bb17: {
-        undefined_behavior;
+        unwind_continue;
     }
 }
-
-#[diagnostic_item("FmtWrite")]
-trait core::fmt::Write
 
 // Full name: core::marker::PhantomData::<ErrorData::<CustomOwner>>
 #[lang_item(PhantomData)]
@@ -1221,16 +1218,16 @@ fn drop_glue::<ErrorData::<CustomOwner>>(_1: &'_ mut ErrorData::<CustomOwner>)
         storage_live(_4);
         _0 = ();
         _2 = @discriminant((*_1));
-        switch move _2 -> 0isize: bb1, 1isize: bb1, 2isize: bb1, otherwise: bb2;
+        switch move _2 -> 0isize: bb2, 1isize: bb2, 2isize: bb2, otherwise: bb1;
     }
 
     bb1: {
-        return;
+        _3 = &raw mut ((*_1) as variant ErrorData::<CustomOwner>::Custom)._0;
+        _4 = drop_glue::<CustomOwner>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        _3 = &raw mut ((*_1) as variant ErrorData::<CustomOwner>::Custom)._0;
-        _4 = drop_glue::<CustomOwner>(move _3) -> bb1 (unwind: bb3);
+        return;
     }
 
     bb3: {
@@ -1310,20 +1307,20 @@ pub fn panic(expr: &'_ str) -> !
         storage_live(_3);
         storage_live(_4);
         _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb3 (unwind: bb4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
@@ -1445,577 +1442,577 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
         storage_live(_3);
         _3 = Option::<ErrorKind>::Some { _0: move _2 };
         _0 = move _3;
-        goto bb3;
+        goto bb89;
     }
 
     bb2: {
-        switch copy ek -> 1u32: bb4, otherwise: bb5;
+        switch copy ek -> 1u32: bb3, otherwise: bb4;
     }
 
     bb3: {
-        return;
-    }
-
-    bb4: {
         storage_live(_4);
         _4 = ErrorKind::PermissionDenied {  };
         storage_live(_5);
         _5 = Option::<ErrorKind>::Some { _0: move _4 };
         _0 = move _5;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb4: {
+        switch copy ek -> 2u32: bb5, otherwise: bb6;
     }
 
     bb5: {
-        switch copy ek -> 2u32: bb6, otherwise: bb7;
-    }
-
-    bb6: {
         storage_live(_6);
         _6 = ErrorKind::ConnectionRefused {  };
         storage_live(_7);
         _7 = Option::<ErrorKind>::Some { _0: move _6 };
         _0 = move _7;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb6: {
+        switch copy ek -> 3u32: bb7, otherwise: bb8;
     }
 
     bb7: {
-        switch copy ek -> 3u32: bb8, otherwise: bb9;
-    }
-
-    bb8: {
         storage_live(_8);
         _8 = ErrorKind::ConnectionReset {  };
         storage_live(_9);
         _9 = Option::<ErrorKind>::Some { _0: move _8 };
         _0 = move _9;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb8: {
+        switch copy ek -> 4u32: bb9, otherwise: bb10;
     }
 
     bb9: {
-        switch copy ek -> 4u32: bb10, otherwise: bb11;
-    }
-
-    bb10: {
         storage_live(_10);
         _10 = ErrorKind::HostUnreachable {  };
         storage_live(_11);
         _11 = Option::<ErrorKind>::Some { _0: move _10 };
         _0 = move _11;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb10: {
+        switch copy ek -> 5u32: bb11, otherwise: bb12;
     }
 
     bb11: {
-        switch copy ek -> 5u32: bb12, otherwise: bb13;
-    }
-
-    bb12: {
         storage_live(_12);
         _12 = ErrorKind::NetworkUnreachable {  };
         storage_live(_13);
         _13 = Option::<ErrorKind>::Some { _0: move _12 };
         _0 = move _13;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb12: {
+        switch copy ek -> 6u32: bb13, otherwise: bb14;
     }
 
     bb13: {
-        switch copy ek -> 6u32: bb14, otherwise: bb15;
-    }
-
-    bb14: {
         storage_live(_14);
         _14 = ErrorKind::ConnectionAborted {  };
         storage_live(_15);
         _15 = Option::<ErrorKind>::Some { _0: move _14 };
         _0 = move _15;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb14: {
+        switch copy ek -> 7u32: bb15, otherwise: bb16;
     }
 
     bb15: {
-        switch copy ek -> 7u32: bb16, otherwise: bb17;
-    }
-
-    bb16: {
         storage_live(_16);
         _16 = ErrorKind::NotConnected {  };
         storage_live(_17);
         _17 = Option::<ErrorKind>::Some { _0: move _16 };
         _0 = move _17;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb16: {
+        switch copy ek -> 8u32: bb17, otherwise: bb18;
     }
 
     bb17: {
-        switch copy ek -> 8u32: bb18, otherwise: bb19;
-    }
-
-    bb18: {
         storage_live(_18);
         _18 = ErrorKind::AddrInUse {  };
         storage_live(_19);
         _19 = Option::<ErrorKind>::Some { _0: move _18 };
         _0 = move _19;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb18: {
+        switch copy ek -> 9u32: bb19, otherwise: bb20;
     }
 
     bb19: {
-        switch copy ek -> 9u32: bb20, otherwise: bb21;
-    }
-
-    bb20: {
         storage_live(_20);
         _20 = ErrorKind::AddrNotAvailable {  };
         storage_live(_21);
         _21 = Option::<ErrorKind>::Some { _0: move _20 };
         _0 = move _21;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb20: {
+        switch copy ek -> 10u32: bb21, otherwise: bb22;
     }
 
     bb21: {
-        switch copy ek -> 10u32: bb22, otherwise: bb23;
-    }
-
-    bb22: {
         storage_live(_22);
         _22 = ErrorKind::NetworkDown {  };
         storage_live(_23);
         _23 = Option::<ErrorKind>::Some { _0: move _22 };
         _0 = move _23;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb22: {
+        switch copy ek -> 11u32: bb23, otherwise: bb24;
     }
 
     bb23: {
-        switch copy ek -> 11u32: bb24, otherwise: bb25;
-    }
-
-    bb24: {
         storage_live(_24);
         _24 = ErrorKind::BrokenPipe {  };
         storage_live(_25);
         _25 = Option::<ErrorKind>::Some { _0: move _24 };
         _0 = move _25;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb24: {
+        switch copy ek -> 12u32: bb25, otherwise: bb26;
     }
 
     bb25: {
-        switch copy ek -> 12u32: bb26, otherwise: bb27;
-    }
-
-    bb26: {
         storage_live(_26);
         _26 = ErrorKind::AlreadyExists {  };
         storage_live(_27);
         _27 = Option::<ErrorKind>::Some { _0: move _26 };
         _0 = move _27;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb26: {
+        switch copy ek -> 13u32: bb27, otherwise: bb28;
     }
 
     bb27: {
-        switch copy ek -> 13u32: bb28, otherwise: bb29;
-    }
-
-    bb28: {
         storage_live(_28);
         _28 = ErrorKind::WouldBlock {  };
         storage_live(_29);
         _29 = Option::<ErrorKind>::Some { _0: move _28 };
         _0 = move _29;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb28: {
+        switch copy ek -> 14u32: bb29, otherwise: bb30;
     }
 
     bb29: {
-        switch copy ek -> 14u32: bb30, otherwise: bb31;
-    }
-
-    bb30: {
         storage_live(_30);
         _30 = ErrorKind::NotADirectory {  };
         storage_live(_31);
         _31 = Option::<ErrorKind>::Some { _0: move _30 };
         _0 = move _31;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb30: {
+        switch copy ek -> 15u32: bb31, otherwise: bb32;
     }
 
     bb31: {
-        switch copy ek -> 15u32: bb32, otherwise: bb33;
-    }
-
-    bb32: {
         storage_live(_32);
         _32 = ErrorKind::IsADirectory {  };
         storage_live(_33);
         _33 = Option::<ErrorKind>::Some { _0: move _32 };
         _0 = move _33;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb32: {
+        switch copy ek -> 16u32: bb33, otherwise: bb34;
     }
 
     bb33: {
-        switch copy ek -> 16u32: bb34, otherwise: bb35;
-    }
-
-    bb34: {
         storage_live(_34);
         _34 = ErrorKind::DirectoryNotEmpty {  };
         storage_live(_35);
         _35 = Option::<ErrorKind>::Some { _0: move _34 };
         _0 = move _35;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb34: {
+        switch copy ek -> 17u32: bb35, otherwise: bb36;
     }
 
     bb35: {
-        switch copy ek -> 17u32: bb36, otherwise: bb37;
-    }
-
-    bb36: {
         storage_live(_36);
         _36 = ErrorKind::ReadOnlyFilesystem {  };
         storage_live(_37);
         _37 = Option::<ErrorKind>::Some { _0: move _36 };
         _0 = move _37;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb36: {
+        switch copy ek -> 18u32: bb37, otherwise: bb38;
     }
 
     bb37: {
-        switch copy ek -> 18u32: bb38, otherwise: bb39;
-    }
-
-    bb38: {
         storage_live(_38);
         _38 = ErrorKind::FilesystemLoop {  };
         storage_live(_39);
         _39 = Option::<ErrorKind>::Some { _0: move _38 };
         _0 = move _39;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb38: {
+        switch copy ek -> 19u32: bb39, otherwise: bb40;
     }
 
     bb39: {
-        switch copy ek -> 19u32: bb40, otherwise: bb41;
-    }
-
-    bb40: {
         storage_live(_40);
         _40 = ErrorKind::StaleNetworkFileHandle {  };
         storage_live(_41);
         _41 = Option::<ErrorKind>::Some { _0: move _40 };
         _0 = move _41;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb40: {
+        switch copy ek -> 20u32: bb41, otherwise: bb42;
     }
 
     bb41: {
-        switch copy ek -> 20u32: bb42, otherwise: bb43;
-    }
-
-    bb42: {
         storage_live(_42);
         _42 = ErrorKind::InvalidInput {  };
         storage_live(_43);
         _43 = Option::<ErrorKind>::Some { _0: move _42 };
         _0 = move _43;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb42: {
+        switch copy ek -> 21u32: bb43, otherwise: bb44;
     }
 
     bb43: {
-        switch copy ek -> 21u32: bb44, otherwise: bb45;
-    }
-
-    bb44: {
         storage_live(_44);
         _44 = ErrorKind::InvalidData {  };
         storage_live(_45);
         _45 = Option::<ErrorKind>::Some { _0: move _44 };
         _0 = move _45;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb44: {
+        switch copy ek -> 22u32: bb45, otherwise: bb46;
     }
 
     bb45: {
-        switch copy ek -> 22u32: bb46, otherwise: bb47;
-    }
-
-    bb46: {
         storage_live(_46);
         _46 = ErrorKind::TimedOut {  };
         storage_live(_47);
         _47 = Option::<ErrorKind>::Some { _0: move _46 };
         _0 = move _47;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb46: {
+        switch copy ek -> 23u32: bb47, otherwise: bb48;
     }
 
     bb47: {
-        switch copy ek -> 23u32: bb48, otherwise: bb49;
-    }
-
-    bb48: {
         storage_live(_48);
         _48 = ErrorKind::WriteZero {  };
         storage_live(_49);
         _49 = Option::<ErrorKind>::Some { _0: move _48 };
         _0 = move _49;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb48: {
+        switch copy ek -> 24u32: bb49, otherwise: bb50;
     }
 
     bb49: {
-        switch copy ek -> 24u32: bb50, otherwise: bb51;
-    }
-
-    bb50: {
         storage_live(_50);
         _50 = ErrorKind::StorageFull {  };
         storage_live(_51);
         _51 = Option::<ErrorKind>::Some { _0: move _50 };
         _0 = move _51;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb50: {
+        switch copy ek -> 25u32: bb51, otherwise: bb52;
     }
 
     bb51: {
-        switch copy ek -> 25u32: bb52, otherwise: bb53;
-    }
-
-    bb52: {
         storage_live(_52);
         _52 = ErrorKind::NotSeekable {  };
         storage_live(_53);
         _53 = Option::<ErrorKind>::Some { _0: move _52 };
         _0 = move _53;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb52: {
+        switch copy ek -> 26u32: bb53, otherwise: bb54;
     }
 
     bb53: {
-        switch copy ek -> 26u32: bb54, otherwise: bb55;
-    }
-
-    bb54: {
         storage_live(_54);
         _54 = ErrorKind::QuotaExceeded {  };
         storage_live(_55);
         _55 = Option::<ErrorKind>::Some { _0: move _54 };
         _0 = move _55;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb54: {
+        switch copy ek -> 27u32: bb55, otherwise: bb56;
     }
 
     bb55: {
-        switch copy ek -> 27u32: bb56, otherwise: bb57;
-    }
-
-    bb56: {
         storage_live(_56);
         _56 = ErrorKind::FileTooLarge {  };
         storage_live(_57);
         _57 = Option::<ErrorKind>::Some { _0: move _56 };
         _0 = move _57;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb56: {
+        switch copy ek -> 28u32: bb57, otherwise: bb58;
     }
 
     bb57: {
-        switch copy ek -> 28u32: bb58, otherwise: bb59;
-    }
-
-    bb58: {
         storage_live(_58);
         _58 = ErrorKind::ResourceBusy {  };
         storage_live(_59);
         _59 = Option::<ErrorKind>::Some { _0: move _58 };
         _0 = move _59;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb58: {
+        switch copy ek -> 29u32: bb59, otherwise: bb60;
     }
 
     bb59: {
-        switch copy ek -> 29u32: bb60, otherwise: bb61;
-    }
-
-    bb60: {
         storage_live(_60);
         _60 = ErrorKind::ExecutableFileBusy {  };
         storage_live(_61);
         _61 = Option::<ErrorKind>::Some { _0: move _60 };
         _0 = move _61;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb60: {
+        switch copy ek -> 30u32: bb61, otherwise: bb62;
     }
 
     bb61: {
-        switch copy ek -> 30u32: bb62, otherwise: bb63;
-    }
-
-    bb62: {
         storage_live(_62);
         _62 = ErrorKind::Deadlock {  };
         storage_live(_63);
         _63 = Option::<ErrorKind>::Some { _0: move _62 };
         _0 = move _63;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb62: {
+        switch copy ek -> 31u32: bb63, otherwise: bb64;
     }
 
     bb63: {
-        switch copy ek -> 31u32: bb64, otherwise: bb65;
-    }
-
-    bb64: {
         storage_live(_64);
         _64 = ErrorKind::CrossesDevices {  };
         storage_live(_65);
         _65 = Option::<ErrorKind>::Some { _0: move _64 };
         _0 = move _65;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb64: {
+        switch copy ek -> 32u32: bb65, otherwise: bb66;
     }
 
     bb65: {
-        switch copy ek -> 32u32: bb66, otherwise: bb67;
-    }
-
-    bb66: {
         storage_live(_66);
         _66 = ErrorKind::TooManyLinks {  };
         storage_live(_67);
         _67 = Option::<ErrorKind>::Some { _0: move _66 };
         _0 = move _67;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb66: {
+        switch copy ek -> 33u32: bb67, otherwise: bb68;
     }
 
     bb67: {
-        switch copy ek -> 33u32: bb68, otherwise: bb69;
-    }
-
-    bb68: {
         storage_live(_68);
         _68 = ErrorKind::InvalidFilename {  };
         storage_live(_69);
         _69 = Option::<ErrorKind>::Some { _0: move _68 };
         _0 = move _69;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb68: {
+        switch copy ek -> 34u32: bb69, otherwise: bb70;
     }
 
     bb69: {
-        switch copy ek -> 34u32: bb70, otherwise: bb71;
-    }
-
-    bb70: {
         storage_live(_70);
         _70 = ErrorKind::ArgumentListTooLong {  };
         storage_live(_71);
         _71 = Option::<ErrorKind>::Some { _0: move _70 };
         _0 = move _71;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb70: {
+        switch copy ek -> 35u32: bb71, otherwise: bb72;
     }
 
     bb71: {
-        switch copy ek -> 35u32: bb72, otherwise: bb73;
-    }
-
-    bb72: {
         storage_live(_72);
         _72 = ErrorKind::Interrupted {  };
         storage_live(_73);
         _73 = Option::<ErrorKind>::Some { _0: move _72 };
         _0 = move _73;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb72: {
+        switch copy ek -> 42u32: bb73, otherwise: bb74;
     }
 
     bb73: {
-        switch copy ek -> 42u32: bb74, otherwise: bb75;
-    }
-
-    bb74: {
         storage_live(_74);
         _74 = ErrorKind::Other {  };
         storage_live(_75);
         _75 = Option::<ErrorKind>::Some { _0: move _74 };
         _0 = move _75;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb74: {
+        switch copy ek -> 37u32: bb75, otherwise: bb76;
     }
 
     bb75: {
-        switch copy ek -> 37u32: bb76, otherwise: bb77;
-    }
-
-    bb76: {
         storage_live(_76);
         _76 = ErrorKind::UnexpectedEof {  };
         storage_live(_77);
         _77 = Option::<ErrorKind>::Some { _0: move _76 };
         _0 = move _77;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb76: {
+        switch copy ek -> 36u32: bb77, otherwise: bb78;
     }
 
     bb77: {
-        switch copy ek -> 36u32: bb78, otherwise: bb79;
-    }
-
-    bb78: {
         storage_live(_78);
         _78 = ErrorKind::Unsupported {  };
         storage_live(_79);
         _79 = Option::<ErrorKind>::Some { _0: move _78 };
         _0 = move _79;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb78: {
+        switch copy ek -> 38u32: bb79, otherwise: bb80;
     }
 
     bb79: {
-        switch copy ek -> 38u32: bb80, otherwise: bb81;
-    }
-
-    bb80: {
         storage_live(_80);
         _80 = ErrorKind::OutOfMemory {  };
         storage_live(_81);
         _81 = Option::<ErrorKind>::Some { _0: move _80 };
         _0 = move _81;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb80: {
+        switch copy ek -> 39u32: bb81, otherwise: bb82;
     }
 
     bb81: {
-        switch copy ek -> 39u32: bb82, otherwise: bb83;
-    }
-
-    bb82: {
         storage_live(_82);
         _82 = ErrorKind::InProgress {  };
         storage_live(_83);
         _83 = Option::<ErrorKind>::Some { _0: move _82 };
         _0 = move _83;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb82: {
+        switch copy ek -> 40u32: bb83, otherwise: bb84;
     }
 
     bb83: {
-        switch copy ek -> 40u32: bb84, otherwise: bb85;
-    }
-
-    bb84: {
         storage_live(_84);
         _84 = ErrorKind::TooManyOpenFiles {  };
         storage_live(_85);
         _85 = Option::<ErrorKind>::Some { _0: move _84 };
         _0 = move _85;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb84: {
+        switch copy ek -> 41u32: bb85, otherwise: bb86;
     }
 
     bb85: {
-        switch copy ek -> 41u32: bb86, otherwise: bb87;
-    }
-
-    bb86: {
         storage_live(_86);
         _86 = ErrorKind::InputOutputError {  };
         storage_live(_87);
         _87 = Option::<ErrorKind>::Some { _0: move _86 };
         _0 = move _87;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb86: {
+        switch copy ek -> 43u32: bb87, otherwise: bb88;
     }
 
     bb87: {
-        switch copy ek -> 43u32: bb88, otherwise: bb89;
-    }
-
-    bb88: {
         storage_live(_88);
         _88 = ErrorKind::Uncategorized {  };
         storage_live(_89);
         _89 = Option::<ErrorKind>::Some { _0: move _88 };
         _0 = move _89;
-        goto bb3;
+        goto bb89;
     }
 
-    bb89: {
+    bb88: {
         storage_live(_90);
         _90 = Option::<ErrorKind>::None {  };
         _0 = move _90;
-        goto bb3;
+        goto bb89;
+    }
+
+    bb89: {
+        return;
     }
 }
 
@@ -2055,7 +2052,7 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_dead(_15);
         _2 = move _6 == const 0usize;
         storage_dead(_6);
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -2086,12 +2083,11 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
         storage_dead(_7);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -2099,7 +2095,8 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        return;
     }
 }
 
@@ -2126,29 +2123,29 @@ fn impl_Drop_for_Repr::drop::{closure}::<i32, extern "rust-call" fn((*mut Custom
         storage_live(custom);
         storage_live(_7);
         _7 = ub_checks;
-        if move _7 -> bb1 else -> bb2;
+        if move _7 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_6);
         _6 = cast<*mut Custom, *mut ()>(copy p);
-        _5 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _6) -> bb3 (unwind: bb4);
+        _5 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _6) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        storage_dead(_6);
+        goto bb4;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
         custom = transmute<*mut Custom, NonNull::<Custom>>(copy p);
         _0 = CustomOwner { _0: copy custom };
         storage_dead(custom);
         return;
-    }
-
-    bb3: {
-        storage_dead(_6);
-        goto bb2;
-    }
-
-    bb4: {
-        undefined_behavior;
     }
 }
 
@@ -2273,7 +2270,7 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(pt
         bits = transmute<NonNull::<()>, usize>(copy ptr);
         storage_live(_5);
         _5 = copy bits & const 3usize;
-        switch copy _5 -> 2usize: bb1, 3usize: bb2, 0usize: bb3, 1usize: bb4, otherwise: bb5;
+        switch copy _5 -> 2usize: bb1, 3usize: bb2, 0usize: bb10, 1usize: bb12, otherwise: bb17;
     }
 
     bb1: {
@@ -2287,7 +2284,7 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(pt
         storage_dead(_7);
         _0 = ErrorData::<CustomOwner>::Os { _0: copy code };
         storage_dead(code);
-        goto bb6;
+        goto bb11;
     }
 
     bb2: {
@@ -2298,10 +2295,48 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(pt
         storage_dead(_10);
         storage_live(kind);
         storage_live(self_12);
-        self_12 = from_prim(move kind_bits) -> bb7 (unwind: bb8);
+        self_12 = from_prim(move kind_bits) -> bb3 (unwind: bb19);
     }
 
     bb3: {
+        storage_live(_22);
+        _22 = @discriminant(self_12);
+        switch move _22 -> 0isize: bb4, 1isize: bb8, otherwise: bb9;
+    }
+
+    bb4: {
+        storage_live(_30);
+        _30 = ub_checks;
+        _31 = assume(move _30) -> bb5 (unwind: bb7);
+    }
+
+    bb5: {
+        _23 = core::hint::unreachable_unchecked::precondition_check() -> bb9 (unwind: bb6);
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        kind = move (self_12 as variant Option::<ErrorKind>::Some)._0;
+        storage_dead(_22);
+        storage_dead(self_12);
+        _0 = ErrorData::<CustomOwner>::Simple { _0: copy kind };
+        storage_dead(kind);
+        storage_dead(kind_bits);
+        goto bb11;
+    }
+
+    bb9: {
+        undefined_behavior;
+    }
+
+    bb10: {
         storage_live(_13);
         storage_live(self_14);
         _21 = transmute<NonNull::<()>, *mut SimpleMessage>(copy ptr);
@@ -2310,40 +2345,26 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(pt
         _13 = &(*_21);
         _0 = ErrorData::<CustomOwner>::SimpleMessage { _0: copy _13 };
         storage_dead(_13);
-        goto bb6;
+        goto bb11;
     }
 
-    bb4: {
+    bb11: {
+        storage_dead(_5);
+        storage_dead(bits);
+        goto bb15;
+    }
+
+    bb12: {
         storage_live(custom);
         storage_live(self_24);
         storage_live(self_25);
         self_25 = transmute<NonNull::<()>, *mut u8>(copy ptr);
         storage_live(_28);
         _28 = transmute<NonNull::<()>, *const u8>(copy ptr);
-        _27 = arith_offset::<u8>(move _28, const -1isize) -> bb9 (unwind: bb10);
+        _27 = arith_offset::<u8>(move _28, const -1isize) -> bb13 (unwind: bb16);
     }
 
-    bb5: {
-        _19 = panic(const "internal error: entered unreachable code") -> bb11 (unwind: bb8);
-    }
-
-    bb6: {
-        storage_dead(_5);
-        storage_dead(bits);
-        goto bb12;
-    }
-
-    bb7: {
-        storage_live(_22);
-        _22 = @discriminant(self_12);
-        switch move _22 -> 0isize: bb13, 1isize: bb14, otherwise: bb15;
-    }
-
-    bb8: {
-        if copy _20 -> bb16 else -> bb16;
-    }
-
-    bb9: {
+    bb13: {
         storage_dead(_28);
         self_24 = cast<*const u8, *mut u8>(copy _27);
         storage_dead(self_25);
@@ -2361,46 +2382,10 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(pt
         _17 = move make_custom;
         storage_live(_18);
         _18 = (copy custom,);
-        _16 = impl_Drop_for_Repr::drop::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>(move _17, move _18) -> bb17 (unwind: bb8);
-    }
-
-    bb10: {
-        undefined_behavior;
-    }
-
-    bb11: {
-        undefined_behavior;
-    }
-
-    bb12: {
-        return;
-    }
-
-    bb13: {
-        storage_live(_30);
-        _30 = ub_checks;
-        _31 = assume(move _30) -> bb18 (unwind: bb19);
+        _16 = impl_Drop_for_Repr::drop::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> CustomOwner, ()>(move _17, move _18) -> bb14 (unwind: bb19);
     }
 
     bb14: {
-        kind = move (self_12 as variant Option::<ErrorKind>::Some)._0;
-        storage_dead(_22);
-        storage_dead(self_12);
-        _0 = ErrorData::<CustomOwner>::Simple { _0: copy kind };
-        storage_dead(kind);
-        storage_dead(kind_bits);
-        goto bb6;
-    }
-
-    bb15: {
-        undefined_behavior;
-    }
-
-    bb16: {
-        unwind_continue;
-    }
-
-    bb17: {
         storage_dead(_18);
         storage_dead(_17);
         _0 = ErrorData::<CustomOwner>::Custom { _0: move _16 };
@@ -2408,19 +2393,31 @@ fn decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(pt
         storage_dead(custom);
         storage_dead(_5);
         storage_dead(bits);
-        goto bb12;
+        goto bb15;
+    }
+
+    bb15: {
+        return;
+    }
+
+    bb16: {
+        undefined_behavior;
+    }
+
+    bb17: {
+        _19 = panic(const "internal error: entered unreachable code") -> bb18 (unwind: bb19);
     }
 
     bb18: {
-        _23 = core::hint::unreachable_unchecked::precondition_check() -> bb15 (unwind: bb20);
+        undefined_behavior;
     }
 
     bb19: {
-        undefined_behavior;
+        if copy _20 -> bb20 else -> bb20;
     }
 
     bb20: {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 
@@ -2445,22 +2442,22 @@ pub fn impl_Drop_for_Repr::drop(self: &'_ mut Repr)
         _3 = copy (*self)._0;
         storage_live(_6);
         _6 = impl_Drop_for_Repr::drop::{closure}::{closure} {  };
-        _2 = decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(move _3, move _6) -> bb1 (unwind: bb2);
+        _2 = decode_repr::<CustomOwner, impl_Drop_for_Repr::drop::{closure}::{closure}>(move _3, move _6) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_3);
         _4 = &raw mut _2;
-        _5 = drop_glue::<ErrorData::<CustomOwner>>(move _4) -> bb3 (unwind: bb4);
+        _5 = drop_glue::<ErrorData::<CustomOwner>>(move _4) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_2);
+        return;
     }
 
     bb3: {
-        storage_dead(_2);
-        return;
+        unwind_continue;
     }
 
     bb4: {
@@ -2539,16 +2536,16 @@ fn drop_glue::<Result::<(), core::io::error::Error>>(_1: &'_ mut Result::<(), co
         storage_live(_4);
         _0 = ();
         _2 = @discriminant((*_1));
-        switch move _2 -> 0isize: bb1, otherwise: bb2;
+        switch move _2 -> 0isize: bb2, otherwise: bb1;
     }
 
     bb1: {
-        return;
+        _3 = &raw mut ((*_1) as variant Result::<(), core::io::error::Error>::Err)._0;
+        _4 = drop_glue::<core::io::error::Error>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        _3 = &raw mut ((*_1) as variant Result::<(), core::io::error::Error>::Err)._0;
-        _4 = drop_glue::<core::io::error::Error>(move _3) -> bb1 (unwind: bb3);
+        return;
     }
 
     bb3: {
@@ -3157,7 +3154,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_6);
         _6 = copy len;
         _4 = move _5 > move _6;
-        if move _4 -> bb1 else -> bb2;
+        if move _4 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -3168,10 +3165,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _8 = copy start;
         storage_live(_9);
         _9 = copy len;
-        _7 = core::slice::index::slice_index_fail::do_panic(move _8, move _9) -> bb3 (unwind: bb4);
+        _7 = core::slice::index::slice_index_fail::do_panic(move _8, move _9) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
@@ -3181,15 +3186,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_12);
         _12 = copy len;
         _10 = move _11 > move _12;
-        if move _10 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        unwind_continue;
+        if move _10 -> bb5 else -> bb8;
     }
 
     bb5: {
@@ -3200,10 +3197,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _14 = copy end;
         storage_live(_15);
         _15 = copy len;
-        _13 = core::slice::index::slice_index_fail::do_panic#1(move _14, move _15) -> bb7 (unwind: bb8);
+        _13 = core::slice::index::slice_index_fail::do_panic#1(move _14, move _15) -> bb6 (unwind: bb7);
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         storage_dead(_12);
         storage_dead(_11);
         storage_dead(_10);
@@ -3213,15 +3218,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_18);
         _18 = copy end;
         _16 = move _17 > move _18;
-        if move _16 -> bb9 else -> bb10;
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        unwind_continue;
+        if move _16 -> bb9 else -> bb12;
     }
 
     bb9: {
@@ -3232,10 +3229,18 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         _20 = copy start;
         storage_live(_21);
         _21 = copy end;
-        _19 = core::slice::index::slice_index_fail::do_panic#2(move _20, move _21) -> bb11 (unwind: bb12);
+        _19 = core::slice::index::slice_index_fail::do_panic#2(move _20, move _21) -> bb10 (unwind: bb11);
     }
 
     bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
         storage_dead(_18);
         storage_dead(_17);
         storage_dead(_16);
@@ -3244,14 +3249,6 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         storage_live(_23);
         _23 = copy len;
         _0 = core::slice::index::slice_index_fail::do_panic#3(move _22, move _23) -> bb13 (unwind: bb14);
-    }
-
-    bb11: {
-        undefined_behavior;
-    }
-
-    bb12: {
-        unwind_continue;
     }
 
     bb13: {
@@ -3347,7 +3344,7 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{cl
         bits = transmute<NonNull::<()>, usize>(copy ptr);
         storage_live(_5);
         _5 = copy bits & const 3usize;
-        switch copy _5 -> 2usize: bb1, 3usize: bb2, 0usize: bb3, 1usize: bb4, otherwise: bb5;
+        switch copy _5 -> 2usize: bb1, 3usize: bb2, 0usize: bb10, 1usize: bb12, otherwise: bb17;
     }
 
     bb1: {
@@ -3361,7 +3358,7 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{cl
         storage_dead(_7);
         _0 = ErrorData::<&'_ Custom>::Os { _0: copy code };
         storage_dead(code);
-        goto bb6;
+        goto bb11;
     }
 
     bb2: {
@@ -3372,10 +3369,48 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{cl
         storage_dead(_10);
         storage_live(kind);
         storage_live(self_12);
-        self_12 = from_prim(move kind_bits) -> bb7 (unwind: bb8);
+        self_12 = from_prim(move kind_bits) -> bb3 (unwind: bb19);
     }
 
     bb3: {
+        storage_live(_22);
+        _22 = @discriminant(self_12);
+        switch move _22 -> 0isize: bb4, 1isize: bb8, otherwise: bb9;
+    }
+
+    bb4: {
+        storage_live(_30);
+        _30 = ub_checks;
+        _31 = assume(move _30) -> bb5 (unwind: bb7);
+    }
+
+    bb5: {
+        _23 = core::hint::unreachable_unchecked::precondition_check() -> bb9 (unwind: bb6);
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        kind = move (self_12 as variant Option::<ErrorKind>::Some)._0;
+        storage_dead(_22);
+        storage_dead(self_12);
+        _0 = ErrorData::<&'_ Custom>::Simple { _0: copy kind };
+        storage_dead(kind);
+        storage_dead(kind_bits);
+        goto bb11;
+    }
+
+    bb9: {
+        undefined_behavior;
+    }
+
+    bb10: {
         storage_live(_13);
         storage_live(self_14);
         _21 = transmute<NonNull::<()>, *mut SimpleMessage>(copy ptr);
@@ -3384,40 +3419,26 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{cl
         _13 = &(*_21);
         _0 = ErrorData::<&'_ Custom>::SimpleMessage { _0: copy _13 };
         storage_dead(_13);
-        goto bb6;
+        goto bb11;
     }
 
-    bb4: {
+    bb11: {
+        storage_dead(_5);
+        storage_dead(bits);
+        goto bb15;
+    }
+
+    bb12: {
         storage_live(custom);
         storage_live(self_24);
         storage_live(self_25);
         self_25 = transmute<NonNull::<()>, *mut u8>(copy ptr);
         storage_live(_28);
         _28 = transmute<NonNull::<()>, *const u8>(copy ptr);
-        _27 = arith_offset::<u8>(move _28, const -1isize) -> bb9 (unwind: bb10);
+        _27 = arith_offset::<u8>(move _28, const -1isize) -> bb13 (unwind: bb16);
     }
 
-    bb5: {
-        _19 = panic(const "internal error: entered unreachable code") -> bb11 (unwind: bb8);
-    }
-
-    bb6: {
-        storage_dead(_5);
-        storage_dead(bits);
-        goto bb12;
-    }
-
-    bb7: {
-        storage_live(_22);
-        _22 = @discriminant(self_12);
-        switch move _22 -> 0isize: bb13, 1isize: bb14, otherwise: bb15;
-    }
-
-    bb8: {
-        if copy _20 -> bb16 else -> bb16;
-    }
-
-    bb9: {
+    bb13: {
         storage_dead(_28);
         self_24 = cast<*const u8, *mut u8>(copy _27);
         storage_dead(self_25);
@@ -3435,46 +3456,10 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{cl
         _17 = move make_custom;
         storage_live(_18);
         _18 = (copy custom,);
-        _16 = core::io::error::repr::{Repr}::data::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> &'_ Custom, ()>(move _17, move _18) -> bb17 (unwind: bb8);
-    }
-
-    bb10: {
-        undefined_behavior;
-    }
-
-    bb11: {
-        undefined_behavior;
-    }
-
-    bb12: {
-        return;
-    }
-
-    bb13: {
-        storage_live(_30);
-        _30 = ub_checks;
-        _31 = assume(move _30) -> bb18 (unwind: bb19);
+        _16 = core::io::error::repr::{Repr}::data::{closure}::<i32, extern "rust-call" fn((*mut Custom,)) -> &'_ Custom, ()>(move _17, move _18) -> bb14 (unwind: bb19);
     }
 
     bb14: {
-        kind = move (self_12 as variant Option::<ErrorKind>::Some)._0;
-        storage_dead(_22);
-        storage_dead(self_12);
-        _0 = ErrorData::<&'_ Custom>::Simple { _0: copy kind };
-        storage_dead(kind);
-        storage_dead(kind_bits);
-        goto bb6;
-    }
-
-    bb15: {
-        undefined_behavior;
-    }
-
-    bb16: {
-        unwind_continue;
-    }
-
-    bb17: {
         storage_dead(_18);
         storage_dead(_17);
         _0 = ErrorData::<&'_ Custom>::Custom { _0: move _16 };
@@ -3482,19 +3467,31 @@ fn decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{cl
         storage_dead(custom);
         storage_dead(_5);
         storage_dead(bits);
-        goto bb12;
+        goto bb15;
+    }
+
+    bb15: {
+        return;
+    }
+
+    bb16: {
+        undefined_behavior;
+    }
+
+    bb17: {
+        _19 = panic(const "internal error: entered unreachable code") -> bb18 (unwind: bb19);
     }
 
     bb18: {
-        _23 = core::hint::unreachable_unchecked::precondition_check() -> bb15 (unwind: bb20);
+        undefined_behavior;
     }
 
     bb19: {
-        undefined_behavior;
+        if copy _20 -> bb20 else -> bb20;
     }
 
     bb20: {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 
@@ -3531,27 +3528,44 @@ pub fn is_interrupted(self: &'_ core::io::error::Error) -> bool
         _8 = copy (*self).repr._0;
         storage_live(_14);
         _14 = core::io::error::repr::{Repr}::data::{closure}::{closure} {  };
-        _2 = decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{closure}>(move _8, move _14) -> bb1 (unwind: bb2);
+        _2 = decode_repr::<&'_ Custom, core::io::error::repr::{Repr}::data::{closure}::{closure}>(move _8, move _14) -> bb1 (unwind: bb12);
     }
 
     bb1: {
         storage_dead(_8);
         _3 = @discriminant(_2);
-        switch move _3 -> 0isize: bb3, 1isize: bb4, 2isize: bb5, 3isize: bb6, otherwise: bb7;
+        switch move _3 -> 0isize: bb2, 1isize: bb7, 2isize: bb8, 3isize: bb9, otherwise: bb11;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(code);
         code = copy (_2 as variant ErrorData::<&'_ Custom>::Os)._0;
         storage_live(f);
-        f = get_os_functions() -> bb8 (unwind: bb9);
+        f = get_os_functions() -> bb3 (unwind: bb6);
+    }
+
+    bb3: {
+        storage_live(_13);
+        _13 = copy (*f).is_interrupted;
+        _0 = (copy _13)(move code) -> bb4 (unwind: bb5);
     }
 
     bb4: {
+        storage_dead(_13);
+        storage_dead(f);
+        storage_dead(code);
+        goto bb10;
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
         storage_live(kind);
         kind = copy (_2 as variant ErrorData::<&'_ Custom>::Simple)._0;
         storage_live(_10);
@@ -3562,7 +3576,7 @@ pub fn is_interrupted(self: &'_ core::io::error::Error) -> bool
         goto bb10;
     }
 
-    bb5: {
+    bb8: {
         m = copy (_2 as variant ErrorData::<&'_ Custom>::SimpleMessage)._0;
         storage_live(_9);
         _9 = @discriminant((*m).kind);
@@ -3571,7 +3585,7 @@ pub fn is_interrupted(self: &'_ core::io::error::Error) -> bool
         goto bb10;
     }
 
-    bb6: {
+    bb9: {
         c = copy (_2 as variant ErrorData::<&'_ Custom>::Custom)._0;
         storage_live(_11);
         _11 = @discriminant((*c).kind);
@@ -3580,30 +3594,13 @@ pub fn is_interrupted(self: &'_ core::io::error::Error) -> bool
         goto bb10;
     }
 
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        storage_live(_13);
-        _13 = copy (*f).is_interrupted;
-        _0 = (copy _13)(move code) -> bb11 (unwind: bb12);
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
     bb10: {
         storage_dead(_2);
         return;
     }
 
     bb11: {
-        storage_dead(_13);
-        storage_dead(f);
-        storage_dead(code);
-        goto bb10;
+        undefined_behavior;
     }
 
     bb12: {
@@ -3676,7 +3673,7 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
         storage_live(_27);
         _27 = Result::<(), core::io::error::Error>::Ok { _0: const () };
         _0 = move _27;
-        goto bb4;
+        goto bb20;
     }
 
     bb3: {
@@ -3684,32 +3681,36 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
         storage_live(_5);
         storage_live(_6);
         _6 = copy buf;
-        _5 = impl_Write_for_Stderr::write(copy self_1, move _6) -> bb5 (unwind: bb6);
+        _5 = impl_Write_for_Stderr::write(copy self_1, move _6) -> bb4 (unwind: bb26);
     }
 
     bb4: {
-        return;
+        storage_dead(_6);
+        _7 = @discriminant(_5);
+        switch move _7 -> 0isize: bb5, 1isize: bb11, otherwise: bb25;
     }
 
     bb5: {
-        storage_dead(_6);
-        _7 = @discriminant(_5);
-        switch move _7 -> 0isize: bb7, 1isize: bb8, otherwise: bb9;
+        switch copy (_5 as variant Result::<usize, core::io::error::Error>::Ok)._0 -> 0usize: bb6, otherwise: bb7;
     }
 
     bb6: {
-        unwind_continue;
+        _0 = Result::<(), core::io::error::Error>::Err { _0: copy WRITE_ALL_EOF };
+        goto bb19;
     }
 
     bb7: {
-        switch copy (_5 as variant Result::<usize, core::io::error::Error>::Ok)._0 -> 0usize: bb10, otherwise: bb11;
+        storage_live(n);
+        n = copy (_5 as variant Result::<usize, core::io::error::Error>::Ok)._0;
+        storage_live(_16);
+        storage_live(_15);
+        _16 = copy buf.metadata;
+        _15 = copy n > copy _16;
+        if move _15 -> bb8 else -> bb10;
     }
 
     bb8: {
-        storage_live(e_9);
-        e_9 = &(_5 as variant Result::<usize, core::io::error::Error>::Err)._0;
-        storage_live(_10);
-        _10 = is_interrupted(move e_9) -> bb12 (unwind: bb13);
+        _17 = slice_index_fail(move n, copy _16, move _16) -> bb9 (unwind: bb21);
     }
 
     bb9: {
@@ -3717,40 +3718,6 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
     }
 
     bb10: {
-        _0 = Result::<(), core::io::error::Error>::Err { _0: copy WRITE_ALL_EOF };
-        goto bb14;
-    }
-
-    bb11: {
-        storage_live(n);
-        n = copy (_5 as variant Result::<usize, core::io::error::Error>::Ok)._0;
-        storage_live(_16);
-        storage_live(_15);
-        _16 = copy buf.metadata;
-        _15 = copy n > copy _16;
-        if move _15 -> bb15 else -> bb16;
-    }
-
-    bb12: {
-        if move _10 -> bb17 else -> bb18;
-    }
-
-    bb13: {
-        _13 = @discriminant(_5);
-        switch move _13 -> 1isize: bb19, otherwise: bb20;
-    }
-
-    bb14: {
-        storage_dead(_5);
-        storage_dead(_3);
-        goto bb4;
-    }
-
-    bb15: {
-        _17 = slice_index_fail(move n, copy _16, move _16) -> bb21 (unwind: bb13);
-    }
-
-    bb16: {
         storage_dead(_15);
         storage_live(new_len);
         new_len = copy _16 ub.- copy n;
@@ -3770,13 +3737,44 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
         storage_dead(new_len);
         storage_dead(_16);
         storage_dead(n);
-        goto bb22;
+        goto bb14;
+    }
+
+    bb11: {
+        storage_live(e_9);
+        e_9 = &(_5 as variant Result::<usize, core::io::error::Error>::Err)._0;
+        storage_live(_10);
+        _10 = is_interrupted(move e_9) -> bb12 (unwind: bb21);
+    }
+
+    bb12: {
+        if move _10 -> bb13 else -> bb18;
+    }
+
+    bb13: {
+        storage_dead(_10);
+        storage_dead(e_9);
+        goto bb14;
+    }
+
+    bb14: {
+        _12 = @discriminant(_5);
+        switch move _12 -> 1isize: bb15, 0isize: bb17, otherwise: bb25;
+    }
+
+    bb15: {
+        _25 = &raw mut (_5 as variant Result::<usize, core::io::error::Error>::Err)._0;
+        _26 = drop_glue::<core::io::error::Error>(move _25) -> bb17 (unwind: bb16);
+    }
+
+    bb16: {
+        unwind_continue;
     }
 
     bb17: {
-        storage_dead(_10);
-        storage_dead(e_9);
-        goto bb22;
+        storage_dead(_5);
+        storage_dead(_3);
+        goto bb1;
     }
 
     bb18: {
@@ -3786,25 +3784,27 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
         e_11 = move (_5 as variant Result::<usize, core::io::error::Error>::Err)._0;
         _0 = Result::<(), core::io::error::Error>::Err { _0: copy e_11 };
         storage_dead(e_11);
-        goto bb14;
+        goto bb19;
     }
 
     bb19: {
-        _23 = &raw mut (_5 as variant Result::<usize, core::io::error::Error>::Err)._0;
-        _24 = drop_glue::<core::io::error::Error>(move _23) -> bb20 (unwind: bb23);
+        storage_dead(_5);
+        storage_dead(_3);
+        goto bb20;
     }
 
     bb20: {
-        unwind_continue;
+        return;
     }
 
     bb21: {
-        undefined_behavior;
+        _13 = @discriminant(_5);
+        switch move _13 -> 1isize: bb22, otherwise: bb24;
     }
 
     bb22: {
-        _12 = @discriminant(_5);
-        switch move _12 -> 1isize: bb24, 0isize: bb25, otherwise: bb9;
+        _23 = &raw mut (_5 as variant Result::<usize, core::io::error::Error>::Err)._0;
+        _24 = drop_glue::<core::io::error::Error>(move _23) -> bb24 (unwind: bb23);
     }
 
     bb23: {
@@ -3812,14 +3812,11 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
     }
 
     bb24: {
-        _25 = &raw mut (_5 as variant Result::<usize, core::io::error::Error>::Err)._0;
-        _26 = drop_glue::<core::io::error::Error>(move _25) -> bb25 (unwind: bb26);
+        unwind_continue;
     }
 
     bb25: {
-        storage_dead(_5);
-        storage_dead(_3);
-        goto bb1;
+        undefined_behavior;
     }
 
     bb26: {
@@ -3854,43 +3851,29 @@ pub fn write_str::<'_, Stderr>(self: &'_ mut Adapter::<'_, Stderr>, s: &'_ str) 
         _7 = copy (*self).inner;
         storage_live(_4);
         _4 = transmute<&'_ str, &'_ [u8]>(copy s);
-        _3 = write_all::<Stderr>(move _7, move _4) -> bb1 (unwind: bb2);
+        _3 = write_all::<Stderr>(move _7, move _4) -> bb1 (unwind: bb8);
     }
 
     bb1: {
         _5 = @discriminant(_3);
-        switch move _5 -> 0isize: bb3, 1isize: bb4, otherwise: bb5;
+        switch move _5 -> 0isize: bb2, 1isize: bb3, otherwise: bb7;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_10);
         _10 = Result::<(), core::fmt::Error>::Ok { _0: const () };
         _0 = move _10;
-        goto bb6;
+        goto bb5;
     }
 
-    bb4: {
+    bb3: {
         storage_live(e);
         e = copy (_3 as variant Result::<(), core::io::error::Error>::Err)._0;
         _8 = &raw mut (*self).error;
-        _9 = drop_glue::<Result::<(), core::io::error::Error>>(move _8) -> bb7 (unwind: bb8);
+        _9 = drop_glue::<Result::<(), core::io::error::Error>>(move _8) -> bb4 (unwind: bb6);
     }
 
-    bb5: {
-        undefined_behavior;
-    }
-
-    bb6: {
-        storage_dead(_4);
-        storage_dead(_3);
-        return;
-    }
-
-    bb7: {
+    bb4: {
         (*self).error = copy _3;
         storage_live(_11);
         _11 = core::fmt::Error {  };
@@ -3898,11 +3881,25 @@ pub fn write_str::<'_, Stderr>(self: &'_ mut Adapter::<'_, Stderr>, s: &'_ str) 
         _12 = Result::<(), core::fmt::Error>::Err { _0: move _11 };
         _0 = move _12;
         storage_dead(e);
-        goto bb6;
+        goto bb5;
+    }
+
+    bb5: {
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+
+    bb6: {
+        (*self).error = copy _3;
+        unwind_continue;
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
-        (*self).error = copy _3;
         unwind_continue;
     }
 }
@@ -3948,18 +3945,14 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         storage_live(ptr);
         ptr = cast<*mut (), *const ()>(copy data);
         storage_live(_11);
-        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb2);
+        _11 = is_aligned_to::<()>(move ptr, move align) -> bb1 (unwind: bb13);
     }
 
     bb1: {
-        if move _11 -> bb3 else -> bb4;
+        if move _11 -> bb2 else -> bb8;
     }
 
     bb2: {
-        unwind_terminate;
-    }
-
-    bb3: {
         storage_live(_12);
         storage_live(_13);
         storage_live(_23);
@@ -3973,37 +3966,49 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         _5 = ~(move _12);
         storage_dead(_12);
         storage_dead(_11);
-        if move _5 -> bb5 else -> bb6;
+        if move _5 -> bb3 else -> bb9;
+    }
+
+    bb3: {
+        storage_dead(ptr);
+        storage_live(_7);
+        storage_live(max_len);
+        switch copy size -> 0usize: bb4, otherwise: bb5;
     }
 
     bb4: {
-        storage_dead(_11);
+        max_len = const 18446744073709551615usize;
         goto bb6;
     }
 
     bb5: {
-        storage_dead(ptr);
-        storage_live(_7);
-        storage_live(max_len);
-        switch copy size -> 0usize: bb7, otherwise: bb8;
+        max_len = const 9223372036854775807usize ub./ copy size;
+        goto bb6;
     }
 
     bb6: {
-        storage_dead(ptr);
-        goto bb9;
+        _7 = copy len <= move max_len;
+        storage_dead(max_len);
+        if move _7 -> bb7 else -> bb10;
     }
 
     bb7: {
-        max_len = const 18446744073709551615usize;
-        goto bb10;
+        storage_dead(_7);
+        storage_dead(_5);
+        return;
     }
 
     bb8: {
-        max_len = const 9223372036854775807usize ub./ copy size;
-        goto bb10;
+        storage_dead(_11);
+        goto bb9;
     }
 
     bb9: {
+        storage_dead(ptr);
+        goto bb10;
+    }
+
+    bb10: {
         msg = const "unsafe precondition(s) violated: slice::from_raw_parts requires the pointer to be aligned and non-null, and the total size of the slice not to exceed `isize::MAX`\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_10);
         storage_live(_15);
@@ -4034,12 +4039,6 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         _9 = panic_nounwind_fmt(move _10, const false) -> bb11 (unwind: bb12);
     }
 
-    bb10: {
-        _7 = copy len <= move max_len;
-        storage_dead(max_len);
-        if move _7 -> bb13 else -> bb9;
-    }
-
     bb11: {
         undefined_behavior;
     }
@@ -4049,9 +4048,7 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
     }
 
     bb13: {
-        storage_dead(_7);
-        storage_dead(_5);
-        return;
+        unwind_terminate;
     }
 }
 
@@ -4095,7 +4092,7 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
         storage_dead(_5);
         storage_live(_6);
         _6 = copy bits & const 1usize;
-        switch copy _6 -> 1usize: bb1, otherwise: bb2;
+        switch copy _6 -> 1usize: bb1, otherwise: bb6;
     }
 
     bb1: {
@@ -4108,24 +4105,25 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
         len = copy bits wrap.>> const 1i32;
         storage_live(_16);
         _16 = ub_checks;
-        if move _16 -> bb3 else -> bb4;
+        if move _16 -> bb2 else -> bb5;
     }
 
     bb2: {
-        storage_dead(_6);
-        storage_live(_17);
-        _17 = Option::<&'_ str>::None {  };
-        s = move _17;
-        goto bb5;
+        storage_live(_13);
+        _13 = transmute<NonNull::<u8>, *mut ()>(copy self_10);
+        _12 = core::slice::raw::from_raw_parts::precondition_check(move _13, const 1usize, const 1usize, copy len) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_live(_13);
-        _13 = transmute<NonNull::<u8>, *mut ()>(copy self_10);
-        _12 = core::slice::raw::from_raw_parts::precondition_check(move _13, const 1usize, const 1usize, copy len) -> bb6 (unwind: bb7);
+        storage_dead(_13);
+        goto bb5;
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         storage_live(v);
         v = *const (copy data, copy len);
         _8 = &(*v) with_metadata(copy v.metadata);
@@ -4135,10 +4133,18 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
         _7 = transmute<&'_ [u8], &'_ str>(copy _8);
         storage_dead(_8);
         s = Option::<&'_ str>::Some { _0: copy _7 };
-        goto bb5;
+        goto bb7;
     }
 
-    bb5: {
+    bb6: {
+        storage_dead(_6);
+        storage_live(_17);
+        _17 = Option::<&'_ str>::None {  };
+        s = move _17;
+        goto bb7;
+    }
+
+    bb7: {
         storage_dead(bits);
         storage_dead(self_10);
         storage_dead(_7);
@@ -4148,42 +4154,33 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
         _15 = @discriminant(s);
         _3 = copy _15 == const 1isize;
         storage_dead(_15);
-        _2 = is_val_statically_known::<bool>(move _3) -> bb8 (unwind: bb9);
-    }
-
-    bb6: {
-        storage_dead(_13);
-        goto bb4;
-    }
-
-    bb7: {
-        undefined_behavior;
+        _2 = is_val_statically_known::<bool>(move _3) -> bb8 (unwind: bb12);
     }
 
     bb8: {
-        if move _2 -> bb10 else -> bb11;
+        if move _2 -> bb9 else -> bb10;
     }
 
     bb9: {
-        undefined_behavior;
+        storage_dead(_3);
+        goto bb11;
     }
 
     bb10: {
         storage_dead(_3);
-        goto bb12;
-    }
-
-    bb11: {
-        storage_dead(_3);
         storage_live(_18);
         _18 = Option::<&'_ str>::None {  };
         s = move _18;
-        goto bb12;
+        goto bb11;
+    }
+
+    bb11: {
+        storage_dead(_2);
+        return;
     }
 
     bb12: {
-        storage_dead(_2);
-        return;
+        undefined_behavior;
     }
 }
 
@@ -4215,7 +4212,7 @@ pub fn write_char::<Adapter::<'_, Stderr>>(self: &'_ mut Adapter::<'_, Stderr>, 
         storage_live(v);
         storage_live(_8);
         _8 = cast<char, u32>(copy c);
-        v = encode_utf8_raw(move _8, move dst) -> bb1 (unwind: bb2);
+        v = encode_utf8_raw(move _8, move dst) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -4227,18 +4224,18 @@ pub fn write_char::<Adapter::<'_, Stderr>>(self: &'_ mut Adapter::<'_, Stderr>, 
         storage_dead(v);
         _3 = &(*_9) with_metadata(copy _9.metadata);
         storage_dead(dst);
-        _0 = write_str::<'_, Stderr>(move self, move _3) -> bb3 (unwind: bb4);
+        _0 = write_str::<'_, Stderr>(move self, move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_3);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -4283,7 +4280,7 @@ fn {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>() -> *const ()
 }
 
 #[diagnostic_item("FmtWrite")]
-static {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>: *const () = {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>()
+vtable {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>: *const () = {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>()
 
 pub fn core::fmt::Write::write_fmt::<Adapter::<'_, Stderr>>(self: &'_ mut Adapter::<'_, Stderr>, args: Arguments::<'_>) -> Result::<(), core::fmt::Error>
 {
@@ -4323,108 +4320,59 @@ fn spec_write_fmt::<'_, Adapter::<'_, Stderr>>(self: &'_ mut Adapter::<'_, Stder
         storage_live(_3);
         storage_live(_4);
         _4 = &args;
-        _3 = as_statically_known_str::<'_>(move _4) -> bb1 (unwind: bb2);
+        _3 = as_statically_known_str::<'_>(move _4) -> bb1 (unwind: bb10);
     }
 
     bb1: {
         storage_dead(_4);
         _5 = @discriminant(_3);
-        switch move _5 -> 1isize: bb3, 0isize: bb4, otherwise: bb5;
+        switch move _5 -> 1isize: bb2, 0isize: bb5, otherwise: bb9;
     }
 
     bb2: {
-        unwind_continue;
+        storage_live(s);
+        s = copy (_3 as variant Option::<&'_ str>::Some)._0;
+        _0 = write_str::<'_, Stderr>(move self, move s) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_live(s);
-        s = copy (_3 as variant Option::<&'_ str>::Some)._0;
-        _0 = write_str::<'_, Stderr>(move self, move s) -> bb6 (unwind: bb7);
+        storage_dead(s);
+        storage_dead(_3);
+        goto bb7;
     }
 
     bb4: {
-        storage_dead(_3);
-        storage_live(_7);
-        _7 = unsize_cast<&'_ mut Adapter::<'_, Stderr>, &'_ mut (dyn FakeTrait), {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>>(copy self);
-        _0 = core::fmt::write(move _7, copy args) -> bb8 (unwind: bb9);
+        unwind_continue;
     }
 
     bb5: {
-        undefined_behavior;
+        storage_dead(_3);
+        storage_live(_7);
+        _7 = unsize_cast<&'_ mut Adapter::<'_, Stderr>, &'_ mut (dyn FakeTrait), {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>>(copy self);
+        _0 = core::fmt::write(move _7, copy args) -> bb6 (unwind: bb8);
     }
 
     bb6: {
-        storage_dead(s);
-        storage_dead(_3);
-        goto bb10;
+        storage_dead(_7);
+        goto bb7;
     }
 
     bb7: {
-        unwind_continue;
+        return;
     }
 
     bb8: {
-        storage_dead(_7);
-        goto bb10;
-    }
-
-    bb9: {
         unwind_continue;
     }
 
+    bb9: {
+        undefined_behavior;
+    }
+
     bb10: {
-        return;
+        unwind_continue;
     }
 }
-
-// Full name: core::fmt::Write::write_fmt::SpecWriteFmt
-trait SpecWriteFmt
-
-// Full name: core::fmt::Write::write_fmt::{impl SpecWriteFmt for &'_ mut W}
-impl<'_, _, W> SpecWriteFmt for &'_ mut W {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::num::{impl UpperHex for u32}
-impl "impl_UpperHex_for_u32" UpperHex for u32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for usize}
-impl "impl_Display_for_usize" Display for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::ops::drop::Drop
-#[lang_item(Drop)]
-trait Drop
-
-// Full name: core::io::error::repr::{impl Drop for Repr}
-impl "impl_Drop_for_Repr" Drop for Repr {
-    non-dyn-compatible
-}
-
-// Full name: core::io::error::{impl Drop for CustomOwner}
-impl "impl_Drop_for_CustomOwner" Drop for CustomOwner {
-    non-dyn-compatible
-}
-
-#[diagnostic_item("IoWrite")]
-trait core::io::write::Write
 
 // Full name: core::io::write::default_write_fmt::<Stderr>
 fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> Result::<(), core::io::error::Error>
@@ -4475,28 +4423,27 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
         storage_live(_6);
         _6 = &mut output;
         _5 = unsize_cast<&'_ mut Adapter::<'_, Stderr>, &'_ mut (dyn FakeTrait), {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>>(copy _6);
-        _4 = core::fmt::write(move _5, move args) -> bb1 (unwind: bb2);
+        _4 = core::fmt::write(move _5, move args) -> bb1 (unwind: bb10);
     }
 
     bb1: {
         storage_dead(_5);
         _7 = @discriminant(_4);
-        switch move _7 -> 0isize: bb3, 1isize: bb4, otherwise: bb5;
+        switch move _7 -> 0isize: bb2, 1isize: bb4, otherwise: bb9;
     }
 
     bb2: {
-        _22 = &raw mut output;
-        _23 = drop_glue::<Adapter::<'_, Stderr>>(move _22) -> bb6 (unwind: bb7);
-    }
-
-    bb3: {
         storage_live(_27);
         _27 = Result::<(), core::io::error::Error>::Ok { _0: const () };
         _0 = move _27;
         storage_dead(_6);
         storage_dead(_4);
         _24 = &raw mut output.error;
-        _25 = drop_glue::<Result::<(), core::io::error::Error>>(move _24) -> bb8 (unwind: bb9);
+        _25 = drop_glue::<Result::<(), core::io::error::Error>>(move _24) -> bb6 (unwind: bb3);
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -4508,39 +4455,23 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
         storage_dead(_12);
         _8 = ~(move _11);
         storage_dead(_11);
-        if move _8 -> bb10 else -> bb11;
+        if move _8 -> bb5 else -> bb7;
     }
 
     bb5: {
-        undefined_behavior;
-    }
-
-    bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
-        unwind_terminate;
-    }
-
-    bb8: {
-        storage_dead(output);
-        return;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
         _0 = move output.error;
         storage_dead(_8);
         storage_dead(_6);
         storage_dead(_4);
-        goto bb8;
+        goto bb6;
     }
 
-    bb11: {
+    bb6: {
+        storage_dead(output);
+        return;
+    }
+
+    bb7: {
         storage_live(_10);
         storage_live(s);
         s = const "a formatting trait implementation returned an error when the underlying stream did not";
@@ -4570,11 +4501,28 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
         storage_dead(_16);
         storage_dead(_14);
         storage_dead(s);
-        _9 = panic_fmt(move _10) -> bb12 (unwind: bb2);
+        _9 = panic_fmt(move _10) -> bb8 (unwind: bb10);
+    }
+
+    bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        undefined_behavior;
+    }
+
+    bb10: {
+        _22 = &raw mut output;
+        _23 = drop_glue::<Adapter::<'_, Stderr>>(move _22) -> bb11 (unwind: bb12);
+    }
+
+    bb11: {
+        unwind_continue;
     }
 
     bb12: {
-        undefined_behavior;
+        unwind_terminate;
     }
 }
 
@@ -4595,41 +4543,41 @@ pub fn core::io::write::Write::write_fmt::<Stderr>(self: &'_ mut Stderr, args: A
         storage_live(_3);
         storage_live(_4);
         _4 = &args;
-        _3 = as_statically_known_str::<'_>(move _4) -> bb1 (unwind: bb2);
+        _3 = as_statically_known_str::<'_>(move _4) -> bb1 (unwind: bb9);
     }
 
     bb1: {
         storage_dead(_4);
         _5 = @discriminant(_3);
-        switch move _5 -> 1isize: bb3, 0isize: bb4, otherwise: bb5;
+        switch move _5 -> 1isize: bb2, 0isize: bb5, otherwise: bb8;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(s);
         s = copy (_3 as variant Option::<&'_ str>::Some)._0;
         storage_live(_7);
         _7 = transmute<&'_ str, &'_ [u8]>(copy s);
-        _0 = write_all::<Stderr>(move self, move _7) -> bb6 (unwind: bb7);
+        _0 = write_all::<Stderr>(move self, move _7) -> bb3 (unwind: bb4);
     }
 
-    bb4: {
-        storage_dead(_3);
-        _0 = default_write_fmt::<Stderr>(move self, copy args) -> bb8 (unwind: bb9);
-    }
-
-    bb5: {
-        undefined_behavior;
-    }
-
-    bb6: {
+    bb3: {
         storage_dead(_7);
         storage_dead(s);
         storage_dead(_3);
-        goto bb8;
+        goto bb6;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        storage_dead(_3);
+        _0 = default_write_fmt::<Stderr>(move self, copy args) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
+        return;
     }
 
     bb7: {
@@ -4637,17 +4585,12 @@ pub fn core::io::write::Write::write_fmt::<Stderr>(self: &'_ mut Stderr, args: A
     }
 
     bb8: {
-        return;
+        undefined_behavior;
     }
 
     bb9: {
         unwind_continue;
     }
-}
-
-// Full name: core::io::write::default_write_fmt::{impl core::fmt::Write for Adapter::<'_, _>}
-impl<'_, _, T> core::fmt::Write for Adapter::<'_, _> {
-    non-dyn-compatible
 }
 
 // Full name: core::mem::SizedTypeProperties::ALIGN::<MaybeUninit::<u32>>
@@ -4768,32 +4711,23 @@ fn core::ptr::replace::precondition_check(addr: *const (), align: usize, is_zst:
         _0 = ();
         storage_live(_4);
         storage_live(_8);
-        _8 = is_aligned_to::<()>(copy addr, move align) -> bb1 (unwind: bb2);
+        _8 = is_aligned_to::<()>(copy addr, move align) -> bb1 (unwind: bb10);
     }
 
     bb1: {
-        if move _8 -> bb3 else -> bb4;
+        if move _8 -> bb2 else -> bb6;
     }
 
     bb2: {
-        unwind_terminate;
+        if copy is_zst -> bb3 else -> bb4;
     }
 
     bb3: {
-        if copy is_zst -> bb5 else -> bb6;
+        storage_dead(_8);
+        goto bb5;
     }
 
     bb4: {
-        storage_dead(_8);
-        goto bb7;
-    }
-
-    bb5: {
-        storage_dead(_8);
-        goto bb8;
-    }
-
-    bb6: {
         storage_live(_9);
         storage_live(_10);
         storage_live(_19);
@@ -4807,7 +4741,17 @@ fn core::ptr::replace::precondition_check(addr: *const (), align: usize, is_zst:
         _4 = ~(move _9);
         storage_dead(_9);
         storage_dead(_8);
-        if move _4 -> bb8 else -> bb7;
+        if move _4 -> bb5 else -> bb7;
+    }
+
+    bb5: {
+        storage_dead(_4);
+        return;
+    }
+
+    bb6: {
+        storage_dead(_8);
+        goto bb7;
     }
 
     bb7: {
@@ -4838,12 +4782,11 @@ fn core::ptr::replace::precondition_check(addr: *const (), align: usize, is_zst:
         _7 = Arguments::<'_> { template: move _11, args: move _13 };
         storage_dead(_13);
         storage_dead(_11);
-        _6 = panic_nounwind_fmt(move _7, const false) -> bb9 (unwind: bb10);
+        _6 = panic_nounwind_fmt(move _7, const false) -> bb8 (unwind: bb9);
     }
 
     bb8: {
-        storage_dead(_4);
-        return;
+        undefined_behavior;
     }
 
     bb9: {
@@ -4851,7 +4794,7 @@ fn core::ptr::replace::precondition_check(addr: *const (), align: usize, is_zst:
     }
 
     bb10: {
-        undefined_behavior;
+        unwind_terminate;
     }
 }
 
@@ -4971,7 +4914,7 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         _4 = copy (*_23);
         storage_dead(_23);
         _5 = @discriminant(_4);
-        switch move _5 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, otherwise: bb4;
+        switch move _5 -> 0isize: bb1, 1isize: bb29, 2isize: bb30, otherwise: bb33;
     }
 
     bb1: {
@@ -4979,39 +4922,19 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_live(self_8);
         storage_live(_26);
         _26 = @discriminant(i);
-        switch move _26 -> 0isize: bb5, 1isize: bb6, otherwise: bb4;
+        switch move _26 -> 0isize: bb2, 1isize: bb3, otherwise: bb33;
     }
 
     bb2: {
-        storage_live(self_6);
-        _25 = &raw const (*self_1).value;
-        self_6 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *mut MaybeUninit::<u32>>(copy _25);
-        _0 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const u32>(copy _25);
-        storage_dead(self_6);
-        goto bb7;
-    }
-
-    bb3: {
-        storage_live(_53);
-        _53 = cast<usize, *const u32>(const 0usize);
-        _0 = move _53;
-        goto bb7;
-    }
-
-    bb4: {
-        undefined_behavior;
-    }
-
-    bb5: {
         self_8 = Option::<u32>::None {  };
         storage_dead(_26);
         storage_live(f_9);
         f_9 = move f_3;
         storage_live(_29);
-        goto bb8;
+        goto bb4;
     }
 
-    bb6: {
+    bb3: {
         storage_live(x);
         x = copy (i as variant Option::<&'_ mut Option::<u32>>::Some)._0;
         storage_live(_28);
@@ -5025,39 +4948,30 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         f_9 = move f_3;
         storage_live(_29);
         _29 = @discriminant(self_8);
-        switch move _29 -> 0isize: bb8, 1isize: bb9, otherwise: bb4;
+        switch move _29 -> 0isize: bb4, 1isize: bb7, otherwise: bb33;
     }
 
-    bb7: {
-        storage_dead(_4);
-        goto bb10;
-    }
-
-    bb8: {
+    bb4: {
         storage_live(_30);
         _30 = move f_9;
-        v = call_once::<__rust_std_internal_init_fn, ()>(move _30, const ()) -> bb11 (unwind: bb12);
+        v = call_once::<__rust_std_internal_init_fn, ()>(move _30, const ()) -> bb5 (unwind: bb6);
     }
 
-    bb9: {
-        v = move (self_8 as variant Option::<u32>::Some)._0;
-        goto bb13;
-    }
-
-    bb10: {
-        return;
-    }
-
-    bb11: {
+    bb5: {
         storage_dead(_30);
-        goto bb13;
+        goto bb8;
     }
 
-    bb12: {
+    bb6: {
         unwind_continue;
     }
 
-    bb13: {
+    bb7: {
+        v = move (self_8 as variant Option::<u32>::Some)._0;
+        goto bb8;
+    }
+
+    bb8: {
         storage_dead(_29);
         storage_dead(f_9);
         storage_dead(self_8);
@@ -5072,40 +4986,40 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_dead(_32);
         storage_live(_50);
         _50 = ub_checks;
-        if move _50 -> bb14 else -> bb15;
+        if move _50 -> bb9 else -> bb12;
     }
 
-    bb14: {
+    bb9: {
         storage_live(_34);
         _34 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const ()>(copy _31);
-        _33 = core::ptr::replace::precondition_check(move _34, copy ALIGN::<MaybeUninit::<u32>>, copy IS_ZST::<MaybeUninit::<u32>>) -> bb16 (unwind: bb17);
+        _33 = core::ptr::replace::precondition_check(move _34, copy ALIGN::<MaybeUninit::<u32>>, copy IS_ZST::<MaybeUninit::<u32>>) -> bb10 (unwind: bb11);
     }
 
-    bb15: {
-        if copy IS_ZST::<MaybeUninit::<u32>> -> bb18 else -> bb19;
-    }
-
-    bb16: {
+    bb10: {
         storage_dead(_34);
-        goto bb15;
+        goto bb12;
     }
 
-    bb17: {
+    bb11: {
         undefined_behavior;
     }
 
-    bb18: {
-        old_value = copy src;
-        goto bb20;
+    bb12: {
+        if copy IS_ZST::<MaybeUninit::<u32>> -> bb13 else -> bb14;
     }
 
-    bb19: {
+    bb13: {
+        old_value = copy src;
+        goto bb15;
+    }
+
+    bb14: {
         old_value = copy (*self_11);
         (*self_11) = copy src;
-        goto bb20;
+        goto bb15;
     }
 
-    bb20: {
+    bb15: {
         storage_dead(src);
         storage_dead(self_11);
         storage_live(_14);
@@ -5121,14 +5035,18 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_dead(_35);
         storage_dead(val);
         _16 = @discriminant(_14);
-        switch move _16 -> 0isize: bb21, 1isize: bb22, 2isize: bb23, otherwise: bb4;
+        switch move _16 -> 0isize: bb16, 1isize: bb18, 2isize: bb22, otherwise: bb33;
     }
 
-    bb21: {
-        _13 = register_dtor::<u32>(copy self_1) -> bb24 (unwind: bb25);
+    bb16: {
+        _13 = register_dtor::<u32>(copy self_1) -> bb20 (unwind: bb17);
     }
 
-    bb22: {
+    bb17: {
+        unwind_continue;
+    }
+
+    bb18: {
         storage_live(to_drop);
         storage_live(_38);
         _38 = &raw mut old_value;
@@ -5136,10 +5054,31 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_dead(_38);
         storage_live(_39);
         _39 = &mut (*to_drop);
-        _13 = drop_glue::<u32>(move _39) -> bb26 (unwind: bb27);
+        _13 = drop_glue::<u32>(move _39) -> bb19 (unwind: bb21);
     }
 
-    bb23: {
+    bb19: {
+        storage_dead(_39);
+        storage_dead(to_drop);
+        goto bb20;
+    }
+
+    bb20: {
+        storage_dead(_14);
+        storage_live(self_22);
+        _49 = &raw const (*self_1).value;
+        self_22 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *mut MaybeUninit::<u32>>(copy _49);
+        _0 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const u32>(copy _49);
+        storage_dead(self_22);
+        storage_dead(old_value);
+        goto bb32;
+    }
+
+    bb21: {
+        unwind_continue;
+    }
+
+    bb22: {
         storage_live(_18);
         storage_live(_19);
         _19 = &mut _17;
@@ -5172,28 +5111,27 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_dead(_43);
         storage_dead(_41);
         storage_dead(s);
-        _18 = core::io::write::Write::write_fmt::<Stderr>(move _19, move _20) -> bb28 (unwind: bb29);
+        _18 = core::io::write::Write::write_fmt::<Stderr>(move _19, move _20) -> bb23 (unwind: bb28);
+    }
+
+    bb23: {
+        storage_dead(_20);
+        _51 = &raw mut _18;
+        _52 = drop_glue::<Result::<(), core::io::error::Error>>(move _51) -> bb24 (unwind: bb27);
     }
 
     bb24: {
-        storage_dead(_14);
-        storage_live(self_22);
-        _49 = &raw const (*self_1).value;
-        self_22 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *mut MaybeUninit::<u32>>(copy _49);
-        _0 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const u32>(copy _49);
-        storage_dead(self_22);
-        storage_dead(old_value);
-        goto bb10;
+        storage_dead(_19);
+        storage_dead(_18);
+        _21 = std::process::abort() -> bb25 (unwind: bb26);
     }
 
     bb25: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb26: {
-        storage_dead(_39);
-        storage_dead(to_drop);
-        goto bb24;
+        unwind_continue;
     }
 
     bb27: {
@@ -5201,31 +5139,36 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     }
 
     bb28: {
-        storage_dead(_20);
-        _51 = &raw mut _18;
-        _52 = drop_glue::<Result::<(), core::io::error::Error>>(move _51) -> bb30 (unwind: bb31);
+        unwind_continue;
     }
 
     bb29: {
-        unwind_continue;
+        storage_live(self_6);
+        _25 = &raw const (*self_1).value;
+        self_6 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *mut MaybeUninit::<u32>>(copy _25);
+        _0 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const u32>(copy _25);
+        storage_dead(self_6);
+        goto bb31;
     }
 
     bb30: {
-        storage_dead(_19);
-        storage_dead(_18);
-        _21 = std::process::abort() -> bb32 (unwind: bb33);
+        storage_live(_53);
+        _53 = cast<usize, *const u32>(const 0usize);
+        _0 = move _53;
+        goto bb31;
     }
 
     bb31: {
-        unwind_continue;
+        storage_dead(_4);
+        goto bb32;
     }
 
     bb32: {
-        undefined_behavior;
+        return;
     }
 
     bb33: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
 
@@ -5269,7 +5212,7 @@ pub fn get_or_init::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::<
         _0 = cast<*const UnsafeCell::<MaybeUninit::<u32>>, *const u32>(copy _11);
         storage_dead(self_6);
         storage_dead(_4);
-        goto bb3;
+        goto bb4;
     }
 
     bb2: {
@@ -5277,16 +5220,16 @@ pub fn get_or_init::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::<
         storage_live(_7);
         _8 = const false;
         _7 = move f;
-        _0 = get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(move self_1, move i, move _7) -> bb4 (unwind: bb5);
+        _0 = get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(move self_1, move i, move _7) -> bb3 (unwind: bb5);
     }
 
     bb3: {
-        return;
+        storage_dead(_7);
+        goto bb4;
     }
 
     bb4: {
-        storage_dead(_7);
-        goto bb3;
+        return;
     }
 
     bb5: {
@@ -5365,24 +5308,6 @@ pub enum Option::<&'_ u32> {
   Some { _0: &'_ u32 },
 }
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
 // Full name: core::result::Result::<u32, AccessError>
 #[diagnostic_item("Result")]
 pub enum Result::<u32, AccessError> {
@@ -5395,19 +5320,6 @@ pub enum Result::<u32, AccessError> {
 pub enum Result::<&'_ u32, AccessError> {
   Ok { _0: &'_ u32 },
   Err { _0: AccessError },
-}
-
-// Full name: std::sys::stdio::unix::{impl core::io::write::Write for Stderr}
-impl "impl_Write_for_Stderr" core::io::write::Write for Stderr {
-    non-dyn-compatible
-}
-
-// Full name: std::sys::thread_local::native::lazy::DestroyedState
-trait DestroyedState
-
-// Full name: std::sys::thread_local::native::lazy::{impl DestroyedState for !}
-impl DestroyedState for ! {
-    non-dyn-compatible
 }
 
 // Full name: std::thread::local::LocalKey::<u32>
@@ -5491,7 +5403,7 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
         _7 = copy (*self_1).inner;
         storage_live(_28);
         _28 = Option::<&'_ mut Option::<u32>>::None {  };
-        self_6 = (copy _7)(move _28) -> bb1 (unwind: bb2);
+        self_6 = (copy _7)(move _28) -> bb1 (unwind: bb8);
     }
 
     bb1: {
@@ -5506,14 +5418,10 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
         storage_dead(_22);
         _14 = move _16 == const 0usize;
         storage_dead(_16);
-        if move _14 -> bb3 else -> bb4;
+        if move _14 -> bb2 else -> bb5;
     }
 
     bb2: {
-        if copy _13 -> bb5 else -> bb5;
-    }
-
-    bb3: {
         storage_live(_24);
         _24 = Option::<&'_ u32>::None {  };
         self_5 = move _24;
@@ -5530,10 +5438,24 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
         storage_live(_20);
         _19 = @discriminant(_8);
         _20 = copy _19 == const 1isize;
-        _21 = assume(move _20) -> bb6 (unwind: bb7);
+        _21 = assume(move _20) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        storage_live(_27);
+        _27 = AccessError {  };
+        _0 = Result::<u32, AccessError>::Err { _0: move _27 };
+        storage_dead(_20);
+        storage_dead(_19);
+        storage_dead(_3);
+        goto bb7;
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         storage_live(_15);
         _15 = &(*self_6);
         self_5 = Option::<&'_ u32>::Some { _0: copy _15 };
@@ -5558,37 +5480,27 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
         _11 = move f;
         storage_live(_12);
         _12 = (copy thread_local,);
-        _10 = test_crate::main::{closure}::<i32, extern "rust-call" fn((&'_ u32,)) -> u32, ()>(move _11, move _12) -> bb9 (unwind: bb2);
-    }
-
-    bb5: {
-        unwind_continue;
+        _10 = test_crate::main::{closure}::<i32, extern "rust-call" fn((&'_ u32,)) -> u32, ()>(move _11, move _12) -> bb6 (unwind: bb8);
     }
 
     bb6: {
-        storage_live(_27);
-        _27 = AccessError {  };
-        _0 = Result::<u32, AccessError>::Err { _0: move _27 };
-        storage_dead(_20);
-        storage_dead(_19);
-        storage_dead(_3);
-        goto bb8;
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        return;
-    }
-
-    bb9: {
         storage_dead(_12);
         storage_dead(_11);
         _0 = Result::<u32, AccessError>::Ok { _0: move _10 };
         storage_dead(_10);
-        goto bb8;
+        goto bb7;
+    }
+
+    bb7: {
+        return;
+    }
+
+    bb8: {
+        if copy _13 -> bb9 else -> bb9;
+    }
+
+    bb9: {
+        unwind_continue;
     }
 }
 
@@ -5608,32 +5520,32 @@ pub fn with::<u32, test_crate::main::{closure}::{closure}, u32>(self: &'_ LocalK
         storage_live(_4);
         storage_live(_5);
         storage_live(_3);
-        _3 = try_with::<u32, test_crate::main::{closure}::{closure}, u32>(move self, move f) -> bb1 (unwind: bb2);
+        _3 = try_with::<u32, test_crate::main::{closure}::{closure}, u32>(move self, move f) -> bb1 (unwind: bb7);
     }
 
     bb1: {
         _4 = @discriminant(_3);
-        switch move _4 -> 0isize: bb3, 1isize: bb4, otherwise: bb5;
+        switch move _4 -> 0isize: bb2, 1isize: bb3, otherwise: bb6;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         r = move (_3 as variant Result::<u32, AccessError>::Ok)._0;
         storage_dead(_3);
         return;
     }
 
-    bb4: {
+    bb3: {
         storage_live(_6);
         _6 = AccessError {  };
-        _5 = panic_access_error(move _6) -> bb6 (unwind: bb7);
+        _5 = panic_access_error(move _6) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 
     bb5: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb6: {

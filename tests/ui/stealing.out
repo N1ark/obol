@@ -71,9 +71,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
-
 // Full name: core::ptr::drop_glue::<&'_ usize>
 #[lang_item(DropGlue)]
 fn drop_glue::<&'_ usize>(_1: &'_ mut &'_ usize)
@@ -123,14 +120,18 @@ pub fn impl_Debug_for_usize::fmt(self: &'_ usize, f: &'_ mut Formatter::<'_>) ->
         storage_dead(_6);
         _3 = move _5 != const 0u32;
         storage_dead(_5);
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = impl_LowerHex_for_usize::fmt(move self, move f) -> bb3 (unwind: bb4);
+        _0 = impl_LowerHex_for_usize::fmt(move self, move f) -> bb8 (unwind: bb2);
     }
 
     bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
         storage_live(_4);
         storage_live(_7);
         storage_live(_8);
@@ -139,20 +140,15 @@ pub fn impl_Debug_for_usize::fmt(self: &'_ usize, f: &'_ mut Formatter::<'_>) ->
         storage_dead(_8);
         _4 = move _7 != const 0u32;
         storage_dead(_7);
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_3);
-        return;
+        if move _4 -> bb4 else -> bb6;
     }
 
     bb4: {
-        unwind_continue;
+        _0 = impl_UpperHex_for_usize::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
-        _0 = impl_UpperHex_for_usize::fmt(move self, move f) -> bb7 (unwind: bb8);
+        unwind_continue;
     }
 
     bb6: {
@@ -161,11 +157,12 @@ pub fn impl_Debug_for_usize::fmt(self: &'_ usize, f: &'_ mut Formatter::<'_>) ->
 
     bb7: {
         storage_dead(_4);
-        goto bb3;
+        goto bb8;
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb9: {
@@ -228,42 +225,7 @@ fn {vtable}::core::fmt::Debug::<&'_ usize>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<&'_ usize>: *const () = {vtable}::core::fmt::Debug::<&'_ usize>()
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::LowerHex
-trait LowerHex
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
-impl<'_, _, T> core::fmt::Debug for &'_ T {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl LowerHex for usize}
-impl "impl_LowerHex_for_usize" LowerHex for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl UpperHex for usize}
-impl "impl_UpperHex_for_usize" UpperHex for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for usize}
-impl "impl_Debug_for_usize" core::fmt::Debug for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for usize}
-impl "impl_Display_for_usize" Display for usize {
-    non-dyn-compatible
-}
+vtable {vtable}::core::fmt::Debug::<&'_ usize>: *const () = {vtable}::core::fmt::Debug::<&'_ usize>()
 
 // Full name: core::option::Option::<Arguments::<'_>>
 #[lang_item(Option)]
@@ -440,7 +402,7 @@ fn main()
         _5 = &(*_6);
         _4 = unsize_cast<&'_ [(); 4usize], &'_ [()], 4usize>(move _5);
         storage_dead(_5);
-        _3 = len::<()>(move _4) -> bb1 (unwind: bb2);
+        _3 = len::<()>(move _4) -> bb1 (unwind: bb6);
     }
 
     bb1: {
@@ -464,14 +426,10 @@ fn main()
         storage_live(_12);
         _12 = copy (*right_val);
         _10 = move _11 == move _12;
-        if move _10 -> bb3 else -> bb4;
+        if move _10 -> bb2 else -> bb3;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_12);
         storage_dead(_11);
         storage_dead(_10);
@@ -484,7 +442,7 @@ fn main()
         return;
     }
 
-    bb4: {
+    bb3: {
         storage_dead(_12);
         storage_dead(_11);
         storage_live(kind);
@@ -502,11 +460,15 @@ fn main()
         _18 = &(*_19);
         storage_live(_20);
         _20 = Option::<Arguments::<'_>>::None {  };
-        _14 = assert_failed::<usize, usize>(move _15, move _16, move _18, move _20) -> bb5 (unwind: bb6);
+        _14 = assert_failed::<usize, usize>(move _15, move _16, move _18, move _20) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 
     bb5: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb6: {

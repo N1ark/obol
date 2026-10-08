@@ -1,16 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::cmp::PartialEq
-#[lang_item(PartialEq)]
-#[diagnostic_item("PartialEq")]
-trait PartialEq
-
-// Full name: core::cmp::impls::{impl PartialEq<i32> for i32}
-impl "impl_PartialEq_i32_for_i32" PartialEq<i32> for i32 {
-    non-dyn-compatible
-}
-
 // Full name: core::cmp::impls::{impl PartialEq<i32> for i32}::eq
 pub fn impl_PartialEq_i32_for_i32::eq(self: &'_ i32, other: &'_ i32) -> bool
 {
@@ -31,11 +21,6 @@ pub fn impl_PartialEq_i32_for_i32::eq(self: &'_ i32, other: &'_ i32) -> bool
         storage_dead(_3);
         return;
     }
-}
-
-// Full name: core::cmp::impls::{impl PartialEq<&'_ B> for &'_ A}
-impl<'_, '_, _, _, A, B> PartialEq<&'_ B> for &'_ A {
-    non-dyn-compatible
 }
 
 // Full name: core::cmp::impls::{impl PartialEq<&'_ B> for &'_ A}::eq::<'_, '_, i32, i32>
@@ -135,9 +120,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
-
 // Full name: core::ptr::drop_glue::<&'_ &'_ i32>
 #[lang_item(DropGlue)]
 fn drop_glue::<&'_ &'_ i32>(_1: &'_ mut &'_ &'_ i32)
@@ -187,14 +169,18 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_6);
         _3 = move _5 != const 0u32;
         storage_dead(_5);
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb3 (unwind: bb4);
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
     }
 
     bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
         storage_live(_4);
         storage_live(_7);
         storage_live(_8);
@@ -203,20 +189,15 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_8);
         _4 = move _7 != const 0u32;
         storage_dead(_7);
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_3);
-        return;
+        if move _4 -> bb4 else -> bb6;
     }
 
     bb4: {
-        unwind_continue;
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb8);
+        unwind_continue;
     }
 
     bb6: {
@@ -225,11 +206,12 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
 
     bb7: {
         storage_dead(_4);
-        goto bb3;
+        goto bb8;
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb9: {
@@ -316,42 +298,7 @@ fn {vtable}::core::fmt::Debug::<&'_ &'_ i32>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<&'_ &'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ &'_ i32>()
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::LowerHex
-trait LowerHex
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
-impl<'_, _, T> core::fmt::Debug for &'_ T {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl LowerHex for i32}
-impl "impl_LowerHex_for_i32" LowerHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl UpperHex for i32}
-impl "impl_UpperHex_for_i32" UpperHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for i32}
-impl "impl_Debug_for_i32" core::fmt::Debug for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for i32}
-impl "impl_Display_for_i32" Display for i32 {
-    non-dyn-compatible
-}
+vtable {vtable}::core::fmt::Debug::<&'_ &'_ i32>: *const () = {vtable}::core::fmt::Debug::<&'_ &'_ i32>()
 
 // Full name: core::option::Option::<Arguments::<'_>>
 #[lang_item(Option)]
@@ -531,7 +478,7 @@ fn main()
         storage_live(_4);
         _4 = &x;
         _3 = &(*_4);
-        f = foo::<i32>(move _3) -> bb1 (unwind: bb2);
+        f = foo::<i32>(move _3) -> bb1 (unwind: bb8);
     }
 
     bb1: {
@@ -544,14 +491,10 @@ fn main()
         _8 = &f;
         storage_live(_9);
         _9 = ();
-        _7 = test_crate::foo::{closure}::{closure}::<i32, i8, extern "rust-call" fn(()) -> &'_ i32, (&'_ i32,)>(move _8, move _9) -> bb3 (unwind: bb4);
+        _7 = test_crate::foo::{closure}::{closure}::<i32, i8, extern "rust-call" fn(()) -> &'_ i32, (&'_ i32,)>(move _8, move _9) -> bb2 (unwind: bb7);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = &_7;
@@ -572,18 +515,14 @@ fn main()
         _14 = &(*left_val);
         storage_live(_15);
         _15 = &(*right_val);
-        _13 = {impl PartialEq<&'_ B> for &'_ A}::eq::<'_, '_, i32, i32>(move _14, move _15) -> bb5 (unwind: bb4);
+        _13 = {impl PartialEq<&'_ B> for &'_ A}::eq::<'_, '_, i32, i32>(move _14, move _15) -> bb3 (unwind: bb7);
+    }
+
+    bb3: {
+        if move _13 -> bb4 else -> bb5;
     }
 
     bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
-        if move _13 -> bb6 else -> bb7;
-    }
-
-    bb6: {
         storage_dead(_15);
         storage_dead(_14);
         storage_dead(_13);
@@ -597,7 +536,7 @@ fn main()
         return;
     }
 
-    bb7: {
+    bb5: {
         storage_dead(_15);
         storage_dead(_14);
         storage_live(kind);
@@ -615,11 +554,19 @@ fn main()
         _21 = &(*_22);
         storage_live(_23);
         _23 = Option::<Arguments::<'_>>::None {  };
-        _17 = assert_failed::<&'_ i32, &'_ i32>(move _18, move _19, move _21, move _23) -> bb8 (unwind: bb4);
+        _17 = assert_failed::<&'_ i32, &'_ i32>(move _18, move _19, move _21, move _23) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        unwind_continue;
     }
 
     bb8: {
-        undefined_behavior;
+        unwind_continue;
     }
 }
 

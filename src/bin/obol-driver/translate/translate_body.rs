@@ -103,6 +103,7 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
         let block = BlockData {
             statements: self.statements,
             terminator,
+            kind: UnwindKind::Regular,
         };
         self.b_ctx.blocks.set_slot(self.current_block, block);
     }
@@ -113,7 +114,8 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
     fn push_nounwind_call(&mut self, span: Span, call: Call) {
         let target = self.blocks.reserve_slot();
         let on_unwind = self.blocks.push(
-            Terminator::new(span, TerminatorKind::Abort(AbortKind::UndefinedBehavior)).into_block(),
+            Terminator::new(span, TerminatorKind::UndefinedBehavior)
+                .into_block(UnwindKind::Regular),
         );
         let block = BlockData {
             statements: mem::take(&mut self.statements),
@@ -125,6 +127,7 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
                     on_unwind,
                 },
             ),
+            kind: UnwindKind::Regular,
         };
         let current_block = mem::replace(&mut self.current_block, target);
         self.blocks.set_slot(current_block, block);
@@ -168,6 +171,7 @@ impl BodyTransCtx<'_, '_, '_> {
             name,
             ty,
             span,
+            drop_flag_for: None,
         });
         self.locals_map.insert(rid, local_id);
     }
@@ -1158,7 +1162,15 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             generics: Box::new(GenericArgs::empty()),
         });
         let dest = self.locals.new_var(None, Ty::mk_unit());
-        self.push_nounwind_call(span, Call { func, args, dest });
+        self.push_nounwind_call(
+            span,
+            Call {
+                func,
+                args,
+                dest,
+                safety: CallSafety::Inherit,
+            },
+        );
         Ok(())
     }
 
@@ -1187,11 +1199,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 TerminatorKind::Switch { data, branches }
             }
             mir::TerminatorKind::Resume => TerminatorKind::UnwindResume,
-            mir::TerminatorKind::Abort => TerminatorKind::Abort(AbortKind::UnwindTerminate),
+            mir::TerminatorKind::Abort => TerminatorKind::UnwindTerminate,
             mir::TerminatorKind::Return => TerminatorKind::Return,
             // A MIR `Unreachable` terminator indicates undefined behavior of the rust abstract
             // machine.
-            mir::TerminatorKind::Unreachable => TerminatorKind::Abort(AbortKind::UndefinedBehavior),
+            mir::TerminatorKind::Unreachable => TerminatorKind::UndefinedBehavior,
             mir::TerminatorKind::Drop {
                 place,
                 target,
@@ -1250,6 +1262,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         func,
                         args: vec![operand],
                         dest: unit_place,
+                        safety: CallSafety::Inherit,
                     },
                     target,
                     on_unwind,
@@ -1405,17 +1418,16 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         match unwind {
             mir::UnwindAction::Continue => {
                 let unwind_continue = Terminator::new(span, TerminatorKind::UnwindResume);
-                self.blocks.push(unwind_continue.into_block())
+                self.blocks
+                    .push(unwind_continue.into_block(UnwindKind::Regular))
             }
             mir::UnwindAction::Unreachable => {
-                let abort =
-                    Terminator::new(span, TerminatorKind::Abort(AbortKind::UndefinedBehavior));
-                self.blocks.push(abort.into_block())
+                let abort = Terminator::new(span, TerminatorKind::UndefinedBehavior);
+                self.blocks.push(abort.into_block(UnwindKind::Regular))
             }
             mir::UnwindAction::Terminate => {
-                let abort =
-                    Terminator::new(span, TerminatorKind::Abort(AbortKind::UnwindTerminate));
-                self.blocks.push(abort.into_block())
+                let abort = Terminator::new(span, TerminatorKind::UnwindTerminate);
+                self.blocks.push(abort.into_block(UnwindKind::Regular))
             }
             mir::UnwindAction::Cleanup(bb) => self.translate_basic_block_id(*bb),
         }
@@ -1502,14 +1514,14 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             func: fn_operand,
             args: fn_args,
             dest: lval,
+            safety: CallSafety::Inherit,
         };
 
         let target = match target {
             Some(target) => self.translate_basic_block_id(*target),
             None => {
-                let abort =
-                    Terminator::new(span, TerminatorKind::Abort(AbortKind::UndefinedBehavior));
-                self.blocks.push(abort.into_block())
+                let abort = Terminator::new(span, TerminatorKind::UndefinedBehavior);
+                self.blocks.push(abort.into_block(UnwindKind::Regular))
             }
         };
         let on_unwind = self.translate_unwind(span, unwind);

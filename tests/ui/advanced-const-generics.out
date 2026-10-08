@@ -1,11 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::cmp::PartialEq
-#[lang_item(PartialEq)]
-#[diagnostic_item("PartialEq")]
-trait PartialEq
-
 // Full name: core::fmt::Error
 pub struct Error {}
 
@@ -25,17 +20,6 @@ pub struct Formatter::<'_> {
   options: FormattingOptions,
   buf: &'_ mut (dyn FakeTrait),
 }
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
-}
-
-// Full name: core::fmt::Debug
-#[diagnostic_item("Debug")]
-trait Debug
 
 struct str {
   _0: [u8],
@@ -58,11 +42,6 @@ pub fn write_str::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str) -> Result::<(),
 enum Foo {
   A,
   B,
-}
-
-// Full name: test_crate::{impl PartialEq<Foo> for Foo}
-impl "impl_PartialEq_Foo_for_Foo" PartialEq<Foo> for Foo {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl PartialEq<Foo> for Foo}::eq
@@ -104,11 +83,6 @@ pub fn eq(self: &'_ Foo, other: &'_ Foo) -> bool
     }
 }
 
-// Full name: test_crate::{impl Debug for Foo}
-impl "impl_Debug_for_Foo" Debug for Foo {
-    non-dyn-compatible
-}
-
 // Full name: test_crate::{impl Debug for Foo}::fmt
 #[inline(hint)]
 pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
@@ -129,7 +103,7 @@ pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
         _3 = &two-phase-mut (*f);
         storage_live(_4);
         _5 = @discriminant((*self));
-        switch move _5 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _5 -> 0isize: bb1, 1isize: bb2, otherwise: bb6;
     }
 
     bb1: {
@@ -137,7 +111,7 @@ pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
         _6 = const "A";
         _4 = &(*_6) with_metadata(copy _6.metadata);
         storage_dead(_6);
-        goto bb4;
+        goto bb3;
     }
 
     bb2: {
@@ -145,25 +119,25 @@ pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
         _7 = const "B";
         _4 = &(*_7) with_metadata(copy _7.metadata);
         storage_dead(_7);
-        goto bb4;
+        goto bb3;
     }
 
     bb3: {
-        undefined_behavior;
+        _0 = write_str::<'_>(move _3, move _4) -> bb4 (unwind: bb5);
     }
 
     bb4: {
-        _0 = write_str::<'_>(move _3, move _4) -> bb5 (unwind: bb6);
-    }
-
-    bb5: {
         storage_dead(_4);
         storage_dead(_3);
         return;
     }
 
-    bb6: {
+    bb5: {
         unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 

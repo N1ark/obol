@@ -11,9 +11,6 @@ pub enum Option::<&'_ mut u32> {
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: test_crate::get
 fn get(x: Option::<&'_ mut u32>) -> u32
 {
@@ -26,12 +23,12 @@ fn get(x: Option::<&'_ mut u32>) -> u32
         storage_live(_0);
         storage_live(_2);
         _2 = @discriminant(x);
-        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb4;
     }
 
     bb1: {
         _0 = const 0u32;
-        goto bb4;
+        goto bb3;
     }
 
     bb2: {
@@ -39,15 +36,15 @@ fn get(x: Option::<&'_ mut u32>) -> u32
         r = move (x as variant Option::<&'_ mut u32>::Some)._0;
         _0 = copy (*r);
         storage_dead(r);
-        goto bb4;
+        goto bb3;
     }
 
     bb3: {
-        undefined_behavior;
+        return;
     }
 
     bb4: {
-        return;
+        undefined_behavior;
     }
 }
 

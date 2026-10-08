@@ -26,8 +26,6 @@ trait FakeTrait
 // Full name: anon_const_0
 const anon_const_0: S = S {  }
 
-trait test_crate::MyTrait
-
 // Full name: test_crate::{impl test_crate::MyTrait for S}::val
 pub fn val(self: &'_ S) -> u32
 {
@@ -70,12 +68,7 @@ fn {vtable}::test_crate::MyTrait::<S>() -> *const ()
     }
 }
 
-static {vtable}::test_crate::MyTrait::<S>: *const () = {vtable}::test_crate::MyTrait::<S>()
-
-// Full name: test_crate::{impl test_crate::MyTrait for S}
-impl "impl_MyTrait_for_S" test_crate::MyTrait for S {
-    non-dyn-compatible
-}
+vtable {vtable}::test_crate::MyTrait::<S>: *const () = {vtable}::test_crate::MyTrait::<S>()
 
 // Full name: test_crate::C
 const C: &'_ (dyn FakeTrait) = &anon_const_0 with_metadata({vtable}::test_crate::MyTrait::<S>)

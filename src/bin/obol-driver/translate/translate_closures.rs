@@ -153,6 +153,7 @@ impl ItemTransCtx<'_, '_> {
                 BlockData {
                     statements,
                     terminator: Terminator::new(span, terminator),
+                    kind: UnwindKind::Regular,
                 }
             };
             let fun_id: FunDeclId = self.register_fun_decl_id(span, instance);
@@ -202,6 +203,7 @@ impl ItemTransCtx<'_, '_> {
                     func: fn_op,
                     args: vec![Operand::Move(state), Operand::Move(args_tupled)],
                     dest: output,
+                    safety: CallSafety::Inherit,
                 },
                 on_unwind: unwind_block,
             };

@@ -82,15 +82,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::intrinsics::AtomicOrdering
-pub enum AtomicOrdering {
-  Relaxed,
-  Release,
-  Acquire,
-  AcqRel,
-  SeqCst,
-}
-
 #[rustc_intrinsic]
 pub fn core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }, false>(src_1: *const u64) -> u64
 = <intrinsic:atomic_load>
@@ -136,15 +127,6 @@ pub struct Location::<'_> {
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
 // Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
@@ -163,15 +145,6 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
     bb2: {
         undefined_behavior;
     }
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -223,23 +196,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -247,18 +213,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -266,7 +235,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -274,7 +247,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -334,14 +307,18 @@ fn core::sync::atomic::atomic_load::<u64, false>(dst: *const u64, order: Orderin
         storage_live(_4);
         storage_live(_6);
         _3 = @discriminant(order);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, 3isize: bb4, 4isize: bb5, otherwise: bb6;
+        switch move _3 -> 0isize: bb1, 1isize: bb3, 2isize: bb6, 3isize: bb8, 4isize: bb11, otherwise: bb14;
     }
 
     bb1: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }, false>(move dst) -> bb7 (unwind: bb8);
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Relaxed {  }, false>(move dst) -> bb12 (unwind: bb2);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
         storage_live(_5);
         storage_live(s_17);
         s_17 = const "there is no such thing as a release load";
@@ -371,14 +348,26 @@ fn core::sync::atomic::atomic_load::<u64, false>(dst: *const u64, order: Orderin
         storage_dead(_20);
         storage_dead(_18);
         storage_dead(s_17);
-        _4 = panic_fmt(move _5) -> bb9 (unwind: bb10);
-    }
-
-    bb3: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }, false>(move dst) -> bb7 (unwind: bb11);
+        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::Acquire {  }, false>(move dst) -> bb12 (unwind: bb7);
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
         storage_live(_7);
         storage_live(s_8);
         s_8 = const "there is no such thing as an acquire-release load";
@@ -408,23 +397,7 @@ fn core::sync::atomic::atomic_load::<u64, false>(dst: *const u64, order: Orderin
         storage_dead(_11);
         storage_dead(_9);
         storage_dead(s_8);
-        _6 = panic_fmt(move _7) -> bb12 (unwind: bb13);
-    }
-
-    bb5: {
-        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }, false>(move dst) -> bb7 (unwind: bb14);
-    }
-
-    bb6: {
-        undefined_behavior;
-    }
-
-    bb7: {
-        return;
-    }
-
-    bb8: {
-        undefined_behavior;
+        _6 = panic_fmt(move _7) -> bb9 (unwind: bb10);
     }
 
     bb9: {
@@ -436,15 +409,15 @@ fn core::sync::atomic::atomic_load::<u64, false>(dst: *const u64, order: Orderin
     }
 
     bb11: {
-        undefined_behavior;
+        _0 = core::intrinsics::atomic_load::<u64, AtomicOrdering::SeqCst {  }, false>(move dst) -> bb12 (unwind: bb13);
     }
 
     bb12: {
-        undefined_behavior;
+        return;
     }
 
     bb13: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb14: {

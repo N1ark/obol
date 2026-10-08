@@ -21,9 +21,6 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
-
 struct () {}
 
 // Full name: core::ptr::drop_glue::<u32>
@@ -82,14 +79,18 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_6);
         _3 = move _5 != const 0u32;
         storage_dead(_5);
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb3 (unwind: bb4);
+        _0 = impl_LowerHex_for_u32::fmt(move self, move f) -> bb8 (unwind: bb2);
     }
 
     bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
         storage_live(_4);
         storage_live(_7);
         storage_live(_8);
@@ -98,20 +99,15 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_8);
         _4 = move _7 != const 0u32;
         storage_dead(_7);
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_3);
-        return;
+        if move _4 -> bb4 else -> bb6;
     }
 
     bb4: {
-        unwind_continue;
+        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
-        _0 = impl_UpperHex_for_u32::fmt(move self, move f) -> bb7 (unwind: bb8);
+        unwind_continue;
     }
 
     bb6: {
@@ -120,11 +116,12 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
 
     bb7: {
         storage_dead(_4);
-        goto bb3;
+        goto bb8;
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb9: {
@@ -163,37 +160,7 @@ fn {vtable}::core::fmt::Debug::<u32>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<u32>: *const () = {vtable}::core::fmt::Debug::<u32>()
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::LowerHex
-trait LowerHex
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::num::{impl LowerHex for u32}
-impl "impl_LowerHex_for_u32" LowerHex for u32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl UpperHex for u32}
-impl "impl_UpperHex_for_u32" UpperHex for u32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for u32}
-impl "impl_Debug_for_u32" core::fmt::Debug for u32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for u32}
-impl "impl_Display_for_u32" Display for u32 {
-    non-dyn-compatible
-}
+vtable {vtable}::core::fmt::Debug::<u32>: *const () = {vtable}::core::fmt::Debug::<u32>()
 
 // Full name: core::result::Result::<u32, u32>
 #[diagnostic_item("Result")]
@@ -227,7 +194,7 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
         storage_live(_2);
         storage_live(_4);
         _2 = @discriminant(self);
-        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb5;
     }
 
     bb1: {
@@ -242,7 +209,7 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
         storage_live(_6);
         _6 = &e;
         _5 = unsize_cast<&'_ u32, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<u32>>(copy _6);
-        _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb4 (unwind: bb5);
+        _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -250,11 +217,11 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
     }
 
     bb4: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb5: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
 

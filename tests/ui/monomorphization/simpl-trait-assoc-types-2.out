@@ -40,8 +40,6 @@ const anon_const_0: i32 = 42i32
 // Full name: anon_const_1
 const anon_const_1: usize = 42usize
 
-trait test_crate::Trait
-
 // Full name: test_crate::{impl test_crate::Trait for i32}::comsume
 fn impl_Trait_for_i32::comsume(self: &'_ i32)
 {
@@ -85,7 +83,7 @@ fn {vtable}::test_crate::Trait::<i32>() -> *const ()
     }
 }
 
-static {vtable}::test_crate::Trait::<i32>: *const () = {vtable}::test_crate::Trait::<i32>()
+vtable {vtable}::test_crate::Trait::<i32>: *const () = {vtable}::test_crate::Trait::<i32>()
 
 // Full name: test_crate::{impl test_crate::Trait for usize}::comsume
 fn impl_Trait_for_usize::comsume(self: &'_ usize)
@@ -130,23 +128,7 @@ fn {vtable}::test_crate::Trait::<usize>() -> *const ()
     }
 }
 
-static {vtable}::test_crate::Trait::<usize>: *const () = {vtable}::test_crate::Trait::<usize>()
-
-fn test_crate::Trait::comsume::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
-= <opaque>
-
-fn test_crate::Trait::comsume::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
-= <opaque>
-
-// Full name: test_crate::{impl test_crate::Trait for i32}
-impl "impl_Trait_for_i32" test_crate::Trait for i32 {
-    non-dyn-compatible
-}
-
-// Full name: test_crate::{impl test_crate::Trait for usize}
-impl "impl_Trait_for_usize" test_crate::Trait for usize {
-    non-dyn-compatible
-}
+vtable {vtable}::test_crate::Trait::<usize>: *const () = {vtable}::test_crate::Trait::<usize>()
 
 // Full name: test_crate::main
 fn main()
@@ -191,7 +173,7 @@ fn main()
         storage_live(_5);
         _5 = &(*a) with_metadata(copy a.metadata);
         _13 = copy _5.metadata offset const 3usize;
-        _4 = (copy (*_13))(move _5) -> bb1 (unwind: bb2);
+        _4 = (copy (*_13))(move _5) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -212,20 +194,20 @@ fn main()
         storage_live(_10);
         _10 = &(*b) with_metadata(copy b.metadata);
         _14 = copy _10.metadata offset const 3usize;
-        _9 = (copy (*_14))(move _10) -> bb3 (unwind: bb4);
+        _9 = (copy (*_14))(move _10) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_10);
         storage_dead(_9);
         _0 = ();
         storage_dead(b);
         storage_dead(a);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {

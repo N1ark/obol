@@ -9,16 +9,6 @@ pub enum Ordering {
   Greater,
 }
 
-// Full name: core::cmp::PartialOrd
-#[lang_item(PartialOrd)]
-#[diagnostic_item("PartialOrd")]
-trait PartialOrd
-
-// Full name: core::cmp::impls::{impl PartialOrd<i32> for i32}
-impl "impl_PartialOrd_i32_for_i32" PartialOrd<i32> for i32 {
-    non-dyn-compatible
-}
-
 // Full name: core::option::Option::<Ordering>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
@@ -114,13 +104,6 @@ pub struct NonNull::<Argument::<'_>> {
 #[lang_item(NonNull)]
 pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -277,23 +260,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -301,18 +277,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -320,7 +299,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -328,7 +311,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -353,20 +336,20 @@ pub fn panic(expr: &'_ str) -> !
         storage_live(_3);
         storage_live(_4);
         _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb2);
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb3 (unwind: bb4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb3: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb4: {
@@ -409,55 +392,29 @@ pub fn unwrap::<Ordering>(self: Option::<Ordering>) -> Ordering
         storage_live(_2);
         storage_live(_3);
         _2 = @discriminant(self);
-        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _2 -> 0isize: bb1, 1isize: bb4, otherwise: bb5;
     }
 
     bb1: {
-        _3 = unwrap_failed() -> bb4 (unwind: bb5);
+        _3 = unwrap_failed() -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         val = move (self as variant Option::<Ordering>::Some)._0;
         return;
     }
 
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        undefined_behavior;
-    }
-
     bb5: {
-        unwind_continue;
+        undefined_behavior;
     }
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
-// Full name: test_crate::Ord
-trait Ord
-
-// Full name: test_crate::{impl Ord for i32}
-impl "impl_Ord_for_i32" Ord for i32 {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::{impl Ord for i32}::cmp
@@ -477,22 +434,22 @@ fn cmp(self: &'_ i32, other: &'_ i32) -> Ordering
         _4 = &(*self);
         storage_live(_5);
         _5 = &(*other);
-        _3 = partial_cmp(move _4, move _5) -> bb1 (unwind: bb2);
+        _3 = partial_cmp(move _4, move _5) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_5);
         storage_dead(_4);
-        _0 = unwrap::<Ordering>(move _3) -> bb3 (unwind: bb4);
+        _0 = unwrap::<Ordering>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb3: {
-        storage_dead(_3);
-        return;
+        unwind_continue;
     }
 
     bb4: {

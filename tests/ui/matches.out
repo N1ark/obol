@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_, _)::<u32, bool> {
   _0: u32,
   _1: bool,
@@ -29,25 +26,25 @@ pub fn test1(x: E1) -> bool
         storage_live(_0);
         storage_live(_2);
         _2 = @discriminant(x);
-        switch move _2 -> 0isize: bb1, 1isize: bb1, 2isize: bb2, otherwise: bb3;
+        switch move _2 -> 0isize: bb1, 1isize: bb1, 2isize: bb2, otherwise: bb4;
     }
 
     bb1: {
         _0 = const true;
-        goto bb4;
+        goto bb3;
     }
 
     bb2: {
         _0 = const false;
-        goto bb4;
+        goto bb3;
     }
 
     bb3: {
-        undefined_behavior;
+        return;
     }
 
     bb4: {
-        return;
+        undefined_behavior;
     }
 }
 
@@ -83,38 +80,38 @@ pub fn test2(x: E2) -> u32
         storage_live(_0);
         storage_live(_2);
         _2 = @discriminant(x);
-        switch move _2 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, otherwise: bb4;
+        switch move _2 -> 0isize: bb1, 1isize: bb2, 2isize: bb4, otherwise: bb6;
     }
 
     bb1: {
         storage_live(n);
         n = copy (x as variant E2::V1)._0;
-        goto bb5;
+        goto bb3;
     }
 
     bb2: {
         storage_live(n);
         n = copy (x as variant E2::V2)._0;
-        goto bb5;
+        goto bb3;
     }
 
     bb3: {
-        _0 = const 0u32;
-        goto bb6;
+        _0 = copy n;
+        storage_dead(n);
+        goto bb5;
     }
 
     bb4: {
-        undefined_behavior;
+        _0 = const 0u32;
+        goto bb5;
     }
 
     bb5: {
-        _0 = copy n;
-        storage_dead(n);
-        goto bb6;
+        return;
     }
 
     bb6: {
-        return;
+        undefined_behavior;
     }
 }
 
@@ -137,42 +134,38 @@ pub fn test3(x: E2) -> u32
         storage_live(_8);
         storage_live(y);
         _3 = @discriminant(x);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb3, otherwise: bb4;
+        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb4, otherwise: bb8;
     }
 
     bb1: {
         storage_live(n);
         n = copy (x as variant E2::V1)._0;
-        goto bb5;
+        goto bb3;
     }
 
     bb2: {
         storage_live(n);
         n = copy (x as variant E2::V2)._0;
-        goto bb5;
+        goto bb3;
     }
 
     bb3: {
-        y = const 0u32;
-        goto bb6;
+        y = copy n;
+        storage_dead(n);
+        goto bb5;
     }
 
     bb4: {
-        undefined_behavior;
+        y = const 0u32;
+        goto bb5;
     }
 
     bb5: {
-        y = copy n;
-        storage_dead(n);
-        goto bb6;
+        storage_live(z);
+        z = id::<u32>(const 3u32) -> bb6 (unwind: bb7);
     }
 
     bb6: {
-        storage_live(z);
-        z = id::<u32>(const 3u32) -> bb7 (unwind: bb8);
-    }
-
-    bb7: {
         storage_live(_6);
         _6 = copy y;
         storage_live(_7);
@@ -186,8 +179,12 @@ pub fn test3(x: E2) -> u32
         return;
     }
 
-    bb8: {
+    bb7: {
         unwind_continue;
+    }
+
+    bb8: {
+        undefined_behavior;
     }
 }
 

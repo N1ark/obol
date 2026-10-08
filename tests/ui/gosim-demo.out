@@ -71,13 +71,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
 pub fn core::fmt::{Arguments::<'_>}::new::<'_, 7usize, 1usize>(template: &'_ [u8; 7usize], args: &'_ [Argument::<'_>; 1usize]) -> Arguments::<'_>
 {
     let _0: Arguments::<'_>; // return
@@ -97,25 +90,6 @@ pub fn core::fmt::{Arguments::<'_>}::new::<'_, 7usize, 1usize>(template: &'_ [u8
         storage_dead(_3);
         return;
     }
-}
-
-// Full name: core::fmt::Debug
-#[diagnostic_item("Debug")]
-trait Debug
-
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
-// Full name: core::fmt::LowerHex
-trait LowerHex
-
-// Full name: core::fmt::UpperHex
-trait UpperHex
-
-// Full name: core::fmt::{impl Debug for &'_ T}
-impl<'_, _, T> Debug for &'_ T {
-    non-dyn-compatible
 }
 
 // Full name: core::fmt::num::imp::{impl Display for i32}::fmt
@@ -153,14 +127,18 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_6);
         _3 = move _5 != const 0u32;
         storage_dead(_5);
-        if move _3 -> bb1 else -> bb2;
+        if move _3 -> bb1 else -> bb3;
     }
 
     bb1: {
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb3 (unwind: bb4);
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
     }
 
     bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
         storage_live(_4);
         storage_live(_7);
         storage_live(_8);
@@ -169,20 +147,15 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
         storage_dead(_8);
         _4 = move _7 != const 0u32;
         storage_dead(_7);
-        if move _4 -> bb5 else -> bb6;
-    }
-
-    bb3: {
-        storage_dead(_3);
-        return;
+        if move _4 -> bb4 else -> bb6;
     }
 
     bb4: {
-        unwind_continue;
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb8);
+        unwind_continue;
     }
 
     bb6: {
@@ -191,11 +164,12 @@ pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Res
 
     bb7: {
         storage_dead(_4);
-        goto bb3;
+        goto bb8;
     }
 
     bb8: {
-        unwind_continue;
+        storage_dead(_3);
+        return;
     }
 
     bb9: {
@@ -225,32 +199,6 @@ pub fn {impl Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &'_ mut Form
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: core::fmt::num::{impl LowerHex for i32}
-impl "impl_LowerHex_for_i32" LowerHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl UpperHex for i32}
-impl "impl_UpperHex_for_i32" UpperHex for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::{impl Debug for i32}
-impl "impl_Debug_for_i32" Debug for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::num::imp::{impl Display for i32}
-impl "impl_Display_for_i32" Display for i32 {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::rt::Argument::<'_>
-#[lang_item(FormatArgument)]
-pub struct Argument::<'_> {
-  ty: ArgumentType::<'_>,
 }
 
 // Full name: core::fmt::rt::{Argument::<'_>}::new_debug::<'_, &'_ i32>
@@ -320,15 +268,6 @@ pub struct Location::<'_> {
 #[rustc_intrinsic]
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
-
-// Full name: core::iter::traits::collect::IntoIterator
-#[diagnostic_item("IntoIterator")]
-trait IntoIterator
-
-// Full name: core::iter::traits::iterator::Iterator
-#[lang_item(Iterator)]
-#[diagnostic_item("Iterator")]
-trait Iterator
 
 // Full name: core::marker::PhantomData::<&'_ i32>
 #[lang_item(PhantomData)]
@@ -415,23 +354,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -439,18 +371,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -458,7 +393,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -466,7 +405,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -568,7 +507,7 @@ fn precondition_check(lhs: usize, rhs: usize)
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb2;
+        if copy _6 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -599,11 +538,11 @@ fn precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -611,7 +550,7 @@ fn precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
-        undefined_behavior;
+        return;
     }
 }
 
@@ -621,24 +560,6 @@ fn precondition_check(lhs: usize, rhs: usize)
 pub enum Option::<&'_ i32> {
   None,
   Some { _0: &'_ i32 },
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::ptr::non_null::NonNull::<i32>
@@ -651,11 +572,6 @@ pub struct NonNull::<i32> {
 #[lang_item(NonNull)]
 pub struct NonNull::<[i32]> {
   pointer: *const [i32] is !null,
-}
-
-// Full name: core::slice::iter::{impl IntoIterator for &'_ [T]}
-impl<'a, _, T> IntoIterator for &'_ [T] {
-    non-dyn-compatible
 }
 
 // Full name: core::slice::iter::Iter::<'_, i32>
@@ -731,11 +647,6 @@ pub fn into_iter::<'_, i32>(self_1: &'_ [i32]) -> Iter::<'_, i32>
     }
 }
 
-// Full name: core::slice::iter::{impl Iterator for Iter::<'_, _>}
-impl<'a, _, T> Iterator for Iter::<'_, _> {
-    non-dyn-compatible
-}
-
 // Full name: core::slice::iter::{impl Iterator for Iter::<'_, _>}::next::<'_, i32>
 pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
 {
@@ -767,16 +678,45 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         ptr = copy (*self).ptr;
         storage_live(end_or_len);
         end_or_len = copy (*self).end_or_len;
-        if copy IS_ZST::<i32> -> bb1 else -> bb2;
+        if copy IS_ZST::<i32> -> bb1 else -> bb7;
     }
 
     bb1: {
         storage_live(len);
         len = transmute<*const i32, usize>(copy end_or_len);
-        switch copy len -> 0usize: bb3, otherwise: bb4;
+        switch copy len -> 0usize: bb2, otherwise: bb3;
     }
 
     bb2: {
+        storage_live(_16);
+        _16 = Option::<&'_ i32>::None {  };
+        _0 = move _16;
+        storage_dead(len);
+        goto bb9;
+    }
+
+    bb3: {
+        storage_live(_15);
+        _15 = ub_checks;
+        if move _15 -> bb4 else -> bb6;
+    }
+
+    bb4: {
+        _10 = precondition_check(copy len, const 1usize) -> bb6 (unwind: bb5);
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+
+    bb6: {
+        addr = copy len ub.- const 1usize;
+        (*self).end_or_len = transmute<usize, *const i32>(copy addr);
+        storage_dead(len);
+        goto bb11;
+    }
+
+    bb7: {
         storage_live(_6);
         storage_live(_7);
         _7 = transmute<*const i32, NonNull::<i32>>(copy end_or_len);
@@ -785,33 +725,25 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         _12 = transmute<NonNull::<i32>, *mut i32>(copy _7);
         _6 = copy _11 == copy _12;
         storage_dead(_12);
-        if move _6 -> bb5 else -> bb6;
+        if move _6 -> bb8 else -> bb10;
     }
 
-    bb3: {
-        storage_live(_16);
-        _16 = Option::<&'_ i32>::None {  };
-        _0 = move _16;
-        storage_dead(len);
-        goto bb7;
-    }
-
-    bb4: {
-        storage_live(_15);
-        _15 = ub_checks;
-        if move _15 -> bb8 else -> bb9;
-    }
-
-    bb5: {
+    bb8: {
         storage_dead(_7);
         storage_live(_17);
         _17 = Option::<&'_ i32>::None {  };
         _0 = move _17;
         storage_dead(_6);
-        goto bb7;
+        goto bb9;
     }
 
-    bb6: {
+    bb9: {
+        storage_dead(end_or_len);
+        storage_dead(ptr);
+        goto bb12;
+    }
+
+    bb10: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(_8);
@@ -821,27 +753,10 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         storage_dead(_13);
         (*self).ptr = move _8;
         storage_dead(_8);
-        goto bb10;
-    }
-
-    bb7: {
-        storage_dead(end_or_len);
-        storage_dead(ptr);
         goto bb11;
     }
 
-    bb8: {
-        _10 = precondition_check(copy len, const 1usize) -> bb9 (unwind: bb12);
-    }
-
-    bb9: {
-        addr = copy len ub.- const 1usize;
-        (*self).end_or_len = transmute<usize, *const i32>(copy addr);
-        storage_dead(len);
-        goto bb10;
-    }
-
-    bb10: {
+    bb11: {
         storage_live(_9);
         storage_live(_14);
         _14 = transmute<NonNull::<i32>, *const i32>(copy ptr);
@@ -851,15 +766,11 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         storage_dead(_9);
         storage_dead(end_or_len);
         storage_dead(ptr);
-        goto bb11;
-    }
-
-    bb11: {
-        return;
+        goto bb12;
     }
 
     bb12: {
-        undefined_behavior;
+        return;
     }
 }
 
@@ -912,40 +823,32 @@ fn debug_slice::<i32>(slice: &'_ [i32])
         storage_live(_2);
         storage_live(_3);
         _3 = copy slice;
-        _2 = into_iter::<'_, i32>(move _3) -> bb1 (unwind: bb2);
+        _2 = into_iter::<'_, i32>(move _3) -> bb1 (unwind: bb14);
     }
 
     bb1: {
         storage_dead(_3);
         storage_live(iter);
         iter = move _2;
-        goto bb3;
+        goto bb2;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_5);
         storage_live(_6);
         storage_live(_7);
         _7 = &mut iter;
         _6 = &two-phase-mut (*_7);
-        _5 = next::<'_, i32>(move _6) -> bb4 (unwind: bb5);
+        _5 = next::<'_, i32>(move _6) -> bb3 (unwind: bb13);
+    }
+
+    bb3: {
+        storage_dead(_6);
+        _8 = @discriminant(_5);
+        switch move _8 -> 0isize: bb4, 1isize: bb5, otherwise: bb12;
     }
 
     bb4: {
-        storage_dead(_6);
-        _8 = @discriminant(_5);
-        switch move _8 -> 0isize: bb6, 1isize: bb7, otherwise: bb8;
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
         _0 = ();
         storage_dead(_7);
         storage_dead(_5);
@@ -954,7 +857,7 @@ fn debug_slice::<i32>(slice: &'_ [i32])
         return;
     }
 
-    bb7: {
+    bb5: {
         storage_live(x);
         x = copy (_5 as variant Option::<&'_ i32>::Some)._0;
         storage_live(_10);
@@ -969,14 +872,10 @@ fn debug_slice::<i32>(slice: &'_ [i32])
         storage_live(_16);
         _21 = copy args_12._0;
         _16 = &(*_21);
-        _15 = new_debug::<'_, &'_ i32>(move _16) -> bb9 (unwind: bb10);
+        _15 = new_debug::<'_, &'_ i32>(move _16) -> bb6 (unwind: bb11);
     }
 
-    bb8: {
-        undefined_behavior;
-    }
-
-    bb9: {
+    bb6: {
         storage_dead(_16);
         args_14 = [move _15];
         storage_dead(_15);
@@ -990,26 +889,18 @@ fn debug_slice::<i32>(slice: &'_ [i32])
         storage_live(_20);
         _20 = &args_14;
         _19 = &(*_20);
-        _11 = core::fmt::{Arguments::<'_>}::new::<'_, 7usize, 1usize>(move _17, move _19) -> bb11 (unwind: bb12);
+        _11 = core::fmt::{Arguments::<'_>}::new::<'_, 7usize, 1usize>(move _17, move _19) -> bb7 (unwind: bb10);
     }
 
-    bb10: {
-        unwind_continue;
-    }
-
-    bb11: {
+    bb7: {
         storage_dead(_20);
         storage_dead(_19);
         storage_dead(_18);
         storage_dead(_17);
-        _10 = _eprint(move _11) -> bb13 (unwind: bb14);
+        _10 = _eprint(move _11) -> bb8 (unwind: bb9);
     }
 
-    bb12: {
-        unwind_continue;
-    }
-
-    bb13: {
+    bb8: {
         storage_dead(_11);
         storage_dead(args_14);
         storage_dead(args_12);
@@ -1017,7 +908,27 @@ fn debug_slice::<i32>(slice: &'_ [i32])
         storage_dead(x);
         storage_dead(_7);
         storage_dead(_5);
-        goto bb3;
+        goto bb2;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
+        undefined_behavior;
+    }
+
+    bb13: {
+        unwind_continue;
     }
 
     bb14: {

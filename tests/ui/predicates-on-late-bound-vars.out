@@ -253,23 +253,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -277,18 +270,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -296,7 +292,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -304,7 +304,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -404,7 +404,7 @@ fn precondition_check(ptr: *mut ())
         storage_dead(_15);
         _2 = move _6 == const 0usize;
         storage_dead(_6);
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -435,12 +435,11 @@ fn precondition_check(ptr: *mut ())
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
         storage_dead(_7);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -448,7 +447,8 @@ fn precondition_check(ptr: *mut ())
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        return;
     }
 }
 
@@ -505,7 +505,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         storage_dead(self_9);
         storage_live(_10);
         _10 = copy b_8 > const 0isize;
-        if move _10 -> bb1 else -> bb2;
+        if move _10 -> bb1 else -> bb6;
     }
 
     bb1: {
@@ -530,25 +530,25 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         ptr = cast<*const UnsafeCell::<bool>, *mut bool>(copy _16);
         storage_live(_19);
         _19 = ub_checks;
-        if move _19 -> bb3 else -> bb4;
+        if move _19 -> bb2 else -> bb5;
     }
 
     bb2: {
-        storage_dead(_10);
-        storage_dead(b_8);
-        storage_live(_20);
-        _20 = BorrowError {  };
-        _0 = Result::<Ref::<'_, bool>, BorrowError>::Err { _0: move _20 };
-        goto bb5;
+        storage_live(_18);
+        _18 = cast<*const UnsafeCell::<bool>, *mut ()>(copy _16);
+        _17 = precondition_check(move _18) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_live(_18);
-        _18 = cast<*const UnsafeCell::<bool>, *mut ()>(copy _16);
-        _17 = precondition_check(move _18) -> bb6 (unwind: bb7);
+        storage_dead(_18);
+        goto bb5;
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         value = transmute<*const UnsafeCell::<bool>, NonNull::<bool>>(copy _16);
         storage_dead(ptr);
         storage_live(_7);
@@ -557,37 +557,23 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         storage_dead(_7);
         storage_dead(value);
         storage_dead(b_4);
-        goto bb5;
+        goto bb7;
     }
 
-    bb5: {
+    bb6: {
+        storage_dead(_10);
+        storage_dead(b_8);
+        storage_live(_20);
+        _20 = BorrowError {  };
+        _0 = Result::<Ref::<'_, bool>, BorrowError>::Err { _0: move _20 };
+        goto bb7;
+    }
+
+    bb7: {
         storage_dead(borrow);
         storage_dead(_2);
         return;
     }
-
-    bb6: {
-        storage_dead(_18);
-        goto bb4;
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-}
-
-// Full name: core::cell::BorrowRef::<'_>
-struct BorrowRef::<'_> {
-  borrow: &'_ Cell::<isize>,
-}
-
-// Full name: core::ops::drop::Drop
-#[lang_item(Drop)]
-trait Drop
-
-// Full name: core::cell::{impl Drop for BorrowRef::<'_>}
-impl<'_> Drop for BorrowRef::<'_> {
-    non-dyn-compatible
 }
 
 // Full name: core::cell::{impl Drop for BorrowRef::<'_>}::drop::<'_>
@@ -640,24 +626,6 @@ pub fn drop::<'_>(self: &'_ mut BorrowRef::<'_>)
 pub enum Option::<&'_ u32> {
   None,
   Some { _0: &'_ u32 },
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::ptr::drop_glue::<BorrowRef::<'_>>
@@ -731,20 +699,20 @@ fn drop_glue::<Result::<Ref::<'_, bool>, BorrowError>>(_1: &'_ mut Result::<Ref:
         storage_live(_4);
         _0 = ();
         _2 = @discriminant((*_1));
-        switch move _2 -> 0isize: bb1, otherwise: bb2;
+        switch move _2 -> 0isize: bb1, otherwise: bb3;
     }
 
     bb1: {
         _3 = &raw mut ((*_1) as variant Result::<Ref::<'_, bool>, BorrowError>::Ok)._0;
-        _4 = drop_glue::<Ref::<'_, bool>>(move _3) -> bb2 (unwind: bb3);
+        _4 = drop_glue::<Ref::<'_, bool>>(move _3) -> bb3 (unwind: bb2);
     }
 
     bb2: {
-        return;
+        unwind_continue;
     }
 
     bb3: {
-        unwind_continue;
+        return;
     }
 }
 
@@ -798,24 +766,27 @@ fn foo()
         storage_live(_5);
         _0 = ();
         storage_live(ref_b);
-        ref_b = core::cell::{RefCell::<_>}::new::<bool>(const false) -> bb1 (unwind: bb2);
+        ref_b = core::cell::{RefCell::<_>}::new::<bool>(const false) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         storage_live(_2);
         storage_live(_3);
         _3 = &ref_b;
-        _2 = try_borrow::<bool>(move _3) -> bb3 (unwind: bb4);
+        _2 = try_borrow::<bool>(move _3) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_3);
+        _4 = &raw mut _2;
+        _5 = drop_glue::<Result::<Ref::<'_, bool>, BorrowError>>(move _4) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_dead(_3);
-        _4 = &raw mut _2;
-        _5 = drop_glue::<Result::<Ref::<'_, bool>, BorrowError>>(move _4) -> bb5 (unwind: bb6);
+        storage_dead(_2);
+        _0 = ();
+        storage_dead(ref_b);
+        return;
     }
 
     bb4: {
@@ -823,10 +794,7 @@ fn foo()
     }
 
     bb5: {
-        storage_dead(_2);
-        _0 = ();
-        storage_dead(ref_b);
-        return;
+        unwind_continue;
     }
 
     bb6: {

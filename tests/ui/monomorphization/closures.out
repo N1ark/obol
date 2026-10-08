@@ -20,9 +20,6 @@ pub fn drop::<Thing>(_x: Thing)
     }
 }
 
-// Full name: FakeTrait
-trait FakeTrait
-
 struct (_,)::<u8> {
   _0: u8,
 }
@@ -279,7 +276,7 @@ fn main()
         _4 = &z_1;
         _3 = test_crate::main::{closure}::{closure} { upvar_0: move _4 };
         storage_dead(_4);
-        _2 = apply_to_zero::<test_crate::main::{closure}::{closure}>(move _3) -> bb1 (unwind: bb2);
+        _2 = apply_to_zero::<test_crate::main::{closure}::{closure}>(move _3) -> bb1 (unwind: bb6);
     }
 
     bb1: {
@@ -293,14 +290,10 @@ fn main()
         _8 = &mut z_5;
         _7 = test_crate::main::{closure#1}::{closure} { upvar_0: move _8 };
         storage_dead(_8);
-        _6 = apply_to_zero_mut::<test_crate::main::{closure#1}::{closure}>(move _7) -> bb3 (unwind: bb4);
+        _6 = apply_to_zero_mut::<test_crate::main::{closure#1}::{closure}>(move _7) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_7);
         storage_dead(_6);
         storage_live(z_9);
@@ -308,14 +301,10 @@ fn main()
         storage_live(_10);
         storage_live(_11);
         _11 = test_crate::main::{closure#2}::{closure} { upvar_0: move z_9 };
-        _10 = apply_to_zero_once::<test_crate::main::{closure#2}::{closure}>(move _11) -> bb5 (unwind: bb6);
+        _10 = apply_to_zero_once::<test_crate::main::{closure#2}::{closure}>(move _11) -> bb3 (unwind: bb4);
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_dead(_11);
         storage_dead(_10);
         _0 = ();
@@ -323,6 +312,14 @@ fn main()
         storage_dead(z_5);
         storage_dead(z_1);
         return;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        unwind_continue;
     }
 
     bb6: {

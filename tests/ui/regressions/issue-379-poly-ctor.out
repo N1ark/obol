@@ -120,7 +120,7 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self: Option::<u32>, f: Some::<u32
         storage_live(_0);
         storage_live(_3);
         _3 = @discriminant(self);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb6;
     }
 
     bb1: {
@@ -136,18 +136,10 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self: Option::<u32>, f: Some::<u32
         _6 = move f;
         storage_live(_7);
         _7 = (copy x,);
-        _5 = call_once::<Some::<u32>, (u32,)>(move _6, move _7) -> bb5 (unwind: bb6);
+        _5 = call_once::<Some::<u32>, (u32,)>(move _6, move _7) -> bb3 (unwind: bb5);
     }
 
     bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        return;
-    }
-
-    bb5: {
         storage_dead(_7);
         storage_dead(_6);
         _0 = Option::<Option::<u32>>::Some { _0: move _5 };
@@ -156,8 +148,16 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self: Option::<u32>, f: Some::<u32
         goto bb4;
     }
 
-    bb6: {
+    bb4: {
+        return;
+    }
+
+    bb5: {
         unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -177,7 +177,7 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self: Option::<u32>, f: Ok::
         storage_live(_0);
         storage_live(_3);
         _3 = @discriminant(self);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _3 -> 0isize: bb1, 1isize: bb2, otherwise: bb6;
     }
 
     bb1: {
@@ -193,18 +193,10 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self: Option::<u32>, f: Ok::
         _6 = move f;
         storage_live(_7);
         _7 = (copy x,);
-        _5 = call_once::<Ok::<u32, u8>, (u32,)>(move _6, move _7) -> bb5 (unwind: bb6);
+        _5 = call_once::<Ok::<u32, u8>, (u32,)>(move _6, move _7) -> bb3 (unwind: bb5);
     }
 
     bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        return;
-    }
-
-    bb5: {
         storage_dead(_7);
         storage_dead(_6);
         _0 = Option::<Result::<u32, u8>>::Some { _0: move _5 };
@@ -213,15 +205,20 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self: Option::<u32>, f: Ok::
         goto bb4;
     }
 
-    bb6: {
+    bb4: {
+        return;
+    }
+
+    bb5: {
         unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
 struct () {}
-
-// Full name: FakeTrait
-trait FakeTrait
 
 // Full name: test_crate::wrap_some
 pub fn wrap_some(x: Option::<u32>) -> Option::<Option::<u32>>

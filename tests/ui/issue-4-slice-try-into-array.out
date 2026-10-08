@@ -1,27 +1,14 @@
 
 // Final ULLBC:
 
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
-
-struct () {}
-
-// Full name: core::array::TryFromSliceError
-pub struct TryFromSliceError {
-  _0: (),
-}
-
-// Full name: core::array::{impl core::fmt::Debug for TryFromSliceError}
-impl "impl_Debug_for_TryFromSliceError" core::fmt::Debug for TryFromSliceError {
-    non-dyn-compatible
-}
-
 // Full name: FakeTrait
 trait FakeTrait
 
 struct str {
   _0: [u8],
 }
+
+struct () {}
 
 // Full name: core::fmt::Error
 pub struct Error {}
@@ -145,7 +132,12 @@ fn {vtable}::core::fmt::Debug::<&'_ ()>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<&'_ ()>: *const () = {vtable}::core::fmt::Debug::<&'_ ()>()
+vtable {vtable}::core::fmt::Debug::<&'_ ()>: *const () = {vtable}::core::fmt::Debug::<&'_ ()>()
+
+// Full name: core::array::TryFromSliceError
+pub struct TryFromSliceError {
+  _0: (),
+}
 
 // Full name: core::array::{impl core::fmt::Debug for TryFromSliceError}::fmt
 pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
@@ -178,15 +170,6 @@ pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: core::convert::TryFrom
-#[diagnostic_item("TryFrom")]
-trait TryFrom
-
-// Full name: core::array::{impl TryFrom<&'_ [T]> for [T; N]}
-impl<'_, _, T, const _ : type_error("const generic param type"), const _ : type_error("const generic param type"), const N : type_error("const generic param type")> "impl_TryFrom_for_array" TryFrom<&'_ [T]> for [T; N] {
-    non-dyn-compatible
 }
 
 // Full name: core::result::Result::<&'_ [u8; 4usize], TryFromSliceError>
@@ -300,15 +283,6 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
     }
 }
 
-// Full name: core::convert::TryInto
-#[diagnostic_item("TryInto")]
-trait TryInto
-
-// Full name: core::convert::{impl TryInto<U> for T}
-impl<T, U> "impl_TryInto_for_T" TryInto<U> for T {
-    non-dyn-compatible
-}
-
 // Full name: core::convert::{impl TryInto<U> for T}::try_into::<&'_ [u8], [u8; 4usize]>
 pub fn try_into::<&'_ [u8], [u8; 4usize]>(self: &'_ [u8]) -> Result::<[u8; 4usize], TryFromSliceError>
 {
@@ -327,13 +301,6 @@ pub fn try_into::<&'_ [u8], [u8; 4usize]>(self: &'_ [u8]) -> Result::<[u8; 4usiz
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
 }
 
 // Full name: core::ptr::drop_glue::<TryFromSliceError>
@@ -381,17 +348,7 @@ fn {vtable}::core::fmt::Debug::<TryFromSliceError>() -> *const ()
 }
 
 #[diagnostic_item("Debug")]
-static {vtable}::core::fmt::Debug::<TryFromSliceError>: *const () = {vtable}::core::fmt::Debug::<TryFromSliceError>()
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
-impl<'_, _, T> core::fmt::Debug for &'_ T {
-    non-dyn-compatible
-}
-
-// Full name: core::fmt::{impl core::fmt::Debug for ()}
-impl "impl_Debug_for_unit" core::fmt::Debug for () {
-    non-dyn-compatible
-}
+vtable {vtable}::core::fmt::Debug::<TryFromSliceError>: *const () = {vtable}::core::fmt::Debug::<TryFromSliceError>()
 
 // Full name: core::result::unwrap_failed
 #[track_caller]
@@ -415,7 +372,7 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
         storage_live(_2);
         storage_live(_4);
         _2 = @discriminant(self);
-        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb3;
+        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb5;
     }
 
     bb1: {
@@ -430,7 +387,7 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
         storage_live(_6);
         _6 = &e;
         _5 = unsize_cast<&'_ TryFromSliceError, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<TryFromSliceError>>(copy _6);
-        _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb4 (unwind: bb5);
+        _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -438,11 +395,11 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
     }
 
     bb4: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb5: {
-        unwind_continue;
+        undefined_behavior;
     }
 }
 
@@ -462,23 +419,23 @@ pub fn trait_error(s: &'_ [u8])
         storage_live(_3);
         storage_live(_4);
         _4 = &(*s) with_metadata(copy s.metadata);
-        _3 = try_into::<&'_ [u8], [u8; 4usize]>(move _4) -> bb1 (unwind: bb2);
+        _3 = try_into::<&'_ [u8], [u8; 4usize]>(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_4);
-        _array = unwrap::<[u8; 4usize], TryFromSliceError>(move _3) -> bb3 (unwind: bb4);
+        _array = unwrap::<[u8; 4usize], TryFromSliceError>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_3);
         _0 = ();
         storage_dead(_array);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {

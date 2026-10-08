@@ -60,9 +60,6 @@ pub fn core::num::{u8}::saturating_add(self: u8, rhs: u8) -> u8
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: test_crate::main
 fn main()
 {
@@ -75,23 +72,25 @@ fn main()
         storage_live(_0);
         _0 = ();
         storage_live(_1);
-        _1 = wrapping_add(const 255u8, const 1u8) -> bb1 (unwind: bb2);
+        _1 = wrapping_add(const 255u8, const 1u8) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         storage_dead(_1);
         storage_live(_2);
-        _2 = overflowing_add(const 255u8, const 1u8) -> bb3 (unwind: bb4);
+        _2 = overflowing_add(const 255u8, const 1u8) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
+        storage_dead(_2);
+        storage_live(_3);
+        _3 = core::num::{u8}::saturating_add(const 255u8, const 1u8) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_dead(_2);
-        storage_live(_3);
-        _3 = core::num::{u8}::saturating_add(const 255u8, const 1u8) -> bb5 (unwind: bb6);
+        storage_dead(_3);
+        _0 = ();
+        return;
     }
 
     bb4: {
@@ -99,9 +98,7 @@ fn main()
     }
 
     bb5: {
-        storage_dead(_3);
-        _0 = ();
-        return;
+        unwind_continue;
     }
 
     bb6: {

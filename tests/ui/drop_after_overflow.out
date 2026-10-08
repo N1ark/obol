@@ -71,13 +71,6 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
 struct str {
   _0: [u8],
 }
@@ -127,10 +120,6 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
     }
 }
 
-// Full name: core::ops::drop::Drop
-#[lang_item(Drop)]
-trait Drop
-
 // Full name: test_crate::Foo
 struct Foo {}
 
@@ -151,22 +140,22 @@ pub fn drop(self: &'_ mut Foo)
         _0 = ();
         storage_live(_2);
         storage_live(_3);
-        _3 = from_str::<'_>(const "Dropping Foo\n") -> bb1 (unwind: bb2);
+        _3 = from_str::<'_>(const "Dropping Foo\n") -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _2 = _print(move _3) -> bb3 (unwind: bb4);
+        _2 = _print(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_3);
         storage_dead(_2);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {
@@ -204,11 +193,6 @@ fn drop_glue::<Foo>(_1: &'_ mut Foo)
 struct (_, _)::<u8, bool> {
   _0: u8,
   _1: bool,
-}
-
-// Full name: test_crate::{impl Drop for Foo}
-impl "impl_Drop_for_Foo" Drop for Foo {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::main

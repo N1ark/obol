@@ -3,9 +3,6 @@
 
 struct () {}
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: test_crate::foo::<10usize>
 fn foo::<10usize>()
 {
@@ -43,23 +40,23 @@ fn main()
         storage_live(_0);
         _0 = ();
         storage_live(_1);
-        _1 = foo::<10usize>() -> bb1 (unwind: bb2);
+        _1 = foo::<10usize>() -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_1);
         storage_live(_2);
-        _2 = bar::<u32>() -> bb3 (unwind: bb4);
+        _2 = bar::<u32>() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_2);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
     }
 
     bb4: {

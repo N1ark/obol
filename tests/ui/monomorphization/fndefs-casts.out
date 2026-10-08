@@ -43,9 +43,6 @@ pub fn call::<foo::<u32>, (&'_ u32,)>(_1: &'_ foo::<u32>, _2: (&'_ u32,))
     }
 }
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: anon_const_0
 const anon_const_0: char = 'x'
 
@@ -175,7 +172,7 @@ fn main()
         storage_live(_8);
         _8 = &a;
         _7 = &(*_8);
-        _5 = (move _6)(move _7) -> bb1 (unwind: bb2);
+        _5 = (move _6)(move _7) -> bb1 (unwind: bb12);
     }
 
     bb1: {
@@ -192,14 +189,10 @@ fn main()
         storage_live(_13);
         _13 = &a;
         _12 = &(*_13);
-        _10 = (move _11)(move _12) -> bb3 (unwind: bb4);
+        _10 = (move _11)(move _12) -> bb2 (unwind: bb11);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_dead(_12);
         storage_dead(_11);
         storage_dead(_13);
@@ -211,14 +204,10 @@ fn main()
         storage_live(_17);
         _17 = &b;
         _16 = &(*_17);
-        _14 = (move _15)(move _16) -> bb5 (unwind: bb6);
+        _14 = (move _15)(move _16) -> bb3 (unwind: bb10);
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
+    bb3: {
         storage_dead(_16);
         storage_dead(_15);
         storage_dead(_17);
@@ -230,14 +219,10 @@ fn main()
         storage_live(_21);
         _21 = &b;
         _20 = &(*_21);
-        _18 = (move _19)(move _20) -> bb7 (unwind: bb8);
+        _18 = (move _19)(move _20) -> bb4 (unwind: bb9);
     }
 
-    bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
+    bb4: {
         storage_dead(_20);
         storage_dead(_19);
         storage_dead(_21);
@@ -252,27 +237,19 @@ fn main()
         _27 = move _28;
         _25 = &(*_27);
         _24 = &(*_25);
-        _22 = (move _23)(move _24) -> bb9 (unwind: bb10);
+        _22 = (move _23)(move _24) -> bb5 (unwind: bb8);
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
+    bb5: {
         storage_dead(_24);
         storage_dead(_23);
         storage_dead(_25);
         storage_dead(_22);
         storage_live(_26);
-        _26 = takes_closure::<foo::<u32>>(const foo::<u32>) -> bb11 (unwind: bb12);
+        _26 = takes_closure::<foo::<u32>>(const foo::<u32>) -> bb6 (unwind: bb7);
     }
 
-    bb10: {
-        unwind_continue;
-    }
-
-    bb11: {
+    bb6: {
         storage_dead(_26);
         _0 = ();
         storage_dead(b);
@@ -281,6 +258,26 @@ fn main()
         storage_dead(fooint2);
         storage_dead(fooint1);
         return;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+
+    bb11: {
+        unwind_continue;
     }
 
     bb12: {

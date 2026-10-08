@@ -81,8 +81,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             let prov = match prov_alloc {
                 mir::alloc::GlobalAlloc::Function(fun) => {
                     let id = self.register_fun_decl_id(span, fun);
-                    Provenance::Function(FunDeclRef {
-                        id,
+                    Provenance::Function(FnPtr {
+                        kind: Box::new(FnPtrKind::Fun(id)),
                         generics: Box::new(GenericArgs::empty()),
                     })
                 }

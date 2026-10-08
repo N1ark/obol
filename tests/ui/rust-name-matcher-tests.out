@@ -7,9 +7,6 @@ struct str {
   _0: [u8],
 }
 
-// Full name: FakeTrait
-trait FakeTrait
-
 // Full name: test_crate::foo::bar
 #[pattern::fail("test_crate::foo::bar::_")]
 #[pattern::pass("test_crate::foo::bar")]
@@ -113,23 +110,28 @@ fn use_generic()
         storage_live(_0);
         _0 = ();
         storage_live(_int_generic);
-        _int_generic = new::<i32>(const 42i32) -> bb1 (unwind: bb2);
+        _int_generic = new::<i32>(const 42i32) -> bb1 (unwind: bb6);
     }
 
     bb1: {
         storage_live(_str_generic);
-        _str_generic = new::<&'_ str>(const "hello") -> bb3 (unwind: bb4);
+        _str_generic = new::<&'_ str>(const "hello") -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_3);
         storage_live(_4);
         _4 = &_int_generic;
-        _3 = get::<i32>(move _4) -> bb5 (unwind: bb6);
+        _3 = get::<i32>(move _4) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        storage_dead(_4);
+        storage_dead(_3);
+        _0 = ();
+        storage_dead(_str_generic);
+        storage_dead(_int_generic);
+        return;
     }
 
     bb4: {
@@ -137,12 +139,7 @@ fn use_generic()
     }
 
     bb5: {
-        storage_dead(_4);
-        storage_dead(_3);
-        _0 = ();
-        storage_dead(_str_generic);
-        storage_dead(_int_generic);
-        return;
+        unwind_continue;
     }
 
     bb6: {

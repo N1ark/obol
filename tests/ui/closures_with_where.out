@@ -247,23 +247,16 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_0);
         storage_live(_2);
         _2 = const false;
-        if move _2 -> bb1 else -> bb2;
+        if move _2 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_3);
-        _3 = abort() -> bb3 (unwind: bb4);
+        _3 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb3: {
@@ -271,18 +264,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
-        undefined_behavior;
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb7 (unwind: bb8);
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
         storage_dead(_7);
         storage_dead(_5);
         storage_dead(_6);
@@ -290,7 +286,11 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
         storage_live(_9);
         _9 = &pi;
         _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb9 (unwind: bb10);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 
     bb8: {
@@ -298,7 +298,7 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
@@ -465,16 +465,22 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
         _0 = ();
         storage_live(_4);
         _4 = copy end >= copy start;
-        if move _4 -> bb1 else -> bb2;
+        if move _4 -> bb1 else -> bb3;
     }
 
     bb1: {
         storage_live(_5);
         _5 = copy end <= copy len;
-        if move _5 -> bb3 else -> bb2;
+        if move _5 -> bb2 else -> bb3;
     }
 
     bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        return;
+    }
+
+    bb3: {
         msg = const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the range is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
         storage_live(_8);
         storage_live(_9);
@@ -503,12 +509,6 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
         storage_dead(_11);
         storage_dead(_9);
         _7 = panic_nounwind_fmt(move _8, const false) -> bb4 (unwind: bb5);
-    }
-
-    bb3: {
-        storage_dead(_5);
-        storage_dead(_4);
-        return;
     }
 
     bb4: {
@@ -574,16 +574,25 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
         slice = &raw mut (*self_5) with_metadata(copy self_5.metadata);
         storage_live(_14);
         _14 = ub_checks;
-        if move _14 -> bb1 else -> bb2;
+        if move _14 -> bb1 else -> bb4;
     }
 
     bb1: {
         storage_live(_9);
         _9 = copy self_5.metadata;
-        _8 = {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(const 0usize, copy index, move _9) -> bb3 (unwind: bb4);
+        _8 = {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(const 0usize, copy index, move _9) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        storage_dead(_9);
+        goto bb4;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
         storage_live(_10);
         _10 = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut MaybeUninit::<[u8; 1usize]>>(copy slice);
         _6 = *mut  (copy _10, copy index);
@@ -592,37 +601,28 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
         self_3 = &mut (*_6) with_metadata(copy _6.metadata);
         storage_dead(_6);
         storage_live(to_drop);
-        switch copy index -> 0usize: bb5, otherwise: bb6;
-    }
-
-    bb3: {
-        storage_dead(_9);
-        goto bb2;
-    }
-
-    bb4: {
-        undefined_behavior;
+        switch copy index -> 0usize: bb7, otherwise: bb5;
     }
 
     bb5: {
-        storage_dead(to_drop);
-        storage_dead(self_3);
-        return;
-    }
-
-    bb6: {
         storage_live(_12);
         _12 = &raw mut (*self_3) with_metadata(copy self_3.metadata);
         to_drop = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut [[u8; 1usize]]>(copy _12);
         storage_live(_13);
         _13 = &mut (*to_drop) with_metadata(copy to_drop.metadata);
-        _2 = drop_glue::<[[u8; 1usize]]>(move _13) -> bb7 (unwind: bb8);
+        _2 = drop_glue::<[[u8; 1usize]]>(move _13) -> bb6 (unwind: bb8);
+    }
+
+    bb6: {
+        storage_dead(_13);
+        storage_dead(_12);
+        goto bb7;
     }
 
     bb7: {
-        storage_dead(_13);
-        storage_dead(_12);
-        goto bb5;
+        storage_dead(to_drop);
+        storage_dead(self_3);
+        return;
     }
 
     bb8: {
@@ -826,7 +826,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb2;
+        if copy _6 -> bb1 else -> bb4;
     }
 
     bb1: {
@@ -857,11 +857,11 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        return;
+        undefined_behavior;
     }
 
     bb3: {
@@ -869,7 +869,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
-        undefined_behavior;
+        return;
     }
 }
 
@@ -956,7 +956,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         _15 = copy guard.array_mut;
         _6 = copy _15.metadata;
         _4 = move _5 < move _6;
-        if move _4 -> bb2 else -> bb3;
+        if move _4 -> bb2 else -> bb23;
     }
 
     bb2: {
@@ -971,56 +971,24 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         storage_live(_12);
         _12 = copy guard.initialized;
         _11 = (move _12,);
-        _9 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::<[u8; 1usize], usize, test_crate::test::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> NeverShortCircuit::<[u8; 1usize]>, (test_crate::test::{closure}::{closure},)>(move _10, move _11) -> bb4 (unwind: bb5);
+        _9 = core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::<[u8; 1usize], usize, test_crate::test::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> NeverShortCircuit::<[u8; 1usize]>, (test_crate::test::{closure}::{closure},)>(move _10, move _11) -> bb3 (unwind: bb20);
     }
 
     bb3: {
-        storage_dead(_6);
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_live(t_34);
-        storage_live(t_35);
-        t_34 = move guard.array_mut;
-        t_35 = move guard.initialized;
-        storage_dead(t_34);
-        storage_dead(t_35);
-        _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Continue { _0: const () };
-        storage_dead(guard);
-        goto bb6;
-    }
-
-    bb4: {
         storage_dead(_12);
         storage_dead(_11);
         storage_dead(_10);
-        self_8 = branch::<[u8; 1usize]>(move _9) -> bb7 (unwind: bb5);
+        self_8 = branch::<[u8; 1usize]>(move _9) -> bb4 (unwind: bb20);
     }
 
-    bb5: {
-        _36 = &raw mut guard;
-        _37 = drop_glue::<Guard::<'_, [u8; 1usize]>>(move _36) -> bb8 (unwind: bb9);
-    }
-
-    bb6: {
-        return;
-    }
-
-    bb7: {
+    bb4: {
         storage_dead(_9);
         storage_live(_16);
         _16 = @discriminant(self_8);
-        switch move _16 -> 0isize: bb10, 1isize: bb11, otherwise: bb12;
+        switch move _16 -> 0isize: bb5, 1isize: bb15, otherwise: bb19;
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
-        unwind_terminate;
-    }
-
-    bb10: {
+    bb5: {
         storage_live(c);
         c = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>::Continue)._0;
         _7 = ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, [u8; 1usize]>::Continue { _0: copy c };
@@ -1035,10 +1003,69 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         index = copy guard.initialized;
         storage_live(_38);
         _38 = ub_checks;
-        if move _38 -> bb13 else -> bb14;
+        if move _38 -> bb6 else -> bb9;
+    }
+
+    bb6: {
+        storage_live(_26);
+        _26 = copy self_23.metadata;
+        _25 = impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(copy index, move _26) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        storage_dead(_26);
+        goto bb9;
+    }
+
+    bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        self_24 = &raw mut (*self_23)[copy index];
+        storage_dead(index);
+        storage_live(_27);
+        storage_live(_28);
+        _28 = ManuallyDrop::<[u8; 1usize]> { value: copy item };
+        _27 = MaybeUninit::<[u8; 1usize]> { value: move _28 };
+        storage_dead(_28);
+        (*self_24) = move _27;
+        storage_dead(_27);
+        _29 = assert_inhabited::<[u8; 1usize]>() -> bb10 (unwind: bb14);
+    }
+
+    bb10: {
+        storage_live(_21);
+        storage_live(self_22);
+        self_22 = copy guard.initialized;
+        storage_live(_42);
+        _42 = ub_checks;
+        if move _42 -> bb11 else -> bb13;
     }
 
     bb11: {
+        _30 = core::num::{usize}::unchecked_add::precondition_check(copy self_22, const 1usize) -> bb13 (unwind: bb12);
+    }
+
+    bb12: {
+        undefined_behavior;
+    }
+
+    bb13: {
+        _21 = copy self_22 ub.+ const 1usize;
+        storage_dead(self_22);
+        guard.initialized = move _21;
+        storage_dead(_21);
+        storage_dead(self_24);
+        storage_dead(_4);
+        goto bb1;
+    }
+
+    bb14: {
+        undefined_behavior;
+    }
+
+    bb15: {
         storage_live(b);
         b = move (self_8 as variant ControlFlow::<NeverShortCircuitResidual, [u8; 1usize]>::Break)._0;
         storage_live(_19);
@@ -1054,33 +1081,10 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         storage_live(_33);
         _31 = @discriminant(residual);
         _33 = copy _31 == const 1isize;
-        _39 = assume(move _33) -> bb15 (unwind: bb16);
+        _39 = assume(move _33) -> bb16 (unwind: bb18);
     }
 
-    bb12: {
-        undefined_behavior;
-    }
-
-    bb13: {
-        storage_live(_26);
-        _26 = copy self_23.metadata;
-        _25 = impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(copy index, move _26) -> bb18 (unwind: bb19);
-    }
-
-    bb14: {
-        self_24 = &raw mut (*self_23)[copy index];
-        storage_dead(index);
-        storage_live(_27);
-        storage_live(_28);
-        _28 = ManuallyDrop::<[u8; 1usize]> { value: copy item };
-        _27 = MaybeUninit::<[u8; 1usize]> { value: move _28 };
-        storage_dead(_28);
-        (*self_24) = move _27;
-        storage_dead(_27);
-        _29 = assert_inhabited::<[u8; 1usize]>() -> bb20 (unwind: bb21);
-    }
-
-    bb15: {
+    bb16: {
         storage_live(_32);
         _32 = copy (residual as variant ControlFlow::<NeverShortCircuitResidual, !>::Break)._0;
         _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Break { _0: copy _32 };
@@ -1091,21 +1095,16 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         storage_dead(_7);
         storage_dead(_4);
         _40 = &raw mut guard;
-        _41 = drop_glue::<Guard::<'_, [u8; 1usize]>>(move _40) -> bb17 (unwind: bb8);
-    }
-
-    bb16: {
-        undefined_behavior;
+        _41 = drop_glue::<Guard::<'_, [u8; 1usize]>>(move _40) -> bb17 (unwind: bb21);
     }
 
     bb17: {
         storage_dead(guard);
-        goto bb6;
+        goto bb24;
     }
 
     bb18: {
-        storage_dead(_26);
-        goto bb14;
+        undefined_behavior;
     }
 
     bb19: {
@@ -1113,34 +1112,35 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
     }
 
     bb20: {
-        storage_live(_21);
-        storage_live(self_22);
-        self_22 = copy guard.initialized;
-        storage_live(_42);
-        _42 = ub_checks;
-        if move _42 -> bb22 else -> bb23;
+        _36 = &raw mut guard;
+        _37 = drop_glue::<Guard::<'_, [u8; 1usize]>>(move _36) -> bb21 (unwind: bb22);
     }
 
     bb21: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb22: {
-        _30 = core::num::{usize}::unchecked_add::precondition_check(copy self_22, const 1usize) -> bb23 (unwind: bb24);
+        unwind_terminate;
     }
 
     bb23: {
-        _21 = copy self_22 ub.+ const 1usize;
-        storage_dead(self_22);
-        guard.initialized = move _21;
-        storage_dead(_21);
-        storage_dead(self_24);
+        storage_dead(_6);
+        storage_dead(_5);
         storage_dead(_4);
-        goto bb1;
+        storage_live(t_34);
+        storage_live(t_35);
+        t_34 = move guard.array_mut;
+        t_35 = move guard.initialized;
+        storage_dead(t_34);
+        storage_dead(t_35);
+        _0 = ControlFlow::<NeverShortCircuitResidual, ()>::Continue { _0: const () };
+        storage_dead(guard);
+        goto bb24;
     }
 
     bb24: {
-        undefined_behavior;
+        return;
     }
 }
 
@@ -1170,69 +1170,69 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
         storage_live(_5);
         _5 = &mut array_2;
         _4 = unsize_cast<&'_ mut [MaybeUninit::<[u8; 1usize]>; 1usize], &'_ mut [MaybeUninit::<[u8; 1usize]>], 1usize>(copy _5);
-        _3 = try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>(move _4, move cb) -> bb1 (unwind: bb2);
+        _3 = try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>(move _4, move cb) -> bb1 (unwind: bb12);
     }
 
     bb1: {
         storage_dead(_4);
         _6 = @discriminant(_3);
-        switch move _6 -> 0isize: bb3, 1isize: bb4, otherwise: bb5;
+        switch move _6 -> 0isize: bb2, 1isize: bb7, otherwise: bb11;
     }
 
     bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
         storage_live(_8);
         storage_live(array_9);
         array_9 = move array_2;
-        _10 = assert_inhabited::<[[u8; 1usize]; 1usize]>() -> bb6 (unwind: bb7);
+        _10 = assert_inhabited::<[[u8; 1usize]; 1usize]>() -> bb3 (unwind: bb6);
+    }
+
+    bb3: {
+        _8 = transmute<[MaybeUninit::<[u8; 1usize]>; 1usize], [[u8; 1usize]; 1usize]>(copy array_9);
+        storage_dead(array_9);
+        _0 = from_output::<[[u8; 1usize]; 1usize]>(move _8) -> bb4 (unwind: bb5);
     }
 
     bb4: {
-        storage_live(r);
-        r = move (_3 as variant ControlFlow::<NeverShortCircuitResidual, ()>::Break)._0;
-        _0 = from_residual::<[[u8; 1usize]; 1usize]>(move r) -> bb8 (unwind: bb9);
+        storage_dead(_8);
+        goto bb9;
     }
 
     bb5: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb6: {
-        _8 = transmute<[MaybeUninit::<[u8; 1usize]>; 1usize], [[u8; 1usize]; 1usize]>(copy array_9);
-        storage_dead(array_9);
-        _0 = from_output::<[[u8; 1usize]; 1usize]>(move _8) -> bb10 (unwind: bb11);
+        undefined_behavior;
     }
 
     bb7: {
-        undefined_behavior;
+        storage_live(r);
+        r = move (_3 as variant ControlFlow::<NeverShortCircuitResidual, ()>::Break)._0;
+        _0 = from_residual::<[[u8; 1usize]; 1usize]>(move r) -> bb8 (unwind: bb10);
     }
 
     bb8: {
         storage_dead(r);
-        goto bb12;
+        goto bb9;
     }
 
     bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
-        storage_dead(_8);
-        goto bb12;
-    }
-
-    bb11: {
-        unwind_continue;
-    }
-
-    bb12: {
         storage_dead(_5);
         storage_dead(_3);
         storage_dead(array_2);
         return;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+
+    bb11: {
+        undefined_behavior;
+    }
+
+    bb12: {
+        unwind_continue;
     }
 }
 
@@ -1264,78 +1264,9 @@ pub fn from_fn::<[u8; 1usize], test_crate::test::{closure}::{closure}, 1usize>(f
     }
 }
 
-// Full name: core::ops::drop::Drop
-#[lang_item(Drop)]
-trait Drop
-
-// Full name: core::array::{impl Drop for Guard::<'_, _>}
-impl<'_, _, T> Drop for Guard::<'_, _> {
-    non-dyn-compatible
-}
-
-// Full name: core::ops::range::Range::<usize>
-#[lang_item(Range)]
-pub struct Range::<usize> {
-  start: usize,
-  end: usize,
-}
-
-// Full name: core::ops::try_trait::Try
-#[lang_item(Try)]
-trait Try
-
-// Full name: core::ops::try_trait::FromResidual
-#[diagnostic_item("FromResidual")]
-trait FromResidual
-
-// Full name: core::ops::try_trait::{impl Try for NeverShortCircuit::<_>}
-impl<T> Try for NeverShortCircuit::<_> {
-    non-dyn-compatible
-}
-
-// Full name: core::ops::try_trait::{impl FromResidual<type_error("unsupported alias type")> for NeverShortCircuit::<_>}
-impl<T> FromResidual<type_error("unsupported alias type")> for NeverShortCircuit::<_> {
-    non-dyn-compatible
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
-// Full name: core::slice::index::SliceIndex
-#[diagnostic_item("SliceIndex")]
-trait SliceIndex
-
-// Full name: core::slice::index::{impl SliceIndex<[T]> for usize}
-impl<T> "impl_SliceIndex_slice_for_usize" SliceIndex<[T]> for usize {
-    non-dyn-compatible
-}
-
-// Full name: core::slice::index::{impl SliceIndex<[T]> for Range::<usize>}
-impl<T> SliceIndex<[T]> for Range::<usize> {
-    non-dyn-compatible
-}
-
 struct (_,)::<test_crate::test::{closure}::{closure}> {
   _0: test_crate::test::{closure}::{closure},
 }
-
-// Full name: test_crate::Ops
-trait Ops
 
 // Full name: test_crate::test::<[u8; 1usize], 0usize>
 fn test::<[u8; 1usize], 0usize>() -> [[u8; 1usize]; 1usize]
@@ -1358,11 +1289,6 @@ fn test::<[u8; 1usize], 0usize>() -> [[u8; 1usize]; 1usize]
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: test_crate::{impl Ops<K> for [u8; 1usize]}
-impl<const K : type_error("const generic param type")> "impl_Ops_for_array" Ops<K> for [u8; 1usize] {
-    non-dyn-compatible
 }
 
 // Full name: test_crate::main
