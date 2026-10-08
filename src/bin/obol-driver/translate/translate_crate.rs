@@ -878,6 +878,7 @@ pub fn translate<'tcx, 'ctx>(
             .keys()
             .copied()
             .filter(|id| !ctx.translated.item_names.contains_key(id))
+            .sorted()
             .collect();
         if missing.is_empty() {
             break;
