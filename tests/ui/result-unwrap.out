@@ -23,6 +23,13 @@ pub struct Formatter::<'_> {
 
 struct () {}
 
+// Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
+pub enum Result::<(), Error> {
+  Ok { _0: () },
+  Err { _0: Error },
+}
+
 // Full name: core::ptr::drop_glue::<u32>
 #[lang_item(DropGlue)]
 fn drop_glue::<u32>(_1: &'_ mut u32)
@@ -35,13 +42,6 @@ fn drop_glue::<u32>(_1: &'_ mut u32)
         _0 = ();
         return;
     }
-}
-
-// Full name: core::result::Result::<(), Error>
-#[diagnostic_item("Result")]
-pub enum Result::<(), Error> {
-  Ok { _0: () },
-  Err { _0: Error },
 }
 
 // Full name: core::fmt::num::imp::{impl Display for u32}::fmt
@@ -130,37 +130,7 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
 }
 
 #[diagnostic_item("Debug")]
-fn {vtable}::core::fmt::Debug::<u32>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let core::fmt::num::<impl std::fmt::Debug for u32>::fmt: *const (); // local
-    let entry_array: [*const (); 4usize]; // local
-    let entry_array_ref: *const [*const (); 4usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(core::fmt::num::<impl std::fmt::Debug for u32>::fmt);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<u32>, *const ()>(const drop_glue::<u32>);
-        size = transmute<usize, *const ()>(const 4usize);
-        align = transmute<usize, *const ()>(const 4usize);
-        core::fmt::num::<impl std::fmt::Debug for u32>::fmt = cast<impl_Debug_for_u32::fmt, *const ()>(const impl_Debug_for_u32::fmt);
-        entry_array = [move drop, move size, move align, move core::fmt::num::<impl std::fmt::Debug for u32>::fmt];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-#[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<u32>: *const () = {vtable}::core::fmt::Debug::<u32>()
+vtable {vtable}::core::fmt::Debug::<u32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<u32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Debug_for_u32::fmt))]
 
 // Full name: core::result::Result::<u32, u32>
 #[diagnostic_item("Result")]
@@ -208,7 +178,7 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
         storage_live(_5);
         storage_live(_6);
         _6 = &e;
-        _5 = unsize_cast<&'_ u32, &'_ (dyn FakeTrait), {vtable}::core::fmt::Debug::<u32>>(copy _6);
+        _5 = unsize_cast<&'_ u32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<u32>)>(copy _6);
         _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb3 (unwind: bb4);
     }
 

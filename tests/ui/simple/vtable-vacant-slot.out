@@ -1,17 +1,19 @@
 
 // Final ULLBC:
 
-// Full name: test_crate::MyStruct
-pub struct MyStruct {}
-
 struct () {}
 
-// Full name: core::ptr::drop_glue::<MyStruct>
+// Full name: test_crate::S
+struct S {
+  _0: *const (),
+}
+
+// Full name: core::ptr::drop_glue::<S>
 #[lang_item(DropGlue)]
-fn drop_glue::<MyStruct>(_1: &'_ mut MyStruct)
+fn drop_glue::<S>(_1: &'_ mut S)
 {
     let _0: (); // return
-    let _1: &'_ mut MyStruct; // arg #1
+    let _1: &'_ mut S; // arg #1
 
     bb0: {
         storage_live(_0);
@@ -24,36 +26,35 @@ fn drop_glue::<MyStruct>(_1: &'_ mut MyStruct)
 trait FakeTrait
 
 // Full name: anon_const_0
-const anon_const_0: MyStruct = MyStruct {  }
+const anon_const_0: S = S { _0: no-provenance 0 }
 
-// Full name: test_crate::{impl test_crate::MyTrait for MyStruct}::foo
-pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
+// Full name: test_crate::{impl test_crate::T for S}::dyn_callable
+fn impl_T_for_S::dyn_callable(self: &'_ S) -> u8
 {
-    let _0: (); // return
-    let self: &'_ MyStruct; // arg #1
+    let _0: u8; // return
+    let self: &'_ S; // arg #1
 
     bb0: {
         storage_live(_0);
-        _0 = ();
-        _0 = ();
+        _0 = const 1u8;
         return;
     }
 }
 
-vtable {vtable}::test_crate::MyTrait::<MyStruct>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<MyStruct>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(impl_MyTrait_for_MyStruct::foo))]
+vtable {vtable}::test_crate::T::<S>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 8, no-provenance 8, no-provenance 0, cast<*const ()>(fnptr(impl_T_for_S::dyn_callable))]
 
 // Full name: test_crate::main
 fn main()
 {
     let _0: (); // return
     let x: &'_ (dyn FakeTrait); // local
-    let _2: &'_ MyStruct; // anonymous local
-    let _3: &'_ MyStruct; // anonymous local
-    let _4: (); // anonymous local
+    let _2: &'_ S; // anonymous local
+    let _3: &'_ S; // anonymous local
+    let _4: u8; // anonymous local
     let _5: &'_ (dyn FakeTrait); // anonymous local
-    let _6: &'_ MyStruct; // anonymous local
+    let _6: &'_ S; // anonymous local
     let _7: *const *const (); // anonymous local
-    let _8: &'_ MyStruct; // anonymous local
+    let _8: &'_ S; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -68,13 +69,13 @@ fn main()
         _6 = move _8;
         _3 = &(*_6);
         _2 = &(*_3);
-        x = unsize_cast<&'_ MyStruct, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<MyStruct>)>(move _2);
+        x = unsize_cast<&'_ S, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::T::<S>)>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
         _5 = &(*x) with_metadata(copy x.metadata);
-        _7 = copy _5.metadata offset const 3usize;
+        _7 = copy _5.metadata offset const 4usize;
         _4 = (copy (*_7))(move _5) -> bb1 (unwind: bb2);
     }
 

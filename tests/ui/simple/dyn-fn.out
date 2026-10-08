@@ -90,44 +90,7 @@ pub fn call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>(_
 
 // Full name: {vtable}::core::ops::function::Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>
 #[lang_item(Fn)]
-fn Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <{closure@tests/ui/simple/dyn-fn.rs:7:15: 7:24} as std::ops::FnOnce<(&mut u32,)>>::call_once: *const (); // local
-    let test_crate::gives_fn::{closure#0}_5: *const (); // local
-    let test_crate::gives_fn::{closure#0}_6: *const (); // local
-    let entry_array: [*const (); 6usize]; // local
-    let entry_array_ref: *const [*const (); 6usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<{closure@tests/ui/simple/dyn-fn.rs:7:15: 7:24} as std::ops::FnOnce<(&mut u32,)>>::call_once);
-        storage_live(test_crate::gives_fn::{closure#0}_5);
-        storage_live(test_crate::gives_fn::{closure#0}_6);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<test_crate::gives_fn::{closure}::{closure}>, *const ()>(const drop_glue::<test_crate::gives_fn::{closure}::{closure}>);
-        size = transmute<usize, *const ()>(const 0usize);
-        align = transmute<usize, *const ()>(const 1usize);
-        <{closure@tests/ui/simple/dyn-fn.rs:7:15: 7:24} as std::ops::FnOnce<(&mut u32,)>>::call_once = cast<call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>, *const ()>(const call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>);
-        test_crate::gives_fn::{closure#0}_5 = cast<test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>, *const ()>(const test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>);
-        test_crate::gives_fn::{closure#0}_6 = cast<test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>, *const ()>(const test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>);
-        entry_array = [move drop, move size, move align, move <{closure@tests/ui/simple/dyn-fn.rs:7:15: 7:24} as std::ops::FnOnce<(&mut u32,)>>::call_once, move test_crate::gives_fn::{closure#0}_5, move test_crate::gives_fn::{closure#0}_6];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 6usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-// Full name: {vtable}::core::ops::function::Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>
-#[lang_item(Fn)]
-vtable Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>: *const () = Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>()
+vtable Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>: [*const (); 6usize] = [cast<*const ()>(fnptr(drop_glue::<test_crate::gives_fn::{closure}::{closure}>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)), cast<*const ()>(fnptr(test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>)), cast<*const ()>(fnptr(test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>))]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -227,7 +190,7 @@ fn gives_fn()
         _4 = move _5;
         _3 = &(*_4);
         _2 = &(*_3);
-        _1 = unsize_cast<&'_ test_crate::gives_fn::{closure}::{closure}, &'_ (dyn FakeTrait), Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>>(move _2);
+        _1 = unsize_cast<&'_ test_crate::gives_fn::{closure}::{closure}, &'_ (dyn FakeTrait), cast<*const ()>(&raw const Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)>(move _2);
         storage_dead(_2);
         _0 = takes_fn(move _1) -> bb1 (unwind: bb2);
     }

@@ -1370,37 +1370,7 @@ fn drop_glue::<String>(_1: &'_ mut String)
 }
 
 #[diagnostic_item("Display")]
-fn {vtable}::core::fmt::Display::<String>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <std::string::String as std::fmt::Display>::fmt: *const (); // local
-    let entry_array: [*const (); 4usize]; // local
-    let entry_array_ref: *const [*const (); 4usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<std::string::String as std::fmt::Display>::fmt);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<String>, *const ()>(const drop_glue::<String>);
-        size = transmute<usize, *const ()>(const 24usize);
-        align = transmute<usize, *const ()>(const 8usize);
-        <std::string::String as std::fmt::Display>::fmt = cast<impl_Display_for_String::fmt, *const ()>(const impl_Display_for_String::fmt);
-        entry_array = [move drop, move size, move align, move <std::string::String as std::fmt::Display>::fmt];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-#[diagnostic_item("Display")]
-vtable {vtable}::core::fmt::Display::<String>: *const () = {vtable}::core::fmt::Display::<String>()
+vtable {vtable}::core::fmt::Display::<String>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8, cast<*const ()>(fnptr(impl_Display_for_String::fmt))]
 
 // Full name: core::intrinsics::assume
 #[rustc_intrinsic]
@@ -4013,7 +3983,7 @@ fn foo()
         storage_live(_14);
         _14 = &string;
         _13 = &(*_14);
-        _12 = unsize_cast<&'_ String, &'_ (dyn FakeTrait), {vtable}::core::fmt::Display::<String>>(move _13);
+        _12 = unsize_cast<&'_ String, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _13);
         storage_dead(_13);
         storage_dead(_14);
         storage_dead(_12);
@@ -4031,7 +4001,7 @@ fn foo()
     }
 
     bb7: {
-        _15 = unsize_cast<Box::<String, Global>, Box::<(dyn FakeTrait), Global>, {vtable}::core::fmt::Display::<String>>(move _16);
+        _15 = unsize_cast<Box::<String, Global>, Box::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _16);
         storage_dead(_17);
         storage_dead(_16);
         _29 = &raw mut _15;
@@ -4054,7 +4024,7 @@ fn foo()
     }
 
     bb10: {
-        _19 = unsize_cast<Rc::<String, Global>, Rc::<(dyn FakeTrait), Global>, {vtable}::core::fmt::Display::<String>>(move _20);
+        _19 = unsize_cast<Rc::<String, Global>, Rc::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _20);
         storage_dead(_21);
         storage_dead(_20);
         _31 = &raw mut _19;

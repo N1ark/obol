@@ -27,36 +27,7 @@ const anon_const_0: () = ()
 pub fn method(_1: &'_ ())
 = <opaque>
 
-fn {vtable}::test_crate::x::Trait::<()>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <() as test_crate::x::Trait>::method: *const (); // local
-    let entry_array: [*const (); 4usize]; // local
-    let entry_array_ref: *const [*const (); 4usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<() as test_crate::x::Trait>::method);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<()>, *const ()>(const drop_glue::<()>);
-        size = transmute<usize, *const ()>(const 0usize);
-        align = transmute<usize, *const ()>(const 1usize);
-        <() as test_crate::x::Trait>::method = cast<method, *const ()>(const method);
-        entry_array = [move drop, move size, move align, move <() as test_crate::x::Trait>::method];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-vtable {vtable}::test_crate::x::Trait::<()>: *const () = {vtable}::test_crate::x::Trait::<()>()
+vtable {vtable}::test_crate::x::Trait::<()>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<()>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(method))]
 
 // Full name: test_crate::use_debug
 fn use_debug(_d: &'_ (dyn FakeTrait))
@@ -96,7 +67,7 @@ fn main()
         _5 = move _6;
         _4 = &(*_5);
         _3 = &(*_4);
-        _2 = unsize_cast<&'_ (), &'_ (dyn FakeTrait), {vtable}::test_crate::x::Trait::<()>>(move _3);
+        _2 = unsize_cast<&'_ (), &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::x::Trait::<()>)>(move _3);
         storage_dead(_3);
         _1 = use_debug(move _2) -> bb1 (unwind: bb2);
     }

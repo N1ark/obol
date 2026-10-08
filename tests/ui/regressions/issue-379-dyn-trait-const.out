@@ -39,39 +39,10 @@ pub fn val(self: &'_ S) -> u32
     }
 }
 
-fn {vtable}::test_crate::MyTrait::<S>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <test_crate::S as test_crate::MyTrait>::val: *const (); // local
-    let entry_array: [*const (); 4usize]; // local
-    let entry_array_ref: *const [*const (); 4usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<test_crate::S as test_crate::MyTrait>::val);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<S>, *const ()>(const drop_glue::<S>);
-        size = transmute<usize, *const ()>(const 0usize);
-        align = transmute<usize, *const ()>(const 1usize);
-        <test_crate::S as test_crate::MyTrait>::val = cast<val, *const ()>(const val);
-        entry_array = [move drop, move size, move align, move <test_crate::S as test_crate::MyTrait>::val];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-vtable {vtable}::test_crate::MyTrait::<S>: *const () = {vtable}::test_crate::MyTrait::<S>()
+vtable {vtable}::test_crate::MyTrait::<S>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(val))]
 
 // Full name: test_crate::C
-const C: &'_ (dyn FakeTrait) = &anon_const_0 with_metadata({vtable}::test_crate::MyTrait::<S>)
+const C: &'_ (dyn FakeTrait) = &anon_const_0 with_metadata(cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<S>))
 
 // Full name: test_crate::get
 pub fn get() -> &'_ (dyn FakeTrait)

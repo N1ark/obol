@@ -3,208 +3,95 @@ extern crate rustc_public;
 
 use super::translate_ctx::*;
 
-use charon_lib::{ast::*, ids::IndexVec, ullbc_ast::*};
+use charon_lib::ast::*;
 use rustc_middle::ty as mty;
 use rustc_public::{mir::mono::Instance, ty};
 
 impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
-    pub fn translate_vtable_init(
-        mut self,
-        def_id: FunDeclId,
-        item_meta: ItemMeta,
-        ty: ty::Ty,
-        principal: Option<ty::TraitRef>,
-    ) -> Result<FunDecl, Error> {
-        let global = self.register_vtable(Span::dummy(), ty, principal.clone());
+    /// The erased pointer type that makes up a vtable entry: `*const ()`.
+    fn vtable_entry_ty() -> Ty {
+        TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty()
+    }
 
-        let mut statements: Vec<StatementKind> = vec![];
-        let mut locals = Locals::new(0);
-
-        let inner_ty = TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty();
-        let ret_entries = locals.new_var(Some("vtable".into()), inner_ty.clone());
-
-        let entries = if let Some(trait_ref) = principal {
+    /// The rustc vtable entries for the given (possibly absent) principal trait.
+    fn vtable_entries(principal: &Option<ty::TraitRef>) -> Vec<ty::VtblEntry> {
+        if let Some(trait_ref) = principal {
             trait_ref.vtable_entries()
         } else {
             rustc_public::rustc_internal::stable(mty::TyCtxt::COMMON_VTABLE_ENTRIES)
-        };
-
-        //
-        // We translate the VTable creation into:
-        //
-        // drop = <const fn ptr> as *const ();
-        // size = <const usize> as *const ();
-        // align = <const usize> as *const ();
-        // entry1 = <fn ptr> as *const ();
-        // ...
-        // entryN = <fn ptr> as *const ();
-        // entry_array = [drop, size, align, entry1, ..., entryN];
-        // entry_array_ref = &entry_array as *const [*const (); N];
-        // return entry_array_ref as *const ();
-        //
-
-        let mut cast_to_unit_ptr = |name: String, op: Operand| -> Operand {
-            let local = locals.new_var(Some(name), inner_ty.clone());
-            let op_ty = op.ty();
-            let cast_kind = if matches!(op_ty.kind(), TyKind::FnDef(..)) {
-                CastKind::FnPtr(op_ty.clone(), inner_ty.clone())
-            } else {
-                // We want a transmute, instead of a RawPtr, as that would imply a int-ptr
-                // cast with provenance, which we don't need for size/alignment constants
-                // (we're just cheating, really)
-                CastKind::Transmute(op_ty.clone(), inner_ty.clone())
-            };
-            statements.push(StatementKind::Assign(
-                local.clone(),
-                Rvalue::UnaryOp(UnOp::Cast(cast_kind), op),
-            ));
-            Operand::Move(local)
-        };
-
-        use ty::VtblEntry::*;
-        let layout = ty.layout()?.shape();
-        let entries: Vec<Operand> = entries
-            .into_iter()
-            .filter_map(|vtable_entry| match vtable_entry {
-                MetadataDropInPlace => {
-                    let drop = Instance::resolve_drop_in_place(ty.clone());
-                    let drop_fn = self.register_fun_decl_id(Span::dummy(), drop);
-                    let fn_ptr = FnPtr {
-                        kind: Box::new(FnPtrKind::Fun(drop_fn)),
-                        generics: Box::new(GenericArgs::empty()),
-                    };
-                    Some(cast_to_unit_ptr(
-                        "drop".into(),
-                        Operand::Const(ConstantExpr::new(
-                            ConstantExprKind::FnDef(fn_ptr.clone()),
-                            TyKind::FnDef(RegionBinder::empty(fn_ptr)).into_ty(),
-                        )),
-                    ))
-                }
-                MetadataSize => Some(cast_to_unit_ptr(
-                    "size".into(),
-                    Operand::Const(ConstantExpr::new(
-                        ConstantExprKind::Integer(IntegerValue::Unsigned(
-                            UIntTy::Usize,
-                            layout.size.bytes() as u128,
-                        )),
-                        Ty::mk_usize(),
-                    )),
-                )),
-                MetadataAlign => Some(cast_to_unit_ptr(
-                    "align".into(),
-                    Operand::Const(ConstantExpr::new(
-                        ConstantExprKind::Integer(IntegerValue::Unsigned(
-                            UIntTy::Usize,
-                            layout.abi_align as u128,
-                        )),
-                        Ty::mk_usize(),
-                    )),
-                )),
-                Method(instance) => {
-                    // Use the non-trimmed name: `trimmed_name` forces rustc's
-                    // `trimmed_def_paths` query which can cause ICEs
-                    let name = instance.name();
-                    let fun = self.register_fun_decl_id(Span::dummy(), instance);
-                    let fn_ptr = FnPtr {
-                        kind: Box::new(FnPtrKind::Fun(fun)),
-                        generics: Box::new(GenericArgs::empty()),
-                    };
-                    Some(cast_to_unit_ptr(
-                        name,
-                        Operand::Const(ConstantExpr::new(
-                            ConstantExprKind::FnDef(fn_ptr.clone()),
-                            TyKind::FnDef(RegionBinder::empty(fn_ptr)).into_ty(),
-                        )),
-                    ))
-                }
-                TraitVPtr(super_trait) => {
-                    let vtable = self.register_vtable(Span::dummy(), ty, Some(super_trait));
-                    Some(Operand::Copy(Place {
-                        kind: PlaceKind::Global(GlobalDeclRef {
-                            id: vtable,
-                            generics: Box::new(GenericArgs::empty()),
-                        }),
-                        ty: inner_ty.clone(),
-                    }))
-                }
-                Vacant => None,
-            })
-            .collect();
-
-        let entry_count = ConstantExpr::mk_usize(entries.len() as u128);
-        let entry_array_ty = TyKind::Array(inner_ty.clone(), entry_count.clone(), None).into_ty();
-        let entry_array = locals.new_var(Some("entry_array".into()), entry_array_ty.clone());
-        statements.push(StatementKind::Assign(
-            entry_array.clone(),
-            Rvalue::Aggregate(
-                AggregateKind::Array(inner_ty.clone(), entry_count.clone(), None),
-                entries,
-            ),
-        ));
-
-        let entry_array_ref_ty = TyKind::RawPtr(entry_array_ty.clone(), RefKind::Shared).into_ty();
-        let entry_array_ref =
-            locals.new_var(Some("entry_array_ref".into()), entry_array_ref_ty.clone());
-        statements.push(StatementKind::Assign(
-            entry_array_ref.clone(),
-            Rvalue::RawPtr {
-                place: entry_array,
-                kind: RefKind::Shared,
-                ptr_metadata: Operand::mk_const_unit(),
-            },
-        ));
-
-        statements.push(StatementKind::Assign(
-            ret_entries,
-            Rvalue::UnaryOp(
-                UnOp::Cast(CastKind::RawPtr(entry_array_ref_ty, inner_ty)),
-                Operand::Move(entry_array_ref),
-            ),
-        ));
-
-        let body = Body::Unstructured(ExprBody {
-            body: IndexVec::from(vec![BlockData {
-                statements: statements
-                    .into_iter()
-                    .map(|k| Statement {
-                        span: Span::dummy(),
-                        comments_before: vec![],
-                        kind: k,
-                    })
-                    .collect(),
-                terminator: Terminator {
-                    span: Span::dummy(),
-                    comments_before: vec![],
-                    kind: TerminatorKind::Return,
-                },
-                kind: UnwindKind::Regular,
-            }]),
-            bound_body_regions: 0,
-            locals,
-            span: Span::dummy(),
-            comments: vec![],
-        });
-
-        Ok(FunDecl {
-            def_id,
-            item_meta,
-            signature: Box::new(FunSig {
-                is_unsafe: false,
-                abi: Abi::rust(),
-                is_variadic: false,
-                inputs: vec![],
-                output: TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
-            }),
-            generics: GenericParams::empty(),
-            src: FunSource::GlobalInitializer(GlobalDeclRef {
-                id: global,
-                generics: Box::new(GenericArgs::empty()),
-            }),
-            body,
-        })
+        }
     }
 
+    /// The type of the vtable global for this principal trait. We don't declare vtable structs
+    /// like charon does; instead, a vtable follows the layout rustc uses: an array of erased
+    /// pointers `[*const (); N]` (drop, size, align, then the methods and supertrait vtables).
+    fn vtable_global_ty(principal: &Option<ty::TraitRef>) -> Ty {
+        let len = ConstantExpr::mk_usize(Self::vtable_entries(principal).len() as u128);
+        Ty::mk_array(Self::vtable_entry_ty(), len, None)
+    }
+
+    /// A constant pointer to the vtable of `ty` for the given principal trait, erased to
+    /// `*const ()`. This is the pointer metadata of a `*const dyn Trait` built from `ty`.
+    pub(crate) fn translate_vtable_ptr_const(
+        &mut self,
+        span: Span,
+        ty: ty::Ty,
+        principal: Option<ty::TraitRef>,
+    ) -> ConstantExpr {
+        let global_ty = Self::vtable_global_ty(&principal);
+        let id = self.register_vtable(span, ty, principal);
+        let global = ConstantExpr::new(
+            ConstantExprKind::Global(GlobalDeclRef {
+                id,
+                generics: Box::new(GenericArgs::empty()),
+            }),
+            global_ty.clone(),
+        );
+        let ptr = ConstantExpr::new(
+            ConstantExprKind::Ptr(RefKind::Shared, global, None),
+            TyKind::RawPtr(global_ty, RefKind::Shared).into_ty(),
+        );
+        let erased_ty = Self::vtable_entry_ty();
+        ConstantExpr::new(ConstantExprKind::Cast(ptr, erased_ty.clone()), erased_ty)
+    }
+
+    /// A function pointer to the given instance, erased to `*const ()` (like charon's
+    /// monomorphic vtable method entries).
+    fn erased_fn_ptr_const(
+        &mut self,
+        span: Span,
+        instance: Instance,
+    ) -> Result<ConstantExpr, Error> {
+        let sig = self.translate_function_signature(instance, span)?;
+        let fun = self.register_fun_decl_id(span, instance);
+        let fn_ptr = FnPtr {
+            kind: Box::new(FnPtrKind::Fun(fun)),
+            generics: Box::new(GenericArgs::empty()),
+        };
+        let fn_ptr_ty = TyKind::FnPtr(RegionBinder::empty(sig)).into_ty();
+        let fn_ptr = ConstantExpr::new(ConstantExprKind::FnPtr(fn_ptr), fn_ptr_ty);
+        let erased_ty = Self::vtable_entry_ty();
+        Ok(ConstantExpr::new(
+            ConstantExprKind::Cast(fn_ptr, erased_ty.clone()),
+            erased_ty,
+        ))
+    }
+
+    /// Translate the vtable of `from_ty` for the given principal trait. Like charon's vtable
+    /// instances, its value is a constant; it is an array of erased pointers laid out like rustc
+    /// lays out vtables:
+    ///
+    /// ```text
+    /// [
+    ///   drop_in_place::<T> as *const (),
+    ///   size_of::<T>() as *const (),
+    ///   align_of::<T>() as *const (),
+    ///   method_1 as *const (),
+    ///   ...
+    ///   &super_trait_vtable as *const (),
+    ///   ...
+    /// ]
+    /// ```
     pub fn translate_vtable(
         mut self,
         def_id: GlobalDeclId,
@@ -212,23 +99,53 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         from_ty: ty::Ty,
         principal: Option<ty::TraitRef>,
     ) -> Result<GlobalDecl, Error> {
-        let self_ty = self.translate_ty(Span::dummy(), from_ty)?;
-        let init = self.register_vtable_init(Span::dummy(), from_ty, principal);
-        let ty = TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty();
-        let value = self.call_initializer(init, ty.clone());
+        let span = item_meta.span;
+        let entry_ty = Self::vtable_entry_ty();
+        // Sizes and alignments are stored as addresses without provenance.
+        let mk_usize_entry = |n: usize| {
+            ConstantExpr::new(
+                ConstantExprKind::PtrNoProvenance(n as u128),
+                entry_ty.clone(),
+            )
+        };
+
+        use ty::VtblEntry::*;
+        let layout = from_ty.layout()?.shape();
+        let entries: Vec<ConstantExpr> = Self::vtable_entries(&principal)
+            .into_iter()
+            .map(|vtable_entry| match vtable_entry {
+                MetadataDropInPlace => {
+                    let drop = Instance::resolve_drop_in_place(from_ty);
+                    self.erased_fn_ptr_const(span, drop)
+                }
+                MetadataSize => Ok(mk_usize_entry(layout.size.bytes())),
+                MetadataAlign => Ok(mk_usize_entry(layout.abi_align as usize)),
+                Method(instance) => self.erased_fn_ptr_const(span, instance),
+                TraitVPtr(super_trait) => {
+                    Ok(self.translate_vtable_ptr_const(span, from_ty, Some(super_trait)))
+                }
+                // Rustc leaves vacant entries (e.g. for methods that require `Self: Sized`) as
+                // null pointers; keep them so that the entry indices match rustc's.
+                Vacant => Ok(mk_usize_entry(0)),
+            })
+            .try_collect()?;
+
+        let ty = Self::vtable_global_ty(&principal);
+        let value = ConstantExpr::new(ConstantExprKind::Array(entries), ty.clone());
+        let self_ty = self.translate_ty(span, from_ty)?;
         Ok(GlobalDecl {
             def_id,
             item_meta,
             generics: GenericParams::empty(),
+            size: Size::from_expr(SizeExpr::size_of(&ty)),
+            align: Size::from_expr(SizeExpr::align_of(&ty)),
+            ptr_metadata: ConstantExpr::mk_unit(),
             global_kind: GlobalKind::VTable,
             src: GlobalSource::VTableInstance {
                 self_ty,
                 impl_ref: None,
             },
             ty,
-            size: Size::new(None),
-            align: Size::new(None),
-            ptr_metadata: ConstantExpr::mk_unit(),
             value,
         })
     }

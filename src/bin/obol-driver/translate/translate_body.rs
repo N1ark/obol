@@ -561,15 +561,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     let stable = rustc_public::rustc_internal::stable(ex_trait_ref);
                     stable.with_self_ty(self_ty)
                 });
-                let vtable_global = self.register_vtable(span, self_ty, trait_ref);
-                let vtable_ref = GlobalDeclRef {
-                    id: vtable_global,
-                    generics: Box::new(GenericArgs::empty()),
-                };
-                let meta = ConstantExpr::new(
-                    ConstantExprKind::Global(vtable_ref),
-                    TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
-                );
+                let meta = self.translate_vtable_ptr_const(span, self_ty, trait_ref);
                 Ok(UnsizingMetadata::VTable(self.dummy_trait_ref(), meta))
             }
             _ => {

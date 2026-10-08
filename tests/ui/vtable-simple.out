@@ -70,36 +70,7 @@ fn impl_Modifiable_for_i32::modify::<i32>(self: &'_ mut i32, arg: &'_ i32) -> i3
     }
 }
 
-fn {vtable}::test_crate::Modifiable::<i32, i32>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <i32 as test_crate::Modifiable<i32>>::modify: *const (); // local
-    let entry_array: [*const (); 4usize]; // local
-    let entry_array_ref: *const [*const (); 4usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<i32 as test_crate::Modifiable<i32>>::modify);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<i32>, *const ()>(const drop_glue::<i32>);
-        size = transmute<usize, *const ()>(const 4usize);
-        align = transmute<usize, *const ()>(const 4usize);
-        <i32 as test_crate::Modifiable<i32>>::modify = cast<impl_Modifiable_for_i32::modify::<i32>, *const ()>(const impl_Modifiable_for_i32::modify::<i32>);
-        entry_array = [move drop, move size, move align, move <i32 as test_crate::Modifiable<i32>>::modify];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-vtable {vtable}::test_crate::Modifiable::<i32, i32>: *const () = {vtable}::test_crate::Modifiable::<i32, i32>()
+vtable {vtable}::test_crate::Modifiable::<i32, i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Modifiable_for_i32::modify::<i32>))]
 
 // Full name: test_crate::modify_trait_object::<i32>
 fn modify_trait_object::<i32>(arg: &'_ i32) -> i32
@@ -124,7 +95,7 @@ fn modify_trait_object::<i32>(arg: &'_ i32) -> i32
         _5 = const 199i32;
         _4 = &mut _5;
         _3 = &mut (*_4);
-        x = unsize_cast<&'_ mut i32, &'_ mut (dyn FakeTrait), {vtable}::test_crate::Modifiable::<i32, i32>>(move _3);
+        x = unsize_cast<&'_ mut i32, &'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Modifiable::<i32, i32>)>(move _3);
         storage_dead(_3);
         storage_dead(_4);
         storage_live(_6);

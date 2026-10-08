@@ -320,16 +320,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     let t = rustc_public::rustc_internal::stable(t);
                                     t.with_self_ty(self_ty)
                                 });
-                                let vtable_global = self.register_vtable(span, self_ty, trait_ref);
-
-                                let global_ref = GlobalDeclRef {
-                                    id: vtable_global,
-                                    generics: Box::new(GenericArgs::empty()),
-                                };
-                                let meta = ConstantExpr::new(
-                                    ConstantExprKind::Global(global_ref),
-                                    TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
-                                );
+                                let meta =
+                                    self.translate_vtable_ptr_const(span, self_ty, trait_ref);
                                 let meta = UnsizingMetadata::VTable(self.dummy_trait_ref(), meta);
                                 (Some(meta), Some(self_ty))
                             }

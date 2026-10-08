@@ -174,16 +174,6 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let decl = bt_ctx.translate_vtable(id, item_meta, *ty, tref)?;
                 self.translated.global_decls.set_slot(id, decl);
             }
-            TransItemSource::VTableInit(ty, tref) => {
-                let Some(ItemId::Fun(id)) = trans_id else {
-                    unreachable!()
-                };
-                let tref = tref
-                    .clone()
-                    .map(|(def_id, args)| ty::TraitRef::try_new(def_id, args.into()).unwrap());
-                let decl = bt_ctx.translate_vtable_init(id, item_meta, *ty, tref)?;
-                self.translated.fun_decls.set_slot(id, decl);
-            }
             TransItemSource::Static(stt) => {
                 let Some(ItemId::Global(id)) = trans_id else {
                     unreachable!()

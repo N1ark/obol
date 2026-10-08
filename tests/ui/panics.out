@@ -84,11 +84,11 @@ pub struct Layout {
 // Full name: core::alloc::AllocError
 pub struct AllocError {}
 
-struct () {}
-
 struct str {
   _0: [u8],
 }
+
+struct () {}
 
 // Full name: core::ptr::drop_glue::<&'_ str>
 #[lang_item(DropGlue)]
@@ -124,37 +124,7 @@ pub fn type_id::<&'_ str>(self: &'_ &'_ str) -> TypeId
 }
 
 #[diagnostic_item("Any")]
-fn {vtable}::core::any::Any::<&'_ str>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <&str as std::any::Any>::type_id: *const (); // local
-    let entry_array: [*const (); 4usize]; // local
-    let entry_array_ref: *const [*const (); 4usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<&str as std::any::Any>::type_id);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<&'_ str>, *const ()>(const drop_glue::<&'_ str>);
-        size = transmute<usize, *const ()>(const 16usize);
-        align = transmute<usize, *const ()>(const 8usize);
-        <&str as std::any::Any>::type_id = cast<type_id::<&'_ str>, *const ()>(const type_id::<&'_ str>);
-        entry_array = [move drop, move size, move align, move <&str as std::any::Any>::type_id];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 4usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-#[diagnostic_item("Any")]
-vtable {vtable}::core::any::Any::<&'_ str>: *const () = {vtable}::core::any::Any::<&'_ str>()
+vtable {vtable}::core::any::Any::<&'_ str>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ str>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(type_id::<&'_ str>))]
 
 // Full name: core::fmt::Error
 pub struct Error {}
@@ -757,6 +727,18 @@ pub fn as_str::<Payload::<&'_ str>>(self: &'_ mut Payload::<&'_ str>) -> Option:
     }
 }
 
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub struct Box::<(dyn FakeTrait), Global> {
+  _0: Unique::<(dyn FakeTrait)>,
+  _1: Global,
+}
+
 #[diagnostic_item("process_abort")]
 pub fn std::process::abort() -> !
 = <missing>
@@ -802,7 +784,7 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
         a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
         storage_live(_5);
         storage_live(_6);
-        _6 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), {vtable}::core::any::Any::<&'_ str>>(copy a);
+        _6 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
         _5 = payload_as_str(move _6) -> bb5 (unwind: bb8);
     }
 
@@ -862,7 +844,7 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
     bb4: {
         storage_live(a);
         a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
-        _0 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), {vtable}::core::any::Any::<&'_ str>>(copy a);
+        _0 = unsize_cast<&'_ &'_ str, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
         storage_dead(a);
         return;
     }
@@ -1304,10 +1286,6 @@ fn box_new_uninit(layout: Layout) -> *mut u8
     }
 }
 
-// Full name: alloc::alloc::Global
-#[lang_item(GlobalAlloc)]
-pub struct Global {}
-
 // Full name: alloc::boxed::Box::<&'_ str, Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
@@ -1341,14 +1319,6 @@ pub fn alloc::boxed::{Box::<_, Global>}::new::<&'_ str>(x: &'_ str) -> Box::<&'_
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
-#[fundamental]
-#[lang_item(OwnedBox)]
-pub struct Box::<(dyn FakeTrait), Global> {
-  _0: Unique::<(dyn FakeTrait)>,
-  _1: Global,
 }
 
 // Full name: std::panicking::begin_panic::{impl alloc::panicking::PanicPayload for Payload::<_>}::take_box::<&'_ str>
@@ -1397,7 +1367,7 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
     }
 
     bb5: {
-        _0 = unsize_cast<Box::<&'_ str, Global>, Box::<(dyn FakeTrait), Global>, {vtable}::core::any::Any::<&'_ str>>(move _5);
+        _0 = unsize_cast<Box::<&'_ str, Global>, Box::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(move _5);
         storage_dead(_5);
         storage_dead(a);
         storage_dead(_2);
@@ -1413,45 +1383,7 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
     }
 }
 
-fn {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <std::rt::begin_panic::Payload<&str> as std::fmt::Display>::fmt: *const (); // local
-    let <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::take_box: *const (); // local
-    let <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::get: *const (); // local
-    let <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::as_str: *const (); // local
-    let entry_array: [*const (); 7usize]; // local
-    let entry_array_ref: *const [*const (); 7usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<std::rt::begin_panic::Payload<&str> as std::fmt::Display>::fmt);
-        storage_live(<std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::take_box);
-        storage_live(<std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::get);
-        storage_live(<std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::as_str);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<Payload::<&'_ str>>, *const ()>(const drop_glue::<Payload::<&'_ str>>);
-        size = transmute<usize, *const ()>(const 16usize);
-        align = transmute<usize, *const ()>(const 8usize);
-        <std::rt::begin_panic::Payload<&str> as std::fmt::Display>::fmt = cast<fmt::<&'_ str>, *const ()>(const fmt::<&'_ str>);
-        <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::take_box = cast<take_box::<&'_ str>, *const ()>(const take_box::<&'_ str>);
-        <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::get = cast<get::<&'_ str>, *const ()>(const get::<&'_ str>);
-        <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::as_str = cast<as_str::<Payload::<&'_ str>>, *const ()>(const as_str::<Payload::<&'_ str>>);
-        entry_array = [move drop, move size, move align, move <std::rt::begin_panic::Payload<&str> as std::fmt::Display>::fmt, move <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::take_box, move <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::get, move <std::rt::begin_panic::Payload<&str> as alloc::panicking::PanicPayload>::as_str];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 7usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-vtable {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>: *const () = {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>()
+vtable {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>: [*const (); 7usize] = [cast<*const ()>(fnptr(drop_glue::<Payload::<&'_ str>>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(fmt::<&'_ str>)), cast<*const ()>(fnptr(take_box::<&'_ str>)), cast<*const ()>(fnptr(get::<&'_ str>)), cast<*const ()>(fnptr(as_str::<Payload::<&'_ str>>))]
 
 // Full name: std::panicking::panic_with_hook
 fn panic_with_hook(_1: &'_ mut (dyn FakeTrait), _2: &'_ Location::<'_>, _3: bool, _4: bool) -> !
@@ -1488,7 +1420,7 @@ fn std::panicking::begin_panic::{closure}::<&'_ str, i32, extern "rust-call" fn(
         _5 = Payload::<&'_ str> { inner: move _6 };
         storage_dead(_6);
         _4 = &mut _5;
-        _3 = unsize_cast<&'_ mut Payload::<&'_ str>, &'_ mut (dyn FakeTrait), {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>>(copy _4);
+        _3 = unsize_cast<&'_ mut Payload::<&'_ str>, &'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>)>(copy _4);
         _8 = copy _1.upvar_1;
         _0 = panic_with_hook(move _3, move _8, const true, const false) -> bb1 (unwind: bb2);
     }

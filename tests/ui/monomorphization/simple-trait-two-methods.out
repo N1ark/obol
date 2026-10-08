@@ -51,39 +51,7 @@ fn impl_Trait_for_i32::consume(self: &'_ i32)
     }
 }
 
-fn {vtable}::test_crate::Trait::<i32>() -> *const ()
-{
-    let vtable: *const (); // return
-    let drop: *const (); // local
-    let size: *const (); // local
-    let align: *const (); // local
-    let <i32 as test_crate::Trait>::consume: *const (); // local
-    let <i32 as test_crate::Trait>::another: *const (); // local
-    let entry_array: [*const (); 5usize]; // local
-    let entry_array_ref: *const [*const (); 5usize]; // local
-
-    bb0: {
-        storage_live(vtable);
-        storage_live(drop);
-        storage_live(size);
-        storage_live(align);
-        storage_live(<i32 as test_crate::Trait>::consume);
-        storage_live(<i32 as test_crate::Trait>::another);
-        storage_live(entry_array);
-        storage_live(entry_array_ref);
-        drop = cast<drop_glue::<i32>, *const ()>(const drop_glue::<i32>);
-        size = transmute<usize, *const ()>(const 4usize);
-        align = transmute<usize, *const ()>(const 4usize);
-        <i32 as test_crate::Trait>::consume = cast<impl_Trait_for_i32::consume, *const ()>(const impl_Trait_for_i32::consume);
-        <i32 as test_crate::Trait>::another = cast<another, *const ()>(const another);
-        entry_array = [move drop, move size, move align, move <i32 as test_crate::Trait>::consume, move <i32 as test_crate::Trait>::another];
-        entry_array_ref = &raw const entry_array;
-        vtable = cast<*const [*const (); 5usize], *const ()>(move entry_array_ref);
-        return;
-    }
-}
-
-vtable {vtable}::test_crate::Trait::<i32>: *const () = {vtable}::test_crate::Trait::<i32>()
+vtable {vtable}::test_crate::Trait::<i32>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Trait_for_i32::consume)), cast<*const ()>(fnptr(another))]
 
 // Full name: test_crate::main
 fn main()
@@ -111,7 +79,7 @@ fn main()
         _6 = move _8;
         _3 = &(*_6);
         _2 = &(*_3);
-        b = unsize_cast<&'_ i32, &'_ (dyn FakeTrait), {vtable}::test_crate::Trait::<i32>>(move _2);
+        b = unsize_cast<&'_ i32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<i32>)>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
