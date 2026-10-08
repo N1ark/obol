@@ -3,6 +3,7 @@ use crate::ObolError;
 use crate::translate::translate_crate;
 use charon_lib::transform::TransformCtx;
 use obol_lib::args::CliOpts;
+use obol_lib::mir_options;
 use rustc_driver::{Callbacks, Compilation};
 use rustc_interface::Config;
 use rustc_interface::interface::Compiler;
@@ -20,26 +21,6 @@ fn run_compiler_with_callbacks(
         .map_err(|_| ObolError::RustcError)
 }
 
-/// Tweak options to get usable MIR even for foreign crates.
-fn set_mir_options(config: &mut Config) {
-    config.opts.unstable_opts.always_encode_mir = true;
-    config.opts.unstable_opts.mir_opt_level = Some(0);
-    config.opts.unstable_opts.mir_preserve_ub = true;
-    let disabled_mir_passes = [
-        "RemoveStorageMarkers",
-        "CheckAlignment",
-        "CheckNull",
-        "CheckEnums",
-    ];
-    for pass in disabled_mir_passes {
-        config
-            .opts
-            .unstable_opts
-            .mir_enable_passes
-            .push((pass.to_owned(), false));
-    }
-}
-
 /// Don't even try to codegen. This avoids errors due to checking if the output filename is
 /// available (despite the fact that we won't emit it because we stop compilation early).
 fn set_no_codegen(config: &mut Config) {
@@ -54,7 +35,6 @@ fn setup_compiler(config: &mut Config, do_translate: bool) {
     if do_translate {
         set_no_codegen(config);
     }
-    set_mir_options(config);
 }
 
 /// Run the rustc driver with our custom hooks. Returns `None` if the crate was not compiled with
@@ -91,6 +71,8 @@ pub fn run_rustc_driver(options: &CliOpts) -> Result<Option<TransformCtx>, ObolE
         !is_workspace_dependency && is_target && (!is_building_test_target || is_test_binary);
 
     let output = if !is_selected_crate {
+        // Tweak options to get usable MIR even for foreign crates.
+        compiler_args.extend(mir_options::rustc_flags());
         // Run the compiler normally.
         run_compiler_with_callbacks(
             compiler_args,
@@ -101,6 +83,9 @@ pub fn run_rustc_driver(options: &CliOpts) -> Result<Option<TransformCtx>, ObolE
         for extra_flag in options.spread.iter().cloned() {
             compiler_args.push(extra_flag);
         }
+        // Tweak options to get usable MIR. These come last so that they take precedence over the
+        // user's flags.
+        compiler_args.extend(mir_options::rustc_flags());
 
         // Call the Rust compiler with our custom callback.
         let mut callback = ObolCallbacks {
