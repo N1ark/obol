@@ -1141,10 +1141,14 @@ fn main()
     let _6: bool; // anonymous local
     let _7: i32; // anonymous local
     let _8: usize; // anonymous local
-    let _9: !; // anonymous local
+    let _9: usize; // anonymous local
+    let _10: bool; // anonymous local
+    let _11: !; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_9);
+        storage_live(_10);
         _0 = ();
         storage_live(array);
         array = [const 1i32, const 2i32, const 3i32, const 4i32, const 5i32, const 6i32];
@@ -1165,6 +1169,9 @@ fn main()
         storage_live(_7);
         storage_live(_8);
         _8 = const 0usize;
+        _9 = copy slice.metadata;
+        _10 = copy _8 < copy _9;
+        assert(move _10 == true) (bounds_check) else panic;
         _7 = copy (*slice)[copy _8];
         _6 = move _7 == const 3i32;
         if move _6 -> bb2 else -> bb3;
@@ -1184,8 +1191,8 @@ fn main()
     bb3: {
         storage_dead(_7);
         storage_dead(_8);
-        storage_live(_9);
-        _9 = panic(const "assertion failed: slice[0] == 3") -> bb4 (unwind: bb5);
+        storage_live(_11);
+        _11 = panic(const "assertion failed: slice[0] == 3") -> bb4 (unwind: bb5);
     }
 
     bb4: {

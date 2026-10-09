@@ -2082,21 +2082,27 @@ pub fn clone(self: &'_ u32) -> u32
     }
 }
 
+struct (_, _)::<u32, bool> {
+  _0: u32,
+  _1: bool,
+}
+
 // Full name: test_crate::incr_u32
 pub fn incr_u32(x: u32) -> u32
 {
     let _0: u32; // return
     let x: u32; // arg #1
     let _2: u32; // anonymous local
-    let _3: u32; // anonymous local
+    let _3: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         storage_live(_2);
         _2 = copy x;
-        _3 = copy _2 panic.+ const 1u32;
-        _0 = move _3;
+        _3 = copy _2 checked.+ const 1u32;
+        assert(move _3._1 == false) (overflow) else panic;
+        _0 = move _3._0;
         storage_dead(_2);
         return;
     }
@@ -2286,7 +2292,7 @@ fn test_crate::test_closure_u32s::{closure}::<i8, extern "rust-call" fn((u32, u3
     let y: u32; // local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
-    let _7: u32; // anonymous local
+    let _7: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2299,8 +2305,9 @@ fn test_crate::test_closure_u32s::{closure}::<i8, extern "rust-call" fn((u32, u3
         _5 = copy x;
         storage_live(_6);
         _6 = copy y;
-        _7 = copy _5 panic.+ copy _6;
-        _0 = move _7;
+        _7 = copy _5 checked.+ copy _6;
+        assert(move _7._1 == false) (overflow) else panic;
+        _0 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         return;
@@ -2386,7 +2393,7 @@ fn test_crate::test_map_option2::{closure}::<i8, extern "rust-call" fn((u32,)) -
     let spread_args: (u32,); // arg #2
     let x: u32; // local
     let _4: u32; // anonymous local
-    let _5: u32; // anonymous local
+    let _5: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2395,8 +2402,9 @@ fn test_crate::test_map_option2::{closure}::<i8, extern "rust-call" fn((u32,)) -
         x = move spread_args._0;
         storage_live(_4);
         _4 = copy x;
-        _5 = copy _4 panic.+ const 1u32;
-        _0 = move _5;
+        _5 = copy _4 checked.+ const 1u32;
+        assert(move _5._1 == false) (overflow) else panic;
+        _0 = move _5._0;
         storage_dead(_4);
         return;
     }
@@ -2491,11 +2499,6 @@ struct (_, _)::<usize, bool> {
   _1: bool,
 }
 
-struct (_, _)::<u32, bool> {
-  _0: u32,
-  _1: bool,
-}
-
 struct (_,)::<test_crate::test_array_map::{closure}::{closure}> {
   _0: test_crate::test_array_map::{closure}::{closure},
 }
@@ -2522,7 +2525,7 @@ fn test_crate::test_map_option3::{closure}::<i8, extern "rust-call" fn((u32,)) -
     let spread_args: (u32,); // arg #2
     let x: u32; // local
     let _4: u32; // anonymous local
-    let _5: u32; // anonymous local
+    let _5: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2531,8 +2534,9 @@ fn test_crate::test_map_option3::{closure}::<i8, extern "rust-call" fn((u32,)) -
         x = move spread_args._0;
         storage_live(_4);
         _4 = copy x;
-        _5 = copy _4 panic.+ const 1u32;
-        _0 = move _5;
+        _5 = copy _4 checked.+ const 1u32;
+        assert(move _5._1 == false) (overflow) else panic;
+        _0 = move _5._0;
         storage_dead(_4);
         return;
     }
@@ -3426,9 +3430,9 @@ fn test_crate::test_closure_capture::{closure}::<i8, extern "rust-call" fn((u32,
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
-    let _7: u32; // anonymous local
+    let _7: (u32, bool); // anonymous local
     let _8: u32; // anonymous local
-    let _9: u32; // anonymous local
+    let _9: (u32, bool); // anonymous local
     let _10: &'_ u32; // anonymous local
     let _11: &'_ u32; // anonymous local
 
@@ -3447,14 +3451,16 @@ fn test_crate::test_closure_capture::{closure}::<i8, extern "rust-call" fn((u32,
         storage_live(_6);
         _11 = copy (*_1).upvar_1;
         _6 = copy (*_11);
-        _7 = copy _5 panic.+ copy _6;
-        _4 = move _7;
+        _7 = copy _5 checked.+ copy _6;
+        assert(move _7._1 == false) (overflow) else panic;
+        _4 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         storage_live(_8);
         _8 = copy z;
-        _9 = copy _4 panic.+ copy _8;
-        _0 = move _9;
+        _9 = copy _4 checked.+ copy _8;
+        assert(move _9._1 == false) (overflow) else panic;
+        _0 = move _9._0;
         storage_dead(_8);
         storage_dead(_4);
         return;

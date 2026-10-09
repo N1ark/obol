@@ -1240,11 +1240,11 @@ fn use_inlines() -> u32
     let _2: u32; // anonymous local
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
-    let _5: u32; // anonymous local
+    let _5: (u32, bool); // anonymous local
     let _6: u32; // anonymous local
-    let _7: u32; // anonymous local
+    let _7: (u32, bool); // anonymous local
     let _8: u32; // anonymous local
-    let _9: u32; // anonymous local
+    let _9: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1263,8 +1263,9 @@ fn use_inlines() -> u32
     }
 
     bb2: {
-        _5 = copy _3 panic.+ copy _4;
-        _2 = move _5;
+        _5 = copy _3 checked.+ copy _4;
+        assert(move _5._1 == false) (overflow) else panic;
+        _2 = move _5._0;
         storage_dead(_4);
         storage_dead(_3);
         storage_live(_6);
@@ -1272,8 +1273,9 @@ fn use_inlines() -> u32
     }
 
     bb3: {
-        _7 = copy _2 panic.+ copy _6;
-        _1 = move _7;
+        _7 = copy _2 checked.+ copy _6;
+        assert(move _7._1 == false) (overflow) else panic;
+        _1 = move _7._0;
         storage_dead(_6);
         storage_dead(_2);
         storage_live(_8);
@@ -1281,8 +1283,9 @@ fn use_inlines() -> u32
     }
 
     bb4: {
-        _9 = copy _1 panic.+ copy _8;
-        _0 = move _9;
+        _9 = copy _1 checked.+ copy _8;
+        assert(move _9._1 == false) (overflow) else panic;
+        _0 = move _9._0;
         storage_dead(_8);
         storage_dead(_1);
         return;

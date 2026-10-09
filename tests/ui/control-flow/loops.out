@@ -1246,9 +1246,16 @@ pub fn impl_SliceIndex_slice_for_usize::index_mut::<u32>(self: usize, slice: &'_
     let _0: &'_ mut u32; // return
     let self: usize; // arg #1
     let slice: &'_ mut [u32]; // arg #2
+    let _3: usize; // anonymous local
+    let _4: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        _3 = copy slice.metadata;
+        _4 = copy self < copy _3;
+        assert(move _4 == true) (bounds_check) else panic;
         _0 = &mut (*slice)[copy self];
         return;
     }
@@ -1358,9 +1365,9 @@ pub fn test_loop1(max: u32) -> u32
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
     let _7: u32; // anonymous local
-    let _8: u32; // anonymous local
-    let _9: u32; // anonymous local
-    let _10: u32; // anonymous local
+    let _8: (u32, bool); // anonymous local
+    let _9: (u32, bool); // anonymous local
+    let _10: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1389,11 +1396,13 @@ pub fn test_loop1(max: u32) -> u32
         storage_dead(_5);
         storage_live(_7);
         _7 = copy i;
-        _8 = copy s panic.+ copy _7;
-        s = move _8;
+        _8 = copy s checked.+ copy _7;
+        assert(move _8._1 == false) (overflow) else panic;
+        s = move _8._0;
         storage_dead(_7);
-        _9 = copy i panic.+ const 1u32;
-        i = move _9;
+        _9 = copy i checked.+ const 1u32;
+        assert(move _9._1 == false) (overflow) else panic;
+        i = move _9._0;
         storage_dead(_4);
         goto bb1;
     }
@@ -1402,8 +1411,9 @@ pub fn test_loop1(max: u32) -> u32
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
-        _10 = copy s panic.* const 2u32;
-        s = move _10;
+        _10 = copy s checked.* const 2u32;
+        assert(move _10._1 == false) (overflow) else panic;
+        s = move _10._0;
         _0 = copy s;
         storage_dead(s);
         storage_dead(i);
@@ -1424,8 +1434,8 @@ pub fn test_loop2(max: u32) -> u32
     let _7: bool; // anonymous local
     let _8: u32; // anonymous local
     let _9: u32; // anonymous local
-    let _10: u32; // anonymous local
-    let _11: u32; // anonymous local
+    let _10: (u32, bool); // anonymous local
+    let _11: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1469,11 +1479,13 @@ pub fn test_loop2(max: u32) -> u32
         storage_dead(_7);
         storage_live(_9);
         _9 = copy i;
-        _10 = copy s panic.+ copy _9;
-        s = move _10;
+        _10 = copy s checked.+ copy _9;
+        assert(move _10._1 == false) (overflow) else panic;
+        s = move _10._0;
         storage_dead(_9);
-        _11 = copy i panic.+ const 1u32;
-        i = move _11;
+        _11 = copy i checked.+ const 1u32;
+        assert(move _11._1 == false) (overflow) else panic;
+        i = move _11._0;
         storage_dead(_4);
         goto bb1;
     }
@@ -1511,13 +1523,13 @@ pub fn test_loop3(max: u32) -> u32
     let _12: u32; // anonymous local
     let _13: u32; // anonymous local
     let _14: u32; // anonymous local
-    let _15: u32; // anonymous local
+    let _15: (u32, bool); // anonymous local
     let _16: u32; // anonymous local
-    let _17: u32; // anonymous local
-    let _18: u32; // anonymous local
+    let _17: (u32, bool); // anonymous local
+    let _18: (u32, bool); // anonymous local
     let _19: u32; // anonymous local
-    let _20: u32; // anonymous local
-    let _21: u32; // anonymous local
+    let _20: (u32, bool); // anonymous local
+    let _21: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1570,8 +1582,9 @@ pub fn test_loop3(max: u32) -> u32
         _13 = copy i;
         storage_live(_14);
         _14 = copy j;
-        _15 = copy _13 panic.+ copy _14;
-        _12 = move _15;
+        _15 = copy _13 checked.+ copy _14;
+        assert(move _15._1 == false) (overflow) else panic;
+        _12 = move _15._0;
         storage_dead(_14);
         storage_dead(_13);
         _11 = move _12 == const 17u32;
@@ -1590,11 +1603,13 @@ pub fn test_loop3(max: u32) -> u32
         storage_dead(_11);
         storage_live(_16);
         _16 = copy i;
-        _17 = copy s panic.+ copy _16;
-        s = move _17;
+        _17 = copy s checked.+ copy _16;
+        assert(move _17._1 == false) (overflow) else panic;
+        s = move _17._0;
         storage_dead(_16);
-        _18 = copy j panic.+ const 1u32;
-        j = move _18;
+        _18 = copy j checked.+ const 1u32;
+        assert(move _18._1 == false) (overflow) else panic;
+        j = move _18._0;
         storage_dead(_8);
         storage_dead(_5);
         goto bb1;
@@ -1607,11 +1622,13 @@ pub fn test_loop3(max: u32) -> u32
         j = const 0u32;
         storage_live(_19);
         _19 = copy i;
-        _20 = copy s panic.+ copy _19;
-        s = move _20;
+        _20 = copy s checked.+ copy _19;
+        assert(move _20._1 == false) (overflow) else panic;
+        s = move _20._0;
         storage_dead(_19);
-        _21 = copy i panic.+ const 1u32;
-        i = move _21;
+        _21 = copy i checked.+ const 1u32;
+        assert(move _21._1 == false) (overflow) else panic;
+        i = move _21._0;
         storage_dead(_5);
         goto bb1;
     }
@@ -1647,13 +1664,13 @@ pub fn test_loop4(max: u32) -> u32
     let _12: u32; // anonymous local
     let _13: u32; // anonymous local
     let _14: u32; // anonymous local
-    let _15: u32; // anonymous local
+    let _15: (u32, bool); // anonymous local
     let _16: u32; // anonymous local
-    let _17: u32; // anonymous local
-    let _18: u32; // anonymous local
+    let _17: (u32, bool); // anonymous local
+    let _18: (u32, bool); // anonymous local
     let _19: u32; // anonymous local
-    let _20: u32; // anonymous local
-    let _21: u32; // anonymous local
+    let _20: (u32, bool); // anonymous local
+    let _21: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1706,8 +1723,9 @@ pub fn test_loop4(max: u32) -> u32
         _13 = copy i;
         storage_live(_14);
         _14 = copy j;
-        _15 = copy _13 panic.+ copy _14;
-        _12 = move _15;
+        _15 = copy _13 checked.+ copy _14;
+        assert(move _15._1 == false) (overflow) else panic;
+        _12 = move _15._0;
         storage_dead(_14);
         storage_dead(_13);
         _11 = move _12 == const 17u32;
@@ -1726,11 +1744,13 @@ pub fn test_loop4(max: u32) -> u32
         storage_dead(_11);
         storage_live(_16);
         _16 = copy i;
-        _17 = copy s panic.+ copy _16;
-        s = move _17;
+        _17 = copy s checked.+ copy _16;
+        assert(move _17._1 == false) (overflow) else panic;
+        s = move _17._0;
         storage_dead(_16);
-        _18 = copy j panic.+ const 1u32;
-        j = move _18;
+        _18 = copy j checked.+ const 1u32;
+        assert(move _18._1 == false) (overflow) else panic;
+        j = move _18._0;
         storage_dead(_8);
         goto bb9;
     }
@@ -1742,11 +1762,13 @@ pub fn test_loop4(max: u32) -> u32
         j = const 0u32;
         storage_live(_19);
         _19 = copy i;
-        _20 = copy s panic.+ copy _19;
-        s = move _20;
+        _20 = copy s checked.+ copy _19;
+        assert(move _20._1 == false) (overflow) else panic;
+        s = move _20._0;
         storage_dead(_19);
-        _21 = copy i panic.+ const 1u32;
-        i = move _21;
+        _21 = copy i checked.+ const 1u32;
+        assert(move _21._1 == false) (overflow) else panic;
+        i = move _21._0;
         storage_dead(_5);
         goto bb1;
     }
@@ -1782,11 +1804,11 @@ pub fn test_loop5(max: u32) -> u32
     let _9: u32; // anonymous local
     let _10: u32; // anonymous local
     let _11: u32; // anonymous local
-    let _12: u32; // anonymous local
-    let _13: u32; // anonymous local
+    let _12: (u32, bool); // anonymous local
+    let _13: (u32, bool); // anonymous local
     let _14: u32; // anonymous local
-    let _15: u32; // anonymous local
-    let _16: u32; // anonymous local
+    let _15: (u32, bool); // anonymous local
+    let _16: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1834,11 +1856,13 @@ pub fn test_loop5(max: u32) -> u32
         storage_dead(_9);
         storage_live(_11);
         _11 = copy j;
-        _12 = copy s panic.+ copy _11;
-        s = move _12;
+        _12 = copy s checked.+ copy _11;
+        assert(move _12._1 == false) (overflow) else panic;
+        s = move _12._0;
         storage_dead(_11);
-        _13 = copy j panic.+ const 1u32;
-        j = move _13;
+        _13 = copy j checked.+ const 1u32;
+        assert(move _13._1 == false) (overflow) else panic;
+        j = move _13._0;
         storage_dead(_8);
         goto bb3;
     }
@@ -1849,11 +1873,13 @@ pub fn test_loop5(max: u32) -> u32
         storage_dead(_8);
         storage_live(_14);
         _14 = copy i;
-        _15 = copy s panic.+ copy _14;
-        s = move _15;
+        _15 = copy s checked.+ copy _14;
+        assert(move _15._1 == false) (overflow) else panic;
+        s = move _15._0;
         storage_dead(_14);
-        _16 = copy i panic.+ const 1u32;
-        i = move _16;
+        _16 = copy i checked.+ const 1u32;
+        assert(move _16._1 == false) (overflow) else panic;
+        i = move _16._0;
         storage_dead(_5);
         goto bb1;
     }
@@ -1883,9 +1909,9 @@ pub fn test_loop6(max: u32) -> u32
     let _7: bool; // anonymous local
     let _8: u32; // anonymous local
     let _9: u32; // anonymous local
-    let _10: u32; // anonymous local
-    let _11: u32; // anonymous local
-    let _12: u32; // anonymous local
+    let _10: (u32, bool); // anonymous local
+    let _11: (u32, bool); // anonymous local
+    let _12: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1930,11 +1956,13 @@ pub fn test_loop6(max: u32) -> u32
         storage_dead(_7);
         storage_live(_9);
         _9 = copy i;
-        _10 = copy s panic.+ copy _9;
-        s = move _10;
+        _10 = copy s checked.+ copy _9;
+        assert(move _10._1 == false) (overflow) else panic;
+        s = move _10._0;
         storage_dead(_9);
-        _11 = copy i panic.+ const 1u32;
-        i = move _11;
+        _11 = copy i checked.+ const 1u32;
+        assert(move _11._1 == false) (overflow) else panic;
+        i = move _11._0;
         storage_dead(_4);
         goto bb1;
     }
@@ -1947,8 +1975,9 @@ pub fn test_loop6(max: u32) -> u32
 
     bb6: {
         storage_dead(_4);
-        _12 = copy s panic.+ const 1u32;
-        s = move _12;
+        _12 = copy s checked.+ const 1u32;
+        assert(move _12._1 == false) (overflow) else panic;
+        s = move _12._0;
         _0 = copy s;
         storage_dead(s);
         storage_dead(i);
@@ -1972,9 +2001,9 @@ pub fn test_loop7(max: u32) -> u32
     let _10: bool; // anonymous local
     let _11: u32; // anonymous local
     let _12: u32; // anonymous local
-    let _13: u32; // anonymous local
-    let _14: u32; // anonymous local
-    let _15: u32; // anonymous local
+    let _13: (u32, bool); // anonymous local
+    let _14: (u32, bool); // anonymous local
+    let _15: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2031,11 +2060,13 @@ pub fn test_loop7(max: u32) -> u32
         storage_dead(_10);
         storage_live(_12);
         _12 = copy i;
-        _13 = copy s panic.+ copy _12;
-        s = move _13;
+        _13 = copy s checked.+ copy _12;
+        assert(move _13._1 == false) (overflow) else panic;
+        s = move _13._0;
         storage_dead(_12);
-        _14 = copy i panic.+ const 1u32;
-        i = move _14;
+        _14 = copy i checked.+ const 1u32;
+        assert(move _14._1 == false) (overflow) else panic;
+        i = move _14._0;
         storage_dead(_7);
         goto bb2;
     }
@@ -2060,8 +2091,9 @@ pub fn test_loop7(max: u32) -> u32
 
     bb9: {
         storage_dead(_4);
-        _15 = copy s panic.+ const 1u32;
-        s = move _15;
+        _15 = copy s checked.+ const 1u32;
+        assert(move _15._1 == false) (overflow) else panic;
+        s = move _15._0;
         _0 = copy s;
         storage_dead(s);
         storage_dead(i);
@@ -2324,7 +2356,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     let _8: &'_ mut Range::<i32>; // anonymous local
     let _9: &'_ mut Range::<i32>; // anonymous local
     let _10: isize; // anonymous local
-    let _11: usize; // anonymous local
+    let _11: (usize, bool); // anonymous local
     let _12: Range::<usize>; // anonymous local
     let _13: Range::<usize>; // anonymous local
     let _14: usize; // anonymous local
@@ -2341,7 +2373,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     let _25: &'_ mut Range::<usize>; // anonymous local
     let _26: &'_ mut Range::<usize>; // anonymous local
     let _27: isize; // anonymous local
-    let _28: usize; // anonymous local
+    let _28: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2469,8 +2501,9 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb14: {
-        _28 = copy s panic.+ const 1usize;
-        s = move _28;
+        _28 = copy s checked.+ const 1usize;
+        assert(move _28._1 == false) (overflow) else panic;
+        s = move _28._0;
         storage_dead(_26);
         storage_dead(_24);
         goto bb11;
@@ -2493,8 +2526,9 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb19: {
-        _11 = copy s panic.+ const 1usize;
-        s = move _11;
+        _11 = copy s checked.+ const 1usize;
+        assert(move _11._1 == false) (overflow) else panic;
+        s = move _11._0;
         storage_dead(_9);
         storage_dead(_7);
         goto bb2;
@@ -2531,7 +2565,7 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
     let _12: isize; // anonymous local
     let i: u32; // local
     let _14: u32; // anonymous local
-    let _15: u32; // anonymous local
+    let _15: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2591,8 +2625,9 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
         i = copy (_9 as variant Option::<u32>::Some)._0;
         storage_live(_14);
         _14 = copy i;
-        _15 = copy s panic.+ copy _14;
-        s = move _15;
+        _15 = copy s checked.+ copy _14;
+        assert(move _15._1 == false) (overflow) else panic;
+        s = move _15._0;
         storage_dead(_14);
         storage_dead(i);
         storage_dead(_11);
@@ -2634,9 +2669,9 @@ pub fn sum(max: u32) -> u32
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
     let _7: u32; // anonymous local
-    let _8: u32; // anonymous local
-    let _9: u32; // anonymous local
-    let _10: u32; // anonymous local
+    let _8: (u32, bool); // anonymous local
+    let _9: (u32, bool); // anonymous local
+    let _10: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2665,11 +2700,13 @@ pub fn sum(max: u32) -> u32
         storage_dead(_5);
         storage_live(_7);
         _7 = copy i;
-        _8 = copy s panic.+ copy _7;
-        s = move _8;
+        _8 = copy s checked.+ copy _7;
+        assert(move _8._1 == false) (overflow) else panic;
+        s = move _8._0;
         storage_dead(_7);
-        _9 = copy i panic.+ const 1u32;
-        i = move _9;
+        _9 = copy i checked.+ const 1u32;
+        assert(move _9._1 == false) (overflow) else panic;
+        i = move _9._0;
         storage_dead(_4);
         goto bb1;
     }
@@ -2678,8 +2715,9 @@ pub fn sum(max: u32) -> u32
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
-        _10 = copy s panic.* const 2u32;
-        s = move _10;
+        _10 = copy s checked.* const 2u32;
+        assert(move _10._1 == false) (overflow) else panic;
+        s = move _10._0;
         _0 = copy s;
         storage_dead(s);
         storage_dead(i);
@@ -2700,7 +2738,7 @@ pub fn clear(v: &'_ mut Vec::<u32, Global>)
     let _7: &'_ mut u32; // anonymous local
     let _8: &'_ mut Vec::<u32, Global>; // anonymous local
     let _9: usize; // anonymous local
-    let _10: usize; // anonymous local
+    let _10: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2743,8 +2781,9 @@ pub fn clear(v: &'_ mut Vec::<u32, Global>)
         storage_dead(_8);
         (*_7) = const 0u32;
         storage_dead(_7);
-        _10 = copy i panic.+ const 1usize;
-        i = move _10;
+        _10 = copy i checked.+ const 1usize;
+        assert(move _10._1 == false) (overflow) else panic;
+        i = move _10._0;
         storage_dead(_3);
         goto bb1;
     }

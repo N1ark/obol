@@ -7,21 +7,27 @@ struct (_,)::<&'_ mut u32> {
   _0: &'_ mut u32,
 }
 
+struct (_, _)::<u32, bool> {
+  _0: u32,
+  _1: bool,
+}
+
 fn test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>(_1: &'_ test_crate::gives_fn::{closure}::{closure}, spread_args: (&'_ mut u32,)) -> bool
 {
     let _0: bool; // return
     let _1: &'_ test_crate::gives_fn::{closure}::{closure}; // arg #1
     let spread_args: (&'_ mut u32,); // arg #2
     let counter: &'_ mut u32; // local
-    let _4: u32; // anonymous local
+    let _4: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(counter);
         storage_live(_4);
         counter = move spread_args._0;
-        _4 = copy (*counter) panic.+ const 1u32;
-        (*counter) = move _4;
+        _4 = copy (*counter) checked.+ const 1u32;
+        assert(move _4._1 == false) (overflow) else panic;
+        (*counter) = move _4._0;
         _0 = const true;
         return;
     }
@@ -97,11 +103,6 @@ trait FakeTrait
 
 // Full name: anon_const_0
 const anon_const_0: test_crate::gives_fn::{closure}::{closure} = test_crate::gives_fn::{closure}::{closure} {  }
-
-struct (_, _)::<u32, bool> {
-  _0: u32,
-  _1: bool,
-}
 
 // Full name: test_crate::takes_fn
 fn takes_fn(f: &'_ (dyn FakeTrait))

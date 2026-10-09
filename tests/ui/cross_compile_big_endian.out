@@ -26,13 +26,17 @@ fn main()
     let z: usize; // local
     let _4: usize; // anonymous local
     let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
+    let _6: (usize, bool); // anonymous local
     let a: u128; // local
+    let _8: u32; // anonymous local
+    let _9: bool; // anonymous local
     let b: HasBEDiscr; // local
 
     bb0: {
         storage_live(_0);
         storage_live(_6);
+        storage_live(_8);
+        storage_live(_9);
         _0 = ();
         storage_live(x);
         x = const 52usize;
@@ -43,12 +47,16 @@ fn main()
         _4 = copy y;
         storage_live(_5);
         _5 = copy x;
-        _6 = copy _4 panic.- copy _5;
-        z = move _6;
+        _6 = copy _4 checked.- copy _5;
+        assert(move _6._1 == false) (overflow) else panic;
+        z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
         storage_live(a);
-        a = const 102u128 panic.<< const 64i32;
+        _8 = cast<i32, u32>(const 64i32);
+        _9 = move _8 < const 128u32;
+        assert(move _9 == true) (overflow) else panic;
+        a = const 102u128 wrap.<< const 64i32;
         storage_live(b);
         b = HasBEDiscr::Second {  };
         _0 = ();

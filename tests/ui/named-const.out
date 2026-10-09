@@ -48,13 +48,14 @@ pub fn get_arr() -> [u32; 3usize]
 pub fn lens() -> usize
 {
     let _0: usize; // return
-    let _1: usize; // anonymous local
+    let _1: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_1);
-        _1 = copy LEN::<u8> panic.+ copy LEN::<u32>;
-        _0 = move _1;
+        _1 = copy LEN::<u8> checked.+ copy LEN::<u32>;
+        assert(move _1._1 == false) (overflow) else panic;
+        _0 = move _1._0;
         return;
     }
 }

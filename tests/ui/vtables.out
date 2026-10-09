@@ -3484,7 +3484,7 @@ fn super_method(self: &'_ i32, arg: i32) -> i32
     let arg: i32; // arg #2
     let _3: i32; // anonymous local
     let _4: i32; // anonymous local
-    let _5: i32; // anonymous local
+    let _5: (i32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3493,8 +3493,9 @@ fn super_method(self: &'_ i32, arg: i32) -> i32
         _3 = copy (*self);
         storage_live(_4);
         _4 = copy arg;
-        _5 = copy _3 panic.+ copy _4;
-        _0 = move _5;
+        _5 = copy _3 checked.+ copy _4;
+        assert(move _5._1 == false) (overflow) else panic;
+        _0 = move _5._0;
         storage_dead(_4);
         storage_dead(_3);
         return;
@@ -3605,14 +3606,15 @@ fn impl_Modifiable_for_i32::modify::<i32>(self: &'_ mut i32, arg: &'_ i32) -> i3
     let _0: i32; // return
     let self: &'_ mut i32; // arg #1
     let arg: &'_ i32; // arg #2
-    let _3: i32; // anonymous local
+    let _3: (i32, bool); // anonymous local
     let _4: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self) panic.+ const 1i32;
-        (*self) = move _3;
+        _3 = copy (*self) checked.+ const 1i32;
+        assert(move _3._1 == false) (overflow) else panic;
+        (*self) = move _3._0;
         storage_live(_4);
         _4 = &(*arg);
         _0 = impl_Clone_for_i32::clone(move _4) -> bb1 (unwind: bb2);
@@ -3636,14 +3638,15 @@ fn impl_Modifiable_for_i32::modify::<String>(self: &'_ mut i32, arg: &'_ String)
     let _0: String; // return
     let self: &'_ mut i32; // arg #1
     let arg: &'_ String; // arg #2
-    let _3: i32; // anonymous local
+    let _3: (i32, bool); // anonymous local
     let _4: &'_ String; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self) panic.+ const 1i32;
-        (*self) = move _3;
+        _3 = copy (*self) checked.+ const 1i32;
+        assert(move _3._1 == false) (overflow) else panic;
+        (*self) = move _3._0;
         storage_live(_4);
         _4 = &(*arg);
         _0 = impl_Clone_for_String::clone(move _4) -> bb1 (unwind: bb2);

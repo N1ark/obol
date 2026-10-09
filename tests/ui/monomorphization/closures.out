@@ -53,7 +53,7 @@ fn test_crate::main::{closure}::<i8, extern "rust-call" fn((u8,)) -> u8, (&'_ u8
     let x: u8; // local
     let _4: u8; // anonymous local
     let _5: u8; // anonymous local
-    let _6: u8; // anonymous local
+    let _6: (u8, bool); // anonymous local
     let _7: &'_ u8; // anonymous local
 
     bb0: {
@@ -67,8 +67,9 @@ fn test_crate::main::{closure}::<i8, extern "rust-call" fn((u8,)) -> u8, (&'_ u8
         storage_live(_5);
         _7 = copy (*_1).upvar_0;
         _5 = copy (*_7);
-        _6 = copy _4 panic.+ copy _5;
-        _0 = move _6;
+        _6 = copy _4 checked.+ copy _5;
+        assert(move _6._1 == false) (overflow) else panic;
+        _0 = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
         return;
@@ -116,7 +117,7 @@ fn test_crate::main::{closure#1}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_
     let _4: (u8, bool); // anonymous local
     let _5: u8; // anonymous local
     let _6: u8; // anonymous local
-    let _7: u8; // anonymous local
+    let _7: (u8, bool); // anonymous local
     let _8: &'_ mut u8; // anonymous local
     let _9: &'_ mut u8; // anonymous local
     let _10: &'_ mut u8; // anonymous local
@@ -143,8 +144,9 @@ fn test_crate::main::{closure#1}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_
         storage_live(_6);
         _11 = copy (*_1).upvar_0;
         _6 = copy (*_11);
-        _7 = copy _5 panic.+ copy _6;
-        _0 = move _7;
+        _7 = copy _5 checked.+ copy _6;
+        assert(move _7._1 == false) (overflow) else panic;
+        _0 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         return;
@@ -192,7 +194,7 @@ fn test_crate::main::{closure#2}::<i32, extern "rust-call" fn((u8,)) -> u8, (Thi
     let _4: (); // anonymous local
     let _5: Thing; // anonymous local
     let _6: u8; // anonymous local
-    let _7: u8; // anonymous local
+    let _7: (u8, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -210,8 +212,9 @@ fn test_crate::main::{closure#2}::<i32, extern "rust-call" fn((u8,)) -> u8, (Thi
         storage_dead(_4);
         storage_live(_6);
         _6 = copy x;
-        _7 = copy _6 panic.+ const 1u8;
-        _0 = move _7;
+        _7 = copy _6 checked.+ const 1u8;
+        assert(move _7._1 == false) (overflow) else panic;
+        _0 = move _7._0;
         storage_dead(_6);
         return;
     }

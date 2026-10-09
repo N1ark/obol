@@ -1,6 +1,11 @@
 
 // Final ULLBC:
 
+struct (_, _)::<u32, bool> {
+  _0: u32,
+  _1: bool,
+}
+
 // Full name: core::ops::arith::{impl Add<&'_ u32> for &'_ u32}::add::<'_, '_>
 #[track_caller]
 pub fn add::<'_, '_>(self_1: &'_ u32, other_2: &'_ u32) -> u32
@@ -10,7 +15,7 @@ pub fn add::<'_, '_>(self_1: &'_ u32, other_2: &'_ u32) -> u32
     let other_2: &'_ u32; // arg #2
     let self_3: u32; // local
     let other_4: u32; // local
-    let _5: u32; // anonymous local
+    let _5: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -19,8 +24,9 @@ pub fn add::<'_, '_>(self_1: &'_ u32, other_2: &'_ u32) -> u32
         storage_live(other_4);
         other_4 = copy (*other_2);
         storage_live(_5);
-        _5 = copy self_3 panic.+ copy other_4;
-        _0 = move _5;
+        _5 = copy self_3 checked.+ copy other_4;
+        assert(move _5._1 == false) (overflow) else panic;
+        _0 = move _5._0;
         storage_dead(_5);
         storage_dead(other_4);
         storage_dead(self_3);
@@ -36,19 +42,14 @@ const anon_const_0: u32 = 1u32
 // Full name: anon_const_1
 const anon_const_1: u32 = 5u32
 
-struct (_, _)::<u32, bool> {
-  _0: u32,
-  _1: bool,
-}
-
 // Full name: test_crate::six
 fn six() -> u32
 {
     let _0: u32; // return
     let x: &'_ u32; // local
-    let _2: u32; // anonymous local
+    let _2: (u32, bool); // anonymous local
     let y: &'_ u32; // local
-    let _4: u32; // anonymous local
+    let _4: (u32, bool); // anonymous local
     let _5: &'_ u32; // anonymous local
     let _6: &'_ u32; // anonymous local
     let _7: &'_ u32; // anonymous local
@@ -63,13 +64,15 @@ fn six() -> u32
         storage_live(_7);
         storage_live(_8);
         storage_live(x);
-        _2 = const 0u32 panic.+ const 1u32;
+        _2 = const 0u32 checked.+ const 1u32;
+        assert(move _2._1 == false) (overflow) else panic;
         storage_live(_9);
         _9 = &anon_const_0;
         _8 = move _9;
         x = &(*_8);
         storage_live(y);
-        _4 = const 2u32 panic.+ const 3u32;
+        _4 = const 2u32 checked.+ const 3u32;
+        assert(move _4._1 == false) (overflow) else panic;
         storage_live(_10);
         _10 = &anon_const_1;
         _7 = move _10;

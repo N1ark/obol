@@ -1057,22 +1057,33 @@ fn f1(a: &'_ [u8]) -> usize
     let _3: bool; // anonymous local
     let _4: u8; // anonymous local
     let _5: usize; // anonymous local
-    let _6: bool; // anonymous local
-    let _7: u8; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: usize; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: bool; // anonymous local
+    let _8: bool; // anonymous local
+    let _9: u8; // anonymous local
     let _10: usize; // anonymous local
+    let _11: usize; // anonymous local
+    let _12: bool; // anonymous local
+    let _13: (usize, bool); // anonymous local
+    let _14: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_9);
-        storage_live(_10);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_11);
+        storage_live(_12);
+        storage_live(_13);
+        storage_live(_14);
         storage_live(sampled);
         sampled = const 0usize;
         storage_live(_3);
         storage_live(_4);
         storage_live(_5);
         _5 = const 0usize;
+        _6 = copy a.metadata;
+        _7 = copy _5 < copy _6;
+        assert(move _7 == true) (bounds_check) else panic;
         _4 = copy (*a)[copy _5];
         _3 = move _4 < const 42u8;
         if move _3 -> bb1 else -> bb4;
@@ -1081,26 +1092,30 @@ fn f1(a: &'_ [u8]) -> usize
     bb1: {
         storage_dead(_5);
         storage_dead(_4);
-        storage_live(_6);
-        storage_live(_7);
         storage_live(_8);
-        _8 = const 1usize;
-        _7 = copy (*a)[copy _8];
-        _6 = move _7 < const 16u8;
-        if move _6 -> bb2 else -> bb3;
+        storage_live(_9);
+        storage_live(_10);
+        _10 = const 1usize;
+        _11 = copy a.metadata;
+        _12 = copy _10 < copy _11;
+        assert(move _12 == true) (bounds_check) else panic;
+        _9 = copy (*a)[copy _10];
+        _8 = move _9 < const 16u8;
+        if move _8 -> bb2 else -> bb3;
     }
 
     bb2: {
-        storage_dead(_8);
-        storage_dead(_7);
-        _9 = copy sampled panic.+ const 100usize;
-        sampled = move _9;
+        storage_dead(_10);
+        storage_dead(_9);
+        _13 = copy sampled checked.+ const 100usize;
+        assert(move _13._1 == false) (overflow) else panic;
+        sampled = move _13._0;
         goto bb5;
     }
 
     bb3: {
-        storage_dead(_8);
-        storage_dead(_7);
+        storage_dead(_10);
+        storage_dead(_9);
         goto bb5;
     }
 
@@ -1111,10 +1126,11 @@ fn f1(a: &'_ [u8]) -> usize
     }
 
     bb5: {
-        storage_dead(_6);
+        storage_dead(_8);
         storage_dead(_3);
-        _10 = copy sampled panic.+ const 101usize;
-        sampled = move _10;
+        _14 = copy sampled checked.+ const 101usize;
+        assert(move _14._1 == false) (overflow) else panic;
+        sampled = move _14._0;
         _0 = copy sampled;
         storage_dead(sampled);
         return;
@@ -1143,42 +1159,78 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
     let b1: i16; // local
     let _14: u8; // anonymous local
     let _15: usize; // anonymous local
+    let _16: usize; // anonymous local
+    let _17: bool; // anonymous local
     let b2: i16; // local
-    let _17: u8; // anonymous local
-    let _18: usize; // anonymous local
-    let b3: i16; // local
-    let _20: u8; // anonymous local
+    let _19: u8; // anonymous local
+    let _20: usize; // anonymous local
     let _21: usize; // anonymous local
+    let _22: bool; // anonymous local
+    let b3: i16; // local
+    let _24: u8; // anonymous local
+    let _25: usize; // anonymous local
+    let _26: usize; // anonymous local
+    let _27: bool; // anonymous local
     let d1: i16; // local
-    let _23: i16; // anonymous local
-    let _24: i16; // anonymous local
-    let _25: i16; // anonymous local
-    let _26: i16; // anonymous local
-    let d2: i16; // local
-    let _28: i16; // anonymous local
     let _29: i16; // anonymous local
     let _30: i16; // anonymous local
     let _31: i16; // anonymous local
-    let _32: bool; // anonymous local
-    let _33: i16; // anonymous local
-    let _34: bool; // anonymous local
-    let _35: usize; // anonymous local
+    let _32: u32; // anonymous local
+    let _33: bool; // anonymous local
+    let _34: i16; // anonymous local
+    let d2: i16; // local
     let _36: i16; // anonymous local
-    let _37: usize; // anonymous local
-    let _38: usize; // anonymous local
+    let _37: i16; // anonymous local
+    let _38: u32; // anonymous local
     let _39: bool; // anonymous local
     let _40: i16; // anonymous local
-    let _41: bool; // anonymous local
-    let _42: usize; // anonymous local
-    let _43: i16; // anonymous local
-    let _44: usize; // anonymous local
-    let _45: usize; // anonymous local
+    let _41: i16; // anonymous local
+    let _42: u32; // anonymous local
+    let _43: bool; // anonymous local
+    let _44: bool; // anonymous local
+    let _45: i16; // anonymous local
+    let _46: bool; // anonymous local
+    let _47: usize; // anonymous local
+    let _48: i16; // anonymous local
+    let _49: usize; // anonymous local
+    let _50: *const [i16]; // anonymous local
+    let _51: usize; // anonymous local
+    let _52: bool; // anonymous local
+    let _53: (usize, bool); // anonymous local
+    let _54: bool; // anonymous local
+    let _55: i16; // anonymous local
+    let _56: bool; // anonymous local
+    let _57: usize; // anonymous local
+    let _58: i16; // anonymous local
+    let _59: usize; // anonymous local
+    let _60: *const [i16]; // anonymous local
+    let _61: usize; // anonymous local
+    let _62: bool; // anonymous local
+    let _63: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_11);
+        storage_live(_16);
+        storage_live(_17);
+        storage_live(_21);
+        storage_live(_22);
+        storage_live(_26);
+        storage_live(_27);
+        storage_live(_32);
+        storage_live(_33);
         storage_live(_38);
-        storage_live(_45);
+        storage_live(_39);
+        storage_live(_42);
+        storage_live(_43);
+        storage_live(_50);
+        storage_live(_51);
+        storage_live(_52);
+        storage_live(_53);
+        storage_live(_60);
+        storage_live(_61);
+        storage_live(_62);
+        storage_live(_63);
         storage_live(sampled);
         sampled = const 0usize;
         storage_live(_4);
@@ -1232,140 +1284,168 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_live(_14);
         storage_live(_15);
         _15 = const 0usize;
+        _16 = copy bytes.metadata;
+        _17 = copy _15 < copy _16;
+        assert(move _17 == true) (bounds_check) else panic;
         _14 = copy (*bytes)[copy _15];
         b1 = cast<u8, i16>(move _14);
         storage_dead(_14);
         storage_dead(_15);
         storage_live(b2);
-        storage_live(_17);
-        storage_live(_18);
-        _18 = const 1usize;
-        _17 = copy (*bytes)[copy _18];
-        b2 = cast<u8, i16>(move _17);
-        storage_dead(_17);
-        storage_dead(_18);
-        storage_live(b3);
+        storage_live(_19);
         storage_live(_20);
-        storage_live(_21);
-        _21 = const 2usize;
-        _20 = copy (*bytes)[copy _21];
-        b3 = cast<u8, i16>(move _20);
+        _20 = const 1usize;
+        _21 = copy bytes.metadata;
+        _22 = copy _20 < copy _21;
+        assert(move _22 == true) (bounds_check) else panic;
+        _19 = copy (*bytes)[copy _20];
+        b2 = cast<u8, i16>(move _19);
+        storage_dead(_19);
         storage_dead(_20);
-        storage_dead(_21);
-        storage_live(d1);
-        storage_live(_23);
+        storage_live(b3);
         storage_live(_24);
         storage_live(_25);
-        _25 = copy b2;
-        _24 = move _25 & const 15i16;
-        storage_dead(_25);
-        _23 = move _24 panic.<< const 8i32;
+        _25 = const 2usize;
+        _26 = copy bytes.metadata;
+        _27 = copy _25 < copy _26;
+        assert(move _27 == true) (bounds_check) else panic;
+        _24 = copy (*bytes)[copy _25];
+        b3 = cast<u8, i16>(move _24);
         storage_dead(_24);
-        storage_live(_26);
-        _26 = copy b1;
-        d1 = move _23 | move _26;
-        storage_dead(_26);
-        storage_dead(_23);
-        storage_live(d2);
-        storage_live(_28);
+        storage_dead(_25);
+        storage_live(d1);
         storage_live(_29);
-        _29 = copy b3;
-        _28 = move _29 panic.<< const 4i32;
-        storage_dead(_29);
         storage_live(_30);
         storage_live(_31);
         _31 = copy b2;
-        _30 = move _31 panic.>> const 4i32;
+        _30 = move _31 & const 15i16;
         storage_dead(_31);
-        d2 = move _28 | move _30;
+        _32 = cast<i32, u32>(const 8i32);
+        _33 = move _32 < const 16u32;
+        assert(move _33 == true) (overflow) else panic;
+        _29 = move _30 wrap.<< const 8i32;
         storage_dead(_30);
-        storage_dead(_28);
-        storage_live(_32);
-        storage_live(_33);
-        _33 = copy d1;
-        _32 = move _33 < copy FIELD_MODULUS;
-        if move _32 -> bb7 else -> bb10;
+        storage_live(_34);
+        _34 = copy b1;
+        d1 = move _29 | move _34;
+        storage_dead(_34);
+        storage_dead(_29);
+        storage_live(d2);
+        storage_live(_36);
+        storage_live(_37);
+        _37 = copy b3;
+        _38 = cast<i32, u32>(const 4i32);
+        _39 = move _38 < const 16u32;
+        assert(move _39 == true) (overflow) else panic;
+        _36 = move _37 wrap.<< const 4i32;
+        storage_dead(_37);
+        storage_live(_40);
+        storage_live(_41);
+        _41 = copy b2;
+        _42 = cast<i32, u32>(const 4i32);
+        _43 = move _42 < const 16u32;
+        assert(move _43 == true) (overflow) else panic;
+        _40 = move _41 wrap.>> const 4i32;
+        storage_dead(_41);
+        d2 = move _36 | move _40;
+        storage_dead(_40);
+        storage_dead(_36);
+        storage_live(_44);
+        storage_live(_45);
+        _45 = copy d1;
+        _44 = move _45 < copy FIELD_MODULUS;
+        if move _44 -> bb7 else -> bb10;
     }
 
     bb7: {
-        storage_dead(_33);
-        storage_live(_34);
-        storage_live(_35);
-        _35 = copy sampled;
-        _34 = move _35 < const 16usize;
-        if move _34 -> bb8 else -> bb9;
+        storage_dead(_45);
+        storage_live(_46);
+        storage_live(_47);
+        _47 = copy sampled;
+        _46 = move _47 < const 16usize;
+        if move _46 -> bb8 else -> bb9;
     }
 
     bb8: {
-        storage_dead(_35);
-        storage_live(_36);
-        _36 = copy d1;
-        storage_live(_37);
-        _37 = copy sampled;
-        (*result)[copy _37] = move _36;
-        storage_dead(_36);
-        storage_dead(_37);
-        _38 = copy sampled panic.+ const 1usize;
-        sampled = move _38;
+        storage_dead(_47);
+        storage_live(_48);
+        _48 = copy d1;
+        storage_live(_49);
+        _49 = copy sampled;
+        _50 = &raw const (*result) with_metadata(copy result.metadata);
+        _51 = copy _50.metadata;
+        _52 = copy _49 < copy _51;
+        assert(move _52 == true) (bounds_check) else panic;
+        (*result)[copy _49] = move _48;
+        storage_dead(_48);
+        storage_dead(_49);
+        _53 = copy sampled checked.+ const 1usize;
+        assert(move _53._1 == false) (overflow) else panic;
+        sampled = move _53._0;
         goto bb11;
     }
 
     bb9: {
-        storage_dead(_35);
+        storage_dead(_47);
         goto bb11;
     }
 
     bb10: {
-        storage_dead(_33);
+        storage_dead(_45);
         goto bb11;
     }
 
     bb11: {
-        storage_dead(_34);
-        storage_dead(_32);
-        storage_live(_39);
-        storage_live(_40);
-        _40 = copy d2;
-        _39 = move _40 < copy FIELD_MODULUS;
-        if move _39 -> bb12 else -> bb15;
+        storage_dead(_46);
+        storage_dead(_44);
+        storage_live(_54);
+        storage_live(_55);
+        _55 = copy d2;
+        _54 = move _55 < copy FIELD_MODULUS;
+        if move _54 -> bb12 else -> bb15;
     }
 
     bb12: {
-        storage_dead(_40);
-        storage_live(_41);
-        storage_live(_42);
-        _42 = copy sampled;
-        _41 = move _42 < const 16usize;
-        if move _41 -> bb13 else -> bb14;
+        storage_dead(_55);
+        storage_live(_56);
+        storage_live(_57);
+        _57 = copy sampled;
+        _56 = move _57 < const 16usize;
+        if move _56 -> bb13 else -> bb14;
     }
 
     bb13: {
-        storage_dead(_42);
-        storage_live(_43);
-        _43 = copy d2;
-        storage_live(_44);
-        _44 = copy sampled;
-        (*result)[copy _44] = move _43;
-        storage_dead(_43);
-        storage_dead(_44);
-        _45 = copy sampled panic.+ const 1usize;
-        sampled = move _45;
+        storage_dead(_57);
+        storage_live(_58);
+        _58 = copy d2;
+        storage_live(_59);
+        _59 = copy sampled;
+        _60 = &raw const (*result) with_metadata(copy result.metadata);
+        _61 = copy _60.metadata;
+        _62 = copy _59 < copy _61;
+        assert(move _62 == true) (bounds_check) else panic;
+        (*result)[copy _59] = move _58;
+        storage_dead(_58);
+        storage_dead(_59);
+        _63 = copy sampled checked.+ const 1usize;
+        assert(move _63._1 == false) (overflow) else panic;
+        sampled = move _63._0;
         goto bb16;
     }
 
     bb14: {
-        storage_dead(_42);
+        storage_dead(_57);
         goto bb16;
     }
 
     bb15: {
-        storage_dead(_40);
+        storage_dead(_55);
         goto bb16;
     }
 
     bb16: {
-        storage_dead(_41);
-        storage_dead(_39);
+        storage_dead(_56);
+        storage_dead(_54);
         storage_dead(d2);
         storage_dead(d1);
         storage_dead(b3);

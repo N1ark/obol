@@ -1349,14 +1349,15 @@ pub fn incr(x: &'_ mut u32)
 {
     let _0: (); // return
     let x: &'_ mut u32; // arg #1
-    let _2: u32; // anonymous local
+    let _2: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         _0 = ();
-        _2 = copy (*x) panic.+ const 1u32;
-        (*x) = move _2;
+        _2 = copy (*x) checked.+ const 1u32;
+        assert(move _2._1 == false) (overflow) else panic;
+        (*x) = move _2._0;
         _0 = ();
         return;
     }
@@ -1369,11 +1370,15 @@ pub fn index_array_u32(s: [u32; 32usize], i: usize) -> u32
     let s: [u32; 32usize]; // arg #1
     let i: usize; // arg #2
     let _3: usize; // anonymous local
+    let _4: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_4);
         storage_live(_3);
         _3 = copy i;
+        _4 = copy _3 < const 32usize;
+        assert(move _4 == true) (bounds_check) else panic;
         _0 = copy s[copy _3];
         storage_dead(_3);
         return;
@@ -1386,11 +1391,15 @@ pub fn index_array_copy(x: &'_ [u32; 32usize]) -> u32
     let _0: u32; // return
     let x: &'_ [u32; 32usize]; // arg #1
     let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy _2 < const 32usize;
+        assert(move _3 == true) (bounds_check) else panic;
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
@@ -1635,16 +1644,24 @@ pub fn index_index_array(s: [[u32; 32usize]; 32usize], i: usize, j: usize) -> u3
     let i: usize; // arg #2
     let j: usize; // arg #3
     let _4: usize; // anonymous local
-    let _5: usize; // anonymous local
+    let _5: bool; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_5);
+        storage_live(_7);
         storage_live(_4);
         _4 = copy i;
-        storage_live(_5);
-        _5 = copy j;
-        _0 = copy s[copy _4][copy _5];
-        storage_dead(_5);
+        _5 = copy _4 < const 32usize;
+        assert(move _5 == true) (bounds_check) else panic;
+        storage_live(_6);
+        _6 = copy j;
+        _7 = copy _6 < const 32usize;
+        assert(move _7 == true) (bounds_check) else panic;
+        _0 = copy s[copy _4][copy _6];
+        storage_dead(_6);
         storage_dead(_4);
         return;
     }
@@ -1658,17 +1675,25 @@ pub fn update_update_array(s: [[u32; 32usize]; 32usize], i: usize, j: usize)
     let i: usize; // arg #2
     let j: usize; // arg #3
     let _4: usize; // anonymous local
-    let _5: usize; // anonymous local
+    let _5: bool; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_5);
+        storage_live(_7);
         _0 = ();
         storage_live(_4);
         _4 = copy i;
-        storage_live(_5);
-        _5 = copy j;
-        s[copy _4][copy _5] = const 0u32;
-        storage_dead(_5);
+        _5 = copy _4 < const 32usize;
+        assert(move _5 == true) (bounds_check) else panic;
+        storage_live(_6);
+        _6 = copy j;
+        _7 = copy _6 < const 32usize;
+        assert(move _7 == true) (bounds_check) else panic;
+        s[copy _4][copy _6] = const 0u32;
+        storage_dead(_6);
         storage_dead(_4);
         _0 = ();
         return;
@@ -1681,16 +1706,21 @@ pub fn incr_array_self(s: &'_ mut [u32; 2usize])
     let _0: (); // return
     let s: &'_ mut [u32; 2usize]; // arg #1
     let _2: usize; // anonymous local
-    let _3: u32; // anonymous local
+    let _3: bool; // anonymous local
+    let _4: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
+        storage_live(_4);
         _0 = ();
         storage_live(_2);
         _2 = const 0usize;
-        _3 = copy (*s)[copy _2] panic.+ const 1u32;
-        (*s)[copy _2] = move _3;
+        _3 = copy _2 < const 2usize;
+        assert(move _3 == true) (bounds_check) else panic;
+        _4 = copy (*s)[copy _2] checked.+ const 1u32;
+        assert(move _4._1 == false) (overflow) else panic;
+        (*s)[copy _2] = move _4._0;
         storage_dead(_2);
         _0 = ();
         return;
@@ -1703,16 +1733,27 @@ pub fn incr_slice_self(s: &'_ mut [u32])
     let _0: (); // return
     let s: &'_ mut [u32]; // arg #1
     let _2: usize; // anonymous local
-    let _3: u32; // anonymous local
+    let _3: *const [u32]; // anonymous local
+    let _4: usize; // anonymous local
+    let _5: bool; // anonymous local
+    let _6: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
         _0 = ();
         storage_live(_2);
         _2 = const 0usize;
-        _3 = copy (*s)[copy _2] panic.+ const 1u32;
-        (*s)[copy _2] = move _3;
+        _3 = &raw const (*s) with_metadata(copy s.metadata);
+        _4 = copy _3.metadata;
+        _5 = copy _2 < copy _4;
+        assert(move _5 == true) (bounds_check) else panic;
+        _6 = copy (*s)[copy _2] checked.+ const 1u32;
+        assert(move _6._1 == false) (overflow) else panic;
+        (*s)[copy _2] = move _6._0;
         storage_dead(_2);
         _0 = ();
         return;
@@ -1954,11 +1995,15 @@ pub fn index_array(x: [u32; 2usize]) -> u32
     let _0: u32; // return
     let x: [u32; 2usize]; // arg #1
     let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy _2 < const 2usize;
+        assert(move _3 == true) (bounds_check) else panic;
         _0 = copy x[copy _2];
         storage_dead(_2);
         return;
@@ -1971,11 +2016,15 @@ pub fn index_array_borrow(x: &'_ [u32; 2usize]) -> u32
     let _0: u32; // return
     let x: &'_ [u32; 2usize]; // arg #1
     let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy _2 < const 2usize;
+        assert(move _3 == true) (bounds_check) else panic;
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
@@ -1988,11 +2037,18 @@ pub fn index_slice_u32_0(x: &'_ [u32]) -> u32
     let _0: u32; // return
     let x: &'_ [u32]; // arg #1
     let _2: usize; // anonymous local
+    let _3: usize; // anonymous local
+    let _4: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy x.metadata;
+        _4 = copy _2 < copy _3;
+        assert(move _4 == true) (bounds_check) else panic;
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
@@ -2005,11 +2061,21 @@ pub fn index_mut_slice_u32_0(x: &'_ mut [u32]) -> u32
     let _0: u32; // return
     let x: &'_ mut [u32]; // arg #1
     let _2: usize; // anonymous local
+    let _3: *const [u32]; // anonymous local
+    let _4: usize; // anonymous local
+    let _5: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
         storage_live(_2);
         _2 = const 0usize;
+        _3 = &raw const (*x) with_metadata(copy x.metadata);
+        _4 = copy _3.metadata;
+        _5 = copy _2 < copy _4;
+        assert(move _5 == true) (bounds_check) else panic;
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
@@ -2031,21 +2097,21 @@ pub fn index_all() -> u32
     let _9: [u32; 2usize]; // anonymous local
     let _10: u32; // anonymous local
     let _11: [u32; 2usize]; // anonymous local
-    let _12: u32; // anonymous local
+    let _12: (u32, bool); // anonymous local
     let _13: u32; // anonymous local
     let _14: &'_ [u32; 2usize]; // anonymous local
     let _15: &'_ [u32; 2usize]; // anonymous local
-    let _16: u32; // anonymous local
+    let _16: (u32, bool); // anonymous local
     let _17: u32; // anonymous local
     let _18: &'_ [u32]; // anonymous local
     let _19: &'_ [u32; 2usize]; // anonymous local
     let _20: &'_ [u32; 2usize]; // anonymous local
-    let _21: u32; // anonymous local
+    let _21: (u32, bool); // anonymous local
     let _22: u32; // anonymous local
     let _23: &'_ mut [u32]; // anonymous local
     let _24: &'_ mut [u32; 2usize]; // anonymous local
     let _25: &'_ mut [u32; 2usize]; // anonymous local
-    let _26: u32; // anonymous local
+    let _26: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2095,8 +2161,9 @@ pub fn index_all() -> u32
 
     bb5: {
         storage_dead(_11);
-        _12 = copy _8 panic.+ copy _10;
-        _7 = move _12;
+        _12 = copy _8 checked.+ copy _10;
+        assert(move _12._1 == false) (overflow) else panic;
+        _7 = move _12._0;
         storage_dead(_10);
         storage_dead(_8);
         storage_live(_13);
@@ -2109,8 +2176,9 @@ pub fn index_all() -> u32
 
     bb6: {
         storage_dead(_14);
-        _16 = copy _7 panic.+ copy _13;
-        _6 = move _16;
+        _16 = copy _7 checked.+ copy _13;
+        assert(move _16._1 == false) (overflow) else panic;
+        _6 = move _16._0;
         storage_dead(_13);
         storage_dead(_7);
         storage_live(_17);
@@ -2126,8 +2194,9 @@ pub fn index_all() -> u32
 
     bb7: {
         storage_dead(_18);
-        _21 = copy _6 panic.+ copy _17;
-        _5 = move _21;
+        _21 = copy _6 checked.+ copy _17;
+        assert(move _21._1 == false) (overflow) else panic;
+        _5 = move _21._0;
         storage_dead(_17);
         storage_dead(_6);
         storage_live(_22);
@@ -2143,8 +2212,9 @@ pub fn index_all() -> u32
 
     bb8: {
         storage_dead(_23);
-        _26 = copy _5 panic.+ copy _22;
-        _0 = move _26;
+        _26 = copy _5 checked.+ copy _22;
+        assert(move _26._1 == false) (overflow) else panic;
+        _0 = move _26._0;
         storage_dead(_22);
         storage_dead(_5);
         storage_dead(x);
@@ -2181,12 +2251,16 @@ pub fn update_array(x: [u32; 2usize])
     let _0: (); // return
     let x: [u32; 2usize]; // arg #1
     let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         _0 = ();
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy _2 < const 2usize;
+        assert(move _3 == true) (bounds_check) else panic;
         x[copy _2] = const 1u32;
         _0 = ();
         storage_dead(_2);
@@ -2200,12 +2274,16 @@ pub fn update_array_mut_borrow(x: &'_ mut [u32; 2usize])
     let _0: (); // return
     let x: &'_ mut [u32; 2usize]; // arg #1
     let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         _0 = ();
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy _2 < const 2usize;
+        assert(move _3 == true) (bounds_check) else panic;
         (*x)[copy _2] = const 1u32;
         _0 = ();
         storage_dead(_2);
@@ -2219,12 +2297,22 @@ pub fn update_mut_slice(x: &'_ mut [u32])
     let _0: (); // return
     let x: &'_ mut [u32]; // arg #1
     let _2: usize; // anonymous local
+    let _3: *const [u32]; // anonymous local
+    let _4: usize; // anonymous local
+    let _5: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
         _0 = ();
         storage_live(_2);
         _2 = const 0usize;
+        _3 = &raw const (*x) with_metadata(copy x.metadata);
+        _4 = copy _3.metadata;
+        _5 = copy _2 < copy _4;
+        assert(move _5 == true) (bounds_check) else panic;
         (*x)[copy _2] = const 1u32;
         _0 = ();
         storage_dead(_2);
@@ -2383,13 +2471,17 @@ pub fn deref_array_borrow(x_1: &'_ [u32; 2usize]) -> u32
     let x_1: &'_ [u32; 2usize]; // arg #1
     let x_2: [u32; 2usize]; // local
     let _3: usize; // anonymous local
+    let _4: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_4);
         storage_live(x_2);
         x_2 = copy (*x_1);
         storage_live(_3);
         _3 = const 0usize;
+        _4 = copy _3 < const 2usize;
+        assert(move _4 == true) (bounds_check) else panic;
         _0 = copy x_2[copy _3];
         storage_dead(x_2);
         storage_dead(_3);
@@ -2404,13 +2496,17 @@ pub fn deref_array_mut_borrow(x_1: &'_ mut [u32; 2usize]) -> u32
     let x_1: &'_ mut [u32; 2usize]; // arg #1
     let x_2: [u32; 2usize]; // local
     let _3: usize; // anonymous local
+    let _4: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_4);
         storage_live(x_2);
         x_2 = copy (*x_1);
         storage_live(_3);
         _3 = const 0usize;
+        _4 = copy _3 < const 2usize;
+        assert(move _4 == true) (bounds_check) else panic;
         _0 = copy x_2[copy _3];
         storage_dead(x_2);
         storage_dead(_3);
@@ -2485,13 +2581,17 @@ pub fn sum(s: &'_ [u32]) -> u32
     let _7: &'_ [u32]; // anonymous local
     let _8: u32; // anonymous local
     let _9: usize; // anonymous local
-    let _10: u32; // anonymous local
-    let _11: usize; // anonymous local
+    let _10: usize; // anonymous local
+    let _11: bool; // anonymous local
+    let _12: (u32, bool); // anonymous local
+    let _13: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_10);
         storage_live(_11);
+        storage_live(_12);
+        storage_live(_13);
         storage_live(sum);
         sum = const 0u32;
         storage_live(i);
@@ -2521,13 +2621,18 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_8);
         storage_live(_9);
         _9 = copy i;
+        _10 = copy s.metadata;
+        _11 = copy _9 < copy _10;
+        assert(move _11 == true) (bounds_check) else panic;
         _8 = copy (*s)[copy _9];
-        _10 = copy sum panic.+ copy _8;
-        sum = move _10;
+        _12 = copy sum checked.+ copy _8;
+        assert(move _12._1 == false) (overflow) else panic;
+        sum = move _12._0;
         storage_dead(_8);
         storage_dead(_9);
-        _11 = copy i panic.+ const 1usize;
-        i = move _11;
+        _13 = copy i checked.+ const 1usize;
+        assert(move _13._1 == false) (overflow) else panic;
+        i = move _13._0;
         storage_dead(_4);
         goto bb1;
     }
@@ -2568,17 +2673,25 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
     let _15: u32; // anonymous local
     let _16: u32; // anonymous local
     let _17: usize; // anonymous local
-    let _18: u32; // anonymous local
-    let _19: usize; // anonymous local
+    let _18: usize; // anonymous local
+    let _19: bool; // anonymous local
     let _20: u32; // anonymous local
-    let _21: u32; // anonymous local
+    let _21: usize; // anonymous local
     let _22: usize; // anonymous local
+    let _23: bool; // anonymous local
+    let _24: (u32, bool); // anonymous local
+    let _25: (u32, bool); // anonymous local
+    let _26: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_20);
-        storage_live(_21);
+        storage_live(_18);
+        storage_live(_19);
         storage_live(_22);
+        storage_live(_23);
+        storage_live(_24);
+        storage_live(_25);
+        storage_live(_26);
         storage_live(sum);
         sum = const 0u32;
         storage_live(_4);
@@ -2634,22 +2747,31 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         storage_live(_16);
         storage_live(_17);
         _17 = copy i;
+        _18 = copy s.metadata;
+        _19 = copy _17 < copy _18;
+        assert(move _19 == true) (bounds_check) else panic;
         _16 = copy (*s)[copy _17];
-        storage_live(_18);
-        storage_live(_19);
-        _19 = copy i;
-        _18 = copy (*s2)[copy _19];
-        _20 = copy _16 panic.+ copy _18;
-        _15 = move _20;
-        storage_dead(_18);
+        storage_live(_20);
+        storage_live(_21);
+        _21 = copy i;
+        _22 = copy s2.metadata;
+        _23 = copy _21 < copy _22;
+        assert(move _23 == true) (bounds_check) else panic;
+        _20 = copy (*s2)[copy _21];
+        _24 = copy _16 checked.+ copy _20;
+        assert(move _24._1 == false) (overflow) else panic;
+        _15 = move _24._0;
+        storage_dead(_20);
         storage_dead(_16);
-        _21 = copy sum panic.+ copy _15;
-        sum = move _21;
+        _25 = copy sum checked.+ copy _15;
+        assert(move _25._1 == false) (overflow) else panic;
+        sum = move _25._0;
         storage_dead(_15);
-        storage_dead(_19);
+        storage_dead(_21);
         storage_dead(_17);
-        _22 = copy i panic.+ const 1usize;
-        i = move _22;
+        _26 = copy i checked.+ const 1usize;
+        assert(move _26._1 == false) (overflow) else panic;
+        i = move _26._0;
         storage_dead(_11);
         goto bb4;
     }
@@ -2701,9 +2823,15 @@ pub fn f0()
     let _3: &'_ mut [u32; 2usize]; // anonymous local
     let _4: [u32; 2usize]; // anonymous local
     let _5: usize; // anonymous local
+    let _6: *const [u32]; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_8);
         _0 = ();
         storage_live(s);
         storage_live(_2);
@@ -2717,6 +2845,10 @@ pub fn f0()
         storage_dead(_3);
         storage_live(_5);
         _5 = const 0usize;
+        _6 = &raw const (*s) with_metadata(copy s.metadata);
+        _7 = copy _6.metadata;
+        _8 = copy _5 < copy _7;
+        assert(move _8 == true) (bounds_check) else panic;
         (*s)[copy _5] = const 1u32;
         storage_dead(_5);
         _0 = ();
@@ -2732,14 +2864,18 @@ pub fn f1()
     let _0: (); // return
     let s: [u32; 2usize]; // local
     let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         _0 = ();
         storage_live(s);
         s = [const 1u32, const 2u32];
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy _2 < const 2usize;
+        assert(move _3 == true) (bounds_check) else panic;
         s[copy _2] = const 1u32;
         storage_dead(_2);
         _0 = ();
@@ -2816,23 +2952,27 @@ pub fn f3() -> u32
     let _2: (); // anonymous local
     let _3: u32; // anonymous local
     let _4: usize; // anonymous local
+    let _5: bool; // anonymous local
     let b: [u32; 32usize]; // local
-    let _6: &'_ [u32]; // anonymous local
-    let _7: &'_ [u32; 2usize]; // anonymous local
+    let _7: &'_ [u32]; // anonymous local
     let _8: &'_ [u32; 2usize]; // anonymous local
-    let _9: &'_ [u32]; // anonymous local
+    let _9: &'_ [u32; 2usize]; // anonymous local
     let _10: &'_ [u32]; // anonymous local
-    let _11: &'_ [u32; 32usize]; // anonymous local
+    let _11: &'_ [u32]; // anonymous local
     let _12: &'_ [u32; 32usize]; // anonymous local
+    let _13: &'_ [u32; 32usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_5);
         storage_live(a);
         a = [const 1u32, const 2u32];
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
         _4 = const 0usize;
+        _5 = copy _4 < const 2usize;
+        assert(move _5 == true) (bounds_check) else panic;
         _3 = copy a[copy _4];
         _2 = f2(move _3) -> bb1 (unwind: bb6);
     }
@@ -2843,36 +2983,36 @@ pub fn f3() -> u32
         storage_dead(_2);
         storage_live(b);
         b = [const 0u32; 32usize];
-        storage_live(_6);
         storage_live(_7);
         storage_live(_8);
-        _8 = &a;
-        _7 = &(*_8);
-        _6 = unsize_cast<&'_ [u32; 2usize], &'_ [u32], 2usize>(move _7);
-        storage_dead(_7);
         storage_live(_9);
+        _9 = &a;
+        _8 = &(*_9);
+        _7 = unsize_cast<&'_ [u32; 2usize], &'_ [u32], 2usize>(move _8);
+        storage_dead(_8);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
-        _12 = &b;
-        _11 = &(*_12);
-        _10 = f4(move _11, const 16usize, const 18usize) -> bb2 (unwind: bb5);
+        storage_live(_13);
+        _13 = &b;
+        _12 = &(*_13);
+        _11 = f4(move _12, const 16usize, const 18usize) -> bb2 (unwind: bb5);
     }
 
     bb2: {
-        _9 = &(*_10) with_metadata(copy _10.metadata);
-        storage_dead(_11);
-        _0 = sum2(move _6, move _9) -> bb3 (unwind: bb4);
+        _10 = &(*_11) with_metadata(copy _11.metadata);
+        storage_dead(_12);
+        _0 = sum2(move _7, move _10) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        storage_dead(_9);
-        storage_dead(_6);
+        storage_dead(_10);
+        storage_dead(_7);
         storage_dead(b);
         storage_dead(a);
-        storage_dead(_12);
-        storage_dead(_10);
-        storage_dead(_8);
+        storage_dead(_13);
+        storage_dead(_11);
+        storage_dead(_9);
         return;
     }
 
@@ -2895,11 +3035,15 @@ pub fn f5(x: &'_ [u32; 32usize]) -> u32
     let _0: u32; // return
     let x: &'_ [u32; 32usize]; // arg #1
     let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         storage_live(_2);
         _2 = const 0usize;
+        _3 = copy _2 < const 32usize;
+        assert(move _3 == true) (bounds_check) else panic;
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
@@ -3002,11 +3146,17 @@ pub fn zero_slice(a: &'_ mut [u8])
     let _6: usize; // anonymous local
     let _7: usize; // anonymous local
     let _8: usize; // anonymous local
-    let _9: usize; // anonymous local
+    let _9: *const [u8]; // anonymous local
+    let _10: usize; // anonymous local
+    let _11: bool; // anonymous local
+    let _12: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_9);
+        storage_live(_10);
+        storage_live(_11);
+        storage_live(_12);
         _0 = ();
         storage_live(i);
         i = const 0usize;
@@ -3036,10 +3186,15 @@ pub fn zero_slice(a: &'_ mut [u8])
         storage_dead(_6);
         storage_live(_8);
         _8 = copy i;
+        _9 = &raw const (*a) with_metadata(copy a.metadata);
+        _10 = copy _9.metadata;
+        _11 = copy _8 < copy _10;
+        assert(move _11 == true) (bounds_check) else panic;
         (*a)[copy _8] = const 0u8;
         storage_dead(_8);
-        _9 = copy i panic.+ const 1usize;
-        i = move _9;
+        _12 = copy i checked.+ const 1usize;
+        assert(move _12._1 == false) (overflow) else panic;
+        i = move _12._0;
         storage_dead(_5);
         goto bb2;
     }
@@ -3070,7 +3225,7 @@ pub fn iter_mut_slice(a: &'_ mut [u8])
     let _5: bool; // anonymous local
     let _6: usize; // anonymous local
     let _7: usize; // anonymous local
-    let _8: usize; // anonymous local
+    let _8: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3102,8 +3257,9 @@ pub fn iter_mut_slice(a: &'_ mut [u8])
     bb3: {
         storage_dead(_7);
         storage_dead(_6);
-        _8 = copy i panic.+ const 1usize;
-        i = move _8;
+        _8 = copy i checked.+ const 1usize;
+        assert(move _8._1 == false) (overflow) else panic;
+        i = move _8._0;
         storage_dead(_5);
         goto bb2;
     }
@@ -3136,13 +3292,19 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
     let _7: &'_ [u32]; // anonymous local
     let _8: u32; // anonymous local
     let _9: usize; // anonymous local
-    let _10: u32; // anonymous local
+    let _10: *const [u32]; // anonymous local
     let _11: usize; // anonymous local
+    let _12: bool; // anonymous local
+    let _13: (u32, bool); // anonymous local
+    let _14: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_10);
         storage_live(_11);
+        storage_live(_12);
+        storage_live(_13);
+        storage_live(_14);
         storage_live(i);
         i = const 0usize;
         storage_live(s);
@@ -3172,13 +3334,19 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
         storage_live(_8);
         storage_live(_9);
         _9 = copy i;
+        _10 = &raw const (*a) with_metadata(copy a.metadata);
+        _11 = copy _10.metadata;
+        _12 = copy _9 < copy _11;
+        assert(move _12 == true) (bounds_check) else panic;
         _8 = copy (*a)[copy _9];
-        _10 = copy s panic.+ copy _8;
-        s = move _10;
+        _13 = copy s checked.+ copy _8;
+        assert(move _13._1 == false) (overflow) else panic;
+        s = move _13._0;
         storage_dead(_8);
         storage_dead(_9);
-        _11 = copy i panic.+ const 1usize;
-        i = move _11;
+        _14 = copy i checked.+ const 1usize;
+        assert(move _14._1 == false) (overflow) else panic;
+        i = move _14._0;
         storage_dead(_4);
         goto bb1;
     }

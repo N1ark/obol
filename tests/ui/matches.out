@@ -126,7 +126,7 @@ pub fn test3(x: E2) -> u32
     let z: u32; // local
     let _6: u32; // anonymous local
     let _7: u32; // anonymous local
-    let _8: u32; // anonymous local
+    let _8: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -170,8 +170,9 @@ pub fn test3(x: E2) -> u32
         _6 = copy y;
         storage_live(_7);
         _7 = copy z;
-        _8 = copy _6 panic.+ copy _7;
-        _0 = move _8;
+        _8 = copy _6 checked.+ copy _7;
+        assert(move _8._1 == false) (overflow) else panic;
+        _0 = move _8._0;
         storage_dead(_7);
         storage_dead(_6);
         storage_dead(z);

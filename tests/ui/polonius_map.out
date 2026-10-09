@@ -9929,21 +9929,22 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
     let x: usize; // local
     let _30: usize; // anonymous local
     let _31: usize; // anonymous local
-    let _32: usize; // anonymous local
+    let _32: bool; // anonymous local
     let _33: usize; // anonymous local
-    let _34: u32; // anonymous local
-    let _35: u64; // anonymous local
-    let _36: isize; // anonymous local
-    let _37: *mut u8; // anonymous local
-    let _38: bool; // anonymous local
-    let _39: usize; // anonymous local
+    let _34: usize; // anonymous local
+    let _35: u32; // anonymous local
+    let _36: u64; // anonymous local
+    let _37: isize; // anonymous local
+    let _38: *mut u8; // anonymous local
+    let _39: bool; // anonymous local
     let _40: usize; // anonymous local
-    let table_layout_41: usize; // local
+    let _41: usize; // anonymous local
     let table_layout_42: usize; // local
+    let table_layout_43: usize; // local
     let oversized_layout: Layout; // local
     let ctrl_offset: usize; // local
-    let _45: bool; // anonymous local
-    let _46: (); // anonymous local
+    let _46: bool; // anonymous local
+    let _47: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -9952,8 +9953,8 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(bucket_mask);
         storage_live(_28);
         storage_live(ctrl_offset);
-        storage_live(_45);
         storage_live(_46);
+        storage_live(_47);
         storage_live(_7);
         storage_live(_8);
         _8 = copy buckets;
@@ -10003,53 +10004,57 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
 
     bb5: {
         storage_dead(_15);
-        storage_live(table_layout_41);
         storage_live(table_layout_42);
-        table_layout_41 = copy table_layout_2.size;
-        table_layout_42 = copy table_layout_2.ctrl_align;
+        storage_live(table_layout_43);
+        table_layout_42 = copy table_layout_2.size;
+        table_layout_43 = copy table_layout_2.ctrl_align;
+        storage_live(_32);
         storage_live(x);
         storage_live(_30);
         _30 = copy allocation_size wrap.- const 8usize;
         storage_live(_31);
-        _31 = copy table_layout_41 wrap.+ const 1usize;
-        x = move _30 panic./ move _31;
+        _31 = copy table_layout_42 wrap.+ const 1usize;
+        _32 = copy _31 == const 0usize;
+        assert(move _32 == false) (division_by_zero) else panic;
+        x = move _30 ub./ move _31;
         storage_dead(_31);
         storage_dead(_30);
-        storage_live(_32);
         storage_live(_33);
         storage_live(_34);
         storage_live(_35);
-        _35 = cast<usize, u64>(copy x);
-        _34 = ctlz::<u64>(move _35) -> bb6 (unwind: bb11);
+        storage_live(_36);
+        _36 = cast<usize, u64>(copy x);
+        _35 = ctlz::<u64>(move _36) -> bb6 (unwind: bb11);
     }
 
     bb6: {
+        storage_dead(_36);
+        _34 = cast<u32, usize>(move _35);
         storage_dead(_35);
-        _33 = cast<u32, usize>(move _34);
+        _33 = const 63usize wrap.- move _34;
         storage_dead(_34);
-        _32 = const 63usize wrap.- move _33;
+        buckets = const 1usize wrap.<< move _33;
         storage_dead(_33);
-        buckets = const 1usize wrap.<< move _32;
-        storage_dead(_32);
         storage_dead(x);
-        storage_dead(table_layout_41);
+        storage_dead(_32);
         storage_dead(table_layout_42);
+        storage_dead(table_layout_43);
         storage_live(oversized_layout);
         storage_live(option);
         option = calculate_layout_for(move table_layout_2, copy buckets) -> bb7 (unwind: bb10);
     }
 
     bb7: {
-        storage_live(_36);
-        _36 = @discriminant(option);
-        _45 = copy _36 == const 1isize;
-        _46 = assume(move _45) -> bb8 (unwind: bb9);
+        storage_live(_37);
+        _37 = @discriminant(option);
+        _46 = copy _37 == const 1isize;
+        _47 = assume(move _46) -> bb8 (unwind: bb9);
     }
 
     bb8: {
         oversized_layout = copy (option as variant Option::<(Layout, usize)>::Some)._0._0;
         ctrl_offset = copy (option as variant Option::<(Layout, usize)>::Some)._0._1;
-        storage_dead(_36);
+        storage_dead(_37);
         storage_dead(option);
         storage_dead(oversized_layout);
         goto bb13;
@@ -10074,10 +10079,10 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
 
     bb13: {
         storage_dead(_13);
-        storage_live(_37);
-        _37 = cast<*mut [u8], *mut u8>(copy _28);
-        ptr_10 = transmute<*mut u8, NonNull::<u8>>(copy _37);
-        storage_dead(_37);
+        storage_live(_38);
+        _38 = cast<*mut [u8], *mut u8>(copy _28);
+        ptr_10 = transmute<*mut u8, NonNull::<u8>>(copy _38);
+        storage_dead(_38);
         storage_dead(block);
         storage_dead(_11);
         storage_live(ctrl);
@@ -10095,24 +10100,24 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         _22 = move _23 wrap.- const 1usize;
         storage_dead(_23);
         bucket_mask = move buckets wrap.- const 1usize;
-        storage_live(_38);
-        _38 = copy bucket_mask < const 8usize;
-        if move _38 -> bb15 else -> bb14;
+        storage_live(_39);
+        _39 = copy bucket_mask < const 8usize;
+        if move _39 -> bb15 else -> bb14;
     }
 
     bb14: {
-        storage_live(_39);
         storage_live(_40);
-        _40 = copy bucket_mask wrap.+ const 1usize;
-        _39 = move _40 ub./ const 8usize;
+        storage_live(_41);
+        _41 = copy bucket_mask wrap.+ const 1usize;
+        _40 = move _41 ub./ const 8usize;
+        storage_dead(_41);
+        bucket_mask = move _40 wrap.* const 7usize;
         storage_dead(_40);
-        bucket_mask = move _39 wrap.* const 7usize;
-        storage_dead(_39);
         goto bb15;
     }
 
     bb15: {
-        storage_dead(_38);
+        storage_dead(_39);
         _21 = RawTableInner { bucket_mask: move _22, ctrl: copy ctrl, growth_left: move bucket_mask, items: const 0usize };
         storage_dead(_22);
         _0 = Result::<RawTableInner, TryReserveError>::Ok { _0: move _21 };

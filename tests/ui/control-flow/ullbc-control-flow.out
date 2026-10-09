@@ -951,7 +951,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     let _8: &'_ mut Range::<i32>; // anonymous local
     let _9: &'_ mut Range::<i32>; // anonymous local
     let _10: isize; // anonymous local
-    let _11: usize; // anonymous local
+    let _11: (usize, bool); // anonymous local
     let _12: Range::<usize>; // anonymous local
     let _13: Range::<usize>; // anonymous local
     let _14: usize; // anonymous local
@@ -968,7 +968,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     let _25: &'_ mut Range::<usize>; // anonymous local
     let _26: &'_ mut Range::<usize>; // anonymous local
     let _27: isize; // anonymous local
-    let _28: usize; // anonymous local
+    let _28: (usize, bool); // anonymous local
     let _29: bool; // anonymous local
     let _30: usize; // anonymous local
     let _31: !; // anonymous local
@@ -1099,8 +1099,9 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb14: {
-        _28 = copy s panic.+ const 1usize;
-        s = move _28;
+        _28 = copy s checked.+ const 1usize;
+        assert(move _28._1 == false) (overflow) else panic;
+        s = move _28._0;
         storage_live(_29);
         storage_live(_30);
         _30 = copy s;
@@ -1147,8 +1148,9 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb23: {
-        _11 = copy s panic.+ const 1usize;
-        s = move _11;
+        _11 = copy s checked.+ const 1usize;
+        assert(move _11._1 == false) (overflow) else panic;
+        s = move _11._0;
         storage_dead(_9);
         storage_dead(_7);
         goto bb2;

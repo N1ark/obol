@@ -46,7 +46,7 @@ fn test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCo
     let _4: (); // anonymous local
     let _5: NotCopy; // anonymous local
     let _6: u8; // anonymous local
-    let _7: u8; // anonymous local
+    let _7: (u8, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -64,8 +64,9 @@ fn test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCo
         storage_dead(_4);
         storage_live(_6);
         _6 = copy x;
-        _7 = copy _6 panic.+ const 1u8;
-        _0 = move _7;
+        _7 = copy _6 checked.+ const 1u8;
+        assert(move _7._1 == false) (overflow) else panic;
+        _0 = move _7._0;
         storage_dead(_6);
         return;
     }

@@ -325,32 +325,36 @@ pub fn sum(s: &'_ [u32]) -> u32
     let _4: (); // anonymous local
     let _5: u32; // anonymous local
     let _6: u32; // anonymous local
-    let _7: u32; // anonymous local
+    let _7: (u32, bool); // anonymous local
     let _8: bool; // anonymous local
     let _9: usize; // anonymous local
     let _10: usize; // anonymous local
     let _11: &'_ [u32]; // anonymous local
     let _12: u32; // anonymous local
     let _13: usize; // anonymous local
-    let _14: u32; // anonymous local
-    let _15: usize; // anonymous local
-    let _16: u32; // anonymous local
-    let _17: bool; // anonymous local
+    let _14: usize; // anonymous local
+    let _15: bool; // anonymous local
+    let _16: (u32, bool); // anonymous local
+    let _17: (usize, bool); // anonymous local
     let _18: u32; // anonymous local
-    let _19: u32; // anonymous local
+    let _19: bool; // anonymous local
     let _20: u32; // anonymous local
-    let _21: (); // anonymous local
-    let _22: u32; // anonymous local
-    let _23: u32; // anonymous local
+    let _21: u32; // anonymous local
+    let _22: (u32, bool); // anonymous local
+    let _23: (); // anonymous local
     let _24: u32; // anonymous local
+    let _25: u32; // anonymous local
+    let _26: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_7);
         storage_live(_14);
         storage_live(_15);
-        storage_live(_20);
-        storage_live(_24);
+        storage_live(_16);
+        storage_live(_17);
+        storage_live(_22);
+        storage_live(_26);
         storage_live(sum);
         sum = const 0u32;
         storage_live(i);
@@ -359,8 +363,9 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_5);
         storage_live(_6);
         _6 = copy sum;
-        _7 = copy _6 panic.+ const 2u32;
-        _5 = move _7;
+        _7 = copy _6 checked.+ const 2u32;
+        assert(move _7._1 == false) (overflow) else panic;
+        _5 = move _7._0;
         storage_dead(_6);
         _4 = function_call(move _5) -> bb1 (unwind: bb12);
     }
@@ -393,13 +398,18 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_12);
         storage_live(_13);
         _13 = copy i;
+        _14 = copy s.metadata;
+        _15 = copy _13 < copy _14;
+        assert(move _15 == true) (bounds_check) else panic;
         _12 = copy (*s)[copy _13];
-        _14 = copy sum panic.+ copy _12;
-        sum = move _14;
+        _16 = copy sum checked.+ copy _12;
+        assert(move _16._1 == false) (overflow) else panic;
+        sum = move _16._0;
         storage_dead(_12);
         storage_dead(_13);
-        _15 = copy i panic.+ const 1usize;
-        i = move _15;
+        _17 = copy i checked.+ const 1usize;
+        assert(move _17._1 == false) (overflow) else panic;
+        i = move _17._0;
         storage_dead(_8);
         goto bb2;
     }
@@ -408,47 +418,49 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_dead(_10);
         storage_dead(_9);
         storage_dead(_8);
-        storage_live(_16);
-        storage_live(_17);
         storage_live(_18);
-        _18 = copy sum;
-        _17 = move _18 > const 10u32;
-        if move _17 -> bb6 else -> bb7;
+        storage_live(_19);
+        storage_live(_20);
+        _20 = copy sum;
+        _19 = move _20 > const 10u32;
+        if move _19 -> bb6 else -> bb7;
     }
 
     bb6: {
-        storage_dead(_18);
-        storage_live(_19);
-        _19 = copy sum;
-        _20 = copy _19 panic.+ const 100u32;
-        _16 = move _20;
-        storage_dead(_19);
+        storage_dead(_20);
+        storage_live(_21);
+        _21 = copy sum;
+        _22 = copy _21 checked.+ const 100u32;
+        assert(move _22._1 == false) (overflow) else panic;
+        _18 = move _22._0;
+        storage_dead(_21);
         goto bb8;
     }
 
     bb7: {
-        storage_dead(_18);
-        _16 = copy sum;
+        storage_dead(_20);
+        _18 = copy sum;
         goto bb8;
     }
 
     bb8: {
-        storage_dead(_17);
-        sum = move _16;
-        storage_dead(_16);
-        storage_live(_21);
-        storage_live(_22);
+        storage_dead(_19);
+        sum = move _18;
+        storage_dead(_18);
         storage_live(_23);
-        _23 = copy sum;
-        _24 = copy _23 panic.+ const 2u32;
-        _22 = move _24;
-        storage_dead(_23);
-        _21 = function_call(move _22) -> bb9 (unwind: bb10);
+        storage_live(_24);
+        storage_live(_25);
+        _25 = copy sum;
+        _26 = copy _25 checked.+ const 2u32;
+        assert(move _26._1 == false) (overflow) else panic;
+        _24 = move _26._0;
+        storage_dead(_25);
+        _23 = function_call(move _24) -> bb9 (unwind: bb10);
     }
 
     bb9: {
-        storage_dead(_22);
-        storage_dead(_21);
+        storage_dead(_24);
+        storage_dead(_23);
         _0 = copy sum;
         storage_dead(i);
         storage_dead(sum);
@@ -600,26 +612,28 @@ fn foo()
     let _16: (&'_ u32, &'_ u32); // anonymous local
     let _17: &'_ u32; // anonymous local
     let _18: usize; // anonymous local
-    let _19: &'_ u32; // anonymous local
+    let _19: bool; // anonymous local
+    let _20: &'_ u32; // anonymous local
     let left_val: &'_ u32; // local
     let right_val: &'_ u32; // local
-    let _22: bool; // anonymous local
-    let _23: u32; // anonymous local
+    let _23: bool; // anonymous local
     let _24: u32; // anonymous local
+    let _25: u32; // anonymous local
     let kind: AssertKind; // local
-    let _26: !; // anonymous local
-    let _27: AssertKind; // anonymous local
-    let _28: &'_ u32; // anonymous local
+    let _27: !; // anonymous local
+    let _28: AssertKind; // anonymous local
     let _29: &'_ u32; // anonymous local
     let _30: &'_ u32; // anonymous local
     let _31: &'_ u32; // anonymous local
-    let _32: Option::<Arguments::<'_>>; // anonymous local
-    let _33: &'_ u32; // anonymous local
+    let _32: &'_ u32; // anonymous local
+    let _33: Option::<Arguments::<'_>>; // anonymous local
     let _34: &'_ u32; // anonymous local
+    let _35: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_33);
+        storage_live(_19);
+        storage_live(_34);
         _0 = ();
         storage_live(_3);
         _3 = impl_Default_for_Foo::default() -> bb1 (unwind: bb12);
@@ -677,32 +691,34 @@ fn foo()
         storage_live(_17);
         storage_live(_18);
         _18 = const 9usize;
+        _19 = copy _18 < const 10usize;
+        assert(move _19 == true) (bounds_check) else panic;
         _17 = &a[copy _18];
-        storage_live(_19);
-        storage_live(_34);
-        _34 = &anon_const_0;
-        _33 = move _34;
-        _19 = &(*_33);
-        _16 = (move _17, move _19);
-        storage_dead(_19);
+        storage_live(_20);
+        storage_live(_35);
+        _35 = &anon_const_0;
+        _34 = move _35;
+        _20 = &(*_34);
+        _16 = (move _17, move _20);
+        storage_dead(_20);
         storage_dead(_17);
         storage_live(left_val);
         left_val = copy _16._0;
         storage_live(right_val);
         right_val = copy _16._1;
-        storage_live(_22);
         storage_live(_23);
-        _23 = copy (*left_val);
         storage_live(_24);
-        _24 = copy (*right_val);
-        _22 = move _23 == move _24;
-        if move _22 -> bb5 else -> bb6;
+        _24 = copy (*left_val);
+        storage_live(_25);
+        _25 = copy (*right_val);
+        _23 = move _24 == move _25;
+        if move _23 -> bb5 else -> bb6;
     }
 
     bb5: {
+        storage_dead(_25);
         storage_dead(_24);
         storage_dead(_23);
-        storage_dead(_22);
         storage_dead(right_val);
         storage_dead(left_val);
         storage_dead(_18);
@@ -717,24 +733,24 @@ fn foo()
     }
 
     bb6: {
+        storage_dead(_25);
         storage_dead(_24);
-        storage_dead(_23);
         storage_live(kind);
         kind = AssertKind::Eq {  };
-        storage_live(_26);
         storage_live(_27);
-        _27 = move kind;
         storage_live(_28);
+        _28 = move kind;
         storage_live(_29);
-        _29 = &(*left_val);
-        _28 = &(*_29);
         storage_live(_30);
+        _30 = &(*left_val);
+        _29 = &(*_30);
         storage_live(_31);
-        _31 = &(*right_val);
-        _30 = &(*_31);
         storage_live(_32);
-        _32 = Option::<Arguments::<'_>>::None {  };
-        _26 = assert_failed::<u32, u32>(move _27, move _28, move _30, move _32) -> bb7 (unwind: bb8);
+        _32 = &(*right_val);
+        _31 = &(*_32);
+        storage_live(_33);
+        _33 = Option::<Arguments::<'_>>::None {  };
+        _27 = assert_failed::<u32, u32>(move _28, move _29, move _31, move _33) -> bb7 (unwind: bb8);
     }
 
     bb7: {
@@ -772,28 +788,36 @@ pub fn thing()
     let x: u32; // local
     let _2: u32; // anonymous local
     let _3: u32; // anonymous local
-    let _4: (); // anonymous local
-    let _5: u32; // anonymous local
+    let _4: bool; // anonymous local
+    let _5: (u32, bool); // anonymous local
+    let _6: (); // anonymous local
+    let _7: u32; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
         _0 = ();
         storage_live(x);
         storage_live(_2);
-        _2 = copy CONSTANT panic.>> const 3i32;
-        _3 = copy _2 panic.+ const 12u32;
-        x = move _3;
+        _3 = cast<i32, u32>(const 3i32);
+        _4 = move _3 < const 32u32;
+        assert(move _4 == true) (overflow) else panic;
+        _2 = copy CONSTANT wrap.>> const 3i32;
+        _5 = copy _2 checked.+ const 12u32;
+        assert(move _5._1 == false) (overflow) else panic;
+        x = move _5._0;
         storage_dead(_2);
-        storage_live(_4);
-        storage_live(_5);
-        _5 = copy x;
-        _4 = function_call(move _5) -> bb1 (unwind: bb2);
+        storage_live(_6);
+        storage_live(_7);
+        _7 = copy x;
+        _6 = function_call(move _7) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(_5);
-        storage_dead(_4);
+        storage_dead(_7);
+        storage_dead(_6);
         _0 = ();
         storage_dead(x);
         return;

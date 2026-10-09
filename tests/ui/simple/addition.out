@@ -13,15 +13,16 @@ fn main()
 {
     let _0: (); // return
     let _1: i32; // anonymous local
-    let _2: i32; // anonymous local
+    let _2: (i32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         _0 = ();
         storage_live(_1);
-        _2 = const 1i32 panic.+ const 2i32;
-        _1 = move _2;
+        _2 = const 1i32 checked.+ const 2i32;
+        assert(move _2._1 == false) (overflow) else panic;
+        _1 = move _2._0;
         storage_dead(_1);
         _0 = ();
         return;

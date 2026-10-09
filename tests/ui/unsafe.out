@@ -129,7 +129,7 @@ fn access_mutable_static()
 {
     let _0: (); // return
     let _1: *mut usize; // anonymous local
-    let _2: usize; // anonymous local
+    let _2: (usize, bool); // anonymous local
     let _3: *mut usize; // anonymous local
 
     bb0: {
@@ -140,8 +140,9 @@ fn access_mutable_static()
         storage_live(_3);
         _3 = &raw mut COUNTER;
         _1 = move _3;
-        _2 = copy (*_1) panic.+ const 1usize;
-        (*_1) = move _2;
+        _2 = copy (*_1) checked.+ const 1usize;
+        assert(move _2._1 == false) (overflow) else panic;
+        (*_1) = move _2._0;
         storage_dead(_1);
         _0 = ();
         return;

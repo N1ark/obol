@@ -23,9 +23,12 @@ fn test_crate::call_fn::{closure}::<i8, extern "rust-call" fn((usize,)) -> u8, (
     let i: usize; // local
     let _4: &'_ &'_ [u8]; // anonymous local
     let _5: usize; // anonymous local
-    let _6: &'_ &'_ [u8]; // anonymous local
-    let _7: &'_ [u8]; // anonymous local
-    let _8: &'_ [u8]; // anonymous local
+    let _6: *const [u8]; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: bool; // anonymous local
+    let _9: &'_ &'_ [u8]; // anonymous local
+    let _10: &'_ [u8]; // anonymous local
+    let _11: &'_ [u8]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -33,15 +36,22 @@ fn test_crate::call_fn::{closure}::<i8, extern "rust-call" fn((usize,)) -> u8, (
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
+        storage_live(_9);
+        storage_live(_10);
+        storage_live(_11);
         i = move spread_args._0;
         storage_live(_4);
-        _6 = copy (*_1).upvar_0;
-        _4 = &(*_6);
+        _9 = copy (*_1).upvar_0;
+        _4 = &(*_9);
         storage_live(_5);
         _5 = copy i;
-        _7 = copy (*_4);
-        _8 = copy (*_4);
-        _0 = copy (*_8)[copy _5];
+        _10 = copy (*_4);
+        _6 = &raw const (*_10) with_metadata(copy _10.metadata);
+        _7 = copy _6.metadata;
+        _8 = copy _5 < copy _7;
+        assert(move _8 == true) (bounds_check) else panic;
+        _11 = copy (*_4);
+        _0 = copy (*_11)[copy _5];
         storage_dead(_5);
         storage_dead(_4);
         return;

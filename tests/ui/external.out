@@ -4294,7 +4294,7 @@ pub fn incr(rc: &'_ mut Cell::<u32>)
     let rc: &'_ mut Cell::<u32>; // arg #1
     let _2: &'_ mut u32; // anonymous local
     let _3: &'_ mut Cell::<u32>; // anonymous local
-    let _4: u32; // anonymous local
+    let _4: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4308,8 +4308,9 @@ pub fn incr(rc: &'_ mut Cell::<u32>)
 
     bb1: {
         storage_dead(_3);
-        _4 = copy (*_2) panic.+ const 1u32;
-        (*_2) = move _4;
+        _4 = copy (*_2) checked.+ const 1u32;
+        assert(move _4._1 == false) (overflow) else panic;
+        (*_2) = move _4._0;
         storage_dead(_2);
         _0 = ();
         return;

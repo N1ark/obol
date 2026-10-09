@@ -770,7 +770,7 @@ pub fn translate<'tcx, 'ctx>(
         extract_opaque_bodies: true,
         reconstruct_asserts: true,
         raw_consts: false,
-        reconstruct_fallible_operations: true,
+        reconstruct_fallible_operations: false,
         start_from: vec!["*".into()],
         ..CharonCliOpts::default()
     };

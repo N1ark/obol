@@ -1965,7 +1965,7 @@ pub fn test2()
     let z: u32; // local
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
-    let _6: u32; // anonymous local
+    let _6: (u32, bool); // anonymous local
     let p: Pair::<u32, u32>; // local
     let _8: u32; // anonymous local
     let _9: u32; // anonymous local
@@ -1988,8 +1988,9 @@ pub fn test2()
         _4 = copy x;
         storage_live(_5);
         _5 = copy y;
-        _6 = copy _4 panic.+ copy _5;
-        z = move _6;
+        _6 = copy _4 checked.+ copy _5;
+        assert(move _6._1 == false) (overflow) else panic;
+        z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
         storage_live(p);
@@ -2273,7 +2274,7 @@ pub fn even(x: u32) -> bool
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
-    let _6: u32; // anonymous local
+    let _6: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2296,8 +2297,9 @@ pub fn even(x: u32) -> bool
         storage_live(_4);
         storage_live(_5);
         _5 = copy x;
-        _6 = copy _5 panic.- const 1u32;
-        _4 = move _6;
+        _6 = copy _5 checked.- const 1u32;
+        assert(move _6._1 == false) (overflow) else panic;
+        _4 = move _6._0;
         storage_dead(_5);
         _0 = odd(move _4) -> bb3 (unwind: bb5);
     }
@@ -2326,7 +2328,7 @@ pub fn odd(x: u32) -> bool
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
-    let _6: u32; // anonymous local
+    let _6: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2349,8 +2351,9 @@ pub fn odd(x: u32) -> bool
         storage_live(_4);
         storage_live(_5);
         _5 = copy x;
-        _6 = copy _5 panic.- const 1u32;
-        _4 = move _6;
+        _6 = copy _5 checked.- const 1u32;
+        assert(move _6._1 == false) (overflow) else panic;
+        _4 = move _6._0;
         storage_dead(_5);
         _0 = even(move _4) -> bb3 (unwind: bb5);
     }
@@ -2588,14 +2591,15 @@ pub fn incr(x: &'_ mut u32)
 {
     let _0: (); // return
     let x: &'_ mut u32; // arg #1
-    let _2: u32; // anonymous local
+    let _2: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         _0 = ();
-        _2 = copy (*x) panic.+ const 1u32;
-        (*x) = move _2;
+        _2 = copy (*x) checked.+ const 1u32;
+        assert(move _2._1 == false) (overflow) else panic;
+        (*x) = move _2._0;
         _0 = ();
         return;
     }
@@ -2607,15 +2611,16 @@ pub fn read_then_incr(x: &'_ mut u32) -> u32
     let _0: u32; // return
     let x: &'_ mut u32; // arg #1
     let r: u32; // local
-    let _3: u32; // anonymous local
+    let _3: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         storage_live(r);
         r = copy (*x);
-        _3 = copy (*x) panic.+ const 1u32;
-        (*x) = move _3;
+        _3 = copy (*x) checked.+ const 1u32;
+        assert(move _3._1 == false) (overflow) else panic;
+        (*x) = move _3._0;
         _0 = copy r;
         storage_dead(r);
         return;

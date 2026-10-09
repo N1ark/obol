@@ -70,23 +70,10 @@ fn run_passes(ctx: &mut TransformCtx) {
         CowBox::Borrowed(&finish_translation::insert_assign_return_unit::Transform),
         // Insert `StorageLive` for locals that don't have one (that's allowed in MIR).
         CowBox::Borrowed(&finish_translation::insert_storage_statements::Transform),
-        // Inline all asserts that correspond to dynamic checks into statements.
-        // The following pass will then merge the generated gotos as part of this substitution,
-        // and [reconstruct_fallible_operations] can then use the inlined asserts to
-        // reconstruct the fallible operations.
-        CowBox::Borrowed(&resugar::move_asserts_to_statements::Transform),
         // Merge single-origin gotos into their parent. This drastically reduces the graph size
         // of the CFG.
         // This must be done early as some resugaring passes depend on it.
         CowBox::Borrowed(&control_flow::merge_goto_chains::Transform),
-        // Remove overflow/div-by-zero/bounds checks since they are already part of the
-        // arithmetic/array operation in the semantics of (U)LLBC.
-        // **WARNING**: this pass uses the fact that the dynamic checks introduced by Rustc use a
-        // special "assert" construct. Because of this, it must happen *before* the
-        // [reconstruct_asserts] pass. See the comments in [crate::remove_dynamic_checks].
-        // **WARNING**: this pass relies on a precise structure of the MIR statements. Because of this,
-        // it must happen before passes that insert statements like [simplify_constants].
-        CowBox::Borrowed(&resugar::reconstruct_fallible_operations::Transform),
         // Reconstruct the asserts
         CowBox::Borrowed(&resugar::reconstruct_asserts::Transform),
         // Replace TypeId construction constants with ConstantExprKind::TypeId(T) before

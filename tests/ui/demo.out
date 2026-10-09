@@ -26,8 +26,8 @@ pub fn mul2_add1(x: u32) -> u32
     let _2: u32; // anonymous local
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
-    let _5: u32; // anonymous local
-    let _6: u32; // anonymous local
+    let _5: (u32, bool); // anonymous local
+    let _6: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -38,12 +38,14 @@ pub fn mul2_add1(x: u32) -> u32
         _3 = copy x;
         storage_live(_4);
         _4 = copy x;
-        _5 = copy _3 panic.+ copy _4;
-        _2 = move _5;
+        _5 = copy _3 checked.+ copy _4;
+        assert(move _5._1 == false) (overflow) else panic;
+        _2 = move _5._0;
         storage_dead(_4);
         storage_dead(_3);
-        _6 = copy _2 panic.+ const 1u32;
-        _0 = move _6;
+        _6 = copy _2 checked.+ const 1u32;
+        assert(move _6._1 == false) (overflow) else panic;
+        _0 = move _6._0;
         storage_dead(_2);
         return;
     }
@@ -58,7 +60,7 @@ pub fn use_mul2_add1(x: u32, y: u32) -> u32
     let _3: u32; // anonymous local
     let _4: u32; // anonymous local
     let _5: u32; // anonymous local
-    let _6: u32; // anonymous local
+    let _6: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -73,8 +75,9 @@ pub fn use_mul2_add1(x: u32, y: u32) -> u32
         storage_dead(_4);
         storage_live(_5);
         _5 = copy y;
-        _6 = copy _3 panic.+ copy _5;
-        _0 = move _6;
+        _6 = copy _3 checked.+ copy _5;
+        assert(move _6._1 == false) (overflow) else panic;
+        _0 = move _6._0;
         storage_dead(_5);
         storage_dead(_3);
         return;
@@ -89,14 +92,15 @@ pub fn test_crate::incr(x: &'_ mut u32)
 {
     let _0: (); // return
     let x: &'_ mut u32; // arg #1
-    let _2: u32; // anonymous local
+    let _2: (u32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         _0 = ();
-        _2 = copy (*x) panic.+ const 1u32;
-        (*x) = move _2;
+        _2 = copy (*x) checked.+ const 1u32;
+        assert(move _2._1 == false) (overflow) else panic;
+        (*x) = move _2._0;
         _0 = ();
         return;
     }
@@ -186,8 +190,8 @@ pub fn i32_id(i: i32) -> i32
     let _4: i32; // anonymous local
     let _5: i32; // anonymous local
     let _6: i32; // anonymous local
-    let _7: i32; // anonymous local
-    let _8: i32; // anonymous local
+    let _7: (i32, bool); // anonymous local
+    let _8: (i32, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -212,16 +216,18 @@ pub fn i32_id(i: i32) -> i32
         storage_live(_5);
         storage_live(_6);
         _6 = copy i;
-        _7 = copy _6 panic.- const 1i32;
-        _5 = move _7;
+        _7 = copy _6 checked.- const 1i32;
+        assert(move _7._1 == false) (overflow) else panic;
+        _5 = move _7._0;
         storage_dead(_6);
         _4 = i32_id(move _5) -> bb3 (unwind: bb5);
     }
 
     bb3: {
         storage_dead(_5);
-        _8 = copy _4 panic.+ const 1i32;
-        _0 = move _8;
+        _8 = copy _4 checked.+ const 1i32;
+        assert(move _8._1 == false) (overflow) else panic;
+        _0 = move _8._0;
         storage_dead(_4);
         goto bb4;
     }
@@ -242,15 +248,16 @@ pub fn impl_Counter_for_usize::incr(self: &'_ mut usize) -> usize
     let _0: usize; // return
     let self: &'_ mut usize; // arg #1
     let x: usize; // local
-    let _3: usize; // anonymous local
+    let _3: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         storage_live(x);
         x = copy (*self);
-        _3 = copy (*self) panic.+ const 1usize;
-        (*self) = move _3;
+        _3 = copy (*self) checked.+ const 1usize;
+        assert(move _3._1 == false) (overflow) else panic;
+        (*self) = move _3._0;
         _0 = copy x;
         storage_dead(x);
         return;

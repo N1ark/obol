@@ -11,12 +11,26 @@ fn test_crate::main::{closure}::<i8, extern "rust-call" fn(()), ()>(_1: &'_ test
     let _1: &'_ test_crate::main::{closure}::{closure}; // arg #1
     let spread_args: (); // arg #2
     let _3: i32; // anonymous local
+    let _4: bool; // anonymous local
+    let _5: bool; // anonymous local
+    let _6: bool; // anonymous local
+    let _7: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
         _0 = ();
         storage_live(_3);
-        _3 = const 1i32 panic./ const 1i32;
+        _4 = const 1i32 == const 0i32;
+        assert(move _4 == false) (division_by_zero) else panic;
+        _5 = const 1i32 == const -1i32;
+        _6 = const 1i32 == const -2147483648i32;
+        _7 = move _5 & move _6;
+        assert(move _7 == false) (overflow) else panic;
+        _3 = const 1i32 ub./ const 1i32;
         storage_dead(_3);
         _0 = ();
         return;

@@ -445,7 +445,7 @@ fn main()
     let z: usize; // local
     let _4: usize; // anonymous local
     let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
+    let _6: (usize, bool); // anonymous local
     let a: HasPointerNiche; // local
     let _8: NonNull::<usize>; // anonymous local
     let _9: *mut usize; // anonymous local
@@ -463,8 +463,9 @@ fn main()
         _4 = copy y;
         storage_live(_5);
         _5 = copy x;
-        _6 = copy _4 panic.- copy _5;
-        z = move _6;
+        _6 = copy _4 checked.- copy _5;
+        assert(move _6._1 == false) (overflow) else panic;
+        z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
         storage_live(a);

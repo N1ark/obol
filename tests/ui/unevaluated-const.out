@@ -479,28 +479,32 @@ fn main()
     let _2: &'_ Atomic::<u64>; // anonymous local
     let _3: &'_ [Atomic::<u64>; 2usize]; // anonymous local
     let _4: usize; // anonymous local
-    let _5: Ordering; // anonymous local
-    let _6: &'_ [Atomic::<u64>; 2usize]; // anonymous local
+    let _5: bool; // anonymous local
+    let _6: Ordering; // anonymous local
+    let _7: &'_ [Atomic::<u64>; 2usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_5);
         _0 = ();
         storage_live(_x);
         storage_live(_2);
         storage_live(_3);
-        storage_live(_6);
-        _6 = &HART_STATES;
-        _3 = move _6;
+        storage_live(_7);
+        _7 = &HART_STATES;
+        _3 = move _7;
         storage_live(_4);
         _4 = const 0usize;
+        _5 = copy _4 < const 2usize;
+        assert(move _5 == true) (bounds_check) else panic;
         _2 = &(*_3)[copy _4];
-        storage_live(_5);
-        _5 = Ordering::Relaxed {  };
-        _x = load(move _2, move _5) -> bb1 (unwind: bb2);
+        storage_live(_6);
+        _6 = Ordering::Relaxed {  };
+        _x = load(move _2, move _6) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(_5);
+        storage_dead(_6);
         storage_dead(_2);
         storage_dead(_4);
         storage_dead(_3);

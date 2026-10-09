@@ -202,7 +202,7 @@ fn main()
     let _0: (); // return
     let f: Foo; // local
     let _2: u8; // anonymous local
-    let _3: u8; // anonymous local
+    let _3: (u8, bool); // anonymous local
     let f_ref: &'_ Foo; // local
     let _5: *mut Foo; // anonymous local
     let _6: (); // anonymous local
@@ -216,8 +216,9 @@ fn main()
         storage_live(f);
         f = Foo {  };
         storage_live(_2);
-        _3 = const 255u8 panic.+ const 1u8;
-        _2 = move _3;
+        _3 = const 255u8 checked.+ const 1u8;
+        assert(move _3._1 == false) (overflow) else panic;
+        _2 = move _3._0;
         storage_dead(_2);
         storage_live(f_ref);
         f_ref = &f;

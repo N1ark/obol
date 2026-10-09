@@ -29,7 +29,7 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_ m
     let _4: (u8, bool); // anonymous local
     let _5: u8; // anonymous local
     let _6: u8; // anonymous local
-    let _7: u8; // anonymous local
+    let _7: (u8, bool); // anonymous local
     let _8: &'_ mut u8; // anonymous local
     let _9: &'_ mut u8; // anonymous local
     let _10: &'_ mut u8; // anonymous local
@@ -56,8 +56,9 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_ m
         storage_live(_6);
         _11 = copy (*_1).upvar_0;
         _6 = copy (*_11);
-        _7 = copy _5 panic.+ copy _6;
-        _0 = move _7;
+        _7 = copy _5 checked.+ copy _6;
+        assert(move _7._1 == false) (overflow) else panic;
+        _0 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         return;
