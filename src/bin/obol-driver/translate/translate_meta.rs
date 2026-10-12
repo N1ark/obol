@@ -10,6 +10,7 @@ extern crate rustc_span;
 use super::translate_crate::TransItemSource;
 use super::translate_ctx::{ItemTransCtx, TranslateCtx};
 use super::translate_from_rustc;
+use charon_lib::ast::from_rustc;
 use charon_lib::{ast::*, register_error};
 use itertools::Itertools;
 use log::trace;
@@ -530,6 +531,22 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     args: None,
                 }));
             }
+        }
+
+        // The attributes of external items may not be in their metadata, but codegen attributes
+        // are: keep the link section, which tells the constructors (see `collect_constructors`).
+        if let TransItemSource::Static(stt) = src
+            && let Some(name) = self.link_section(stt.0)
+            && !attributes.iter().any(|a| {
+                matches!(
+                    a,
+                    Attribute::Builtin(from_rustc::AttributeKind::LinkSection { .. })
+                )
+            })
+        {
+            attributes.push(Attribute::Builtin(from_rustc::AttributeKind::LinkSection {
+                name: name.into(),
+            }));
         }
 
         let rename = {

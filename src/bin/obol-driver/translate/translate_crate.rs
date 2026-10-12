@@ -9,6 +9,7 @@ extern crate rustc_span;
 use crate::translate::my_gen_args::MyGenericArgs;
 use obol_lib::args::CliOpts;
 use rustc_hir::attrs::AttributeKind;
+use rustc_hir::def::DefKind;
 
 use super::translate_ctx::*;
 
@@ -740,6 +741,47 @@ impl<'tcx> TranslateCtx<'tcx> {
             }
         }
     }
+
+    /// The statics in an `.init_array` section, in any crate, hold the constructors that run
+    /// before `main` (e.g. those of `inventory` or `ctor`): translate them too, so that the
+    /// analysis can run them. Only constructors without arguments are kept: the others, e.g.
+    /// std's initialiser of the program arguments, are called with them by the C runtime.
+    fn collect_constructors(&mut self) {
+        let tcx = self.tcx;
+        // The metadata of macro-only (e.g. proc-macro) crates doesn't describe all their items.
+        let crates = std::iter::once(rustc_public::local_crate()).chain(
+            rustc_public::external_crates().into_iter().filter(|krate| {
+                !tcx.crate_dep_kind(rustc_internal::internal(tcx, krate.id))
+                    .macros_only()
+            }),
+        );
+        for krate in crates {
+            for stt in krate.statics() {
+                // Nested statics (allocations inside other statics) have no type of their own.
+                let def_id = rustc_internal::internal(tcx, stt.def_id());
+                if matches!(tcx.def_kind(def_id), DefKind::Static { nested: true, .. })
+                    || !self
+                        .link_section(stt.def_id())
+                        .is_some_and(|s| s.starts_with(".init_array"))
+                {
+                    continue;
+                }
+                if matches!(
+                    stt.ty().kind(),
+                    ty::TyKind::RigidTy(ty::RigidTy::FnPtr(sig)) if sig.value.inputs().is_empty()
+                ) {
+                    self.register_global_from_static(&None, stt);
+                }
+            }
+        }
+    }
+
+    /// The `#[link_section]` of an item, if any.
+    pub(crate) fn link_section(&self, def_id: DefId) -> Option<String> {
+        let def_id = rustc_internal::internal(self.tcx, def_id);
+        let link_section = self.tcx.codegen_fn_attrs(def_id).link_section?;
+        Some(link_section.to_string())
+    }
 }
 
 pub(crate) const FAKE_DYN_TRAIT: TraitDeclId = TraitDeclId::ZERO;
@@ -885,6 +927,7 @@ pub fn translate<'tcx, 'ctx>(
     ctx.translate_fake_dyn_trait();
 
     ctx.collect_entrypoints(options);
+    ctx.collect_constructors();
 
     // Translate.
     //
