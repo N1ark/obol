@@ -347,7 +347,23 @@ fn locate_argsfile(project_root: &Path, action: &RustcActionInfo) -> Result<Path
             "could not find the materialized argsfile `{template}` in buck-out (was the build \
              run with `-c buck2.defer_write_actions=false`?)"
         ),
-        [first, ..] => Ok(first.clone()),
+        // Several argsfiles match the template: older builds of the target left argsfiles in
+        // other content-hash directories that differ only in (placeholder) hash segments, i.e.
+        // they point at *stale* dependency metadata. The build we just ran (re)wrote the current
+        // one, so take the most recently modified.
+        many => {
+            let newest = many
+                .iter()
+                .max_by_key(|p| std::fs::metadata(p).and_then(|m| m.modified()).ok())
+                .unwrap()
+                .clone();
+            eprintln!(
+                "[obol] {} argsfiles match `{template}`; using the newest: {}",
+                many.len(),
+                newest.display()
+            );
+            Ok(newest)
+        }
     }
 }
 
