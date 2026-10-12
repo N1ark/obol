@@ -67,6 +67,9 @@ fn translate_with_cargo(mut options: CliOpts) -> Result<ExitStatus> {
     cmd.env("RUSTC_WRAPPER", toolchain::driver_path());
     cmd.env("OBOL_USING_CARGO", "1");
     cmd.env_remove("CARGO_PRIMARY_PACKAGE");
+    // Translation doesn't benefit from incremental compilation, and rustc's incremental save
+    // ICEs after obol-driver caught a panic while extracting an item.
+    cmd.env("CARGO_INCREMENTAL", "0");
     if cfg!(target_os = "macos") {
         let mut lib = toolchain_path()?;
         lib.push("lib");
