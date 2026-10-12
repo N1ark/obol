@@ -2718,7 +2718,7 @@ fn main()
     let _10: isize; // anonymous local
     let v_11: i32; // local
     let _12: i32; // anonymous local
-    let _13: i32; // anonymous local
+    let _13: (i32, bool); // anonymous local
     let _14: Iter::<'_, i32>; // anonymous local
     let _15: Iter::<'_, i32>; // anonymous local
     let _16: &'_ [i32]; // anonymous local
@@ -2796,12 +2796,12 @@ fn main()
         storage_live(_4);
         storage_live(_5);
         _5 = copy a;
-        _4 = impl_IntoIterator_for_array::into_iter::<i32, 7usize>(move _5) -> bb1 (unwind: bb45);
+        _4 = impl_IntoIterator_for_array::into_iter::<i32, 7usize>(move _5) -> bb1 (unwind: bb46);
     }
 
     bb1: {
         storage_dead(_5);
-        _3 = impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(move _4) -> bb2 (unwind: bb44);
+        _3 = impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(move _4) -> bb2 (unwind: bb45);
     }
 
     bb2: {
@@ -2817,20 +2817,20 @@ fn main()
         storage_live(_9);
         _9 = &mut iter_6;
         _8 = &two-phase-mut (*_9);
-        _7 = {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(move _8) -> bb4 (unwind: bb42);
+        _7 = {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(move _8) -> bb4 (unwind: bb43);
     }
 
     bb4: {
         storage_dead(_8);
         _10 = @discriminant(_7);
-        switch move _10 -> 0isize: bb5, 1isize: bb40, otherwise: bb41;
+        switch move _10 -> 0isize: bb5, 1isize: bb40, otherwise: bb42;
     }
 
     bb5: {
         storage_dead(_9);
         storage_dead(_7);
         _66 = &raw mut iter_6;
-        _67 = drop_glue::<IntoIter::<i32, 7usize>>(move _66) -> bb6 (unwind: bb44);
+        _67 = drop_glue::<IntoIter::<i32, 7usize>>(move _66) -> bb6 (unwind: bb45);
     }
 
     bb6: {
@@ -2870,7 +2870,7 @@ fn main()
     bb10: {
         storage_dead(_20);
         _22 = @discriminant(_19);
-        switch move _22 -> 0isize: bb11, 1isize: bb34, otherwise: bb41;
+        switch move _22 -> 0isize: bb11, 1isize: bb34, otherwise: bb42;
     }
 
     bb11: {
@@ -2912,7 +2912,7 @@ fn main()
     bb15: {
         storage_dead(_33);
         _35 = @discriminant(_32);
-        switch move _35 -> 0isize: bb16, 1isize: bb30, otherwise: bb41;
+        switch move _35 -> 0isize: bb16, 1isize: bb30, otherwise: bb42;
     }
 
     bb16: {
@@ -2954,7 +2954,7 @@ fn main()
     bb20: {
         storage_dead(_43);
         _45 = @discriminant(_42);
-        switch move _45 -> 0isize: bb21, 1isize: bb26, otherwise: bb41;
+        switch move _45 -> 0isize: bb21, 1isize: bb26, otherwise: bb42;
     }
 
     bb21: {
@@ -3110,8 +3110,12 @@ fn main()
         v_11 = copy (_7 as variant Option::<i32>::Some)._0;
         storage_live(_12);
         _12 = copy v_11;
-        _13 = copy i panic.+ copy _12;
-        i = move _13;
+        _13 = copy i checked.+ copy _12;
+        assert assert(move _13._1 == false) (overflow) -> bb41 (unwind: bb43);
+    }
+
+    bb41: {
+        i = move _13._0;
         storage_dead(_12);
         storage_dead(v_11);
         storage_dead(_9);
@@ -3119,24 +3123,24 @@ fn main()
         goto bb3;
     }
 
-    bb41: {
+    bb42: {
         undefined_behavior;
     }
 
-    bb42 (cleanup): {
+    bb43 (cleanup): {
         _64 = &raw mut iter_6;
-        _65 = drop_glue::<IntoIter::<i32, 7usize>>(move _64) -> bb44 (unwind: bb43);
+        _65 = drop_glue::<IntoIter::<i32, 7usize>>(move _64) -> bb45 (unwind: bb44);
     }
 
-    bb43 (terminate): {
+    bb44 (terminate): {
         unwind_terminate;
     }
 
-    bb44 (cleanup): {
+    bb45 (cleanup): {
         unwind_continue;
     }
 
-    bb45 (cleanup): {
+    bb46 (cleanup): {
         unwind_continue;
     }
 }

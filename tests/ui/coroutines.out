@@ -775,7 +775,7 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
     let _15: isize; // anonymous local
     let result: u32; // local
     let _17: ResumeTy; // anonymous local
-    let _18: u32; // anonymous local
+    let _18: (u32, bool); // anonymous local
     let _19: u32; // anonymous local
     let _20: u32; // anonymous local
     let _21: &'_ mut test_crate::add::{closure}::{coroutine}; // anonymous local
@@ -795,7 +795,7 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
         _task_context = ResumeTy { _0: move _23 };
         _21 = copy _1.pointer;
         _20 = cast<u8, u32>(copy (*_21).__state);
-        switch move _20 -> 0u32: bb1, 1u32: bb4, 2u32: bb5, 3u32: bb6, otherwise: bb16;
+        switch move _20 -> 0u32: bb1, 1u32: bb4, 2u32: bb5, 3u32: bb6, otherwise: bb17;
     }
 
     bb1: {
@@ -819,7 +819,7 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
 
     bb3 (cleanup): {
         storage_dead(_7);
-        goto bb15;
+        goto bb16;
     }
 
     bb4: {
@@ -851,7 +851,7 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
         storage_live(_11);
         _11 = &mut (*_21).slot_1.value.value._0;
         _10 = &two-phase-mut (*_11);
-        _9 = new_unchecked::<&'_ mut Pending>(move _10) -> bb8 (unwind: bb13);
+        _9 = new_unchecked::<&'_ mut Pending>(move _10) -> bb8 (unwind: bb14);
     }
 
     bb8: {
@@ -863,14 +863,14 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
         _13 = transmute<NonNull::<Context::<'_>>, &'_ mut Context::<'_>>(copy _14._0);
         _12 = &two-phase-mut (*_13);
         storage_dead(_14);
-        _8 = poll(move _9, move _12) -> bb9 (unwind: bb12);
+        _8 = poll(move _9, move _12) -> bb9 (unwind: bb13);
     }
 
     bb9: {
         storage_dead(_12);
         storage_dead(_9);
         _15 = @discriminant(_8);
-        switch move _15 -> 0isize: bb10, 1isize: bb11, otherwise: bb16;
+        switch move _15 -> 0isize: bb10, 1isize: bb12, otherwise: bb17;
     }
 
     bb10: {
@@ -881,8 +881,12 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
         storage_dead(_13);
         storage_dead(_11);
         storage_dead(_8);
-        _18 = copy (*_21).slot_0.value.value._0 panic.+ copy _5;
-        _19 = move _18;
+        _18 = copy (*_21).slot_0.value.value._0 checked.+ copy _5;
+        assert assert(move _18._1 == false) (overflow) -> bb11 (unwind: bb16);
+    }
+
+    bb11: {
+        _19 = move _18._0;
         storage_dead(_5);
         storage_dead(saved);
         storage_dead(_6);
@@ -892,7 +896,7 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
         return;
     }
 
-    bb11: {
+    bb12: {
         storage_dead(_13);
         storage_dead(_11);
         storage_dead(_8);
@@ -907,26 +911,26 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
         return;
     }
 
-    bb12 (cleanup): {
+    bb13 (cleanup): {
         storage_dead(_12);
         storage_dead(_9);
         storage_dead(_13);
-        goto bb14;
-    }
-
-    bb13 (cleanup): {
-        storage_dead(_10);
-        storage_dead(_9);
-        goto bb14;
+        goto bb15;
     }
 
     bb14 (cleanup): {
-        storage_dead(_11);
-        storage_dead(_8);
+        storage_dead(_10);
+        storage_dead(_9);
         goto bb15;
     }
 
     bb15 (cleanup): {
+        storage_dead(_11);
+        storage_dead(_8);
+        goto bb16;
+    }
+
+    bb16 (cleanup): {
         storage_dead(_5);
         storage_dead(saved);
         storage_dead(_6);
@@ -935,7 +939,7 @@ fn test_crate::add::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut
         unwind_continue;
     }
 
-    bb16: {
+    bb17: {
         undefined_behavior;
     }
 }

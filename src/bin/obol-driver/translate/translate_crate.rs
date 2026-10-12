@@ -802,6 +802,8 @@ pub fn translate<'tcx, 'ctx>(
         reconstruct_asserts: true,
         raw_consts: false,
         reconstruct_fallible_operations: true,
+        // Obol's output is ULLBC, with unwinding paths.
+        ullbc: true,
         start_from: vec!["*".into()],
         ..CharonCliOpts::default()
     };
