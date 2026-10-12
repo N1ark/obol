@@ -3,6 +3,7 @@
 //! us to handle, and easier to maintain - rustc's representation can evolve
 //! independently.
 
+extern crate rustc_ast;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
@@ -199,12 +200,24 @@ impl ItemTransCtx<'_, '_> {
             );
             use rustc_middle::mir::visit::MutVisitor;
             NamedConstPreservingEvaluator { tcx, typing_env }.visit_body(&mut b);
-            // `rustc_public` doesn't expose whether a block is a cleanup block, so record it here;
-            // block indices are preserved by the conversion.
+            // `rustc_public` doesn't expose whether a block is a cleanup block, nor inline assembly
+            // templates, so record what we need here; block indices are preserved by the
+            // conversion.
             let cleanup_blocks = b.basic_blocks.iter().map(|bb| bb.is_cleanup).collect();
+            let comment_asm_blocks = b
+                .basic_blocks
+                .iter()
+                .map(|bb| match &bb.terminator().kind {
+                    rustc_middle::mir::TerminatorKind::InlineAsm { template, .. } => {
+                        asm_is_only_comments(template)
+                    }
+                    _ => false,
+                })
+                .collect();
             MonoBody {
                 body: rustc_public::rustc_internal::stable(b),
                 cleanup_blocks,
+                comment_asm_blocks,
             }
         })
     }
@@ -245,4 +258,27 @@ pub struct MonoBody {
     pub body: rustc_public::mir::Body,
     /// For each block, whether it is a cleanup (unwinding) block.
     pub cleanup_blocks: Vec<bool>,
+    /// For each block, whether it ends with inline assembly made only of comments.
+    pub comment_asm_blocks: Vec<bool>,
+}
+
+/// Whether an inline assembly template is only comments, like the `asm!("/*{0}*/", inout(reg) x)`
+/// used as optimization barriers: such assembly does nothing.
+fn asm_is_only_comments(template: &[rustc_ast::InlineAsmTemplatePiece]) -> bool {
+    // A placeholder becomes a register name or similar, which can't end a comment.
+    let code: String = template
+        .iter()
+        .map(|piece| match piece {
+            rustc_ast::InlineAsmTemplatePiece::String(s) => s.as_ref(),
+            rustc_ast::InlineAsmTemplatePiece::Placeholder { .. } => "x",
+        })
+        .collect();
+    let mut rest = code.trim_start();
+    while !rest.is_empty() {
+        let Some(end) = rest.strip_prefix("/*").and_then(|r| r.find("*/")) else {
+            return false;
+        };
+        rest = rest[end + 4..].trim_start();
+    }
+    true
 }

@@ -50,6 +50,9 @@ pub(crate) struct BodyTransCtx<'tcx, 'tctx, 'ictx> {
     /// For each MIR block, whether it is a cleanup (unwinding) block. `rustc_public` doesn't
     /// expose this, so it is taken from the internal MIR body (see [`MonoBody`]).
     pub cleanup_blocks: Vec<bool>,
+    /// For each MIR block, whether it ends with inline assembly made only of comments. This is
+    /// also taken from the internal MIR body.
+    pub comment_asm_blocks: Vec<bool>,
 }
 
 impl<'tcx, 'tctx, 'ictx> Deref for BodyTransCtx<'tcx, 'tctx, 'ictx> {
@@ -80,6 +83,7 @@ impl<'tcx, 'tctx, 'ictx> BodyTransCtx<'tcx, 'tctx, 'ictx> {
             blocks_map: Default::default(),
             blocks_stack: Default::default(),
             cleanup_blocks: Default::default(),
+            comment_asm_blocks: Default::default(),
             caller: None,
         }
     }
@@ -255,13 +259,22 @@ impl BodyTransCtx<'_, '_, '_> {
         } else {
             UnwindKind::Regular
         };
+        let comment_asm = self
+            .comment_asm_blocks
+            .get(mir_block_id)
+            .copied()
+            .unwrap_or(false);
         let mut block_ctx = BlockTransCtx::new(self, block_id, kind);
         for statement in &block.statements {
             block_ctx.translate_statement(statement)?;
         }
 
         // Translate the terminator; this fills in the block(s) we've been building.
-        block_ctx.translate_terminator(&block.terminator)?;
+        if comment_asm {
+            block_ctx.translate_comment_asm(&block.terminator)?;
+        } else {
+            block_ctx.translate_terminator(&block.terminator)?;
+        }
 
         Ok(())
     }
@@ -1375,6 +1388,41 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
 
         // Add the span information
         self.finish_current_block(Terminator::new(span, t_terminator));
+        Ok(())
+    }
+
+    /// Translate inline assembly made only of comments, which does nothing: each `inout` operand
+    /// keeps its value, i.e. its output place is assigned its input.
+    fn translate_comment_asm(mut self, terminator: &mir::Terminator) -> Result<(), Error> {
+        let span = self.translate_span_from_smir(crate::rustc_compat::terminator_span(terminator));
+        let mir::TerminatorKind::InlineAsm {
+            operands,
+            destination: Some(target),
+            ..
+        } = &terminator.kind
+        else {
+            raise_error!(self, span, "Inline assembly is not supported");
+        };
+        for operand in operands {
+            match (&operand.in_value, &operand.out_place) {
+                (Some(input), Some(output)) => {
+                    let (input, input_ty) = self.translate_operand_with_type(span, input)?;
+                    let output = self.translate_place(span, output)?;
+                    if input_ty != output.ty {
+                        raise_error!(self, span, "Inline assembly is not supported");
+                    }
+                    self.statements.push(Statement::new(
+                        span,
+                        StatementKind::Assign(output, Rvalue::Use(input, WithRetag::No)),
+                    ));
+                }
+                // An `out` operand would get whatever its register holds.
+                (None, Some(_)) => raise_error!(self, span, "Inline assembly is not supported"),
+                (_, None) => {}
+            }
+        }
+        let target = self.translate_basic_block_id(*target);
+        self.finish_current_block(Terminator::new(span, TerminatorKind::Goto { target }));
         Ok(())
     }
 

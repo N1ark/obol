@@ -537,10 +537,12 @@ impl ItemTransCtx<'_, '_> {
         } else if let Some(MonoBody {
             body,
             cleanup_blocks,
+            comment_asm_blocks,
         }) = self.get_body(def)
         {
             let mut bt_ctx = BodyTransCtx::new(&mut self, body.locals(), &mut signature);
             bt_ctx.cleanup_blocks = cleanup_blocks;
+            bt_ctx.comment_asm_blocks = comment_asm_blocks;
             bt_ctx.caller = Some(rustc_public::rustc_internal::internal(
                 bt_ctx.t_ctx.tcx,
                 def.def.def_id(),
