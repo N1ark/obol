@@ -15,6 +15,7 @@ use super::translate_ctx::*;
 use charon_lib::ast::*;
 use charon_lib::errors::ErrorCtx;
 use charon_lib::options::{CliOpts as CharonCliOpts, TranslateOptions};
+use charon_lib::register_error;
 use charon_lib::transform::TransformCtx;
 use itertools::Itertools;
 use log::trace;
@@ -643,6 +644,19 @@ impl<'tcx> TranslateCtx<'tcx> {
             && options.start_from_attribute.is_empty()
             && !options.start_from_pub;
 
+        // A `--start-from` path names the functions whose path ends with it, where `crate` stands
+        // for the local crate: e.g. `wrap`, `lines::wrap` or `crate::lines::wrap`.
+        let crate_name = self.tcx.crate_name(rustc_span::def_id::LOCAL_CRATE);
+        let start_from: Vec<String> = options
+            .start_from
+            .iter()
+            .map(|path| match path.strip_prefix("crate::") {
+                Some(path) => format!("{crate_name}::{path}"),
+                None => path.clone(),
+            })
+            .collect();
+        let mut start_from_matched = vec![false; start_from.len()];
+
         rustc_public::all_local_items()
             .iter()
             .filter_map(|item| {
@@ -685,8 +699,14 @@ impl<'tcx> TranslateCtx<'tcx> {
                 }
 
                 let instance_name = instance.name();
-                let name_split = instance_name.split("::").last().unwrap();
-                if options.start_from.contains(&name_split.to_string()) {
+                let mut start_from_match = false;
+                for (path, matched) in start_from.iter().zip(&mut start_from_matched) {
+                    if instance_name == *path || instance_name.ends_with(&format!("::{path}")) {
+                        *matched = true;
+                        start_from_match = true;
+                    }
+                }
+                if start_from_match {
                     return Some(instance);
                 }
 
@@ -708,7 +728,17 @@ impl<'tcx> TranslateCtx<'tcx> {
             .for_each(|instance| {
                 self.started_from.insert(TransItemSource::Fun(instance));
                 self.register_fun_decl_id(&None, instance);
-            })
+            });
+
+        for (path, matched) in options.start_from.iter().zip(start_from_matched) {
+            if !matched {
+                register_error!(
+                    self,
+                    Span::dummy(),
+                    "`--start-from {path}` matches no function"
+                );
+            }
+        }
     }
 }
 
