@@ -7,7 +7,7 @@
 //!    MIR. `-c buck2.defer_write_actions=false` makes Buck write argsfiles to disk eagerly.
 //! 2. `buck2 aquery` gives the target's metadata rustc action and the contents of its argsfile,
 //!    with content-hash path segments replaced by `aquery_placeholder`. We find the real argsfile
-//!    in `buck-out` by matching the contents.
+//!    in `buck-out` by matching the contents, asking Buck to materialize it if needed.
 //! 3. The argsfile is a `rustc_action.py` command line; we ask Buck to materialize every
 //!    `buck-out` path it mentions (with remote execution, inputs are not downloaded by default).
 //! 4. We check that the dependencies' metadata was produced by the same rustc as obol-driver.
@@ -133,7 +133,7 @@ pub fn translate_with_buck2(mut opts: Buck2Opts) -> Result<ExitStatus> {
         true,
     )?;
     let action = find_rustc_action(&aquery, &target)?;
-    let argsfile = locate_argsfile(&buck.project_root, &action)?;
+    let argsfile = locate_argsfile(&buck, &action)?;
     eprintln!("[obol] rustc argsfile: {}", argsfile.display());
 
     // 3. Parse it and make sure all the inputs are on disk. Nested argsfiles referenced by the
@@ -327,34 +327,42 @@ fn find_rustc_action(aquery_json: &str, target: &str) -> Result<RustcActionInfo>
 
 /// Find the on-disk argsfile corresponding to the aquery template: the placeholder segment is the
 /// content hash of the file, so we look at all candidates and compare contents.
-fn locate_argsfile(project_root: &Path, action: &RustcActionInfo) -> Result<PathBuf> {
+fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
+    let project_root = &buck.project_root;
     let template = &action.argsfile;
-    let candidates: Vec<PathBuf> = match template.split_once(&format!("/{PLACEHOLDER}/")) {
-        None => vec![project_root.join(template)],
+    // Project-relative paths of the candidates, one per content-hash directory.
+    let candidates: Vec<String> = match template.split_once(&format!("/{PLACEHOLDER}/")) {
+        None => vec![template.clone()],
         Some((dir, rest)) => {
-            let dir = project_root.join(dir);
-            let entries = std::fs::read_dir(&dir)
-                .with_context(|| format!("argsfile directory `{}` not found", dir.display()))?;
+            let entries = std::fs::read_dir(project_root.join(dir))
+                .with_context(|| format!("argsfile directory `{dir}` not found"))?;
             entries
                 .filter_map(|e| e.ok())
-                .map(|e| e.path().join(rest))
-                .filter(|p| p.is_file())
+                .map(|e| format!("{dir}/{}/{rest}", e.file_name().to_string_lossy()))
                 .collect()
         }
     };
-    let matches: Vec<_> = candidates
-        .into_iter()
-        .filter(|p| {
-            std::fs::read_to_string(p)
-                .is_ok_and(|actual| matches_template(&action.contents, &actual))
-        })
-        .collect();
+    let find_matches = || -> Vec<PathBuf> {
+        candidates
+            .iter()
+            .map(|c| project_root.join(c))
+            .filter(|p| {
+                std::fs::read_to_string(p)
+                    .is_ok_and(|actual| matches_template(&action.contents, &actual))
+            })
+            .collect()
+    };
+    let mut matches = find_matches();
+    if matches.is_empty() {
+        // The argsfile is an input of the rustc action: when that action is a cache hit, Buck
+        // doesn't write it, even with `defer_write_actions=false`. Ask Buck to materialize the
+        // candidates (a no-op for paths that aren't artifacts it knows of) and look again.
+        materialize(buck, &candidates)?;
+        matches = find_matches();
+    }
     match matches.as_slice() {
         [one] => Ok(one.clone()),
-        [] => bail!(
-            "could not find the materialized argsfile `{template}` in buck-out (was the build \
-             run with `-c buck2.defer_write_actions=false`?)"
-        ),
+        [] => bail!("could not find the argsfile `{template}` in buck-out"),
         // Several argsfiles match the template: older builds of the target left argsfiles in
         // other content-hash directories that differ only in (placeholder) hash segments, i.e.
         // they point at *stale* dependency metadata. The build we just ran (re)wrote the current
