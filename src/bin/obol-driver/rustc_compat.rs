@@ -34,3 +34,13 @@ pub(crate) fn terminator_span(terminator: &mir::Terminator) -> &ty::Span {
     #[cfg(not(rustc_1_98))]
     return &terminator.source_info.span;
 }
+
+/// rustc 1.99 gives the `extern "unadjusted"` functions linked to LLVM intrinsics (`llvm.*`, as used
+/// by `core::arch`) their own instance kind; before, they were plain foreign items.
+#[cfg_attr(rustc_1_98, allow(unused_variables))]
+pub(crate) fn is_llvm_intrinsic(instance: &mir::mono::Instance) -> bool {
+    #[cfg(rustc_1_98)]
+    return false;
+    #[cfg(not(rustc_1_98))]
+    return matches!(instance.kind, mir::mono::InstanceKind::LlvmIntrinsic);
+}

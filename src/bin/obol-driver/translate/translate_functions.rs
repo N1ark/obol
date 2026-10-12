@@ -126,6 +126,25 @@ impl ItemTransCtx<'_, '_> {
             }
         }
 
+        // `fn_abi` panics on LLVM intrinsics (`extern "unadjusted"` functions linked to `llvm.*`,
+        // like those of `core::arch`), which have no caller location argument: use their type.
+        if crate::rustc_compat::is_llvm_intrinsic(&def) {
+            let sig = self.erased_fn_sig(rustc_internal::internal(self.t_ctx.tcx, def.ty()));
+            let inputs = sig
+                .inputs()
+                .iter()
+                .map(|ty| self.translate_ty(span, *ty))
+                .try_collect()?;
+            let output = self.translate_ty(span, sig.output())?;
+            return Ok(FunSig {
+                inputs,
+                output,
+                is_variadic: sig.c_variadic,
+                is_unsafe: false,
+                abi: Abi::rust(),
+            });
+        }
+
         // Rust may add an implicit call location argument to the function, to improve error
         // tracking; this argument however doesn't exist when calling the function or for the
         // body's locals; we must remove it manually.
