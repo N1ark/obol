@@ -233,14 +233,20 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 use mir::alloc::GlobalAlloc;
                 let alloc_id = suballoc.0;
                 let glob_alloc: GlobalAlloc = alloc_id.into();
+                // For a pointer to a `str` or a slice, the pointer's bytes hold its offset into the
+                // allocation, and the metadata the length.
+                let (ptr_bytes, meta_bytes) = bytes.split_at(size / 2);
                 match glob_alloc {
                     GlobalAlloc::Memory(suballoc) if subty.is_str() => {
-                        let as_str =
-                            unsafe { String::from_utf8_unchecked(suballoc.raw_bytes().unwrap()) };
+                        let start = self.read_target_uint(Self::as_init(ptr_bytes)?.as_slice())?;
+                        let len = self.read_target_uint(Self::as_init(meta_bytes)?.as_slice())?;
+                        let str_bytes =
+                            Self::as_init(&suballoc.bytes[start as usize..(start + len) as usize])?;
+                        let as_str = unsafe { String::from_utf8_unchecked(str_bytes) };
                         ConstantExprKind::Str(as_str)
                     }
                     GlobalAlloc::Memory(suballoc) if subty.is_slice() => {
-                        let meta_bytes = &alloc.bytes.as_slice()[offset + size / 2..offset + size];
+                        let start = self.read_target_uint(Self::as_init(ptr_bytes)?.as_slice())?;
                         let len = self.read_target_uint(Self::as_init(meta_bytes)?.as_slice())?;
                         let subty = subty.as_array_or_slice().unwrap();
                         let rtyk = rty.kind().builtin_deref(true).unwrap().ty.kind();
@@ -250,7 +256,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         let elem_size = rsubty.layout().unwrap().shape().size.bytes();
                         let sub_constants = (0..len as usize)
                             .map(|i| {
-                                let elem_off = elem_size * i;
+                                let elem_off = start as usize + elem_size * i;
                                 self.translate_allocation_at(
                                     span,
                                     &suballoc,

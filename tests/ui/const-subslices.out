@@ -1,0 +1,34 @@
+
+// Final ULLBC:
+
+struct () {}
+
+struct str {
+  _0: [u8],
+}
+
+struct (_, _)::<&'_ str, &'_ [u8]> {
+  _0: &'_ str,
+  _1: &'_ [u8],
+}
+
+// Full name: test_crate::STR_SUFFIX
+const STR_SUFFIX: &'_ str = "ello"
+
+// Full name: test_crate::BYTES_SUFFIX
+const BYTES_SUFFIX: &'_ [u8] = &[108u8, 108u8, 111u8] with_metadata(3usize)
+
+// Full name: test_crate::suffixes
+fn suffixes() -> (&'_ str, &'_ [u8])
+{
+    let _0: (&'_ str, &'_ [u8]); // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = (copy STR_SUFFIX, copy BYTES_SUFFIX);
+        return;
+    }
+}
+
+
+
