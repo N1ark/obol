@@ -306,7 +306,7 @@ fn find_rustc_action(aquery_json: &str, target: &str) -> Result<RustcActionInfo>
     let owner = format!("(target: `{label} {cfg}`, id:");
     let own: Vec<_> = json.iter().filter(|(k, _)| k.starts_with(&owner)).collect();
 
-    let rustc = own
+    let Some(rustc) = own
         .iter()
         .filter(|(_, v)| v["category"] == "rustc")
         .min_by_key(|(_, v)| match v["identifier"].as_str() {
@@ -314,12 +314,25 @@ fn find_rustc_action(aquery_json: &str, target: &str) -> Result<RustcActionInfo>
             Some("diag") => 1,
             _ => 2,
         })
-        .with_context(|| {
-            format!(
-                "no rustc action found for `{label}[check]`: is `{target}` a Rust target \
-                 (rust_library, rust_binary, rust_test)?"
-            )
-        })?;
+    else {
+        // fbcode's `rust_proc_macro_alias` points to a `_<name>` rust_library built in the exec
+        // configuration: the crate runs in the compiler, not in the program.
+        if let Some((package, name)) = label.rsplit_once(':')
+            && let proc_macro = format!("(target: `{package}:_{name} ")
+            && json
+                .iter()
+                .any(|(k, v)| k.starts_with(&proc_macro) && v["category"] == "rustc")
+        {
+            bail!(
+                "`{target}` is a proc macro, which runs at compile time: translate the crates \
+                 that use it, or its unit tests with `--test`"
+            );
+        }
+        bail!(
+            "no rustc action found for `{label}[check]`: is `{target}` a Rust target \
+             (rust_library, rust_binary, rust_test)?"
+        );
+    };
     let cmd = rustc.1["cmd"].as_str().unwrap_or_default();
     let argsfile = cmd
         .trim_matches(|c| c == '[' || c == ']')
@@ -570,5 +583,15 @@ mod tests {
             "buck-out/x/app/__app__/aquery_placeholder/XIPMD/app-metadata-fast-diag.args"
         );
         assert!(info.contents.starts_with("--env=A=1"));
+    }
+
+    #[test]
+    fn proc_macro_from_aquery() {
+        let json = r#"{
+          "root//m:m[check] (cfg#1)": {"kind": "analysis"},
+          "(target: `root//m:_m (cfg#2)`, id: `3`)": {"kind": "run", "category": "rustc", "identifier": "diag", "cmd": "[python3, rustc_action.py, @buck-out/x/m.args]"}
+        }"#;
+        let err = find_rustc_action(json, "//m:m").unwrap_err().to_string();
+        assert!(err.contains("is a proc macro"), "{err}");
     }
 }
