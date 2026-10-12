@@ -1,0 +1,80 @@
+
+// Final ULLBC:
+
+struct () {}
+
+// Full name: core::any::TypeId
+#[lang_item(TypeId)]
+pub struct TypeId {
+  data: [*const (); 2usize],
+}
+
+// Full name: core::any::{impl PartialEq<TypeId> for TypeId}::eq
+pub fn eq(self: &'_ TypeId, other: &'_ TypeId) -> bool
+{
+    let _0: bool; // return
+    let self: &'_ TypeId; // arg #1
+    let other: &'_ TypeId; // arg #2
+    let _3: TypeId; // anonymous local
+    let _4: TypeId; // anonymous local
+    let _5: u128; // anonymous local
+    let _6: u128; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        storage_live(_5);
+        _5 = transmute<TypeId, u128>(copy _3);
+        storage_live(_6);
+        _6 = transmute<TypeId, u128>(copy _4);
+        _0 = move _5 == move _6;
+        storage_dead(_6);
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
+
+// Full name: anon_const_0
+const anon_const_0: TypeId = TypeId(u8)
+
+// Full name: test_crate::is_u8
+fn is_u8(id: TypeId) -> bool
+{
+    let _0: bool; // return
+    let id: TypeId; // arg #1
+    let _2: &'_ TypeId; // anonymous local
+    let _3: &'_ TypeId; // anonymous local
+    let _4: &'_ TypeId; // anonymous local
+    let _5: &'_ TypeId; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_4);
+        storage_live(_2);
+        _2 = &id;
+        storage_live(_3);
+        storage_live(_5);
+        _5 = &anon_const_0;
+        _4 = move _5;
+        _3 = &(*_4);
+        _0 = eq(move _2, move _3) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_3);
+        storage_dead(_2);
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+
+

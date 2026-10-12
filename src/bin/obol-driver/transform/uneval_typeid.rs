@@ -36,13 +36,28 @@ impl Transform {
     }
 }
 
+impl Transform {
+    fn replace_typeid(&self, cexpr: &mut ConstantExpr) {
+        if let Some(t) = extract_typeid_ty(cexpr, &self.typeid_globals) {
+            cexpr.with_contents_mut(|kind, _ty| *kind = ConstantExprKind::TypeId(t));
+        }
+    }
+}
+
 impl UllbcPass for Transform {
     fn transform_body(&self, _ctx: &mut TransformCtx, body: &mut ExprBody) {
-        body.dyn_visit_in_body_mut(|cexpr: &mut ConstantExpr| {
-            if let Some(t) = extract_typeid_ty(cexpr, &self.typeid_globals) {
-                cexpr.with_contents_mut(|kind, _ty| *kind = ConstantExprKind::TypeId(t));
-            }
-        });
+        body.dyn_visit_in_body_mut(|cexpr: &mut ConstantExpr| self.replace_typeid(cexpr));
+    }
+
+    fn transform_item(&self, ctx: &mut TransformCtx, item: ItemRefMut<'_>) {
+        match item {
+            ItemRefMut::Fun(decl) => self.transform_function(ctx, decl),
+            // The values of constants and statics hold TypeIds too.
+            ItemRefMut::Global(decl) => decl
+                .value
+                .dyn_visit_mut(|cexpr: &mut ConstantExpr| self.replace_typeid(cexpr)),
+            _ => {}
+        }
     }
 
     fn finalize(&self, ctx: &mut TransformCtx) {
