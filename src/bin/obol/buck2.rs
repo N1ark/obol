@@ -330,19 +330,17 @@ fn find_rustc_action(aquery_json: &str, target: &str) -> Result<RustcActionInfo>
 fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
     let project_root = &buck.project_root;
     let template = &action.argsfile;
-    // Project-relative paths of the candidates, one per content-hash directory.
-    let candidates: Vec<String> = match template.split_once(&format!("/{PLACEHOLDER}/")) {
+    // Project-relative paths of the candidates on disk, one per content-hash directory.
+    let mut candidates: Vec<String> = match template.split_once(&format!("/{PLACEHOLDER}/")) {
         None => vec![template.clone()],
-        Some((dir, rest)) => {
-            let entries = std::fs::read_dir(project_root.join(dir))
-                .with_context(|| format!("argsfile directory `{dir}` not found"))?;
-            entries
-                .filter_map(|e| e.ok())
-                .map(|e| format!("{dir}/{}/{rest}", e.file_name().to_string_lossy()))
-                .collect()
-        }
+        Some((dir, rest)) => std::fs::read_dir(project_root.join(dir))
+            .into_iter()
+            .flatten()
+            .filter_map(|e| e.ok())
+            .map(|e| format!("{dir}/{}/{rest}", e.file_name().to_string_lossy()))
+            .collect(),
     };
-    let find_matches = || -> Vec<PathBuf> {
+    let find_matches = |candidates: &[String]| -> Vec<PathBuf> {
         candidates
             .iter()
             .map(|c| project_root.join(c))
@@ -352,13 +350,30 @@ fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
             })
             .collect()
     };
-    let mut matches = find_matches();
+    let mut matches = find_matches(&candidates);
     if matches.is_empty() {
         // The argsfile is an input of the rustc action: when that action is a cache hit, Buck
-        // doesn't write it, even with `defer_write_actions=false`. Ask Buck to materialize the
-        // candidates (a no-op for paths that aren't artifacts it knows of) and look again.
+        // doesn't write it, even with `defer_write_actions=false`, and its content-hash directory
+        // may not exist at all. The deferred materializer knows its path: add the matching paths
+        // it lists, materialize the candidates and look again.
+        let listing = buck
+            .run(
+                "audit",
+                &["deferred-materializer".into(), "list".into()],
+                false,
+            )
+            .unwrap_or_default();
+        candidates.extend(
+            listing
+                .lines()
+                .filter_map(|line| line.split('\t').next())
+                .filter(|path| matches_template(template, path))
+                .map(str::to_owned),
+        );
+        candidates.sort();
+        candidates.dedup();
         materialize(buck, &candidates)?;
-        matches = find_matches();
+        matches = find_matches(&candidates);
     }
     match matches.as_slice() {
         [one] => Ok(one.clone()),
