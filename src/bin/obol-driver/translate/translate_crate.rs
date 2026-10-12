@@ -729,6 +729,7 @@ impl<'tcx> TranslateCtx<'tcx> {
             .for_each(|instance| {
                 self.started_from.insert(TransItemSource::Fun(instance));
                 self.register_fun_decl_id(&None, instance);
+                self.register_async_body(instance);
             });
 
         for (path, matched) in options.start_from.iter().zip(start_from_matched) {
@@ -738,6 +739,72 @@ impl<'tcx> TranslateCtx<'tcx> {
                     Span::dummy(),
                     "`--start-from {path}` matches no function"
                 );
+            }
+        }
+    }
+
+    /// An entry point that is an `async fn` only builds its future: translate what running its
+    /// body takes, i.e. the future's `poll` and what makes a no-op context to poll it with
+    /// (`Waker::noop` and `Context::from_waker`), so that an analysis can poll the future.
+    fn register_async_body(&mut self, instance: Instance) {
+        let tcx = self.tcx;
+        // Checked before converting anything to `rustc_public`, which doesn't support every type
+        // that a function may return (e.g. async closures).
+        let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
+        let fn_ty = rustc_internal::internal(tcx, instance).ty(tcx, typing_env);
+        if !fn_ty.is_fn() {
+            return;
+        }
+        let output = tcx
+            .instantiate_bound_regions_with_erased(fn_ty.fn_sig(tcx))
+            .output();
+        // The future of an `async fn` is an opaque type.
+        let Ok(output) = tcx.try_normalize_erasing_regions(
+            typing_env,
+            rustc_middle::ty::Unnormalized::new_wip(output),
+        ) else {
+            return;
+        };
+        match output.kind() {
+            rustc_middle::ty::Coroutine(def_id, _) if tcx.coroutine_is_async(*def_id) => {}
+            _ => return,
+        }
+        let future = rustc_internal::stable(output);
+        let erased = ty::GenericArgKind::Lifetime(ty::Region {
+            kind: ty::RegionKind::ReErased,
+        });
+        let inherent_fn = |ty: Option<rustc_span::def_id::DefId>, name: &str| {
+            tcx.inherent_impls(ty?).iter().find_map(|&imp| {
+                tcx.associated_items(imp)
+                    .filter_by_name_unhygienic(Symbol::intern(name))
+                    .next()
+                    .map(|item| item.def_id)
+            })
+        };
+        let fns = [
+            (
+                tcx.lang_items()
+                    .get(crate::rustc_compat::LangItem::FuturePoll),
+                ty::GenericArgs(vec![ty::GenericArgKind::Type(future)]),
+            ),
+            (
+                inherent_fn(tcx.get_diagnostic_item(Symbol::intern("Waker")), "noop"),
+                ty::GenericArgs(vec![]),
+            ),
+            (
+                inherent_fn(
+                    tcx.lang_items().get(crate::rustc_compat::LangItem::Context),
+                    "from_waker",
+                ),
+                ty::GenericArgs(vec![erased]),
+            ),
+        ];
+        for (def_id, args) in fns {
+            let Some(def_id) = def_id else { continue };
+            let fn_def = ty::FnDef(rustc_internal::stable(def_id));
+            if let Ok(instance) = Instance::resolve(fn_def, &args) {
+                self.started_from.insert(TransItemSource::Fun(instance));
+                self.register_fun_decl_id(&None, instance);
             }
         }
     }

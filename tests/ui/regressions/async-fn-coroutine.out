@@ -3,9 +3,442 @@
 
 struct () {}
 
+// Full name: core::task::wake::RawWaker
+pub struct RawWaker {
+  data: *const (),
+  vtable: &'_ RawWakerVTable,
+}
+
+// Full name: core::task::wake::RawWakerVTable
+pub struct RawWakerVTable {
+  clone: unsafe fn(*const ()) -> RawWaker,
+  wake: unsafe fn(*const ()),
+  wake_by_ref: unsafe fn(*const ()),
+  drop: unsafe fn(*const ()),
+}
+
+// Full name: core::task::wake::LocalWaker
+pub struct LocalWaker {
+  waker: RawWaker,
+}
+
+// Full name: core::task::wake::Waker
+#[diagnostic_item("Waker")]
+pub struct Waker {
+  waker: RawWaker,
+}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::task::wake::ExtData::<'_>
+enum ExtData::<'_> {
+  Some { _0: &'_ mut (dyn FakeTrait) },
+  None { _0: () },
+}
+
+// Full name: core::panic::unwind_safe::AssertUnwindSafe::<ExtData::<'_>>
+pub struct AssertUnwindSafe::<ExtData::<'_>> {
+  _0: ExtData::<'_>,
+}
+
+// Full name: core::marker::PhantomData::<fn(&'_ ()) -> &'_ ()>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<fn(&'_ ()) -> &'_ ()> {}
+
+// Full name: core::marker::PhantomData::<*mut ()>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<*mut ()> {}
+
+// Full name: core::task::wake::Context::<'_>
+#[lang_item(Context)]
+pub struct Context::<'_> {
+  waker: &'_ Waker,
+  local_waker: &'_ LocalWaker,
+  ext: AssertUnwindSafe::<ExtData::<'_>>,
+  _marker: PhantomData::<fn(&'_ ()) -> &'_ ()>,
+  _marker2: PhantomData::<*mut ()>,
+}
+
+// Full name: core::ptr::non_null::NonNull::<Context::<'_>>
+#[diagnostic_item("NonNull")]
+pub struct NonNull::<Context::<'_>> {
+  pointer: *const Context::<'_> is !null,
+}
+
+// Full name: core::future::ResumeTy
+#[lang_item(ResumeTy)]
+pub struct ResumeTy {
+  _0: NonNull::<Context::<'_>>,
+}
+
+struct (_,)::<*const ()> {
+  _0: *const (),
+}
+
+struct core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure} {}
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::<i8, extern "rust-call" fn((*const (),)), ()>(_1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}, spread_args: (*const (),))
+{
+    let _0: (); // return
+    let _1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}; // arg #1
+    let spread_args: (*const (),); // arg #2
+    let _3: *const (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _0 = ();
+        _3 = move spread_args._0;
+        return;
+    }
+}
+
+// Full name: core::ops::function::FnOnce::call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}, (*const (),)>
+pub fn call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}, (*const (),)>(_1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}, _2: (*const (),))
+{
+    let _0: (); // return
+    let _1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}; // arg #1
+    let _2: (*const (),); // arg #2
+    let _3: &'_ mut core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _0 = ();
+        _3 = &mut _1;
+        _0 = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::<i8, extern "rust-call" fn((*const (),)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{as_fn}(arg1: *const ())
+{
+    let _0: (); // return
+    let arg1: *const (); // arg #1
+    let args: (*const (),); // local
+    let state: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}; // local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(args);
+        storage_live(state);
+        _0 = ();
+        args = (move arg1,);
+        state = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure} {  };
+        _0 = call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}, (*const (),)>(move state, move args) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+struct core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure} {}
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::<i8, extern "rust-call" fn((*const (),)), ()>(_1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}, spread_args: (*const (),))
+{
+    let _0: (); // return
+    let _1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}; // arg #1
+    let spread_args: (*const (),); // arg #2
+    let _3: *const (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _0 = ();
+        _3 = move spread_args._0;
+        return;
+    }
+}
+
+// Full name: core::ops::function::FnOnce::call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}, (*const (),)>
+pub fn call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}, (*const (),)>(_1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}, _2: (*const (),))
+{
+    let _0: (); // return
+    let _1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}; // arg #1
+    let _2: (*const (),); // arg #2
+    let _3: &'_ mut core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _0 = ();
+        _3 = &mut _1;
+        _0 = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::<i8, extern "rust-call" fn((*const (),)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{as_fn}(arg1: *const ())
+{
+    let _0: (); // return
+    let arg1: *const (); // arg #1
+    let args: (*const (),); // local
+    let state: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}; // local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(args);
+        storage_live(state);
+        _0 = ();
+        args = (move arg1,);
+        state = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure} {  };
+        _0 = call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}, (*const (),)>(move state, move args) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+struct core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure} {}
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::<i8, extern "rust-call" fn((*const (),)), ()>(_1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}, spread_args: (*const (),))
+{
+    let _0: (); // return
+    let _1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}; // arg #1
+    let spread_args: (*const (),); // arg #2
+    let _3: *const (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _0 = ();
+        _3 = move spread_args._0;
+        return;
+    }
+}
+
+// Full name: core::ops::function::FnOnce::call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}, (*const (),)>
+pub fn call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}, (*const (),)>(_1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}, _2: (*const (),))
+{
+    let _0: (); // return
+    let _1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}; // arg #1
+    let _2: (*const (),); // arg #2
+    let _3: &'_ mut core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _0 = ();
+        _3 = &mut _1;
+        _0 = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::<i8, extern "rust-call" fn((*const (),)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{as_fn}(arg1: *const ())
+{
+    let _0: (); // return
+    let arg1: *const (); // arg #1
+    let args: (*const (),); // local
+    let state: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}; // local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(args);
+        storage_live(state);
+        _0 = ();
+        args = (move arg1,);
+        state = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure} {  };
+        _0 = call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}, (*const (),)>(move state, move args) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+struct core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure} {}
+
+// Full name: core::ops::function::FnOnce::call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}, (*const (),)>
+pub fn call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}, (*const (),)>(_1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}, _2: (*const (),)) -> RawWaker
+{
+    let _0: RawWaker; // return
+    let _1: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}; // arg #1
+    let _2: (*const (),); // arg #2
+    let _3: &'_ mut core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = &mut _1;
+        _0 = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::<i8, extern "rust-call" fn((*const (),)) -> RawWaker, ()>(move _3, move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+// Full name: core::task::wake::{RawWaker}::NOOP
+const NOOP: RawWaker = RawWaker { data: no-provenance 0, vtable: &anon_const_1 }
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{as_fn}(arg1: *const ()) -> RawWaker
+{
+    let _0: RawWaker; // return
+    let arg1: *const (); // arg #1
+    let args: (*const (),); // local
+    let state: core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}; // local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(args);
+        storage_live(state);
+        args = (move arg1,);
+        state = core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure} {  };
+        _0 = call_once::<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}, (*const (),)>(move state, move args) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+fn core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::<i8, extern "rust-call" fn((*const (),)) -> RawWaker, ()>(_1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}, spread_args: (*const (),)) -> RawWaker
+{
+    let _0: RawWaker; // return
+    let _1: &'_ core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}; // arg #1
+    let spread_args: (*const (),); // arg #2
+    let _3: *const (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = move spread_args._0;
+        _0 = copy NOOP;
+        return;
+    }
+}
+
+// Full name: anon_const_1
+const anon_const_1: RawWakerVTable = RawWakerVTable { clone: fnptr(core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{as_fn}<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure}::{closure}, (*const (),)>), wake: fnptr(core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{as_fn}<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#1}::{closure}, (*const (),)>), wake_by_ref: fnptr(core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{as_fn}<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#2}::{closure}, (*const (),)>), drop: fnptr(core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{as_fn}<core::task::wake::{RawWaker}::NOOP::VTABLE::{closure#3}::{closure}, (*const (),)>) }
+
 struct test_crate::increment::{closure}::{coroutine} {
   upvar_0: u32,
   __state: u8,
+}
+
+// Full name: core::pin::Pin::<&'_ mut test_crate::increment::{closure}::{coroutine}>
+#[fundamental]
+#[lang_item(Pin)]
+pub struct Pin::<&'_ mut test_crate::increment::{closure}::{coroutine}> {
+  pointer: &'_ mut test_crate::increment::{closure}::{coroutine},
+}
+
+struct test_crate::use_async_block::{closure}::{coroutine} {
+  __state: u8,
+}
+
+// Full name: core::pin::Pin::<&'_ mut test_crate::use_async_block::{closure}::{coroutine}>
+#[fundamental]
+#[lang_item(Pin)]
+pub struct Pin::<&'_ mut test_crate::use_async_block::{closure}::{coroutine}> {
+  pointer: &'_ mut test_crate::use_async_block::{closure}::{coroutine},
+}
+
+// Full name: core::task::poll::Poll::<u32>
+#[lang_item(Poll)]
+pub enum Poll::<u32> {
+  Ready { _0: u32 },
+  Pending,
+}
+
+// Full name: core::task::wake::{Context::<'_>}::from_waker::<'_>
+pub fn from_waker::<'_>(waker: &'_ Waker) -> Context::<'_>
+{
+    let _0: Context::<'_>; // return
+    let waker: &'_ Waker; // arg #1
+    let _2: &'_ LocalWaker; // anonymous local
+    let _3: ExtData::<'_>; // anonymous local
+    let _4: AssertUnwindSafe::<ExtData::<'_>>; // anonymous local
+    let _5: PhantomData::<fn(&'_ ()) -> &'_ ()>; // anonymous local
+    let _6: PhantomData::<*mut ()>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = transmute<&'_ Waker, &'_ LocalWaker>(copy waker);
+        storage_live(_3);
+        _3 = ExtData::<'_>::None { _0: const () };
+        storage_live(_4);
+        _4 = AssertUnwindSafe::<ExtData::<'_>> { _0: move _3 };
+        storage_live(_5);
+        _5 = PhantomData::<fn(&'_ ()) -> &'_ ()> {  };
+        storage_live(_6);
+        _6 = PhantomData::<*mut ()> {  };
+        _0 = Context::<'_> { waker: copy waker, local_waker: copy _2, ext: move _4, _marker: move _5, _marker2: move _6 };
+        return;
+    }
+}
+
+// Full name: anon_const_0
+const anon_const_0: Waker = Waker { waker: RawWaker { data: no-provenance 0, vtable: &anon_const_1 } }
+
+// Full name: core::task::wake::{Waker}::noop::WAKER
+const WAKER: &'_ Waker = &anon_const_0
+
+// Full name: core::task::wake::{Waker}::noop
+pub fn noop() -> &'_ Waker
+{
+    let _0: &'_ Waker; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy WAKER;
+        return;
+    }
+}
+
+struct (_,)::<u32> {
+  _0: u32,
+}
+
+struct (_, _)::<u32, bool> {
+  _0: u32,
+  _1: bool,
 }
 
 // Full name: test_crate::increment
@@ -22,8 +455,73 @@ pub fn increment(x: u32) -> test_crate::increment::{closure}::{coroutine}
     }
 }
 
-struct test_crate::use_async_block::{closure}::{coroutine} {
-  __state: u8,
+fn test_crate::increment::{closure}::<(), ResumeTy, (), u32, (u32,)>(_1: Pin::<&'_ mut test_crate::increment::{closure}::{coroutine}>, _2: &'_ mut Context::<'_>) -> Poll::<u32>
+{
+    let _0: Poll::<u32>; // return
+    let _1: Pin::<&'_ mut test_crate::increment::{closure}::{coroutine}>; // arg #1
+    let _2: &'_ mut Context::<'_>; // arg #2
+    let x: u32; // local
+    let _4: u32; // anonymous local
+    let _5: (u32, bool); // anonymous local
+    let _6: u32; // anonymous local
+    let _7: u32; // anonymous local
+    let _8: &'_ mut test_crate::increment::{closure}::{coroutine}; // anonymous local
+    let _task_context: ResumeTy; // local
+    let _10: NonNull::<Context::<'_>>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_8);
+        storage_live(_task_context);
+        storage_live(_10);
+        _10 = transmute<&'_ mut Context::<'_>, NonNull::<Context::<'_>>>(move _2);
+        _task_context = ResumeTy { _0: move _10 };
+        _8 = copy _1.pointer;
+        _7 = cast<u8, u32>(copy (*_8).__state);
+        switch move _7 -> 0u32: bb1, 1u32: bb4, 2u32: bb5, otherwise: bb6;
+    }
+
+    bb1: {
+        storage_live(x);
+        x = copy (*_8).upvar_0;
+        storage_live(_4);
+        _4 = copy x;
+        _5 = copy _4 checked.+ const 1u32;
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        _6 = move _5._0;
+        storage_dead(_4);
+        storage_dead(x);
+        _0 = Poll::<u32>::Ready { _0: move _6 };
+        (*_8).__state = const 1u8;
+        return;
+    }
+
+    bb3 (cleanup): {
+        storage_dead(_4);
+        storage_dead(x);
+        (*_8).__state = const 2u8;
+        unwind_continue;
+    }
+
+    bb4: {
+        assert(const false == true) (resumed_after_return) else panic;
+        goto bb4;
+    }
+
+    bb5: {
+        assert(const false == true) (resumed_after_panic) else panic;
+        goto bb5;
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
 }
 
 // Full name: test_crate::use_async_block
@@ -35,6 +533,65 @@ pub fn use_async_block() -> test_crate::use_async_block::{closure}::{coroutine}
         storage_live(_0);
         _0.__state = const 0u8;
         return;
+    }
+}
+
+fn test_crate::use_async_block::{closure}::<(), ResumeTy, (), u32, ()>(_1: Pin::<&'_ mut test_crate::use_async_block::{closure}::{coroutine}>, _2: &'_ mut Context::<'_>) -> Poll::<u32>
+{
+    let _0: Poll::<u32>; // return
+    let _1: Pin::<&'_ mut test_crate::use_async_block::{closure}::{coroutine}>; // arg #1
+    let _2: &'_ mut Context::<'_>; // arg #2
+    let _3: (u32, bool); // anonymous local
+    let _4: u32; // anonymous local
+    let _5: u32; // anonymous local
+    let _6: &'_ mut test_crate::use_async_block::{closure}::{coroutine}; // anonymous local
+    let _task_context: ResumeTy; // local
+    let _8: NonNull::<Context::<'_>>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_task_context);
+        storage_live(_8);
+        _8 = transmute<&'_ mut Context::<'_>, NonNull::<Context::<'_>>>(move _2);
+        _task_context = ResumeTy { _0: move _8 };
+        _6 = copy _1.pointer;
+        _5 = cast<u8, u32>(copy (*_6).__state);
+        switch move _5 -> 0u32: bb1, 1u32: bb4, 2u32: bb5, otherwise: bb6;
+    }
+
+    bb1: {
+        _3 = const 1u32 checked.+ const 2u32;
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        _4 = move _3._0;
+        _0 = Poll::<u32>::Ready { _0: move _4 };
+        (*_6).__state = const 1u8;
+        return;
+    }
+
+    bb3 (cleanup): {
+        (*_6).__state = const 2u8;
+        unwind_continue;
+    }
+
+    bb4: {
+        assert(const false == true) (resumed_after_return) else panic;
+        goto bb4;
+    }
+
+    bb5: {
+        assert(const false == true) (resumed_after_panic) else panic;
+        goto bb5;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
