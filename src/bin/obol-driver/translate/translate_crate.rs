@@ -743,9 +743,10 @@ impl<'tcx> TranslateCtx<'tcx> {
         }
     }
 
-    /// An entry point that is an `async fn` only builds its future: translate what running its
-    /// body takes, i.e. the future's `poll` and what makes a no-op context to poll it with
-    /// (`Waker::noop` and `Context::from_waker`), so that an analysis can poll the future.
+    /// An entry point that is an `async fn` (or an async-trait method) only builds its future:
+    /// translate what running its body takes, i.e. the future's `poll`, what makes a no-op context
+    /// to poll it with (`Waker::noop` and `Context::from_waker`) and the future's drop glue, so
+    /// that an analysis can poll the future.
     fn register_async_body(&mut self, instance: Instance) {
         let tcx = self.tcx;
         // Checked before converting anything to `rustc_public`, which doesn't support every type
@@ -765,9 +766,27 @@ impl<'tcx> TranslateCtx<'tcx> {
         ) else {
             return;
         };
-        match output.kind() {
-            rustc_middle::ty::Coroutine(def_id, _) if tcx.coroutine_is_async(*def_id) => {}
-            _ => return,
+        let is_future_trait =
+            |def_id| tcx.is_lang_item(def_id, crate::rustc_compat::LangItem::Future);
+        let is_future = match output.kind() {
+            rustc_middle::ty::Coroutine(def_id, _) => tcx.coroutine_is_async(*def_id),
+            // A pinned pointer to a `dyn Future`, e.g. the boxed future of an async-trait method.
+            rustc_middle::ty::Adt(adt, args)
+                if tcx.is_lang_item(adt.did(), crate::rustc_compat::LangItem::Pin) =>
+            {
+                args.type_at(0)
+                    .builtin_deref(true)
+                    .is_some_and(|ty| match ty.kind() {
+                        rustc_middle::ty::Dynamic(preds, ..) => {
+                            preds.principal_def_id().is_some_and(is_future_trait)
+                        }
+                        _ => false,
+                    })
+            }
+            _ => false,
+        };
+        if !is_future {
+            return;
         }
         let future = rustc_internal::stable(output);
         let erased = ty::GenericArgKind::Lifetime(ty::Region {
@@ -799,13 +818,18 @@ impl<'tcx> TranslateCtx<'tcx> {
                 ty::GenericArgs(vec![erased]),
             ),
         ];
-        for (def_id, args) in fns {
-            let Some(def_id) = def_id else { continue };
-            let fn_def = ty::FnDef(rustc_internal::stable(def_id));
-            if let Ok(instance) = Instance::resolve(fn_def, &args) {
-                self.started_from.insert(TransItemSource::Fun(instance));
-                self.register_fun_decl_id(&None, instance);
-            }
+        let instances = fns
+            .into_iter()
+            .filter_map(|(def_id, args)| {
+                let fn_def = ty::FnDef(rustc_internal::stable(def_id?));
+                Instance::resolve(fn_def, &args).ok()
+            })
+            // The future is dropped once it is ready.
+            .chain([Instance::resolve_drop_in_place(future)])
+            .collect_vec();
+        for instance in instances {
+            self.started_from.insert(TransItemSource::Fun(instance));
+            self.register_fun_decl_id(&None, instance);
         }
     }
 
