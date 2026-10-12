@@ -282,7 +282,7 @@ pub struct MonoBody {
 }
 
 /// Whether an inline assembly template is only comments, like the `asm!("/*{0}*/", inout(reg) x)`
-/// used as optimization barriers: such assembly does nothing.
+/// or `asm!("# {}", in(reg) p)` used as optimization barriers: such assembly does nothing.
 fn asm_is_only_comments(template: &[rustc_ast::InlineAsmTemplatePiece]) -> bool {
     // A placeholder becomes a register name or similar, which can't end a comment.
     let code: String = template
@@ -292,12 +292,26 @@ fn asm_is_only_comments(template: &[rustc_ast::InlineAsmTemplatePiece]) -> bool 
             rustc_ast::InlineAsmTemplatePiece::Placeholder { .. } => "x",
         })
         .collect();
-    let mut rest = code.trim_start();
-    while !rest.is_empty() {
-        let Some(end) = rest.strip_prefix("/*").and_then(|r| r.find("*/")) else {
+    let mut rest = code.as_str();
+    let mut line_start = true;
+    loop {
+        let trimmed = rest.trim_start();
+        line_start |= rest[..rest.len() - trimmed.len()].contains('\n');
+        rest = trimmed;
+        if rest.is_empty() {
+            return true;
+        }
+        if let Some(block) = rest.strip_prefix("/*") {
+            let Some(end) = block.find("*/") else {
+                return false;
+            };
+            rest = &block[end + 2..];
+            line_start = false;
+        } else if line_start && rest.starts_with('#') {
+            // A `#` at the start of a line comments it out, e.g. zeroize's `asm!("# {}", ...)`.
+            rest = rest.find('\n').map_or("", |end| &rest[end..]);
+        } else {
             return false;
-        };
-        rest = rest[end + 4..].trim_start();
+        }
     }
-    true
 }

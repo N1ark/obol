@@ -10,3 +10,7 @@ fn split(x: u32) -> u32 {
     unsafe { core::arch::asm!("/* {0:e} */ /* {1} */", inout(reg) x => y, in(reg) 0u64) };
     y
 }
+
+fn hash_comment(x: &u64) {
+    unsafe { core::arch::asm!("# {}", in(reg) x, options(readonly, preserves_flags, nostack)) };
+}
