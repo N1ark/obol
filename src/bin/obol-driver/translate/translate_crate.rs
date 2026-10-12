@@ -876,6 +876,8 @@ pub fn translate<'tcx, 'ctx>(
         reconstruct_fallible_operations: true,
         // Obol's output is ULLBC, with unwinding paths.
         ullbc: true,
+        // Soteria doesn't read doc comments, and they are repeated in every instance of an item.
+        no_doc_comments: true,
         start_from: vec!["*".into()],
         ..CharonCliOpts::default()
     };

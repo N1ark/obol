@@ -458,7 +458,9 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             rustc_hir::Attribute::Parsed(rustc_hir::attrs::AttributeKind::DocComment {
                 comment,
                 ..
-            }) => Some(Attribute::DocComment(comment.to_string())),
+            }) => {
+                (!self.options.no_doc_comments).then(|| Attribute::DocComment(comment.to_string()))
+            }
             rustc_hir::Attribute::Parsed(kind) => self
                 .translate_rustc_attribute_kind(kind)
                 .ok()
