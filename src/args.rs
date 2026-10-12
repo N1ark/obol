@@ -58,7 +58,7 @@ pub struct CliOpts {
     pub print_ullbc: bool,
     #[clap(
         long = "start-from",
-        help = "List of function paths that count as entry points to generate, matched against the end of the functions' paths (e.g. `wrap`, `lines::wrap` or `crate::lines::wrap`); if none are specified, main is used."
+        help = "List of function paths that count as entry points to generate, matched against the end of the functions' paths (e.g. `wrap`, `lines::wrap` or `crate::lines::wrap`). Without any `--start-from*` option, every monomorphic function of the crate is an entry point."
     )]
     pub start_from: Vec<String>,
     #[clap(
