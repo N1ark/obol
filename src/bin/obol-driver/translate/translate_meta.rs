@@ -249,6 +249,8 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             DefPathData::AnonConst => {
                 Some(PathElem::Builtin(BuiltinPathElem::AnonConst, disambiguator))
             }
+            // The allocation behind a static, e.g. the data of a `static S: &[T]`.
+            DefPathData::NestedStatic => Some(PathElem::Ident("{nested}".into(), disambiguator)),
 
             DefPathData::Impl => {
                 let kind = self.tcx.def_kind(internal);
@@ -283,7 +285,6 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             | DefPathData::GlobalAsm
             | DefPathData::OpaqueLifetime(_)
             | DefPathData::AnonAssocTy(_)
-            | DefPathData::NestedStatic
             | DefPathData::SyntheticCoroutineBody => {
                 unreachable!("unexpected def path data")
             }
@@ -490,6 +491,11 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 // Impl blocks have no meaningful attributes and `tcx.visibility` ICEs on external ones.
                 | TransItemSource::TraitImpl(..)
         ) || (matches!(src, TransItemSource::Fun(..)) && self.tcx.is_closure_like(internal))
+            // Nor do nested statics (the allocations behind statics).
+            || matches!(
+                self.tcx.def_kind(internal),
+                rustc_hir::def::DefKind::Static { nested: true, .. }
+            )
         {
             return AttrInfo::default();
         }

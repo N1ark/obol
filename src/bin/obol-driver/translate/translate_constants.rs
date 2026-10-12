@@ -1,5 +1,6 @@
 extern crate rustc_abi;
 extern crate rustc_apfloat;
+extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_public_bridge;
@@ -108,7 +109,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     // The pointee's type is unknown: use the static's type, or raw memory of the
                     // allocation's size and alignment.
                     let ty = match &global {
-                        mir::alloc::GlobalAlloc::Static(stt) => Some(stt.ty()),
+                        mir::alloc::GlobalAlloc::Static(stt) => self.static_ty(stt).or_else(|| {
+                            let alloc = stt.eval_initializer().ok()?;
+                            self.raw_alloc_ty(&alloc).ok()
+                        }),
                         mir::alloc::GlobalAlloc::Memory(mem) => self.raw_alloc_ty(mem).ok(),
                         _ => None,
                     };
@@ -129,6 +133,16 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         }
 
         bytes
+    }
+
+    /// The type of a static, unless it is the allocation behind a static (e.g. the data of a
+    /// `static S: &[T]`): such *nested* statics have no type.
+    fn static_ty(&self, stt: &mir::mono::StaticDef) -> Option<ty::Ty> {
+        let def_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, stt.0);
+        match self.t_ctx.tcx.def_kind(def_id) {
+            rustc_hir::def::DefKind::Static { nested: true, .. } => None,
+            _ => Some(stt.ty()),
+        }
     }
 
     fn provenance_at<'a>(
@@ -368,7 +382,19 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         let glob_ty = match (&glob_alloc, dyn_self_ty) {
                             // we try checking if there's a static we can use the type of,
                             // to avoid registering unsized globals (a static is always sized)
-                            (GlobalAlloc::Static(stt), _) => stt.ty(),
+                            (GlobalAlloc::Static(stt), _) if let Some(ty) = self.static_ty(stt) => {
+                                ty
+                            }
+                            // a nested static (the allocation behind a static, e.g. the data of a
+                            // `static S: &[T]`) has no type: for an unsized pointee, represent it
+                            // as raw memory, like an anonymous allocation below.
+                            (GlobalAlloc::Static(stt), _)
+                                if let Some(inner) =
+                                    rty.kind().builtin_deref(true).map(|d| d.ty)
+                                    && inner.layout().is_ok_and(|l| l.shape().is_unsized()) =>
+                            {
+                                self.raw_alloc_ty(&stt.eval_initializer()?)?
+                            }
                             // for a `&dyn Trait` (or a struct with a `dyn Trait` tail) the pointee
                             // type is unsized; use the concrete type recovered from the vtable so
                             // we register a sized global.
