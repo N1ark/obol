@@ -67,6 +67,16 @@ impl Buck {
         Ok(String::from_utf8_lossy(&out.stdout).into_owned())
     }
 
+    /// Whether the target exists in the Buck project.
+    fn target_exists(&self, target: &str) -> bool {
+        let mut cmd = self.cmd("uquery");
+        cmd.arg(target)
+            .current_dir(&self.project_root)
+            .stdout(Stdio::null())
+            .stderr(Stdio::null());
+        cmd.status().is_ok_and(|status| status.success())
+    }
+
     fn buck_out(&self) -> String {
         format!("buck-out/{}", self.isolation_dir)
     }
@@ -92,8 +102,6 @@ pub fn translate_with_buck2(mut opts: Buck2Opts) -> Result<ExitStatus> {
         );
     }
     let user_args = std::mem::take(&mut opts.obol.spread);
-    let target = opts.target.clone();
-    let check_target = format!("{target}[check]");
 
     let mut config = vec![
         "-c".to_owned(),
@@ -116,6 +124,16 @@ pub fn translate_with_buck2(mut opts: Buck2Opts) -> Result<ExitStatus> {
     };
     let root = buck.run("root", &["--kind".into(), "project".into()], false)?;
     buck.project_root = PathBuf::from(root.trim());
+
+    // fbcode's `rust_library` defines a `<name>-unittest` `rust_test` for its unit tests, which
+    // also has the library's `test_deps`: with `--test`, translate it rather than the library.
+    let mut target = opts.target.clone();
+    let unittest = format!("{target}-unittest");
+    if opts.test && buck.target_exists(&unittest) {
+        eprintln!("[obol] translating `{unittest}`, the test target of `{target}`");
+        target = unittest;
+    }
+    let check_target = format!("{target}[check]");
 
     // 1. Build the target's metadata with full MIR for the whole graph.
     buck.run("build", &[check_target.clone()], true)?;

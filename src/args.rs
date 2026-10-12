@@ -105,7 +105,9 @@ pub struct Buck2Opts {
     pub target: String,
     /// Translate the crate as a test harness: adds `--test` to its rustc command line (like
     /// `cargo test --lib`) and uses the `#[test]` functions as entry points. Implied for targets
-    /// whose rustc command line already has `--test` (`rust_test`).
+    /// whose rustc command line already has `--test` (`rust_test`). For a library with a
+    /// `<target>-unittest` test target (as fbcode's `rust_library` defines, with its `test_deps`),
+    /// translates that target instead.
     #[clap(long = "test")]
     pub test: bool,
     /// The `buck2` executable.

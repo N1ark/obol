@@ -64,10 +64,12 @@ obol buck2 [OBOL OPTIONS] <TARGET> [-- <BUCK2 ARGS>]
 # e.g., in fbsource:
 obol buck2 --start-from-pub fbcode//foo/bar:lib -- @fbcode//mode/dev
 obol buck2 fbcode//foo/bar:lib-unittest            # a rust_test: #[test] fns are the entry points
-obol buck2 --test fbcode//foo/bar:lib              # a library compiled as a test harness
+obol buck2 --test fbcode//foo/bar:lib              # the same: lib-unittest, if it exists
 ```
 
-`TARGET` is a `rust_library`, `rust_binary` or `rust_test`. The usual translation options apply
+`TARGET` is a `rust_library`, `rust_binary` or `rust_test`. With `--test`, a library is compiled as
+a test harness; if it has a `<TARGET>-unittest` test target (fbcode's `rust_library` defines one,
+with the library's `test_deps`), that target is translated instead. The usual translation options apply
 (`--dest-file`, `--format`, `--start-from`, `--start-from-attribute`, `--start-from-pub`,
 `--opaque`, `--print-ullbc`, ...); the output defaults to `<crate>.ullbc.postcard` in the current
 directory. Arguments after `--` go to `buck2 build`/`buck2 aquery` (mode files, `-c` options).
