@@ -19,6 +19,7 @@ use std::{
 
 use charon_lib::{ast::*, raise_error, register_error, ullbc_ast::*};
 
+use crate::translate::translate_coroutines::as_coroutine;
 use crate::translate::translate_ctx::ItemTransCtx;
 
 /// A translation context for function bodies.
@@ -649,6 +650,15 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 return Ok((of_place, proj_ty, Some(self.translate_variant_id(*variant))));
             }
             mir::ProjectionElem::Field(field_idx, _) => {
+                if let Some(variant_id) = variant_id
+                    && let Some((def, args)) = as_coroutine(place_ty)
+                {
+                    let info = self.coroutine_info(span, def, &args)?;
+                    let place = self.coroutine_saved_local(
+                        span, of_place, &info, variant_id, *field_idx, proj_ty,
+                    )?;
+                    return Ok((place, proj_ty, None));
+                }
                 ProjectionElem::Field(variant_id, FieldId::from_usize(*field_idx))
             }
             mir::ProjectionElem::OpaqueCast(..) => {
@@ -936,7 +946,12 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 Ok(Rvalue::UnaryOp(unop, operand))
             }
             mir::Rvalue::Discriminant(place) => {
+                let ty = place.ty(self.local_decls)?;
                 let place = self.translate_place(span, place)?;
+                if let Some((def, args)) = as_coroutine(ty) {
+                    let info = self.coroutine_info(span, def, &args)?;
+                    return Ok(info.discriminant(place));
+                }
                 Ok(Rvalue::Discriminant(place))
             }
             mir::Rvalue::Aggregate(aggregate_kind, operands) => {
@@ -1028,9 +1043,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
 
                         Ok(Rvalue::Aggregate(akind, operands_t))
                     }
+                    // Coroutine aggregates are translated by `translate_statement`.
                     mir::AggregateKind::Coroutine(..)
                     | mir::AggregateKind::CoroutineClosure(..) => {
-                        raise_error!(self, span, "Coroutines are not supported");
+                        raise_error!(self, span, "Coroutine closures are not supported");
                     }
                 }
             }
@@ -1085,6 +1101,24 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             .translate_span_from_smir(crate::rustc_compat::statement_span(statement));
 
         let t_statement: Option<StatementKind> = match &statement.kind {
+            mir::StatementKind::Assign(
+                place,
+                mir::Rvalue::Aggregate(mir::AggregateKind::Coroutine(def, args), operands),
+            ) => {
+                let t_place = self.translate_place(span, &place)?;
+                let operands = operands
+                    .iter()
+                    .map(|op| self.translate_operand(span, op))
+                    .try_collect()?;
+                let info = self.coroutine_info(span, *def, args)?;
+                let statements = self.coroutine_init(span, t_place, &info, operands)?;
+                self.statements.extend(
+                    statements
+                        .into_iter()
+                        .map(|kind| Statement::new(span, kind)),
+                );
+                None
+            }
             mir::StatementKind::Assign(place, rvalue) => {
                 let t_place = self.translate_place(span, &place)?;
                 let t_rvalue = self.translate_rvalue(span, &rvalue, &t_place.ty)?;
@@ -1094,9 +1128,19 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 place,
                 variant_index,
             } => {
+                let ty = place.ty(self.local_decls)?;
                 let t_place = self.translate_place(span, &place)?;
-                let variant_id = self.translate_variant_id(*variant_index);
-                Some(StatementKind::SetDiscriminant(t_place, variant_id))
+                if let Some((def, args)) = as_coroutine(ty) {
+                    let info = self.coroutine_info(span, def, &args)?;
+                    let state = info.state_of_variant(variant_index.to_index());
+                    Some(StatementKind::Assign(
+                        info.state_place(t_place),
+                        Rvalue::Use(state, WithRetag::No),
+                    ))
+                } else {
+                    let variant_id = self.translate_variant_id(*variant_index);
+                    Some(StatementKind::SetDiscriminant(t_place, variant_id))
+                }
             }
             mir::StatementKind::StorageLive(local) => {
                 let var_id = self.translate_local(&local).unwrap();
@@ -1435,11 +1479,9 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let operand = self.translate_operand(span, operand)?;
                 Ok(BuiltinAssertKind::InvalidEnumConstruction(operand))
             }
-            mir::AssertMessage::ResumedAfterDrop(..)
-            | mir::AssertMessage::ResumedAfterPanic(..)
-            | mir::AssertMessage::ResumedAfterReturn(..) => {
-                raise_error!(self, span, "Coroutines are not supported");
-            }
+            mir::AssertMessage::ResumedAfterReturn(..) => Ok(BuiltinAssertKind::ResumedAfterReturn),
+            mir::AssertMessage::ResumedAfterPanic(..) => Ok(BuiltinAssertKind::ResumedAfterPanic),
+            mir::AssertMessage::ResumedAfterDrop(..) => Ok(BuiltinAssertKind::ResumedAfterDrop),
         }
     }
 

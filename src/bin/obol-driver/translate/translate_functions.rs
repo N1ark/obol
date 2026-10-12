@@ -68,10 +68,10 @@ impl ItemTransCtx<'_, '_> {
     }
 
     /// If this instance is a closure, meaning in MIR it has untupled arguments both in the
-    /// signature and the body.
+    /// signature and the body. The resume function of a coroutine takes its arguments as is.
     pub fn instance_is_closure(&self, def: mir::mono::Instance) -> bool {
         let def = rustc_internal::internal(self.t_ctx.tcx, def.def.def_id());
-        self.t_ctx.tcx.is_closure_like(def)
+        self.t_ctx.tcx.is_closure_like(def) && !self.t_ctx.tcx.is_coroutine(def)
     }
 
     /// Translate a function's signature

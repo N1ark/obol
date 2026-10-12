@@ -3,6 +3,7 @@ pub mod translate_body;
 pub mod translate_buck;
 pub mod translate_closures;
 pub mod translate_constants;
+pub mod translate_coroutines;
 pub mod translate_crate;
 pub mod translate_ctx;
 pub mod translate_from_rustc;

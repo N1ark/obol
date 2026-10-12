@@ -1,9 +1,6 @@
 //@ output=pretty-llbc
-//! Limitation regression test: `async fn` lowers to a coroutine, which obol does
-//! not support. The item must be dropped *gracefully* (a `caused errors; ignoring`
-//! diagnostic and a non-zero error count) rather than crashing the whole tool.
-//! If obol gains coroutine support this output will change and the test should be
-//! updated to reflect the real translation.
+//! Regression test: `async fn`s and `async` blocks lower to coroutines, which we declare as
+//! structs (see `coroutines.rs`).
 pub async fn increment(x: u32) -> u32 {
     x + 1
 }

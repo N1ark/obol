@@ -145,6 +145,14 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     bt_ctx.translate_stateless_closure_as_fn(id, item_meta, &def, &generics)?;
                 self.translated.fun_decls.set_slot(id, fun_decl);
             }
+            TransItemSource::Coroutine(def, generics) => {
+                let Some(ItemId::Type(id)) = trans_id else {
+                    unreachable!()
+                };
+                let generics: ty::GenericArgs = generics.clone().into();
+                let ty = bt_ctx.translate_coroutine_adt(id, item_meta, &def, &generics)?;
+                self.translated.type_decls.set_slot(id, ty);
+            }
             TransItemSource::ForeignType(def) => {
                 let Some(ItemId::Type(id)) = trans_id else {
                     unreachable!()

@@ -97,6 +97,8 @@ pub enum TransItemSource {
     Type(ty::AdtDef, MyGenericArgs),
     Closure(ty::ClosureDef, MyGenericArgs),
     ClosureAsFn(ty::ClosureDef, MyGenericArgs),
+    /// The state machine of an `async fn` or `async` block, which we declare as a struct.
+    Coroutine(ty::CoroutineDef, MyGenericArgs),
     ForeignType(ty::ForeignDef),
     /// A tuple type. Tuples have no `DefId`, but like `str` they get a type declaration of their
     /// own, which we declare as a struct of its elements.
@@ -125,6 +127,7 @@ impl TransItemSource {
             TransItemSource::Type(id, _) => Some(id.0),
             TransItemSource::Closure(def, _) => Some(def.def_id()),
             TransItemSource::ClosureAsFn(def, _) => Some(def.def_id()),
+            TransItemSource::Coroutine(def, _) => Some(def.def_id()),
             TransItemSource::ForeignType(def) => Some(def.def_id()),
             TransItemSource::Tuple(..) | TransItemSource::Str => None,
             TransItemSource::VTable(_, Some((tr, _))) => Some(tr.0),
@@ -172,6 +175,9 @@ impl TransItemSource {
             TransItemSource::TraitImpl(did) => (13, did.to_index(), 0),
             TransItemSource::Tuple(tuple) => (14, tuple.fields.len(), 0),
             TransItemSource::Str => (15, 0, 0),
+            TransItemSource::Coroutine(def, gargs) => {
+                (16, def.def_id().to_index(), gargs.sort_key())
+            }
         }
     }
 }
@@ -200,6 +206,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let trans_id = match id {
                     TransItemSource::Type(..)
                     | TransItemSource::Closure(..)
+                    | TransItemSource::Coroutine(..)
                     | TransItemSource::ForeignType(..)
                     | TransItemSource::Tuple(..)
                     | TransItemSource::Str => {
@@ -258,6 +265,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             TransItemSource::Type(_, g)
             | TransItemSource::Closure(_, g)
             | TransItemSource::ClosureAsFn(_, g)
+            | TransItemSource::Coroutine(_, g)
             | TransItemSource::NamedConst(_, g) => g,
             _ => return false,
         };
@@ -347,6 +355,18 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
     ) -> TypeDeclId {
         *self
             .register_and_enqueue_id(src, TransItemSource::Closure(closure, args.into()))
+            .as_type()
+            .unwrap()
+    }
+
+    pub(crate) fn register_coroutine_type_decl_id(
+        &mut self,
+        src: &Option<DepSource>,
+        coroutine: ty::CoroutineDef,
+        args: ty::GenericArgs,
+    ) -> TypeDeclId {
+        *self
+            .register_and_enqueue_id(src, TransItemSource::Coroutine(coroutine, args.into()))
             .as_type()
             .unwrap()
     }
@@ -474,6 +494,17 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         let src = self.make_dep_source(span);
         self.t_ctx
             .register_closure_type_decl_id(&src, closure, args)
+    }
+
+    pub(crate) fn register_coroutine_type_decl_id(
+        &mut self,
+        span: Span,
+        coroutine: ty::CoroutineDef,
+        args: ty::GenericArgs,
+    ) -> TypeDeclId {
+        let src = self.make_dep_source(span);
+        self.t_ctx
+            .register_coroutine_type_decl_id(&src, coroutine, args)
     }
 
     pub(crate) fn register_closure_as_fn_id(

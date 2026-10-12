@@ -1,8 +1,6 @@
 //@ output=pretty-llbc
-//! Limitation regression test: an explicit `#[coroutine]` closure produces a
-//! coroutine type, which obol does not support. The item must be dropped
-//! gracefully with a `Coroutine types are not supported yet` error rather than
-//! panicking.
+//! Regression test: an explicit `#[coroutine]` closure produces a coroutine type, which we
+//! declare as a struct like those of `async` code.
 #![feature(coroutines, coroutine_trait, stmt_expr_attributes)]
 
 use std::ops::Coroutine;

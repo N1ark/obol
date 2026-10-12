@@ -403,8 +403,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 TyKind::Pattern(ty, pat)
             }
 
-            ty::RigidTy::Coroutine(..) => {
-                raise_error!(self, span, "Coroutine types are not supported yet")
+            ty::RigidTy::Coroutine(def, gargs) => {
+                let id = self.register_coroutine_type_decl_id(span, *def, gargs.clone());
+                TyKind::Adt(TypeDeclRef::new(id, GenericArgs::empty(), None))
             }
             ty::RigidTy::CoroutineClosure(..) => {
                 raise_error!(self, span, "Coroutine closure types are not supported yet")
@@ -624,10 +625,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             .translated
             .the_target_information()
             .target_pointer_size;
-        let ty_env = rustc_ty::TypingEnv::new(
-            rustc_ty::ParamEnv::empty(),
-            rustc_ty::TypingMode::PostAnalysis,
-        );
+        // Not `PostAnalysis`: rustc only computes the layouts of coroutines (e.g. in the `Stage<F>`
+        // of a tokio task) during codegen.
+        let ty_env = rustc_ty::TypingEnv::fully_monomorphized();
 
         // Build the discriminator tree and variant layouts.
         let (discriminator, variant_layouts) = match layout.variants() {

@@ -337,6 +337,9 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 BuiltinPathElem::ClosureAsFn,
                 Disambiguator::ZERO,
             )),
+            TransItemSource::Coroutine(..) => name
+                .name
+                .push(PathElem::Ident("{coroutine}".into(), Disambiguator::ZERO)),
             TransItemSource::Fun(_)
             | TransItemSource::Type(..)
             | TransItemSource::NamedConst(..) => 'add_generics: {
@@ -482,6 +485,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             src,
             TransItemSource::Closure(..)
                 | TransItemSource::ClosureAsFn(..)
+                | TransItemSource::Coroutine(..)
                 | TransItemSource::VTable(..)
                 // Impl blocks have no meaningful attributes and `tcx.visibility` ICEs on external ones.
                 | TransItemSource::TraitImpl(..)
@@ -560,6 +564,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             TransItemSource::Closure(def, _) | TransItemSource::ClosureAsFn(def, _) => {
                 Some(def.span())
             }
+            TransItemSource::Coroutine(def, _) => Some(def.span()),
             TransItemSource::ForeignType(def) => Some(def.span()),
             TransItemSource::Fun(instance) => Some(instance.def.span()),
             TransItemSource::Static(stt) => Some(stt.span()),
