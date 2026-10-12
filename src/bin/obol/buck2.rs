@@ -171,6 +171,9 @@ pub fn translate_with_buck2(mut opts: Buck2Opts) -> Result<ExitStatus> {
         .driver_invocation(&buck.project_root, out_dir.path())
         .map_err(anyhow::Error::msg)?;
     materialize_inputs(&buck, &invocation.args)?;
+    if let Some(deps_json) = &action.deps_json {
+        private_dependency_dirs(&buck, deps_json, out_dir.path(), &mut invocation.args)?;
+    }
     let expanded = argsfile::expand_argsfiles(&invocation.args, &buck.project_root)?;
 
     let crate_name = argsfile::option_values(&expanded, "--crate-name")
@@ -286,6 +289,9 @@ struct RustcActionInfo {
     argsfile: String,
     /// The argsfile's contents, with `aquery_placeholder` segments.
     contents: String,
+    /// The path of the JSON list of the dependencies' metadata that the action creating the
+    /// `-Ldependency` symlink directories reads, with `aquery_placeholder` segments.
+    deps_json: Option<String>,
 }
 
 /// Find, in `buck2 aquery --json` output, the rustc action of `target`'s `[check]` subtarget.
@@ -353,7 +359,61 @@ fn find_rustc_action(aquery_json: &str, target: &str) -> Result<RustcActionInfo>
         .as_str()
         .context("argsfile write action has no contents")?
         .to_owned();
-    Ok(RustcActionInfo { argsfile, contents })
+    let deps_json = own
+        .iter()
+        .filter(|(_, v)| v["category"] == "deps")
+        .find_map(|(_, v)| {
+            let cmd = v["cmd"].as_str()?;
+            let artifacts = cmd
+                .split(", ")
+                .find_map(|a| a.strip_prefix("--artifacts="))?;
+            Some(artifacts.trim_end_matches(']').to_owned())
+        });
+    Ok(RustcActionInfo {
+        argsfile,
+        contents,
+        deps_json,
+    })
+}
+
+/// Project-relative paths of the files on disk matching a path template, one per content-hash
+/// directory.
+fn candidates_on_disk(project_root: &Path, template: &str) -> Vec<String> {
+    match template.split_once(&format!("/{PLACEHOLDER}/")) {
+        None => vec![template.to_owned()],
+        Some((dir, rest)) => std::fs::read_dir(project_root.join(dir))
+            .into_iter()
+            .flatten()
+            .filter_map(|e| e.ok())
+            .map(|e| format!("{dir}/{}/{rest}", e.file_name().to_string_lossy()))
+            .collect(),
+    }
+}
+
+/// Add to `candidates` the paths matching `template` that the deferred materializer lists, i.e.
+/// the artifacts Buck knows of, written or not, and ask Buck to materialize them all.
+fn add_declared_candidates(
+    buck: &Buck,
+    template: &str,
+    candidates: &mut Vec<String>,
+) -> Result<()> {
+    let listing = buck
+        .run(
+            "audit",
+            &["deferred-materializer".into(), "list".into()],
+            false,
+        )
+        .unwrap_or_default();
+    candidates.extend(
+        listing
+            .lines()
+            .filter_map(|line| line.split('\t').next())
+            .filter(|path| matches_template(template, path))
+            .map(str::to_owned),
+    );
+    candidates.sort();
+    candidates.dedup();
+    materialize(buck, candidates)
 }
 
 /// Find the on-disk argsfile corresponding to the aquery template: the placeholder segment is the
@@ -361,16 +421,7 @@ fn find_rustc_action(aquery_json: &str, target: &str) -> Result<RustcActionInfo>
 fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
     let project_root = &buck.project_root;
     let template = &action.argsfile;
-    // Project-relative paths of the candidates on disk, one per content-hash directory.
-    let mut candidates: Vec<String> = match template.split_once(&format!("/{PLACEHOLDER}/")) {
-        None => vec![template.clone()],
-        Some((dir, rest)) => std::fs::read_dir(project_root.join(dir))
-            .into_iter()
-            .flatten()
-            .filter_map(|e| e.ok())
-            .map(|e| format!("{dir}/{}/{rest}", e.file_name().to_string_lossy()))
-            .collect(),
-    };
+    let mut candidates = candidates_on_disk(project_root, template);
     let find_matches = |candidates: &[String]| -> Vec<PathBuf> {
         candidates
             .iter()
@@ -387,23 +438,7 @@ fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
         // doesn't write it, even with `defer_write_actions=false`, and its content-hash directory
         // may not exist at all. The deferred materializer knows its path: add the matching paths
         // it lists, materialize the candidates and look again.
-        let listing = buck
-            .run(
-                "audit",
-                &["deferred-materializer".into(), "list".into()],
-                false,
-            )
-            .unwrap_or_default();
-        candidates.extend(
-            listing
-                .lines()
-                .filter_map(|line| line.split('\t').next())
-                .filter(|path| matches_template(template, path))
-                .map(str::to_owned),
-        );
-        candidates.sort();
-        candidates.dedup();
-        materialize(buck, &candidates)?;
+        add_declared_candidates(buck, template, &mut candidates)?;
         matches = find_matches(&candidates);
     }
     match matches.as_slice() {
@@ -438,6 +473,97 @@ fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
             Ok(newest)
         }
     }
+}
+
+/// Replace the `-Ldependency` symlink directories of the rustc command line with private ones.
+/// Buck creates them at configuration-hash paths, which another build of the target with
+/// different flags re-points: rustc would then load that build's metadata ("found possibly newer
+/// version of crate"). The list of dependencies they hold is a content-addressed JSON file, one per
+/// build: take the one that agrees with the command line's `--extern`s, and link its entries in
+/// private directories. Without such a list, the shared directories are kept.
+fn private_dependency_dirs(
+    buck: &Buck,
+    deps_json: &str,
+    out_dir: &Path,
+    args: &mut Vec<String>,
+) -> Result<()> {
+    let project_root = &buck.project_root;
+    let externs: std::collections::HashMap<String, String> =
+        argsfile::expand_argsfiles(args, project_root)?
+            .iter()
+            .filter_map(|arg| arg.strip_prefix("--extern="))
+            .filter_map(|arg| arg.split_once('=').map(|(_, path)| path))
+            .filter_map(|path| {
+                let path = path
+                    .strip_prefix(&format!("{}/", project_root.display()))
+                    .unwrap_or(path);
+                let name = Path::new(path).file_name()?.to_string_lossy().into_owned();
+                Some((name, path.to_owned()))
+            })
+            .collect();
+    // There is one list per build of the target, so in particular one per configuration.
+    let mut candidates = candidates_on_disk(project_root, deps_json);
+    add_declared_candidates(buck, deps_json, &mut candidates)?;
+    let file_name = |path: &str| {
+        Path::new(path)
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+    };
+    let matching: Vec<Vec<(String, Option<String>)>> = candidates
+        .iter()
+        .filter_map(|c| std::fs::read_to_string(project_root.join(c)).ok())
+        .filter_map(|s| serde_json::from_str::<Vec<(String, Option<String>)>>(&s).ok())
+        .filter(|deps| {
+            deps.iter().all(|(path, _)| {
+                file_name(path).is_none_or(|name| externs.get(&name).is_none_or(|e| e == path))
+            })
+        })
+        .collect();
+    let [deps] = matching.as_slice() else {
+        return Ok(());
+    };
+    let mut needed: Vec<String> = deps.iter().map(|(path, _)| path.clone()).collect();
+    needed.extend(deps.iter().filter_map(|(_, file)| file.clone()));
+    materialize(buck, &needed)?;
+    // Name and group the links as Buck's `transitive_dependency_symlinks.py` does: a dependency
+    // with a dynamic crate name (read from a file) is renamed after it, and a name collision with
+    // the last directory starts a new one.
+    let mut dirs: Vec<std::collections::HashSet<String>> = vec![Default::default()];
+    for (path, crate_name_file) in deps {
+        let name = file_name(path).context("dependency without a file name")?;
+        let name = match crate_name_file {
+            Some(file) => {
+                let crate_name = std::fs::read_to_string(project_root.join(file))
+                    .with_context(|| format!("reading the crate name in `{file}`"))?;
+                let suffix = name.rsplit_once('-').map_or(name.as_str(), |(_, s)| s);
+                format!("lib{}-{suffix}", crate_name.trim())
+            }
+            None => name,
+        };
+        if dirs.last().unwrap().contains(&name) {
+            dirs.push(Default::default());
+        }
+        let index = dirs.len() - 1;
+        let dir = out_dir.join(format!("deps-{index}"));
+        std::fs::create_dir_all(&dir)?;
+        std::os::unix::fs::symlink(project_root.join(path), dir.join(&name))?;
+        dirs[index].insert(name);
+    }
+    let is_shared_dir = |arg: &String| {
+        (arg.starts_with('@') || arg.starts_with("-Ldependency="))
+            && arg.contains("-depsfast-symlinked_dirs/")
+    };
+    args.retain(|arg| !is_shared_dir(arg));
+    for index in 0..dirs.len() {
+        let dir = out_dir.join(format!("deps-{index}"));
+        args.push(format!("-Ldependency={}", dir.display()));
+    }
+    eprintln!(
+        "[obol] dependency directories: {} (from {} dependencies)",
+        dirs.len(),
+        deps.len()
+    );
+    Ok(())
 }
 
 /// Whether every `buck-out/...` path mentioned in the argsfile at `p` exists.
