@@ -1,0 +1,83 @@
+
+// Final ULLBC:
+
+struct () {}
+
+struct (_, _, _)::<u8, u32, u8> {
+  _0: u8,
+  _1: u32,
+  _2: u8,
+}
+
+// Full name: interior_pointer_aux::ARR
+pub static ARR: [u8; 5usize] = [104u8, 101u8, 108u8, 108u8, 111u8]
+
+// Full name: interior_pointer_aux::S
+pub static S: &'static u8 = RawMemory(&ARR+2[0], &ARR+2[1], &ARR+2[2], &ARR+2[3], &ARR+2[4], &ARR+2[5], &ARR+2[6], &ARR+2[7])
+
+// Full name: interior_pointer_aux::PB
+pub static PB: &'static u32 = RawMemory(&PAIR+4[0], &PAIR+4[1], &PAIR+4[2], &PAIR+4[3], &PAIR+4[4], &PAIR+4[5], &PAIR+4[6], &PAIR+4[7])
+
+// Full name: interior_pointer_aux::TABLE
+pub static TABLE: [&'static u8; 2usize] = [&ARR, RawMemory(&ARR+4[0], &ARR+4[1], &ARR+4[2], &ARR+4[3], &ARR+4[4], &ARR+4[5], &ARR+4[6], &ARR+4[7])]
+
+// Full name: test_crate::values
+fn values() -> (u8, u32, u8)
+{
+    let _0: (u8, u32, u8); // return
+    let _1: u8; // anonymous local
+    let _2: &'_ &'_ u8; // anonymous local
+    let _3: u32; // anonymous local
+    let _4: &'_ &'_ u32; // anonymous local
+    let _5: u8; // anonymous local
+    let _6: &'_ [&'_ u8; 2usize]; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: &'_ u8; // anonymous local
+    let _9: &'_ u32; // anonymous local
+    let _10: &'_ u8; // anonymous local
+    let _11: &'_ &'_ u8; // anonymous local
+    let _12: &'_ &'_ u32; // anonymous local
+    let _13: &'_ [&'_ u8; 2usize]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_8);
+        storage_live(_9);
+        storage_live(_10);
+        storage_live(_1);
+        storage_live(_2);
+        storage_live(_11);
+        _11 = &S;
+        _2 = move _11;
+        _8 = copy (*_2);
+        _1 = copy (*_8);
+        storage_live(_3);
+        storage_live(_4);
+        storage_live(_12);
+        _12 = &PB;
+        _4 = move _12;
+        _9 = copy (*_4);
+        _3 = copy (*_9);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_13);
+        _13 = &TABLE;
+        _6 = move _13;
+        storage_live(_7);
+        _7 = const 1usize;
+        _10 = copy (*_6)[copy _7];
+        _5 = copy (*_10);
+        _0 = (move _1, move _3, move _5);
+        storage_dead(_5);
+        storage_dead(_3);
+        storage_dead(_1);
+        storage_dead(_7);
+        storage_dead(_6);
+        storage_dead(_4);
+        storage_dead(_2);
+        return;
+    }
+}
+
+
+

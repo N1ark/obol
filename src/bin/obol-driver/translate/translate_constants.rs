@@ -117,17 +117,29 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         _ => None,
                     };
                     let id = self.register_global_decl_id(span, prov.0, ty);
-                    Provenance::Global(GlobalDeclRef {
+                    let global = GlobalDeclRef {
                         id,
                         generics: Box::new(GenericArgs::empty()),
-                    })
+                    };
+                    // The pointer's bytes hold its offset into the global.
+                    let offset = alloc.bytes.as_slice()[*prov_ofs..*prov_ofs + ptr_size]
+                        .iter()
+                        .copied()
+                        .collect::<Option<Vec<u8>>>()
+                        .and_then(|bytes| self.read_target_uint(&bytes).ok())
+                        .unwrap_or(0);
+                    if offset == 0 {
+                        Provenance::Global(global)
+                    } else {
+                        Provenance::GlobalOffset(global, offset as u64)
+                    }
                 }
             };
             let prov_ofs = *prov_ofs;
             for ptr_i in 0..ptr_size {
                 let alloc_i = prov_ofs + ptr_i;
                 if offset <= alloc_i && alloc_i < offset + size {
-                    bytes[alloc_i] = Byte::Provenance(prov.clone(), ptr_i as u8);
+                    bytes[alloc_i - offset] = Byte::Provenance(prov.clone(), ptr_i as u8);
                 }
             }
         }
@@ -379,37 +391,26 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             _ => (None, None),
                         };
 
-                        // The pointer's bytes hold its offset into the allocation, but the AST
-                        // can't point into the middle of a global: for a sized pointee in an
-                        // anonymous (immutable) allocation, point to a copy of the pointee instead.
+                        // The pointer's bytes hold its offset into the allocation. A reference to a
+                        // global points to its start, so keep a pointer into the middle of a global
+                        // as raw memory, whose provenance records the offset.
                         let ptr_bytes = &bytes[..if metadata.is_some() { size / 2 } else { size }];
                         let ptr_offset =
                             self.read_target_uint(Self::as_init(ptr_bytes)?.as_slice())?;
                         if ptr_offset != 0
                             && matches!(glob_alloc, GlobalAlloc::Memory(_) | GlobalAlloc::Static(_))
                         {
-                            let (GlobalAlloc::Memory(mem), None) = (&glob_alloc, &metadata) else {
+                            if matches!(metadata, Some(UnsizingMetadata::VTable(..))) {
                                 raise_error!(
                                     self,
                                     span,
-                                    "Pointers into the middle of a global are not supported"
+                                    "Pointers into the middle of a global with a vtable are not \
+                                     supported"
                                 );
-                            };
-                            let pointee = rty.kind().builtin_deref(true).unwrap().ty;
-                            let pointee_ty = self.translate_ty(span, pointee)?;
-                            let value = self.translate_allocation_at(
-                                span,
-                                mem,
-                                pointee_ty.kind(),
-                                pointee,
-                                ptr_offset as usize,
-                                None,
-                            )?;
-                            break 'ptr_case if let TyKind::RawPtr(_, rk) = ty {
-                                ConstantExprKind::Ptr(*rk, value, None)
-                            } else {
-                                ConstantExprKind::Ref(value, None)
-                            };
+                            }
+                            break 'ptr_case ConstantExprKind::RawMemory(
+                                self.as_charon_bytes(span, alloc, offset, size),
+                            );
                         }
                         let glob_ty = match (&glob_alloc, dyn_self_ty) {
                             // we try checking if there's a static we can use the type of,
