@@ -265,7 +265,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     let id = TypeVarId::from_raw(ty.index);
                     let ty = TyKind::TypeVar(TypeDbVar::Free(id)).into_ty();
                     self.t_ctx.type_trans_cache.insert(mir_ty, ty.clone());
-                    register_error!(self, span, "translate_ty got a type parameter: {:?}", ty);
+                    if !self.params_expected() {
+                        register_error!(self, span, "translate_ty got a type parameter: {:?}", ty);
+                    }
                     return Ok(ty);
                 }
                 ty::TyKind::RigidTy(..) => unreachable!(),

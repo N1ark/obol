@@ -902,12 +902,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 // const-generic variable rather than failing.
                 let id = ConstGenericVarId::from_raw(param.index);
                 let ty = TyKind::Error("Param type".to_string()).into_ty();
-                register_error!(
-                    self,
-                    span,
-                    "translate const: got a const parameter: {:?}",
-                    param
-                );
+                if !self.params_expected() {
+                    register_error!(
+                        self,
+                        span,
+                        "translate const: got a const parameter: {:?}",
+                        param
+                    );
+                }
                 Ok(ConstantExpr::new(
                     ConstantExprKind::Var(ConstGenericDbVar::Free(id)),
                     ty,

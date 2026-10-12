@@ -114,6 +114,16 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     pub fn span_err(&self, span: Span, msg: &str, level: Level) -> Error {
         self.t_ctx.span_err(span, msg, level)
     }
+
+    /// Whether type and const parameters are expected here: when naming an item (no current
+    /// item), and in trait declarations and impls, which we translate polymorphically. Everything
+    /// else is monomorphic.
+    pub(crate) fn params_expected(&self) -> bool {
+        matches!(
+            self.item_id,
+            None | Some(ItemId::TraitDecl(_) | ItemId::TraitImpl(_))
+        )
+    }
 }
 
 impl<'a> IntoFormatter for &'a TranslateCtx<'_> {
