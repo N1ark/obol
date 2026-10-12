@@ -920,7 +920,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let operand = self.translate_operand(span, operand)?;
                 let unop = match unop {
                     mir::UnOp::Not => UnOp::Not,
-                    mir::UnOp::Neg => UnOp::Neg(OverflowMode::UB),
+                    mir::UnOp::Neg => UnOp::Neg(OverflowMode::Wrap),
                     mir::UnOp::PtrMetadata => match operand {
                         Operand::Copy(p) | Operand::Move(p) => {
                             return Ok(Rvalue::Use(
