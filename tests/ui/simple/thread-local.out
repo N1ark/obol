@@ -3618,6 +3618,28 @@ pub fn is_interrupted(self: &'_ core::io::error::Error) -> bool
     }
 }
 
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[u64; 3usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[u64; 3usize]> {
+  _0: [u64; 3usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u64; 3usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u64; 3usize]> {
+  value: MaybeDangling::<[u64; 3usize]>,
+}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u64; 3usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u64; 3usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u64; 3usize]>,
+}
+
+// Full name: anon_const_5
+const anon_const_5: MaybeUninit::<[u64; 3usize]> = RawMemory(&anon_const_19[0], &anon_const_19[1], &anon_const_19[2], &anon_const_19[3], &anon_const_19[4], &anon_const_19[5], &anon_const_19[6], &anon_const_19[7], 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x17, --, --, --, --, --, --, --)
+
 // Full name: core::io::error::{core::io::error::Error}::WRITE_ALL_EOF
 pub const WRITE_ALL_EOF: core::io::error::Error = core::io::error::Error { repr: Repr { _0: NonNull::<()> { pointer: &raw const anon_const_5 }, _1: PhantomData::<ErrorData::<CustomOwner>> {  } } }
 

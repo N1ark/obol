@@ -1,0 +1,44 @@
+
+// Final ULLBC:
+
+// Full name: core::mem::maybe_dangling::MaybeDangling::<[u64; 3usize]>
+#[lang_item(MaybeDangling)]
+pub struct MaybeDangling::<[u64; 3usize]> {
+  _0: [u64; 3usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u64; 3usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u64; 3usize]> {
+  value: MaybeDangling::<[u64; 3usize]>,
+}
+
+struct () {}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u64; 3usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u64; 3usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u64; 3usize]>,
+}
+
+// Full name: anon_const_0
+const anon_const_0: MaybeUninit::<[u64; 3usize]> = RawMemory(&anon_const_1[0], &anon_const_1[1], &anon_const_1[2], &anon_const_1[3], &anon_const_1[4], &anon_const_1[5], &anon_const_1[6], &anon_const_1[7], 0x1b, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x25, --, --, --, --, --, --, --)
+
+// Full name: test_crate::MESSAGE
+const MESSAGE: *const () = &raw const anon_const_0
+
+// Full name: test_crate::message
+fn message() -> *const ()
+{
+    let _0: *const (); // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy MESSAGE;
+        return;
+    }
+}
+
+
+

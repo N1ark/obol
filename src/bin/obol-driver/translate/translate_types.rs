@@ -150,8 +150,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     /// size *and* the right alignment. Used to faithfully represent anonymous
     /// constant allocations whose pointee type is smaller than the allocation
     /// itself (e.g. hashbrown's `Group::static_empty`, a `*const u8` into a
-    /// larger, over-aligned `[u8; N]`).
-    pub fn raw_alloc_ty(&mut self, size: usize, align: usize) -> Result<ty::Ty, Error> {
+    /// larger, over-aligned `[u8; N]`). If the allocation holds uninitialized
+    /// bytes or pointers, which integers can't (e.g. the padding and the message
+    /// of `io::Error`'s `SimpleMessage`), the array is wrapped in `MaybeUninit`.
+    pub fn raw_alloc_ty(&mut self, alloc: &ty::Allocation) -> Result<ty::Ty, Error> {
+        let (size, align) = (alloc.bytes.len(), alloc.align as usize);
         let (elem, elem_size) = match align {
             16 if size % 16 == 0 => (ty::UintTy::U128, 16),
             8 if size % 8 == 0 => (ty::UintTy::U64, 8),
@@ -167,11 +170,20 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             }
         };
         let elem_ty = ty::Ty::from_rigid_kind(ty::RigidTy::Uint(elem));
-        if elem_size == size {
-            return Ok(elem_ty);
+        let ty = if elem_size == size {
+            elem_ty
+        } else {
+            let len_cg = ty::TyConst::try_from_target_usize((size / elem_size) as u64)?;
+            ty::Ty::new_array_with_const_len(elem_ty, len_cg)
+        };
+        if alloc.bytes.iter().all(Option::is_some) && alloc.provenance.ptrs.is_empty() {
+            return Ok(ty);
         }
-        let len_cg = ty::TyConst::try_from_target_usize((size / elem_size) as u64)?;
-        Ok(ty::Ty::new_array_with_const_len(elem_ty, len_cg))
+        let tcx = self.t_ctx.tcx;
+        let ty = rustc_public::rustc_internal::internal(tcx, ty);
+        Ok(rustc_public::rustc_internal::stable(
+            rustc_middle::ty::Ty::new_maybe_uninit(tcx, ty),
+        ))
     }
 
     /// Translate a Ty.

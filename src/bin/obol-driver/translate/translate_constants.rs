@@ -104,8 +104,15 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         generics: Box::new(GenericArgs::empty()),
                     })
                 }
-                _ => {
-                    let id = self.register_global_decl_id(span, prov.0, None);
+                global => {
+                    // The pointee's type is unknown: use the static's type, or raw memory of the
+                    // allocation's size and alignment.
+                    let ty = match &global {
+                        mir::alloc::GlobalAlloc::Static(stt) => Some(stt.ty()),
+                        mir::alloc::GlobalAlloc::Memory(mem) => self.raw_alloc_ty(mem).ok(),
+                        _ => None,
+                    };
+                    let id = self.register_global_decl_id(span, prov.0, ty);
                     Provenance::Global(GlobalDeclRef {
                         id,
                         generics: Box::new(GenericArgs::empty()),
@@ -344,7 +351,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     && !layout.shape().is_unsized()
                                     && mem.bytes.len() > layout.shape().size.bytes() as usize =>
                             {
-                                self.raw_alloc_ty(mem.bytes.len(), mem.align as usize)?
+                                self.raw_alloc_ty(&mem)?
                             }
                             // An unsized pointee (e.g. `&CStr`): we avoid unsized globals by
                             // representing the allocation as raw memory; the reference keeps the
@@ -356,7 +363,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                     && let Ok(layout) = inner.layout()
                                     && layout.shape().is_unsized() =>
                             {
-                                self.raw_alloc_ty(mem.bytes.len(), mem.align as usize)?
+                                self.raw_alloc_ty(&mem)?
                             }
                             _ => rty.kind().builtin_deref(true).unwrap().ty,
                         };
