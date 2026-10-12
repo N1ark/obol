@@ -1,0 +1,87 @@
+
+// Final ULLBC:
+
+struct () {}
+
+// Full name: core::ptr::drop_glue::<u8>
+#[lang_item(DropGlue)]
+fn drop_glue::<u8>(_1: &'_ mut u8)
+{
+    let _0: (); // return
+    let _1: &'_ mut u8; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
+    }
+}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::W::<u8>
+struct W::<u8> {
+  _0: u8,
+  _1: u8,
+}
+
+// Full name: anon_const_0
+const anon_const_0: W::<u8> = W::<u8> { _0: 0u8, _1: 5u8 }
+
+// Full name: test_crate::{impl test_crate::Tr for u8}::m
+fn impl_Tr_for_u8::m(self: &'_ u8) -> u8
+{
+    let _0: u8; // return
+    let self: &'_ u8; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy (*self);
+        return;
+    }
+}
+
+vtable {vtable}::test_crate::Tr::<u8>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<u8>)), no-provenance 1, no-provenance 1, cast<*const ()>(fnptr(impl_Tr_for_u8::m))]
+
+// Full name: test_crate::W::<(dyn FakeTrait)>
+struct W::<(dyn FakeTrait)> {
+  _0: u8,
+  _1: (dyn FakeTrait),
+}
+
+// Full name: test_crate::W_DYN
+const W_DYN: &'_ W::<(dyn FakeTrait)> = &anon_const_0 with_metadata(cast<*const ()>(&raw const {vtable}::test_crate::Tr::<u8>))
+
+// Full name: test_crate::tail
+fn tail() -> u8
+{
+    let _0: u8; // return
+    let _1: &'_ (dyn FakeTrait); // anonymous local
+    let _2: &'_ W::<(dyn FakeTrait)>; // anonymous local
+    let _3: *const *const (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_1);
+        storage_live(_2);
+        _2 = copy W_DYN;
+        _1 = &(*_2)._1 with_metadata(copy _2.metadata);
+        _3 = copy _1.metadata offset const 3usize;
+        _0 = (copy (*_3))(move _1) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_1);
+        storage_dead(_2);
+        return;
+    }
+
+    bb2 (cleanup): {
+        unwind_continue;
+    }
+}
+
+
+

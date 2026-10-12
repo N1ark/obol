@@ -290,18 +290,25 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         })
                     }
                     _ => {
+                        let tcx = self.t_ctx.tcx;
+                        let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
+                        // The pointee, and the type that determines its metadata.
+                        let pointee = rty.kind().builtin_deref(true).map(|d| {
+                            let pointee = rustc_public::rustc_internal::internal(tcx, d.ty);
+                            (pointee, tcx.struct_tail_for_codegen(pointee, typing_env))
+                        });
                         let pointee_has_len_metadata = || {
-                            let tcx = self.t_ctx.tcx;
-                            let Some(pointee) = rty.kind().builtin_deref(true).map(|d| d.ty) else {
-                                return false;
-                            };
-                            let pointee: rustc_middle::ty::Ty<'_> =
-                                rustc_public::rustc_internal::internal(tcx, pointee);
-                            let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
-                            matches!(
-                                tcx.struct_tail_for_codegen(pointee, typing_env).kind(),
-                                rustc_middle::ty::Str | rustc_middle::ty::Slice(..)
-                            )
+                            pointee.is_some_and(|(_, tail)| {
+                                matches!(
+                                    tail.kind(),
+                                    rustc_middle::ty::Str | rustc_middle::ty::Slice(..)
+                                )
+                            })
+                        };
+                        let pointee_has_dyn_tail = || {
+                            pointee.is_some_and(|(_, tail)| {
+                                matches!(tail.kind(), rustc_middle::ty::Dynamic(..))
+                            })
                         };
                         let (metadata, dyn_self_ty) = match subty.kind() {
                             // Slices, and (e.g. `CStr`) structs with a slice or `str` tail.
@@ -315,7 +322,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                 );
                                 (Some(meta), None)
                             }
-                            TyKind::DynTrait(_) => {
+                            // `dyn Trait`, and structs with a `dyn Trait` tail.
+                            TyKind::DynTrait(_) | TyKind::Adt(..) if pointee_has_dyn_tail() => {
                                 let Some(vtable_prov) =
                                     self.provenance_at(alloc, offset + size / 2)
                                 else {
@@ -336,7 +344,23 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                                 let meta =
                                     self.translate_vtable_ptr_const(span, self_ty, trait_ref);
                                 let meta = UnsizingMetadata::VTable(self.dummy_trait_ref(), meta);
-                                (Some(meta), Some(self_ty))
+                                // The concrete pointee: its `dyn Trait` tail replaced by the
+                                // vtable's type.
+                                let (pointee, tail) = pointee.unwrap();
+                                let self_ty_internal =
+                                    rustc_public::rustc_internal::internal(tcx, self_ty);
+                                use rustc_middle::ty::TypeFoldable;
+                                let concrete =
+                                    pointee.fold_with(&mut rustc_middle::ty::BottomUpFolder {
+                                        tcx,
+                                        ty_op: |t| if t == tail { self_ty_internal } else { t },
+                                        lt_op: |r| r,
+                                        ct_op: |c| c,
+                                    });
+                                (
+                                    Some(meta),
+                                    Some(rustc_public::rustc_internal::stable(concrete)),
+                                )
                             }
                             _ => (None, None),
                         };
@@ -345,8 +369,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             // we try checking if there's a static we can use the type of,
                             // to avoid registering unsized globals (a static is always sized)
                             (GlobalAlloc::Static(stt), _) => stt.ty(),
-                            // for a `&dyn Trait` the pointee type is unsized; use the concrete
-                            // type recovered from the vtable so we register a sized global.
+                            // for a `&dyn Trait` (or a struct with a `dyn Trait` tail) the pointee
+                            // type is unsized; use the concrete type recovered from the vtable so
+                            // we register a sized global.
                             (_, Some(dyn_self_ty)) => dyn_self_ty,
                             // if we don't know the exact type, we create a dummy type
                             // that should match
