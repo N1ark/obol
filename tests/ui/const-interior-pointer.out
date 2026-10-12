@@ -1,0 +1,46 @@
+
+// Final ULLBC:
+
+struct () {}
+
+struct (_, _)::<u8, [u8; 2usize]> {
+  _0: u8,
+  _1: [u8; 2usize],
+}
+
+// Full name: test_crate::P
+const P: &'_ u8 = &101u8
+
+// Full name: test_crate::Q
+const Q: &'_ [u8; 2usize] = &[108u8, 111u8]
+
+// Full name: test_crate::values
+fn values() -> (u8, [u8; 2usize])
+{
+    let _0: (u8, [u8; 2usize]); // return
+    let _1: u8; // anonymous local
+    let _2: &'_ u8; // anonymous local
+    let _3: [u8; 2usize]; // anonymous local
+    let _4: &'_ [u8; 2usize]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        storage_live(_2);
+        _2 = copy P;
+        _1 = copy (*_2);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy Q;
+        _3 = copy (*_4);
+        _0 = (move _1, move _3);
+        storage_dead(_3);
+        storage_dead(_1);
+        storage_dead(_4);
+        storage_dead(_2);
+        return;
+    }
+}
+
+
+

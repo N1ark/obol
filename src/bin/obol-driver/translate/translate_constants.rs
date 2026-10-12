@@ -379,6 +379,38 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             _ => (None, None),
                         };
 
+                        // The pointer's bytes hold its offset into the allocation, but the AST
+                        // can't point into the middle of a global: for a sized pointee in an
+                        // anonymous (immutable) allocation, point to a copy of the pointee instead.
+                        let ptr_bytes = &bytes[..if metadata.is_some() { size / 2 } else { size }];
+                        let ptr_offset =
+                            self.read_target_uint(Self::as_init(ptr_bytes)?.as_slice())?;
+                        if ptr_offset != 0
+                            && matches!(glob_alloc, GlobalAlloc::Memory(_) | GlobalAlloc::Static(_))
+                        {
+                            let (GlobalAlloc::Memory(mem), None) = (&glob_alloc, &metadata) else {
+                                raise_error!(
+                                    self,
+                                    span,
+                                    "Pointers into the middle of a global are not supported"
+                                );
+                            };
+                            let pointee = rty.kind().builtin_deref(true).unwrap().ty;
+                            let pointee_ty = self.translate_ty(span, pointee)?;
+                            let value = self.translate_allocation_at(
+                                span,
+                                mem,
+                                pointee_ty.kind(),
+                                pointee,
+                                ptr_offset as usize,
+                                None,
+                            )?;
+                            break 'ptr_case if let TyKind::RawPtr(_, rk) = ty {
+                                ConstantExprKind::Ptr(*rk, value, None)
+                            } else {
+                                ConstantExprKind::Ref(value, None)
+                            };
+                        }
                         let glob_ty = match (&glob_alloc, dyn_self_ty) {
                             // we try checking if there's a static we can use the type of,
                             // to avoid registering unsized globals (a static is always sized)
