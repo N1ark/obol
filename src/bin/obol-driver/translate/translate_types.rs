@@ -906,6 +906,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         }
 
         // The type is transparent: explore the variants
+        let adt_internal = rustc_public::rustc_internal::internal(self.t_ctx.tcx, adt);
         let mut variants: IndexVec<VariantId, Variant> = Default::default();
         for (i, var_def) in adt.variants_iter().enumerate() {
             trace!("variant {i}: {var_def:?}");
@@ -916,8 +917,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 // Translate the field type
                 let ty = field_def.ty_with_args(&generics);
                 let ty = self.translate_ty(def_span, ty)?;
-                // let field_full_def = self.hax_def(&field_def.did)?;
-                // let field_attrs = self.t_ctx.translate_attr_info(&field_full_def);
 
                 // Retrieve the field name.
                 let field_name = field_def.name.clone();
@@ -928,10 +927,19 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     field_name
                 };
 
+                // Field visibility (consumers may treat private fields as carrying invariants).
+                let internal_variant = adt_internal.variant(rustc_abi::VariantIdx::from_usize(i));
+                let public = internal_variant.fields[rustc_abi::FieldIdx::from_usize(j)]
+                    .vis
+                    .is_public();
+
                 // Store the field
                 let field = Field {
                     span: def_span,
-                    attr_info: AttrInfo::default(),
+                    attr_info: AttrInfo {
+                        public,
+                        ..AttrInfo::default()
+                    },
                     name: field_name,
                     is_positional,
                     ty,
