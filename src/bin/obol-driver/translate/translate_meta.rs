@@ -459,7 +459,15 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 comment,
                 ..
             }) => {
-                (!self.options.no_doc_comments).then(|| Attribute::DocComment(comment.to_string()))
+                if !self.options.no_doc_comments {
+                    Some(Attribute::DocComment(comment.to_string()))
+                } else if comment.as_str().trim() == "# Panics" {
+                    // Keep only the marker of a rustdoc `# Panics` section: Soteria's
+                    // `auto --report-latent` labels a panic its function documents.
+                    Some(Attribute::DocComment("# Panics".to_owned()))
+                } else {
+                    None
+                }
             }
             rustc_hir::Attribute::Parsed(kind) => self
                 .translate_rustc_attribute_kind(kind)
