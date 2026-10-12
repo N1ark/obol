@@ -374,7 +374,11 @@ fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
                 .iter()
                 .filter(|p| references_exist(project_root, p))
                 .collect();
-            let pool: Vec<&PathBuf> = if complete.is_empty() { many.iter().collect() } else { complete };
+            let pool: Vec<&PathBuf> = if complete.is_empty() {
+                many.iter().collect()
+            } else {
+                complete
+            };
             let newest = pool
                 .into_iter()
                 .max_by_key(|p| std::fs::metadata(p).and_then(|m| m.modified()).ok())
@@ -392,9 +396,13 @@ fn locate_argsfile(buck: &Buck, action: &RustcActionInfo) -> Result<PathBuf> {
 
 /// Whether every `buck-out/...` path mentioned in the argsfile at `p` exists.
 fn references_exist(project_root: &Path, p: &Path) -> bool {
-    let Ok(contents) = std::fs::read_to_string(p) else { return false };
+    let Ok(contents) = std::fs::read_to_string(p) else {
+        return false;
+    };
     contents
-        .split(|c: char| c.is_whitespace() || c == '"' || c == '\'' || c == '=' || c == '@' || c == ',')
+        .split(|c: char| {
+            c.is_whitespace() || c == '"' || c == '\'' || c == '=' || c == '@' || c == ','
+        })
         .filter(|tok| tok.starts_with("buck-out/"))
         .all(|tok| project_root.join(tok).exists())
 }
