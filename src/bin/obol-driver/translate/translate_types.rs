@@ -17,6 +17,15 @@ use rustc_middle::ty as rustc_ty;
 use rustc_public::{CrateDef, CrateDefType, mir, ty};
 use rustc_public_bridge::IndexedVal;
 
+/// Obol only handles monomorphic code, so inhabitedness is always known.
+pub(crate) fn inhabited_predicate(inhabited: bool) -> InhabitedPredicate {
+    if inhabited {
+        InhabitedPredicate::mk_true()
+    } else {
+        InhabitedPredicate::mk_false()
+    }
+}
+
 impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     /// The signature of a function pointer type, with its bound lifetimes erased. We drop the
     /// binder when translating, and a type mentioning one of its lifetimes would otherwise differ
@@ -584,15 +593,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 inhabited: inhabited_predicate(!variant_layout.is_uninhabited()),
                 tagger,
             })
-        }
-
-        // Obol only handles monomorphic code, so inhabitedness is always known.
-        fn inhabited_predicate(inhabited: bool) -> InhabitedPredicate {
-            if inhabited {
-                InhabitedPredicate::mk_true()
-            } else {
-                InhabitedPredicate::mk_false()
-            }
         }
 
         fn translate_primitive_int(int_ty: r_abi::Integer, signed: bool) -> IntegerTy {

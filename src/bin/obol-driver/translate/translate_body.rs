@@ -1056,9 +1056,16 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
 
                         Ok(Rvalue::Aggregate(akind, operands_t))
                     }
-                    // Coroutine aggregates are translated by `translate_statement`.
-                    mir::AggregateKind::Coroutine(..)
-                    | mir::AggregateKind::CoroutineClosure(..) => {
+                    // Coroutine aggregates are translated by `translate_statement`, as they need
+                    // their destination.
+                    mir::AggregateKind::Coroutine(..) => {
+                        raise_error!(
+                            self,
+                            span,
+                            "Coroutine aggregates are only supported as the value of an assignment"
+                        );
+                    }
+                    mir::AggregateKind::CoroutineClosure(..) => {
                         raise_error!(self, span, "Coroutine closures are not supported");
                     }
                 }

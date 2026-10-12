@@ -24,6 +24,7 @@ use rustc_public::{CrateDef, CrateDefType, rustc_internal, ty};
 use charon_lib::{ast::*, ids::IndexVec, raise_error, register_error, ullbc_ast::*};
 
 use crate::translate::translate_ctx::ItemTransCtx;
+use crate::translate::translate_types::inhabited_predicate;
 
 /// The shape of a monomorphic coroutine.
 pub(crate) struct CoroutineInfo {
@@ -184,10 +185,10 @@ impl ItemTransCtx<'_, '_> {
             size: Size::new(layout.size().bytes()),
             align: Size::new(layout.align().abi.bytes()),
             discriminator: Some(Discriminator::trivial(VariantId::ZERO)),
-            inhabited: InhabitedPredicate::mk_true(),
+            inhabited: inhabited_predicate(!layout.is_uninhabited()),
             variant_layouts: [Some(VariantLayout {
                 field_offsets,
-                inhabited: InhabitedPredicate::mk_true(),
+                inhabited: inhabited_predicate(!layout.is_uninhabited()),
                 tagger: vec![],
             })]
             .into_iter()
