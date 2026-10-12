@@ -136,7 +136,15 @@ pub fn translate_with_buck2(mut opts: Buck2Opts) -> Result<ExitStatus> {
     let argsfile = locate_argsfile(&buck.project_root, &action)?;
     eprintln!("[obol] rustc argsfile: {}", argsfile.display());
 
-    // 3. Parse it and make sure all the inputs are on disk.
+    // 3. Parse it and make sure all the inputs are on disk. Nested argsfiles referenced by the
+    // top-level one (e.g. `-Ldependency` symlink dirs) may not be materialized yet (cached or
+    // remote actions), and expanding them below would fail: materialize them first.
+    let top_level: Vec<String> = std::fs::read_to_string(&argsfile)
+        .unwrap_or_default()
+        .split_whitespace()
+        .map(|t| t.trim_matches(|c| c == '"' || c == '\'').to_owned())
+        .collect();
+    materialize(&buck, &buck_out_paths(&top_level, &buck.buck_out()))?;
     let lines =
         argsfile::expand_argsfiles(&[format!("@{}", argsfile.display())], &buck.project_root)?;
     let rustc_action = RustcAction::parse(&lines).map_err(anyhow::Error::msg)?;
@@ -352,8 +360,15 @@ fn locate_argsfile(project_root: &Path, action: &RustcActionInfo) -> Result<Path
         // they point at *stale* dependency metadata. The build we just ran (re)wrote the current
         // one, so take the most recently modified.
         many => {
-            let newest = many
+            // Prefer candidates whose referenced buck-out paths all exist: an argsfile can be
+            // newer than the build we just ran yet reference dirs that were never materialized.
+            let complete: Vec<&PathBuf> = many
                 .iter()
+                .filter(|p| references_exist(project_root, p))
+                .collect();
+            let pool: Vec<&PathBuf> = if complete.is_empty() { many.iter().collect() } else { complete };
+            let newest = pool
+                .into_iter()
                 .max_by_key(|p| std::fs::metadata(p).and_then(|m| m.modified()).ok())
                 .unwrap()
                 .clone();
@@ -365,6 +380,15 @@ fn locate_argsfile(project_root: &Path, action: &RustcActionInfo) -> Result<Path
             Ok(newest)
         }
     }
+}
+
+/// Whether every `buck-out/...` path mentioned in the argsfile at `p` exists.
+fn references_exist(project_root: &Path, p: &Path) -> bool {
+    let Ok(contents) = std::fs::read_to_string(p) else { return false };
+    contents
+        .split(|c: char| c.is_whitespace() || c == '"' || c == '\'' || c == '=' || c == '@' || c == ',')
+        .filter(|tok| tok.starts_with("buck-out/"))
+        .all(|tok| project_root.join(tok).exists())
 }
 
 /// Whether `actual` equals `template` where each `aquery_placeholder` stands for one path segment.
