@@ -1356,10 +1356,17 @@ pub fn incr(x: &'_ mut u32)
         storage_live(_2);
         _0 = ();
         _2 = copy (*x) checked.+ const 1u32;
-        assert(move _2._1 == false) (overflow) else panic;
+        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*x) = move _2._0;
         _0 = ();
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -1378,10 +1385,17 @@ pub fn index_array_u32(s: [u32; 32usize], i: usize) -> u32
         storage_live(_3);
         _3 = copy i;
         _4 = copy _3 < const 32usize;
-        assert(move _4 == true) (bounds_check) else panic;
+        assert assert(move _4 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy s[copy _3];
         storage_dead(_3);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -1399,10 +1413,17 @@ pub fn index_array_copy(x: &'_ [u32; 32usize]) -> u32
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 32usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -1655,15 +1676,29 @@ pub fn index_index_array(s: [[u32; 32usize]; 32usize], i: usize, j: usize) -> u3
         storage_live(_4);
         _4 = copy i;
         _5 = copy _4 < const 32usize;
-        assert(move _5 == true) (bounds_check) else panic;
+        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         storage_live(_6);
         _6 = copy j;
         _7 = copy _6 < const 32usize;
-        assert(move _7 == true) (bounds_check) else panic;
+        assert assert(move _7 == true) (bounds_check) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = copy s[copy _4][copy _6];
         storage_dead(_6);
         storage_dead(_4);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -1687,16 +1722,30 @@ pub fn update_update_array(s: [[u32; 32usize]; 32usize], i: usize, j: usize)
         storage_live(_4);
         _4 = copy i;
         _5 = copy _4 < const 32usize;
-        assert(move _5 == true) (bounds_check) else panic;
+        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         storage_live(_6);
         _6 = copy j;
         _7 = copy _6 < const 32usize;
-        assert(move _7 == true) (bounds_check) else panic;
+        assert assert(move _7 == true) (bounds_check) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         s[copy _4][copy _6] = const 0u32;
         storage_dead(_6);
         storage_dead(_4);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -1717,13 +1766,27 @@ pub fn incr_array_self(s: &'_ mut [u32; 2usize])
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 2usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         _4 = copy (*s)[copy _2] checked.+ const 1u32;
-        assert(move _4._1 == false) (overflow) else panic;
+        assert assert(move _4._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         (*s)[copy _2] = move _4._0;
         storage_dead(_2);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -1750,13 +1813,27 @@ pub fn incr_slice_self(s: &'_ mut [u32])
         _3 = &raw const (*s) with_metadata(copy s.metadata);
         _4 = copy _3.metadata;
         _5 = copy _2 < copy _4;
-        assert(move _5 == true) (bounds_check) else panic;
+        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         _6 = copy (*s)[copy _2] checked.+ const 1u32;
-        assert(move _6._1 == false) (overflow) else panic;
+        assert assert(move _6._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         (*s)[copy _2] = move _6._0;
         storage_dead(_2);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -2003,10 +2080,17 @@ pub fn index_array(x: [u32; 2usize]) -> u32
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 2usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy x[copy _2];
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2024,10 +2108,17 @@ pub fn index_array_borrow(x: &'_ [u32; 2usize]) -> u32
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 2usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2048,10 +2139,17 @@ pub fn index_slice_u32_0(x: &'_ [u32]) -> u32
         _2 = const 0usize;
         _3 = copy x.metadata;
         _4 = copy _2 < copy _3;
-        assert(move _4 == true) (bounds_check) else panic;
+        assert assert(move _4 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2075,10 +2173,17 @@ pub fn index_mut_slice_u32_0(x: &'_ mut [u32]) -> u32
         _3 = &raw const (*x) with_metadata(copy x.metadata);
         _4 = copy _3.metadata;
         _5 = copy _2 < copy _4;
-        assert(move _5 == true) (bounds_check) else panic;
+        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2148,7 +2253,7 @@ pub fn index_all() -> u32
         storage_live(_8);
         storage_live(_9);
         _9 = copy x;
-        _8 = index_array(move _9) -> bb4 (unwind: bb13);
+        _8 = index_array(move _9) -> bb4 (unwind: bb21);
     }
 
     bb4: {
@@ -2156,13 +2261,16 @@ pub fn index_all() -> u32
         storage_live(_10);
         storage_live(_11);
         _11 = copy x;
-        _10 = index_array(move _11) -> bb5 (unwind: bb12);
+        _10 = index_array(move _11) -> bb5 (unwind: bb20);
     }
 
     bb5: {
         storage_dead(_11);
         _12 = copy _8 checked.+ copy _10;
-        assert(move _12._1 == false) (overflow) else panic;
+        assert assert(move _12._1 == false) (overflow) -> bb6 (unwind: bb19);
+    }
+
+    bb6: {
         _7 = move _12._0;
         storage_dead(_10);
         storage_dead(_8);
@@ -2171,13 +2279,16 @@ pub fn index_all() -> u32
         storage_live(_15);
         _15 = &x;
         _14 = &(*_15);
-        _13 = index_array_borrow(move _14) -> bb6 (unwind: bb11);
+        _13 = index_array_borrow(move _14) -> bb7 (unwind: bb18);
     }
 
-    bb6: {
+    bb7: {
         storage_dead(_14);
         _16 = copy _7 checked.+ copy _13;
-        assert(move _16._1 == false) (overflow) else panic;
+        assert assert(move _16._1 == false) (overflow) -> bb8 (unwind: bb17);
+    }
+
+    bb8: {
         _6 = move _16._0;
         storage_dead(_13);
         storage_dead(_7);
@@ -2189,13 +2300,16 @@ pub fn index_all() -> u32
         _19 = &(*_20);
         _18 = unsize_cast<&'_ [u32; 2usize], &'_ [u32], 2usize>(move _19);
         storage_dead(_19);
-        _17 = index_slice_u32_0(move _18) -> bb7 (unwind: bb10);
+        _17 = index_slice_u32_0(move _18) -> bb9 (unwind: bb16);
     }
 
-    bb7: {
+    bb9: {
         storage_dead(_18);
         _21 = copy _6 checked.+ copy _17;
-        assert(move _21._1 == false) (overflow) else panic;
+        assert assert(move _21._1 == false) (overflow) -> bb10 (unwind: bb15);
+    }
+
+    bb10: {
         _5 = move _21._0;
         storage_dead(_17);
         storage_dead(_6);
@@ -2207,13 +2321,16 @@ pub fn index_all() -> u32
         _24 = &mut (*_25);
         _23 = unsize_cast<&'_ mut [u32; 2usize], &'_ mut [u32], 2usize>(move _24);
         storage_dead(_24);
-        _22 = index_mut_slice_u32_0(move _23) -> bb8 (unwind: bb9);
+        _22 = index_mut_slice_u32_0(move _23) -> bb11 (unwind: bb14);
     }
 
-    bb8: {
+    bb11: {
         storage_dead(_23);
         _26 = copy _5 checked.+ copy _22;
-        assert(move _26._1 == false) (overflow) else panic;
+        assert assert(move _26._1 == false) (overflow) -> bb12 (unwind: bb13);
+    }
+
+    bb12: {
         _0 = move _26._0;
         storage_dead(_22);
         storage_dead(_5);
@@ -2224,23 +2341,39 @@ pub fn index_all() -> u32
         return;
     }
 
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
-        unwind_continue;
-    }
-
-    bb11: {
-        unwind_continue;
-    }
-
-    bb12: {
-        unwind_continue;
-    }
-
     bb13: {
+        unwind_continue;
+    }
+
+    bb14: {
+        unwind_continue;
+    }
+
+    bb15: {
+        unwind_continue;
+    }
+
+    bb16: {
+        unwind_continue;
+    }
+
+    bb17: {
+        unwind_continue;
+    }
+
+    bb18: {
+        unwind_continue;
+    }
+
+    bb19: {
+        unwind_continue;
+    }
+
+    bb20: {
+        unwind_continue;
+    }
+
+    bb21: {
         unwind_continue;
     }
 }
@@ -2260,11 +2393,18 @@ pub fn update_array(x: [u32; 2usize])
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 2usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         x[copy _2] = const 1u32;
         _0 = ();
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2283,11 +2423,18 @@ pub fn update_array_mut_borrow(x: &'_ mut [u32; 2usize])
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 2usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*x)[copy _2] = const 1u32;
         _0 = ();
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2312,11 +2459,18 @@ pub fn update_mut_slice(x: &'_ mut [u32])
         _3 = &raw const (*x) with_metadata(copy x.metadata);
         _4 = copy _3.metadata;
         _5 = copy _2 < copy _4;
-        assert(move _5 == true) (bounds_check) else panic;
+        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*x)[copy _2] = const 1u32;
         _0 = ();
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2481,11 +2635,18 @@ pub fn deref_array_borrow(x_1: &'_ [u32; 2usize]) -> u32
         storage_live(_3);
         _3 = const 0usize;
         _4 = copy _3 < const 2usize;
-        assert(move _4 == true) (bounds_check) else panic;
+        assert assert(move _4 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy x_2[copy _3];
         storage_dead(x_2);
         storage_dead(_3);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2506,11 +2667,18 @@ pub fn deref_array_mut_borrow(x_1: &'_ mut [u32; 2usize]) -> u32
         storage_live(_3);
         _3 = const 0usize;
         _4 = copy _3 < const 2usize;
-        assert(move _4 == true) (bounds_check) else panic;
+        assert assert(move _4 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy x_2[copy _3];
         storage_dead(x_2);
         storage_dead(_3);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2606,13 +2774,13 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_6);
         storage_live(_7);
         _7 = &(*s) with_metadata(copy s.metadata);
-        _6 = len::<u32>(move _7) -> bb2 (unwind: bb5);
+        _6 = len::<u32>(move _7) -> bb2 (unwind: bb11);
     }
 
     bb2: {
         storage_dead(_7);
         _4 = move _5 < move _6;
-        if move _4 -> bb3 else -> bb4;
+        if move _4 -> bb3 else -> bb10;
     }
 
     bb3: {
@@ -2623,21 +2791,42 @@ pub fn sum(s: &'_ [u32]) -> u32
         _9 = copy i;
         _10 = copy s.metadata;
         _11 = copy _9 < copy _10;
-        assert(move _11 == true) (bounds_check) else panic;
+        assert assert(move _11 == true) (bounds_check) -> bb4 (unwind: bb9);
+    }
+
+    bb4: {
         _8 = copy (*s)[copy _9];
         _12 = copy sum checked.+ copy _8;
-        assert(move _12._1 == false) (overflow) else panic;
+        assert assert(move _12._1 == false) (overflow) -> bb5 (unwind: bb8);
+    }
+
+    bb5: {
         sum = move _12._0;
         storage_dead(_8);
         storage_dead(_9);
         _13 = copy i checked.+ const 1usize;
-        assert(move _13._1 == false) (overflow) else panic;
+        assert assert(move _13._1 == false) (overflow) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
         i = move _13._0;
         storage_dead(_4);
         goto bb1;
     }
 
-    bb4: {
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
@@ -2647,7 +2836,7 @@ pub fn sum(s: &'_ [u32]) -> u32
         return;
     }
 
-    bb5: {
+    bb11: {
         unwind_continue;
     }
 }
@@ -2698,7 +2887,7 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         storage_live(_5);
         storage_live(_6);
         _6 = &(*s) with_metadata(copy s.metadata);
-        _5 = len::<u32>(move _6) -> bb1 (unwind: bb13);
+        _5 = len::<u32>(move _6) -> bb1 (unwind: bb23);
     }
 
     bb1: {
@@ -2706,13 +2895,13 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         storage_live(_7);
         storage_live(_8);
         _8 = &(*s2) with_metadata(copy s2.metadata);
-        _7 = len::<u32>(move _8) -> bb2 (unwind: bb12);
+        _7 = len::<u32>(move _8) -> bb2 (unwind: bb22);
     }
 
     bb2: {
         storage_dead(_8);
         _4 = move _5 == move _7;
-        if move _4 -> bb3 else -> bb9;
+        if move _4 -> bb3 else -> bb19;
     }
 
     bb3: {
@@ -2731,13 +2920,13 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         storage_live(_13);
         storage_live(_14);
         _14 = &(*s) with_metadata(copy s.metadata);
-        _13 = len::<u32>(move _14) -> bb5 (unwind: bb8);
+        _13 = len::<u32>(move _14) -> bb5 (unwind: bb18);
     }
 
     bb5: {
         storage_dead(_14);
         _11 = move _12 < move _13;
-        if move _11 -> bb6 else -> bb7;
+        if move _11 -> bb6 else -> bb17;
     }
 
     bb6: {
@@ -2749,34 +2938,69 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         _17 = copy i;
         _18 = copy s.metadata;
         _19 = copy _17 < copy _18;
-        assert(move _19 == true) (bounds_check) else panic;
+        assert assert(move _19 == true) (bounds_check) -> bb7 (unwind: bb16);
+    }
+
+    bb7: {
         _16 = copy (*s)[copy _17];
         storage_live(_20);
         storage_live(_21);
         _21 = copy i;
         _22 = copy s2.metadata;
         _23 = copy _21 < copy _22;
-        assert(move _23 == true) (bounds_check) else panic;
+        assert assert(move _23 == true) (bounds_check) -> bb8 (unwind: bb15);
+    }
+
+    bb8: {
         _20 = copy (*s2)[copy _21];
         _24 = copy _16 checked.+ copy _20;
-        assert(move _24._1 == false) (overflow) else panic;
+        assert assert(move _24._1 == false) (overflow) -> bb9 (unwind: bb14);
+    }
+
+    bb9: {
         _15 = move _24._0;
         storage_dead(_20);
         storage_dead(_16);
         _25 = copy sum checked.+ copy _15;
-        assert(move _25._1 == false) (overflow) else panic;
+        assert assert(move _25._1 == false) (overflow) -> bb10 (unwind: bb13);
+    }
+
+    bb10: {
         sum = move _25._0;
         storage_dead(_15);
         storage_dead(_21);
         storage_dead(_17);
         _26 = copy i checked.+ const 1usize;
-        assert(move _26._1 == false) (overflow) else panic;
+        assert assert(move _26._1 == false) (overflow) -> bb11 (unwind: bb12);
+    }
+
+    bb11: {
         i = move _26._0;
         storage_dead(_11);
         goto bb4;
     }
 
-    bb7: {
+    bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
+        unwind_continue;
+    }
+
+    bb14: {
+        unwind_continue;
+    }
+
+    bb15: {
+        unwind_continue;
+    }
+
+    bb16: {
+        unwind_continue;
+    }
+
+    bb17: {
         storage_dead(_13);
         storage_dead(_12);
         storage_dead(_11);
@@ -2786,30 +3010,30 @@ pub fn sum2(s: &'_ [u32], s2: &'_ [u32]) -> u32
         return;
     }
 
-    bb8: {
+    bb18: {
         unwind_continue;
     }
 
-    bb9: {
+    bb19: {
         storage_dead(_7);
         storage_dead(_5);
         storage_live(_9);
-        _9 = panic(const "assertion failed: s.len() == s2.len()") -> bb10 (unwind: bb11);
+        _9 = panic(const "assertion failed: s.len() == s2.len()") -> bb20 (unwind: bb21);
     }
 
-    bb10: {
+    bb20: {
         undefined_behavior;
     }
 
-    bb11: {
+    bb21: {
         unwind_continue;
     }
 
-    bb12: {
+    bb22: {
         unwind_continue;
     }
 
-    bb13: {
+    bb23: {
         unwind_continue;
     }
 }
@@ -2848,13 +3072,20 @@ pub fn f0()
         _6 = &raw const (*s) with_metadata(copy s.metadata);
         _7 = copy _6.metadata;
         _8 = copy _5 < copy _7;
-        assert(move _8 == true) (bounds_check) else panic;
+        assert assert(move _8 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*s)[copy _5] = const 1u32;
         storage_dead(_5);
         _0 = ();
         storage_dead(_4);
         storage_dead(s);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2875,12 +3106,19 @@ pub fn f1()
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 2usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         s[copy _2] = const 1u32;
         storage_dead(_2);
         _0 = ();
         storage_dead(s);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2972,12 +3210,15 @@ pub fn f3() -> u32
         storage_live(_4);
         _4 = const 0usize;
         _5 = copy _4 < const 2usize;
-        assert(move _5 == true) (bounds_check) else panic;
-        _3 = copy a[copy _4];
-        _2 = f2(move _3) -> bb1 (unwind: bb6);
+        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb8);
     }
 
     bb1: {
+        _3 = copy a[copy _4];
+        _2 = f2(move _3) -> bb2 (unwind: bb7);
+    }
+
+    bb2: {
         storage_dead(_3);
         storage_dead(_4);
         storage_dead(_2);
@@ -2996,16 +3237,16 @@ pub fn f3() -> u32
         storage_live(_13);
         _13 = &b;
         _12 = &(*_13);
-        _11 = f4(move _12, const 16usize, const 18usize) -> bb2 (unwind: bb5);
-    }
-
-    bb2: {
-        _10 = &(*_11) with_metadata(copy _11.metadata);
-        storage_dead(_12);
-        _0 = sum2(move _7, move _10) -> bb3 (unwind: bb4);
+        _11 = f4(move _12, const 16usize, const 18usize) -> bb3 (unwind: bb6);
     }
 
     bb3: {
+        _10 = &(*_11) with_metadata(copy _11.metadata);
+        storage_dead(_12);
+        _0 = sum2(move _7, move _10) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
         storage_dead(_10);
         storage_dead(_7);
         storage_dead(b);
@@ -3016,15 +3257,19 @@ pub fn f3() -> u32
         return;
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
     bb5: {
         unwind_continue;
     }
 
     bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         unwind_continue;
     }
 }
@@ -3043,10 +3288,17 @@ pub fn f5(x: &'_ [u32; 32usize]) -> u32
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 32usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy (*x)[copy _2];
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -3163,7 +3415,7 @@ pub fn zero_slice(a: &'_ mut [u8])
         storage_live(len);
         storage_live(_4);
         _4 = &(*a) with_metadata(copy a.metadata);
-        len = len::<u8>(move _4) -> bb1 (unwind: bb5);
+        len = len::<u8>(move _4) -> bb1 (unwind: bb9);
     }
 
     bb1: {
@@ -3178,7 +3430,7 @@ pub fn zero_slice(a: &'_ mut [u8])
         storage_live(_7);
         _7 = copy len;
         _5 = move _6 < move _7;
-        if move _5 -> bb3 else -> bb4;
+        if move _5 -> bb3 else -> bb8;
     }
 
     bb3: {
@@ -3189,17 +3441,31 @@ pub fn zero_slice(a: &'_ mut [u8])
         _9 = &raw const (*a) with_metadata(copy a.metadata);
         _10 = copy _9.metadata;
         _11 = copy _8 < copy _10;
-        assert(move _11 == true) (bounds_check) else panic;
+        assert assert(move _11 == true) (bounds_check) -> bb4 (unwind: bb7);
+    }
+
+    bb4: {
         (*a)[copy _8] = const 0u8;
         storage_dead(_8);
         _12 = copy i checked.+ const 1usize;
-        assert(move _12._1 == false) (overflow) else panic;
+        assert assert(move _12._1 == false) (overflow) -> bb5 (unwind: bb6);
+    }
+
+    bb5: {
         i = move _12._0;
         storage_dead(_5);
         goto bb2;
     }
 
-    bb4: {
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         storage_dead(_7);
         storage_dead(_6);
         _0 = ();
@@ -3209,7 +3475,7 @@ pub fn zero_slice(a: &'_ mut [u8])
         return;
     }
 
-    bb5: {
+    bb9: {
         unwind_continue;
     }
 }
@@ -3234,7 +3500,7 @@ pub fn iter_mut_slice(a: &'_ mut [u8])
         storage_live(len);
         storage_live(_3);
         _3 = &(*a) with_metadata(copy a.metadata);
-        len = len::<u8>(move _3) -> bb1 (unwind: bb5);
+        len = len::<u8>(move _3) -> bb1 (unwind: bb7);
     }
 
     bb1: {
@@ -3251,20 +3517,27 @@ pub fn iter_mut_slice(a: &'_ mut [u8])
         storage_live(_7);
         _7 = copy len;
         _5 = move _6 < move _7;
-        if move _5 -> bb3 else -> bb4;
+        if move _5 -> bb3 else -> bb6;
     }
 
     bb3: {
         storage_dead(_7);
         storage_dead(_6);
         _8 = copy i checked.+ const 1usize;
-        assert(move _8._1 == false) (overflow) else panic;
+        assert assert(move _8._1 == false) (overflow) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
         i = move _8._0;
         storage_dead(_5);
         goto bb2;
     }
 
-    bb4: {
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
         storage_dead(_7);
         storage_dead(_6);
         _0 = ();
@@ -3274,7 +3547,7 @@ pub fn iter_mut_slice(a: &'_ mut [u8])
         return;
     }
 
-    bb5: {
+    bb7: {
         unwind_continue;
     }
 }
@@ -3319,13 +3592,13 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
         storage_live(_6);
         storage_live(_7);
         _7 = &(*a) with_metadata(copy a.metadata);
-        _6 = len::<u32>(move _7) -> bb2 (unwind: bb5);
+        _6 = len::<u32>(move _7) -> bb2 (unwind: bb11);
     }
 
     bb2: {
         storage_dead(_7);
         _4 = move _5 < move _6;
-        if move _4 -> bb3 else -> bb4;
+        if move _4 -> bb3 else -> bb10;
     }
 
     bb3: {
@@ -3337,21 +3610,42 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
         _10 = &raw const (*a) with_metadata(copy a.metadata);
         _11 = copy _10.metadata;
         _12 = copy _9 < copy _11;
-        assert(move _12 == true) (bounds_check) else panic;
+        assert assert(move _12 == true) (bounds_check) -> bb4 (unwind: bb9);
+    }
+
+    bb4: {
         _8 = copy (*a)[copy _9];
         _13 = copy s checked.+ copy _8;
-        assert(move _13._1 == false) (overflow) else panic;
+        assert assert(move _13._1 == false) (overflow) -> bb5 (unwind: bb8);
+    }
+
+    bb5: {
         s = move _13._0;
         storage_dead(_8);
         storage_dead(_9);
         _14 = copy i checked.+ const 1usize;
-        assert(move _14._1 == false) (overflow) else panic;
+        assert assert(move _14._1 == false) (overflow) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
         i = move _14._0;
         storage_dead(_4);
         goto bb1;
     }
 
-    bb4: {
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
@@ -3361,7 +3655,7 @@ pub fn sum_mut_slice(a: &'_ mut [u32]) -> u32
         return;
     }
 
-    bb5: {
+    bb11: {
         unwind_continue;
     }
 }

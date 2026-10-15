@@ -4303,20 +4303,27 @@ pub fn incr(rc: &'_ mut Cell::<u32>)
         storage_live(_2);
         storage_live(_3);
         _3 = &two-phase-mut (*rc);
-        _2 = get_mut::<u32>(move _3) -> bb1 (unwind: bb2);
+        _2 = get_mut::<u32>(move _3) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_3);
         _4 = copy (*_2) checked.+ const 1u32;
-        assert(move _4._1 == false) (overflow) else panic;
+        assert assert(move _4._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         (*_2) = move _4._0;
         storage_dead(_2);
         _0 = ();
         return;
     }
 
-    bb2: {
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         unwind_continue;
     }
 }

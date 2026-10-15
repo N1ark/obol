@@ -141,11 +141,18 @@ fn access_mutable_static()
         _3 = &raw mut COUNTER;
         _1 = move _3;
         _2 = copy (*_1) checked.+ const 1usize;
-        assert(move _2._1 == false) (overflow) else panic;
+        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*_1) = move _2._0;
         storage_dead(_1);
         _0 = ();
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

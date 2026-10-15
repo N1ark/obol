@@ -25,12 +25,19 @@ pub fn add::<'_, '_>(self_1: &'_ u32, other_2: &'_ u32) -> u32
         other_4 = copy (*other_2);
         storage_live(_5);
         _5 = copy self_3 checked.+ copy other_4;
-        assert(move _5._1 == false) (overflow) else panic;
+        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _5._0;
         storage_dead(_5);
         storage_dead(other_4);
         storage_dead(self_3);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -65,14 +72,20 @@ fn six() -> u32
         storage_live(_8);
         storage_live(x);
         _2 = const 0u32 checked.+ const 1u32;
-        assert(move _2._1 == false) (overflow) else panic;
+        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_live(_9);
         _9 = &anon_const_0;
         _8 = move _9;
         x = &(*_8);
         storage_live(y);
         _4 = const 2u32 checked.+ const 3u32;
-        assert(move _4._1 == false) (overflow) else panic;
+        assert assert(move _4._1 == false) (overflow) -> bb2 (unwind: bb5);
+    }
+
+    bb2: {
         storage_live(_10);
         _10 = &anon_const_1;
         _7 = move _10;
@@ -81,10 +94,10 @@ fn six() -> u32
         _5 = copy x;
         storage_live(_6);
         _6 = copy y;
-        _0 = add::<'_, '_>(move _5, move _6) -> bb1 (unwind: bb2);
+        _0 = add::<'_, '_>(move _5, move _6) -> bb3 (unwind: bb4);
     }
 
-    bb1: {
+    bb3: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(y);
@@ -92,7 +105,15 @@ fn six() -> u32
         return;
     }
 
-    bb2: {
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
         unwind_continue;
     }
 }

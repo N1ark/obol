@@ -1464,21 +1464,28 @@ fn {impl test_crate::Modifiable<T> for Box::<i32, Global>}::modify::<i32>(self: 
         _3 = copy (*_8) checked.+ const 1i32;
         _6 = copy (*self);
         _9 = transmute<Unique::<i32>, *const i32>(copy _6._0);
-        assert(move _3._1 == false) (overflow) else panic;
+        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         _7 = copy (*self);
         _10 = transmute<Unique::<i32>, *const i32>(copy _7._0);
         (*_10) = move _3._0;
         storage_live(_4);
         _4 = &(*arg);
-        _0 = clone(move _4) -> bb1 (unwind: bb2);
+        _0 = clone(move _4) -> bb2 (unwind: bb3);
     }
 
-    bb1: {
+    bb2: {
         storage_dead(_4);
         return;
     }
 
-    bb2: {
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         unwind_continue;
     }
 }

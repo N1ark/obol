@@ -68,11 +68,18 @@ fn test_crate::main::{closure}::<i8, extern "rust-call" fn((u8,)) -> u8, (&'_ u8
         _7 = copy (*_1).upvar_0;
         _5 = copy (*_7);
         _6 = copy _4 checked.+ copy _5;
-        assert(move _6._1 == false) (overflow) else panic;
+        assert assert(move _6._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -136,7 +143,10 @@ fn test_crate::main::{closure#1}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_
         _8 = copy (*_1).upvar_0;
         _4 = copy (*_8) checked.+ const 1u8;
         _9 = copy (*_1).upvar_0;
-        assert(move _4._1 == false) (overflow) else panic;
+        assert assert(move _4._1 == false) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         _10 = copy (*_1).upvar_0;
         (*_10) = move _4._0;
         storage_live(_5);
@@ -145,11 +155,22 @@ fn test_crate::main::{closure#1}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_
         _11 = copy (*_1).upvar_0;
         _6 = copy (*_11);
         _7 = copy _5 checked.+ copy _6;
-        assert(move _7._1 == false) (overflow) else panic;
+        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -204,7 +225,7 @@ fn test_crate::main::{closure#2}::<i32, extern "rust-call" fn((u8,)) -> u8, (Thi
         storage_live(_4);
         storage_live(_5);
         _5 = move _1.upvar_0;
-        _4 = drop::<Thing>(move _5) -> bb1 (unwind: bb2);
+        _4 = drop::<Thing>(move _5) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -213,13 +234,20 @@ fn test_crate::main::{closure#2}::<i32, extern "rust-call" fn((u8,)) -> u8, (Thi
         storage_live(_6);
         _6 = copy x;
         _7 = copy _6 checked.+ const 1u8;
-        assert(move _7._1 == false) (overflow) else panic;
+        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _7._0;
         storage_dead(_6);
         return;
     }
 
-    bb2: {
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         unwind_continue;
     }
 }

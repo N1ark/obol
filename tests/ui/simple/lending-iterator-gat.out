@@ -364,12 +364,19 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mu
         _6 = copy (*_1).upvar_0;
         _5 = copy (*_6) checked.+ copy _4;
         _7 = copy (*_1).upvar_0;
-        assert(move _5._1 == false) (overflow) else panic;
+        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _8 = copy (*_1).upvar_0;
         (*_8) = move _5._0;
         _0 = ();
         storage_dead(_4);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

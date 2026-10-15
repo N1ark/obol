@@ -54,9 +54,16 @@ pub fn lens() -> usize
         storage_live(_0);
         storage_live(_1);
         _1 = copy LEN::<u8> checked.+ copy LEN::<u32>;
-        assert(move _1._1 == false) (overflow) else panic;
+        assert assert(move _1._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _1._0;
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

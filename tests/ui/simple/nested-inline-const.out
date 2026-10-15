@@ -21,11 +21,18 @@ fn main()
         _0 = ();
         storage_live(_1);
         _2 = const 1i32 checked.+ const 9i32;
-        assert(move _2._1 == false) (overflow) else panic;
+        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _1 = move _2._0;
         storage_dead(_1);
         _0 = ();
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

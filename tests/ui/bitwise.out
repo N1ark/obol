@@ -28,20 +28,34 @@ pub fn shift_u32(a: u32) -> u32
         storage_live(_5);
         _5 = copy i;
         _6 = copy _5 < const 32usize;
-        assert(move _6 == true) (overflow) else panic;
+        assert assert(move _6 == true) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         t = move _4 wrap.>> move _5;
         storage_dead(_5);
         storage_dead(_4);
         storage_live(_7);
         _7 = copy i;
         _8 = copy _7 < const 32usize;
-        assert(move _8 == true) (overflow) else panic;
+        assert assert(move _8 == true) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         t = copy t wrap.<< move _7;
         storage_dead(_7);
         _0 = copy t;
         storage_dead(t);
         storage_dead(i);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -75,7 +89,10 @@ pub fn shift_i32(a: i32) -> i32
         _5 = copy i;
         _6 = cast<isize, usize>(copy _5);
         _7 = move _6 < const 32usize;
-        assert(move _7 == true) (overflow) else panic;
+        assert assert(move _7 == true) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         t = move _4 wrap.>> move _5;
         storage_dead(_5);
         storage_dead(_4);
@@ -83,13 +100,24 @@ pub fn shift_i32(a: i32) -> i32
         _8 = copy i;
         _9 = cast<isize, usize>(copy _8);
         _10 = move _9 < const 32usize;
-        assert(move _10 == true) (overflow) else panic;
+        assert assert(move _10 == true) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         t = copy t wrap.<< move _8;
         storage_dead(_8);
         _0 = copy t;
         storage_dead(t);
         storage_dead(i);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 

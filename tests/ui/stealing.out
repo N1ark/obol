@@ -323,9 +323,16 @@ fn four() -> usize
         _2 = copy FOO;
         storage_dead(_2);
         _3 = const 2usize checked.+ const 2usize;
-        assert(move _3._1 == false) (overflow) else panic;
+        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _3._0;
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

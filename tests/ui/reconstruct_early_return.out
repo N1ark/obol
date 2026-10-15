@@ -47,43 +47,60 @@ fn f() -> usize
         storage_live(_4);
         _4 = copy i;
         _3 = move _4 < const 32i32;
-        if move _3 -> bb2 else -> bb8;
+        if move _3 -> bb2 else -> bb16;
     }
 
     bb2: {
         storage_dead(_4);
         _5 = copy j checked.+ const 1i32;
-        assert(move _5._1 == false) (overflow) else panic;
+        assert assert(move _5._1 == false) (overflow) -> bb3 (unwind: bb15);
+    }
+
+    bb3: {
         j = move _5._0;
         storage_live(_6);
         storage_live(_7);
         _7 = copy j;
         _6 = move _7 > const 16i32;
-        if move _6 -> bb3 else -> bb4;
-    }
-
-    bb3: {
-        storage_dead(_7);
-        _8 = const 2i32 == const 0i32;
-        assert(move _8 == false) (division_by_zero) else panic;
-        _9 = const 2i32 == const -1i32;
-        _10 = copy j == const -2147483648i32;
-        _11 = move _9 & move _10;
-        assert(move _11 == false) (overflow) else panic;
-        j = copy j ub./ const 2i32;
-        goto bb7;
+        if move _6 -> bb4 else -> bb9;
     }
 
     bb4: {
+        storage_dead(_7);
+        _8 = const 2i32 == const 0i32;
+        assert assert(move _8 == false) (division_by_zero) -> bb5 (unwind: bb8);
+    }
+
+    bb5: {
+        _9 = const 2i32 == const -1i32;
+        _10 = copy j == const -2147483648i32;
+        _11 = move _9 & move _10;
+        assert assert(move _11 == false) (overflow) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
+        j = copy j ub./ const 2i32;
+        goto bb12;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
         storage_dead(_7);
         storage_live(_12);
         storage_live(_13);
         _13 = copy j;
         _12 = move _13 > const 32i32;
-        if move _12 -> bb5 else -> bb6;
+        if move _12 -> bb10 else -> bb11;
     }
 
-    bb5: {
+    bb10: {
         storage_dead(_13);
         _0 = const 1usize;
         storage_dead(_12);
@@ -91,34 +108,45 @@ fn f() -> usize
         storage_dead(_3);
         storage_dead(j);
         storage_dead(i);
-        goto bb9;
+        goto bb17;
     }
 
-    bb6: {
+    bb11: {
         storage_dead(_13);
         storage_dead(_12);
-        goto bb7;
+        goto bb12;
     }
 
-    bb7: {
+    bb12: {
         storage_dead(_6);
         _14 = copy i checked.+ const 1i32;
-        assert(move _14._1 == false) (overflow) else panic;
+        assert assert(move _14._1 == false) (overflow) -> bb13 (unwind: bb14);
+    }
+
+    bb13: {
         i = move _14._0;
         storage_dead(_3);
         goto bb1;
     }
 
-    bb8: {
+    bb14: {
+        unwind_continue;
+    }
+
+    bb15: {
+        unwind_continue;
+    }
+
+    bb16: {
         storage_dead(_4);
         storage_dead(_3);
         _0 = const 0usize;
         storage_dead(j);
         storage_dead(i);
-        goto bb9;
+        goto bb17;
     }
 
-    bb9: {
+    bb17: {
         return;
     }
 }

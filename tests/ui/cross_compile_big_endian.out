@@ -48,14 +48,20 @@ fn main()
         storage_live(_5);
         _5 = copy x;
         _6 = copy _4 checked.- copy _5;
-        assert(move _6._1 == false) (overflow) else panic;
+        assert assert(move _6._1 == false) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
         storage_live(a);
         _8 = cast<i32, u32>(const 64i32);
         _9 = move _8 < const 128u32;
-        assert(move _9 == true) (overflow) else panic;
+        assert assert(move _9 == true) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         a = const 102u128 wrap.<< const 64i32;
         storage_live(b);
         b = HasBEDiscr::Second {  };
@@ -66,6 +72,14 @@ fn main()
         storage_dead(y);
         storage_dead(x);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 

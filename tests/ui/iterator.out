@@ -1390,11 +1390,18 @@ pub fn add_assign::<'_>(self: &'_ mut i32, other_2: &'_ i32)
         other_3 = copy (*other_2);
         storage_live(_4);
         _4 = copy (*self) checked.+ copy other_3;
-        assert(move _4._1 == false) (overflow) else panic;
+        assert assert(move _4._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*self) = move _4._0;
         storage_dead(_4);
         storage_dead(other_3);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2584,15 +2591,18 @@ pub fn chunks_exact::<i32>(self: &'_ [i32], chunk_size: usize) -> ChunksExact::<
         storage_live(rem);
         _6 = copy self.metadata;
         _7 = copy chunk_size == const 0usize;
-        assert(move _7 == false) (remainder_by_zero) else panic;
+        assert assert(move _7 == false) (remainder_by_zero) -> bb5 (unwind: bb8);
+    }
+
+    bb5: {
         rem = copy _6 wrap.% copy chunk_size;
         storage_live(fst_len);
         fst_len = copy _6 wrap.- copy rem;
         storage_live(_11);
-        _11 = split_at_unchecked::<i32>(move self, move fst_len) -> bb5 (unwind: bb6);
+        _11 = split_at_unchecked::<i32>(move self, move fst_len) -> bb6 (unwind: bb7);
     }
 
-    bb5: {
+    bb6: {
         storage_live(fst);
         fst = copy _11._0;
         storage_live(snd);
@@ -2608,7 +2618,11 @@ pub fn chunks_exact::<i32>(self: &'_ [i32], chunk_size: usize) -> ChunksExact::<
         return;
     }
 
-    bb6: {
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         unwind_continue;
     }
 }
@@ -2712,12 +2726,12 @@ fn main()
         storage_live(_4);
         storage_live(_5);
         _5 = copy a;
-        _4 = impl_IntoIterator_for_array::into_iter::<i32, 7usize>(move _5) -> bb1 (unwind: bb45);
+        _4 = impl_IntoIterator_for_array::into_iter::<i32, 7usize>(move _5) -> bb1 (unwind: bb50);
     }
 
     bb1: {
         storage_dead(_5);
-        _3 = impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(move _4) -> bb2 (unwind: bb44);
+        _3 = impl_IntoIterator_for_T::into_iter::<IntoIter::<i32, 7usize>>(move _4) -> bb2 (unwind: bb49);
     }
 
     bb2: {
@@ -2733,20 +2747,20 @@ fn main()
         storage_live(_9);
         _9 = &mut iter_6;
         _8 = &two-phase-mut (*_9);
-        _7 = {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(move _8) -> bb4 (unwind: bb42);
+        _7 = {impl Iterator for IntoIter::<_, _>}::next::<i32, 7usize>(move _8) -> bb4 (unwind: bb47);
     }
 
     bb4: {
         storage_dead(_8);
         _10 = @discriminant(_7);
-        switch move _10 -> 0isize: bb5, 1isize: bb40, otherwise: bb41;
+        switch move _10 -> 0isize: bb5, 1isize: bb44, otherwise: bb46;
     }
 
     bb5: {
         storage_dead(_9);
         storage_dead(_7);
         _66 = &raw mut iter_6;
-        _67 = drop_glue::<IntoIter::<i32, 7usize>>(move _66) -> bb6 (unwind: bb44);
+        _67 = drop_glue::<IntoIter::<i32, 7usize>>(move _66) -> bb6 (unwind: bb49);
     }
 
     bb6: {
@@ -2759,12 +2773,12 @@ fn main()
         _17 = &a;
         _16 = unsize_cast<&'_ [i32; 7usize], &'_ [i32], 7usize>(move _17);
         storage_dead(_17);
-        _15 = iter::<i32>(move _16) -> bb7 (unwind: bb39);
+        _15 = iter::<i32>(move _16) -> bb7 (unwind: bb43);
     }
 
     bb7: {
         storage_dead(_16);
-        _14 = impl_IntoIterator_for_T::into_iter::<Iter::<'_, i32>>(move _15) -> bb8 (unwind: bb38);
+        _14 = impl_IntoIterator_for_T::into_iter::<Iter::<'_, i32>>(move _15) -> bb8 (unwind: bb42);
     }
 
     bb8: {
@@ -2780,13 +2794,13 @@ fn main()
         storage_live(_21);
         _21 = &mut iter_18;
         _20 = &two-phase-mut (*_21);
-        _19 = {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(move _20) -> bb10 (unwind: bb37);
+        _19 = {impl Iterator for Iter::<'_, _>}::next::<'_, i32>(move _20) -> bb10 (unwind: bb41);
     }
 
     bb10: {
         storage_dead(_20);
         _22 = @discriminant(_19);
-        switch move _22 -> 0isize: bb11, 1isize: bb34, otherwise: bb41;
+        switch move _22 -> 0isize: bb11, 1isize: bb38, otherwise: bb46;
     }
 
     bb11: {
@@ -2801,12 +2815,12 @@ fn main()
         _30 = &a;
         _29 = unsize_cast<&'_ [i32; 7usize], &'_ [i32], 7usize>(move _30);
         storage_dead(_30);
-        _28 = chunks::<i32>(move _29, const 2usize) -> bb12 (unwind: bb33);
+        _28 = chunks::<i32>(move _29, const 2usize) -> bb12 (unwind: bb37);
     }
 
     bb12: {
         storage_dead(_29);
-        _27 = impl_IntoIterator_for_T::into_iter::<Chunks::<'_, i32>>(move _28) -> bb13 (unwind: bb32);
+        _27 = impl_IntoIterator_for_T::into_iter::<Chunks::<'_, i32>>(move _28) -> bb13 (unwind: bb36);
     }
 
     bb13: {
@@ -2822,13 +2836,13 @@ fn main()
         storage_live(_34);
         _34 = &mut iter_31;
         _33 = &two-phase-mut (*_34);
-        _32 = {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(move _33) -> bb15 (unwind: bb31);
+        _32 = {impl Iterator for Chunks::<'_, _>}::next::<'_, i32>(move _33) -> bb15 (unwind: bb35);
     }
 
     bb15: {
         storage_dead(_33);
         _35 = @discriminant(_32);
-        switch move _35 -> 0isize: bb16, 1isize: bb30, otherwise: bb41;
+        switch move _35 -> 0isize: bb16, 1isize: bb32, otherwise: bb46;
     }
 
     bb16: {
@@ -2843,12 +2857,12 @@ fn main()
         _40 = &a;
         _39 = unsize_cast<&'_ [i32; 7usize], &'_ [i32], 7usize>(move _40);
         storage_dead(_40);
-        _38 = chunks_exact::<i32>(move _39, const 2usize) -> bb17 (unwind: bb29);
+        _38 = chunks_exact::<i32>(move _39, const 2usize) -> bb17 (unwind: bb31);
     }
 
     bb17: {
         storage_dead(_39);
-        _37 = impl_IntoIterator_for_T::into_iter::<ChunksExact::<'_, i32>>(move _38) -> bb18 (unwind: bb28);
+        _37 = impl_IntoIterator_for_T::into_iter::<ChunksExact::<'_, i32>>(move _38) -> bb18 (unwind: bb30);
     }
 
     bb18: {
@@ -2864,13 +2878,13 @@ fn main()
         storage_live(_44);
         _44 = &mut iter_41;
         _43 = &two-phase-mut (*_44);
-        _42 = {impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>(move _43) -> bb20 (unwind: bb27);
+        _42 = {impl Iterator for ChunksExact::<'_, _>}::next::<'_, i32>(move _43) -> bb20 (unwind: bb29);
     }
 
     bb20: {
         storage_dead(_43);
         _45 = @discriminant(_42);
-        switch move _45 -> 0isize: bb21, 1isize: bb26, otherwise: bb41;
+        switch move _45 -> 0isize: bb21, 1isize: bb26, otherwise: bb46;
     }
 
     bb21: {
@@ -2946,15 +2960,14 @@ fn main()
 
     bb26: {
         _46 = copy i checked.+ const 1i32;
-        assert(move _46._1 == false) (overflow) else panic;
+        assert assert(move _46._1 == false) (overflow) -> bb27 (unwind: bb28);
+    }
+
+    bb27: {
         i = move _46._0;
         storage_dead(_44);
         storage_dead(_42);
         goto bb19;
-    }
-
-    bb27: {
-        unwind_continue;
     }
 
     bb28: {
@@ -2966,12 +2979,7 @@ fn main()
     }
 
     bb30: {
-        _36 = copy i checked.+ const 1i32;
-        assert(move _36._1 == false) (overflow) else panic;
-        i = move _36._0;
-        storage_dead(_34);
-        storage_dead(_32);
-        goto bb14;
+        unwind_continue;
     }
 
     bb31: {
@@ -2979,32 +2987,23 @@ fn main()
     }
 
     bb32: {
-        unwind_continue;
+        _36 = copy i checked.+ const 1i32;
+        assert assert(move _36._1 == false) (overflow) -> bb33 (unwind: bb34);
     }
 
     bb33: {
-        unwind_continue;
+        i = move _36._0;
+        storage_dead(_34);
+        storage_dead(_32);
+        goto bb14;
     }
 
     bb34: {
-        storage_live(v_23);
-        v_23 = copy (_19 as variant Option::<&'_ i32>::Some)._0;
-        storage_live(_24);
-        storage_live(_25);
-        _25 = &two-phase-mut i;
-        storage_live(_26);
-        _26 = copy v_23;
-        _24 = add_assign::<'_>(move _25, move _26) -> bb35 (unwind: bb36);
+        unwind_continue;
     }
 
     bb35: {
-        storage_dead(_26);
-        storage_dead(_25);
-        storage_dead(_24);
-        storage_dead(v_23);
-        storage_dead(_21);
-        storage_dead(_19);
-        goto bb9;
+        unwind_continue;
     }
 
     bb36: {
@@ -3016,20 +3015,52 @@ fn main()
     }
 
     bb38: {
-        unwind_continue;
+        storage_live(v_23);
+        v_23 = copy (_19 as variant Option::<&'_ i32>::Some)._0;
+        storage_live(_24);
+        storage_live(_25);
+        _25 = &two-phase-mut i;
+        storage_live(_26);
+        _26 = copy v_23;
+        _24 = add_assign::<'_>(move _25, move _26) -> bb39 (unwind: bb40);
     }
 
     bb39: {
-        unwind_continue;
+        storage_dead(_26);
+        storage_dead(_25);
+        storage_dead(_24);
+        storage_dead(v_23);
+        storage_dead(_21);
+        storage_dead(_19);
+        goto bb9;
     }
 
     bb40: {
+        unwind_continue;
+    }
+
+    bb41: {
+        unwind_continue;
+    }
+
+    bb42: {
+        unwind_continue;
+    }
+
+    bb43: {
+        unwind_continue;
+    }
+
+    bb44: {
         storage_live(v_11);
         v_11 = copy (_7 as variant Option::<i32>::Some)._0;
         storage_live(_12);
         _12 = copy v_11;
         _13 = copy i checked.+ copy _12;
-        assert(move _13._1 == false) (overflow) else panic;
+        assert assert(move _13._1 == false) (overflow) -> bb45 (unwind: bb47);
+    }
+
+    bb45: {
         i = move _13._0;
         storage_dead(_12);
         storage_dead(v_11);
@@ -3038,24 +3069,24 @@ fn main()
         goto bb3;
     }
 
-    bb41: {
+    bb46: {
         undefined_behavior;
     }
 
-    bb42: {
+    bb47: {
         _64 = &raw mut iter_6;
-        _65 = drop_glue::<IntoIter::<i32, 7usize>>(move _64) -> bb44 (unwind: bb43);
+        _65 = drop_glue::<IntoIter::<i32, 7usize>>(move _64) -> bb49 (unwind: bb48);
     }
 
-    bb43: {
+    bb48: {
         unwind_terminate;
     }
 
-    bb44: {
+    bb49: {
         unwind_continue;
     }
 
-    bb45: {
+    bb50: {
         unwind_continue;
     }
 }

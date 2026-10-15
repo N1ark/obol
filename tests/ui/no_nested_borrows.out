@@ -1989,7 +1989,10 @@ pub fn test2()
         storage_live(_5);
         _5 = copy y;
         _6 = copy _4 checked.+ copy _5;
-        assert(move _6._1 == false) (overflow) else panic;
+        assert assert(move _6._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
@@ -2022,6 +2025,10 @@ pub fn test2()
         storage_dead(y);
         storage_dead(x);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2289,7 +2296,7 @@ pub fn even(x: u32) -> bool
     bb1: {
         storage_dead(_3);
         _0 = const true;
-        goto bb4;
+        goto bb5;
     }
 
     bb2: {
@@ -2298,23 +2305,30 @@ pub fn even(x: u32) -> bool
         storage_live(_5);
         _5 = copy x;
         _6 = copy _5 checked.- const 1u32;
-        assert(move _6._1 == false) (overflow) else panic;
-        _4 = move _6._0;
-        storage_dead(_5);
-        _0 = odd(move _4) -> bb3 (unwind: bb5);
+        assert assert(move _6._1 == false) (overflow) -> bb3 (unwind: bb7);
     }
 
     bb3: {
-        storage_dead(_4);
-        goto bb4;
+        _4 = move _6._0;
+        storage_dead(_5);
+        _0 = odd(move _4) -> bb4 (unwind: bb6);
     }
 
     bb4: {
+        storage_dead(_4);
+        goto bb5;
+    }
+
+    bb5: {
         storage_dead(_2);
         return;
     }
 
-    bb5: {
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
         unwind_continue;
     }
 }
@@ -2343,7 +2357,7 @@ pub fn odd(x: u32) -> bool
     bb1: {
         storage_dead(_3);
         _0 = const false;
-        goto bb4;
+        goto bb5;
     }
 
     bb2: {
@@ -2352,23 +2366,30 @@ pub fn odd(x: u32) -> bool
         storage_live(_5);
         _5 = copy x;
         _6 = copy _5 checked.- const 1u32;
-        assert(move _6._1 == false) (overflow) else panic;
-        _4 = move _6._0;
-        storage_dead(_5);
-        _0 = even(move _4) -> bb3 (unwind: bb5);
+        assert assert(move _6._1 == false) (overflow) -> bb3 (unwind: bb7);
     }
 
     bb3: {
-        storage_dead(_4);
-        goto bb4;
+        _4 = move _6._0;
+        storage_dead(_5);
+        _0 = even(move _4) -> bb4 (unwind: bb6);
     }
 
     bb4: {
+        storage_dead(_4);
+        goto bb5;
+    }
+
+    bb5: {
         storage_dead(_2);
         return;
     }
 
-    bb5: {
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
         unwind_continue;
     }
 }
@@ -2598,10 +2619,17 @@ pub fn incr(x: &'_ mut u32)
         storage_live(_2);
         _0 = ();
         _2 = copy (*x) checked.+ const 1u32;
-        assert(move _2._1 == false) (overflow) else panic;
+        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*x) = move _2._0;
         _0 = ();
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2619,11 +2647,18 @@ pub fn read_then_incr(x: &'_ mut u32) -> u32
         storage_live(r);
         r = copy (*x);
         _3 = copy (*x) checked.+ const 1u32;
-        assert(move _3._1 == false) (overflow) else panic;
+        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*x) = move _3._0;
         _0 = copy r;
         storage_dead(r);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

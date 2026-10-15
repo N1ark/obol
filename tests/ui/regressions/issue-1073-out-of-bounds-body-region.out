@@ -1492,7 +1492,7 @@ pub fn advance_slices::<'_>(bufs: &'_ mut &'_ mut [core::io::io_slice::IoSlice::
         storage_dead(_41);
         storage_live(_45);
         _45 = copy self_8 < copy len_42;
-        if move _45 -> bb8 else -> bb24;
+        if move _45 -> bb8 else -> bb26;
     }
 
     bb8: {
@@ -1564,7 +1564,7 @@ pub fn advance_slices::<'_>(bufs: &'_ mut &'_ mut [core::io::io_slice::IoSlice::
     }
 
     bb14: {
-        switch copy n -> 0usize: bb23, otherwise: bb15;
+        switch copy n -> 0usize: bb24, otherwise: bb15;
     }
 
     bb15: {
@@ -1612,17 +1612,20 @@ pub fn advance_slices::<'_>(bufs: &'_ mut &'_ mut [core::io::io_slice::IoSlice::
         _19 = copy (*bufs);
         _15 = copy _19.metadata;
         _16 = const 0usize < copy _15;
-        assert(move _16 == true) (bounds_check) else panic;
+        assert assert(move _16 == true) (bounds_check) -> bb19 (unwind: bb25);
+    }
+
+    bb19: {
         _20 = copy (*bufs);
         self_14 = &two-phase-mut (*_20)[const 0usize];
         storage_live(_66);
         storage_live(_67);
         _67 = copy (*self_14)._0.vec.iov_len;
         _66 = move _67 < copy n;
-        if move _66 -> bb19 else -> bb22;
+        if move _66 -> bb20 else -> bb23;
     }
 
-    bb19: {
+    bb20: {
         storage_dead(_67);
         storage_live(_69);
         storage_live(s_72);
@@ -1653,18 +1656,18 @@ pub fn advance_slices::<'_>(bufs: &'_ mut &'_ mut [core::io::io_slice::IoSlice::
         storage_dead(_75);
         storage_dead(_73);
         storage_dead(s_72);
-        _68 = panic_fmt(move _69) -> bb20 (unwind: bb21);
-    }
-
-    bb20: {
-        undefined_behavior;
+        _68 = panic_fmt(move _69) -> bb21 (unwind: bb22);
     }
 
     bb21: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb22: {
+        unwind_continue;
+    }
+
+    bb23: {
         storage_dead(_67);
         storage_dead(_66);
         (*self_14)._0.vec.iov_len = copy (*self_14)._0.vec.iov_len wrap.- copy n;
@@ -1675,15 +1678,19 @@ pub fn advance_slices::<'_>(bufs: &'_ mut &'_ mut [core::io::io_slice::IoSlice::
         storage_dead(self_71);
         (*self_14)._0.vec.iov_base = copy _70;
         storage_dead(_70);
-        goto bb23;
+        goto bb24;
     }
 
-    bb23: {
+    bb24: {
         storage_dead(_11);
         return;
     }
 
-    bb24: {
+    bb25: {
+        unwind_continue;
+    }
+
+    bb26: {
         storage_live(_46);
         _46 = copy self_8 ub.- copy len_42;
         _7 = Option::<usize>::Some { _0: move _46 };

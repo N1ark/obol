@@ -496,14 +496,17 @@ fn main()
         storage_live(_4);
         _4 = const 0usize;
         _5 = copy _4 < const 2usize;
-        assert(move _5 == true) (bounds_check) else panic;
-        _2 = &(*_3)[copy _4];
-        storage_live(_6);
-        _6 = Ordering::Relaxed {  };
-        _x = load(move _2, move _6) -> bb1 (unwind: bb2);
+        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        _2 = &(*_3)[copy _4];
+        storage_live(_6);
+        _6 = Ordering::Relaxed {  };
+        _x = load(move _2, move _6) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         storage_dead(_6);
         storage_dead(_2);
         storage_dead(_4);
@@ -513,7 +516,11 @@ fn main()
         return;
     }
 
-    bb2: {
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         unwind_continue;
     }
 }

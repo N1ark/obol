@@ -49,12 +49,19 @@ fn test_crate::call_fn::{closure}::<i8, extern "rust-call" fn((usize,)) -> u8, (
         _6 = &raw const (*_10) with_metadata(copy _10.metadata);
         _7 = copy _6.metadata;
         _8 = copy _5 < copy _7;
-        assert(move _8 == true) (bounds_check) else panic;
+        assert assert(move _8 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _11 = copy (*_4);
         _0 = copy (*_11)[copy _5];
         storage_dead(_5);
         storage_dead(_4);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

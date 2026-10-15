@@ -18,10 +18,17 @@ pub fn first(s: [u32; 0usize]) -> u32
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 0usize;
-        assert(move _3 == true) (bounds_check) else panic;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = copy s[copy _2];
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

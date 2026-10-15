@@ -206,18 +206,25 @@ fn main()
     let f_ref: &'_ Foo; // local
     let _5: *mut Foo; // anonymous local
     let _6: (); // anonymous local
+    let _7: *mut Foo; // anonymous local
+    let _8: (); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_3);
         storage_live(_5);
         storage_live(_6);
+        storage_live(_7);
+        storage_live(_8);
         _0 = ();
         storage_live(f);
         f = Foo {  };
         storage_live(_2);
         _3 = const 255u8 checked.+ const 1u8;
-        assert(move _3._1 == false) (overflow) else panic;
+        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb3);
+    }
+
+    bb1: {
         _2 = move _3._0;
         storage_dead(_2);
         storage_live(f_ref);
@@ -225,16 +232,25 @@ fn main()
         _0 = ();
         storage_dead(f_ref);
         _5 = &raw mut f;
-        _6 = drop_glue::<Foo>(move _5) -> bb1 (unwind: bb2);
+        _6 = drop_glue::<Foo>(move _5) -> bb2 (unwind: bb4);
     }
 
-    bb1: {
+    bb2: {
         storage_dead(f);
         return;
     }
 
-    bb2: {
+    bb3: {
+        _7 = &raw mut f;
+        _8 = drop_glue::<Foo>(move _7) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
         unwind_continue;
+    }
+
+    bb5: {
+        unwind_terminate;
     }
 }
 

@@ -1158,7 +1158,7 @@ fn main()
         _4 = &array;
         storage_live(_5);
         _5 = Range::<usize> { start: const 2usize, end: const 5usize };
-        _3 = impl_Index_for_array::index::<i32, Range::<usize>, 6usize>(move _4, move _5) -> bb1 (unwind: bb6);
+        _3 = impl_Index_for_array::index::<i32, Range::<usize>, 6usize>(move _4, move _5) -> bb1 (unwind: bb8);
     }
 
     bb1: {
@@ -1171,13 +1171,16 @@ fn main()
         _8 = const 0usize;
         _9 = copy slice.metadata;
         _10 = copy _8 < copy _9;
-        assert(move _10 == true) (bounds_check) else panic;
-        _7 = copy (*slice)[copy _8];
-        _6 = move _7 == const 3i32;
-        if move _6 -> bb2 else -> bb3;
+        assert assert(move _10 == true) (bounds_check) -> bb2 (unwind: bb7);
     }
 
     bb2: {
+        _7 = copy (*slice)[copy _8];
+        _6 = move _7 == const 3i32;
+        if move _6 -> bb3 else -> bb4;
+    }
+
+    bb3: {
         storage_dead(_7);
         storage_dead(_8);
         storage_dead(_6);
@@ -1188,22 +1191,26 @@ fn main()
         return;
     }
 
-    bb3: {
+    bb4: {
         storage_dead(_7);
         storage_dead(_8);
         storage_live(_11);
-        _11 = panic(const "assertion failed: slice[0] == 3") -> bb4 (unwind: bb5);
-    }
-
-    bb4: {
-        undefined_behavior;
+        _11 = panic(const "assertion failed: slice[0] == 3") -> bb5 (unwind: bb6);
     }
 
     bb5: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
         unwind_continue;
     }
 }

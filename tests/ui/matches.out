@@ -134,7 +134,7 @@ pub fn test3(x: E2) -> u32
         storage_live(_8);
         storage_live(y);
         _3 = @discriminant(x);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb4, otherwise: bb8;
+        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb4, otherwise: bb10;
     }
 
     bb1: {
@@ -162,7 +162,7 @@ pub fn test3(x: E2) -> u32
 
     bb5: {
         storage_live(z);
-        z = id::<u32>(const 3u32) -> bb6 (unwind: bb7);
+        z = id::<u32>(const 3u32) -> bb6 (unwind: bb9);
     }
 
     bb6: {
@@ -171,7 +171,10 @@ pub fn test3(x: E2) -> u32
         storage_live(_7);
         _7 = copy z;
         _8 = copy _6 checked.+ copy _7;
-        assert(move _8._1 == false) (overflow) else panic;
+        assert assert(move _8._1 == false) (overflow) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
         _0 = move _8._0;
         storage_dead(_7);
         storage_dead(_6);
@@ -180,11 +183,15 @@ pub fn test3(x: E2) -> u32
         return;
     }
 
-    bb7: {
+    bb8: {
         unwind_continue;
     }
 
-    bb8: {
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
         undefined_behavior;
     }
 }

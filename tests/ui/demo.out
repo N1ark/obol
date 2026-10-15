@@ -39,15 +39,29 @@ pub fn mul2_add1(x: u32) -> u32
         storage_live(_4);
         _4 = copy x;
         _5 = copy _3 checked.+ copy _4;
-        assert(move _5._1 == false) (overflow) else panic;
+        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         _2 = move _5._0;
         storage_dead(_4);
         storage_dead(_3);
         _6 = copy _2 checked.+ const 1u32;
-        assert(move _6._1 == false) (overflow) else panic;
+        assert assert(move _6._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _6._0;
         storage_dead(_2);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -68,7 +82,7 @@ pub fn use_mul2_add1(x: u32, y: u32) -> u32
         storage_live(_3);
         storage_live(_4);
         _4 = copy x;
-        _3 = mul2_add1(move _4) -> bb1 (unwind: bb2);
+        _3 = mul2_add1(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -76,14 +90,21 @@ pub fn use_mul2_add1(x: u32, y: u32) -> u32
         storage_live(_5);
         _5 = copy y;
         _6 = copy _3 checked.+ copy _5;
-        assert(move _6._1 == false) (overflow) else panic;
+        assert assert(move _6._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _6._0;
         storage_dead(_5);
         storage_dead(_3);
         return;
     }
 
-    bb2: {
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         unwind_continue;
     }
 }
@@ -99,10 +120,17 @@ pub fn test_crate::incr(x: &'_ mut u32)
         storage_live(_2);
         _0 = ();
         _2 = copy (*x) checked.+ const 1u32;
-        assert(move _2._1 == false) (overflow) else panic;
+        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*x) = move _2._0;
         _0 = ();
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -207,7 +235,7 @@ pub fn i32_id(i: i32) -> i32
     bb1: {
         storage_dead(_3);
         _0 = const 0i32;
-        goto bb4;
+        goto bb6;
     }
 
     bb2: {
@@ -217,27 +245,41 @@ pub fn i32_id(i: i32) -> i32
         storage_live(_6);
         _6 = copy i;
         _7 = copy _6 checked.- const 1i32;
-        assert(move _7._1 == false) (overflow) else panic;
-        _5 = move _7._0;
-        storage_dead(_6);
-        _4 = i32_id(move _5) -> bb3 (unwind: bb5);
+        assert assert(move _7._1 == false) (overflow) -> bb3 (unwind: bb9);
     }
 
     bb3: {
-        storage_dead(_5);
-        _8 = copy _4 checked.+ const 1i32;
-        assert(move _8._1 == false) (overflow) else panic;
-        _0 = move _8._0;
-        storage_dead(_4);
-        goto bb4;
+        _5 = move _7._0;
+        storage_dead(_6);
+        _4 = i32_id(move _5) -> bb4 (unwind: bb8);
     }
 
     bb4: {
+        storage_dead(_5);
+        _8 = copy _4 checked.+ const 1i32;
+        assert assert(move _8._1 == false) (overflow) -> bb5 (unwind: bb7);
+    }
+
+    bb5: {
+        _0 = move _8._0;
+        storage_dead(_4);
+        goto bb6;
+    }
+
+    bb6: {
         storage_dead(_2);
         return;
     }
 
-    bb5: {
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
         unwind_continue;
     }
 }
@@ -256,11 +298,18 @@ pub fn impl_Counter_for_usize::incr(self: &'_ mut usize) -> usize
         storage_live(x);
         x = copy (*self);
         _3 = copy (*self) checked.+ const 1usize;
-        assert(move _3._1 == false) (overflow) else panic;
+        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*self) = move _3._0;
         _0 = copy x;
         storage_dead(x);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

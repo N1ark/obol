@@ -985,7 +985,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_4);
         storage_live(_5);
         _5 = Range::<i32> { start: const 0i32, end: const 128i32 };
-        _4 = into_iter::<Range::<i32>>(move _5) -> bb1 (unwind: bb26);
+        _4 = into_iter::<Range::<i32>>(move _5) -> bb1 (unwind: bb30);
     }
 
     bb1: {
@@ -1001,13 +1001,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_9);
         _9 = &mut iter_6;
         _8 = &two-phase-mut (*_9);
-        _7 = next::<i32>(move _8) -> bb3 (unwind: bb25);
+        _7 = next::<i32>(move _8) -> bb3 (unwind: bb29);
     }
 
     bb3: {
         storage_dead(_8);
         _10 = @discriminant(_7);
-        switch move _10 -> 0isize: bb4, 1isize: bb23, otherwise: bb24;
+        switch move _10 -> 0isize: bb4, 1isize: bb25, otherwise: bb28;
     }
 
     bb4: {
@@ -1021,7 +1021,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         _14 = copy step_out;
         _13 = Range::<usize> { start: const 0usize, end: move _14 };
         storage_dead(_14);
-        _12 = into_iter::<Range::<usize>>(move _13) -> bb5 (unwind: bb22);
+        _12 = into_iter::<Range::<usize>>(move _13) -> bb5 (unwind: bb24);
     }
 
     bb5: {
@@ -1037,13 +1037,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_18);
         _18 = &mut iter_15;
         _17 = &two-phase-mut (*_18);
-        _16 = next::<usize>(move _17) -> bb7 (unwind: bb21);
+        _16 = next::<usize>(move _17) -> bb7 (unwind: bb23);
     }
 
     bb7: {
         storage_dead(_17);
         _19 = @discriminant(_16);
-        switch move _19 -> 0isize: bb8, 1isize: bb9, otherwise: bb24;
+        switch move _19 -> 0isize: bb8, 1isize: bb9, otherwise: bb28;
     }
 
     bb8: {
@@ -1063,7 +1063,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         _22 = copy step_in;
         _21 = Range::<usize> { start: const 0usize, end: move _22 };
         storage_dead(_22);
-        _20 = into_iter::<Range::<usize>>(move _21) -> bb10 (unwind: bb20);
+        _20 = into_iter::<Range::<usize>>(move _21) -> bb10 (unwind: bb22);
     }
 
     bb10: {
@@ -1079,13 +1079,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_26);
         _26 = &mut iter_23;
         _25 = &two-phase-mut (*_26);
-        _24 = next::<usize>(move _25) -> bb12 (unwind: bb19);
+        _24 = next::<usize>(move _25) -> bb12 (unwind: bb21);
     }
 
     bb12: {
         storage_dead(_25);
         _27 = @discriminant(_24);
-        switch move _27 -> 0isize: bb13, 1isize: bb14, otherwise: bb24;
+        switch move _27 -> 0isize: bb13, 1isize: bb14, otherwise: bb28;
     }
 
     bb13: {
@@ -1100,16 +1100,19 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
 
     bb14: {
         _28 = copy s checked.+ const 1usize;
-        assert(move _28._1 == false) (overflow) else panic;
+        assert assert(move _28._1 == false) (overflow) -> bb15 (unwind: bb20);
+    }
+
+    bb15: {
         s = move _28._0;
         storage_live(_29);
         storage_live(_30);
         _30 = copy s;
         _29 = move _30 >= const 1usize;
-        if move _29 -> bb15 else -> bb16;
+        if move _29 -> bb16 else -> bb17;
     }
 
-    bb15: {
+    bb16: {
         storage_dead(_30);
         storage_dead(_29);
         storage_dead(_26);
@@ -1117,18 +1120,14 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         goto bb11;
     }
 
-    bb16: {
+    bb17: {
         storage_dead(_30);
         storage_live(_31);
-        _31 = panic(const "assertion failed: s >= 1") -> bb17 (unwind: bb18);
-    }
-
-    bb17: {
-        undefined_behavior;
+        _31 = panic(const "assertion failed: s >= 1") -> bb18 (unwind: bb19);
     }
 
     bb18: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb19: {
@@ -1148,23 +1147,38 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb23: {
+        unwind_continue;
+    }
+
+    bb24: {
+        unwind_continue;
+    }
+
+    bb25: {
         _11 = copy s checked.+ const 1usize;
-        assert(move _11._1 == false) (overflow) else panic;
+        assert assert(move _11._1 == false) (overflow) -> bb26 (unwind: bb27);
+    }
+
+    bb26: {
         s = move _11._0;
         storage_dead(_9);
         storage_dead(_7);
         goto bb2;
     }
 
-    bb24: {
-        undefined_behavior;
-    }
-
-    bb25: {
+    bb27: {
         unwind_continue;
     }
 
-    bb26: {
+    bb28: {
+        undefined_behavior;
+    }
+
+    bb29: {
+        unwind_continue;
+    }
+
+    bb30: {
         unwind_continue;
     }
 }

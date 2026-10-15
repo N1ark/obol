@@ -26,10 +26,17 @@ fn test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -
         storage_live(_4);
         counter = move spread_args._0;
         _4 = copy (*counter) checked.+ const 1u32;
-        assert(move _4._1 == false) (overflow) else panic;
+        assert assert(move _4._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         (*counter) = move _4._0;
         _0 = const true;
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

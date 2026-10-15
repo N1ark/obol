@@ -25,15 +25,29 @@ fn test_crate::main::{closure}::<i8, extern "rust-call" fn(()), ()>(_1: &'_ test
         _0 = ();
         storage_live(_3);
         _4 = const 1i32 == const 0i32;
-        assert(move _4 == false) (division_by_zero) else panic;
+        assert assert(move _4 == false) (division_by_zero) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         _5 = const 1i32 == const -1i32;
         _6 = const 1i32 == const -2147483648i32;
         _7 = move _5 & move _6;
-        assert(move _7 == false) (overflow) else panic;
+        assert assert(move _7 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _3 = const 1i32 ub./ const 1i32;
         storage_dead(_3);
         _0 = ();
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 

@@ -84,6 +84,10 @@ impl ItemTransCtx<'_, '_> {
             info: ClosureInfo {
                 kind,
                 // HACK: put whatever ^-^'
+                closure_body: FunDeclRef {
+                    id: FunDeclId::ZERO,
+                    generics: Box::new(GenericArgs::empty()),
+                },
                 fn_once_impl: RegionBinder::empty(self.dummy_trait_impl_ref()),
                 fn_mut_impl: None,
                 fn_impl: None,

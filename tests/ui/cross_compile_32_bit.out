@@ -464,7 +464,10 @@ fn main()
         storage_live(_5);
         _5 = copy x;
         _6 = copy _4 checked.- copy _5;
-        assert(move _6._1 == false) (overflow) else panic;
+        assert assert(move _6._1 == false) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
@@ -472,10 +475,10 @@ fn main()
         storage_live(_8);
         storage_live(_9);
         _9 = &raw mut x;
-        _8 = new_unchecked::<usize>(move _9) -> bb1 (unwind: bb2);
+        _8 = new_unchecked::<usize>(move _9) -> bb2 (unwind: bb3);
     }
 
-    bb1: {
+    bb2: {
         storage_dead(_9);
         a = HasPointerNiche::Second { _0: move _8 };
         storage_dead(_8);
@@ -487,7 +490,11 @@ fn main()
         return;
     }
 
-    bb2: {
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
         unwind_continue;
     }
 }

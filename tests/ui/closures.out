@@ -2101,10 +2101,17 @@ pub fn incr_u32(x: u32) -> u32
         storage_live(_2);
         _2 = copy x;
         _3 = copy _2 checked.+ const 1u32;
-        assert(move _3._1 == false) (overflow) else panic;
+        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _3._0;
         storage_dead(_2);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2306,11 +2313,18 @@ fn test_crate::test_closure_u32s::{closure}::<i8, extern "rust-call" fn((u32, u3
         storage_live(_6);
         _6 = copy y;
         _7 = copy _5 checked.+ copy _6;
-        assert(move _7._1 == false) (overflow) else panic;
+        assert assert(move _7._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2403,10 +2417,17 @@ fn test_crate::test_map_option2::{closure}::<i8, extern "rust-call" fn((u32,)) -
         storage_live(_4);
         _4 = copy x;
         _5 = copy _4 checked.+ const 1u32;
-        assert(move _5._1 == false) (overflow) else panic;
+        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _5._0;
         storage_dead(_4);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -2535,10 +2556,17 @@ fn test_crate::test_map_option3::{closure}::<i8, extern "rust-call" fn((u32,)) -
         storage_live(_4);
         _4 = copy x;
         _5 = copy _4 checked.+ const 1u32;
-        assert(move _5._1 == false) (overflow) else panic;
+        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _0 = move _5._0;
         storage_dead(_4);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 
@@ -3452,18 +3480,32 @@ fn test_crate::test_closure_capture::{closure}::<i8, extern "rust-call" fn((u32,
         _11 = copy (*_1).upvar_1;
         _6 = copy (*_11);
         _7 = copy _5 checked.+ copy _6;
-        assert(move _7._1 == false) (overflow) else panic;
+        assert assert(move _7._1 == false) (overflow) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
         _4 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         storage_live(_8);
         _8 = copy z;
         _9 = copy _4 checked.+ copy _8;
-        assert(move _9._1 == false) (overflow) else panic;
+        assert assert(move _9._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _9._0;
         storage_dead(_8);
         storage_dead(_4);
         return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
     }
 }
 
@@ -3570,12 +3612,19 @@ fn test_crate::test_fnmut_with_ref::{closure}::<i16, extern "rust-call" fn((&'_ 
         _6 = copy (*_1).upvar_0;
         _5 = copy (*_6) checked.+ copy _4;
         _7 = copy (*_1).upvar_0;
-        assert(move _5._1 == false) (overflow) else panic;
+        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         _8 = copy (*_1).upvar_0;
         (*_8) = move _5._0;
         _0 = ();
         storage_dead(_4);
         return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

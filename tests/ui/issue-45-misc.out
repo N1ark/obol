@@ -2577,7 +2577,7 @@ fn cbd(prf_input: [u8; 33usize])
         storage_live(_2);
         storage_live(_3);
         _3 = Range::<u8> { start: const 0u8, end: const 3u8 };
-        _2 = into_iter::<Range::<u8>>(move _3) -> bb1 (unwind: bb8);
+        _2 = into_iter::<Range::<u8>>(move _3) -> bb1 (unwind: bb10);
     }
 
     bb1: {
@@ -2593,13 +2593,13 @@ fn cbd(prf_input: [u8; 33usize])
         storage_live(_7);
         _7 = &mut iter;
         _6 = &two-phase-mut (*_7);
-        _5 = next::<u8>(move _6) -> bb3 (unwind: bb7);
+        _5 = next::<u8>(move _6) -> bb3 (unwind: bb9);
     }
 
     bb3: {
         storage_dead(_6);
         _8 = @discriminant(_5);
-        switch move _8 -> 0isize: bb4, 1isize: bb5, otherwise: bb6;
+        switch move _8 -> 0isize: bb4, 1isize: bb5, otherwise: bb8;
     }
 
     bb4: {
@@ -2619,7 +2619,10 @@ fn cbd(prf_input: [u8; 33usize])
         storage_live(_11);
         _11 = const 0usize;
         _12 = copy _11 < const 33usize;
-        assert(move _12 == true) (bounds_check) else panic;
+        assert assert(move _12 == true) (bounds_check) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
         prf_input[copy _11] = move _10;
         storage_dead(_10);
         storage_dead(_11);
@@ -2629,15 +2632,19 @@ fn cbd(prf_input: [u8; 33usize])
         goto bb2;
     }
 
-    bb6: {
-        undefined_behavior;
-    }
-
     bb7: {
         unwind_continue;
     }
 
     bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
         unwind_continue;
     }
 }

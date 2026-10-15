@@ -3383,27 +3383,33 @@ fn setup(r_1: Range::<usize>, step: usize) -> Range::<usize>
         storage_live(_12);
         storage_live(d);
         _12 = copy step == const 0usize;
-        assert(copy _12 == false) (division_by_zero) else panic;
-        d = copy inner_len ub./ copy step;
-        storage_live(r_13);
-        assert(copy _12 == false) (remainder_by_zero) else panic;
-        r_13 = copy inner_len wrap.% copy step;
-        storage_live(_14);
-        _14 = copy r_13 > const 0usize;
-        if move _14 -> bb7 else -> bb8;
+        assert assert(copy _12 == false) (division_by_zero) -> bb7 (unwind: bb13);
     }
 
     bb7: {
-        yield_count = copy d wrap.+ const 1usize;
-        goto bb9;
+        d = copy inner_len ub./ copy step;
+        storage_live(r_13);
+        assert assert(copy _12 == false) (remainder_by_zero) -> bb8 (unwind: bb12);
     }
 
     bb8: {
-        yield_count = copy d;
-        goto bb9;
+        r_13 = copy inner_len wrap.% copy step;
+        storage_live(_14);
+        _14 = copy r_13 > const 0usize;
+        if move _14 -> bb9 else -> bb10;
     }
 
     bb9: {
+        yield_count = copy d wrap.+ const 1usize;
+        goto bb11;
+    }
+
+    bb10: {
+        yield_count = copy d;
+        goto bb11;
+    }
+
+    bb11: {
         storage_dead(_14);
         storage_dead(r_13);
         storage_dead(d);
@@ -3411,6 +3417,14 @@ fn setup(r_1: Range::<usize>, step: usize) -> Range::<usize>
         r_1.end = move yield_count;
         _0 = move r_1;
         return;
+    }
+
+    bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
+        unwind_continue;
     }
 }
 
@@ -9958,13 +9972,13 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_7);
         storage_live(_8);
         _8 = copy buckets;
-        _7 = calculate_layout_for(copy table_layout_2, move _8) -> bb1 (unwind: bb25);
+        _7 = calculate_layout_for(copy table_layout_2, move _8) -> bb1 (unwind: bb27);
     }
 
     bb1: {
         storage_dead(_8);
         _9 = @discriminant(_7);
-        switch move _9 -> 1isize: bb2, 0isize: bb20, otherwise: bb24;
+        switch move _9 -> 1isize: bb2, 0isize: bb22, otherwise: bb26;
     }
 
     bb2: {
@@ -9976,12 +9990,12 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_11);
         storage_live(_26);
         storage_live(_25);
-        _25 = allocate(move alloc, copy layout) -> bb3 (unwind: bb19);
+        _25 = allocate(move alloc, copy layout) -> bb3 (unwind: bb21);
     }
 
     bb3: {
         _26 = @discriminant(_25);
-        switch move _26 -> 0isize: bb4, 1isize: bb16, otherwise: bb24;
+        switch move _26 -> 0isize: bb4, 1isize: bb18, otherwise: bb26;
     }
 
     bb4: {
@@ -9999,7 +10013,7 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_15);
         _15 = copy layout.size;
         _13 = copy allocation_size != move _15;
-        if move _13 -> bb5 else -> bb12;
+        if move _13 -> bb5 else -> bb14;
     }
 
     bb5: {
@@ -10015,7 +10029,10 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_31);
         _31 = copy table_layout_42 wrap.+ const 1usize;
         _32 = copy _31 == const 0usize;
-        assert(move _32 == false) (division_by_zero) else panic;
+        assert assert(move _32 == false) (division_by_zero) -> bb6 (unwind: bb13);
+    }
+
+    bb6: {
         x = move _30 ub./ move _31;
         storage_dead(_31);
         storage_dead(_30);
@@ -10024,10 +10041,10 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_35);
         storage_live(_36);
         _36 = cast<usize, u64>(copy x);
-        _35 = ctlz::<u64>(move _36) -> bb6 (unwind: bb11);
+        _35 = ctlz::<u64>(move _36) -> bb7 (unwind: bb12);
     }
 
-    bb6: {
+    bb7: {
         storage_dead(_36);
         _34 = cast<u32, usize>(move _35);
         storage_dead(_35);
@@ -10041,43 +10058,47 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_dead(table_layout_43);
         storage_live(oversized_layout);
         storage_live(option);
-        option = calculate_layout_for(move table_layout_2, copy buckets) -> bb7 (unwind: bb10);
-    }
-
-    bb7: {
-        storage_live(_37);
-        _37 = @discriminant(option);
-        _46 = copy _37 == const 1isize;
-        _47 = assume(move _46) -> bb8 (unwind: bb9);
+        option = calculate_layout_for(move table_layout_2, copy buckets) -> bb8 (unwind: bb11);
     }
 
     bb8: {
+        storage_live(_37);
+        _37 = @discriminant(option);
+        _46 = copy _37 == const 1isize;
+        _47 = assume(move _46) -> bb9 (unwind: bb10);
+    }
+
+    bb9: {
         oversized_layout = copy (option as variant Option::<(Layout, usize)>::Some)._0._0;
         ctrl_offset = copy (option as variant Option::<(Layout, usize)>::Some)._0._1;
         storage_dead(_37);
         storage_dead(option);
         storage_dead(oversized_layout);
-        goto bb13;
-    }
-
-    bb9: {
-        undefined_behavior;
+        goto bb15;
     }
 
     bb10: {
-        unwind_continue;
-    }
-
-    bb11: {
         undefined_behavior;
     }
 
+    bb11: {
+        unwind_continue;
+    }
+
     bb12: {
-        storage_dead(_15);
-        goto bb13;
+        undefined_behavior;
     }
 
     bb13: {
+        unwind_continue;
+    }
+
+    bb14: {
+        storage_dead(_15);
+        goto bb15;
+    }
+
+    bb15: {
         storage_dead(_13);
         storage_live(_38);
         _38 = cast<*mut [u8], *mut u8>(copy _28);
@@ -10102,10 +10123,10 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         bucket_mask = move buckets wrap.- const 1usize;
         storage_live(_39);
         _39 = copy bucket_mask < const 8usize;
-        if move _39 -> bb15 else -> bb14;
+        if move _39 -> bb17 else -> bb16;
     }
 
-    bb14: {
+    bb16: {
         storage_live(_40);
         storage_live(_41);
         _41 = copy bucket_mask wrap.+ const 1usize;
@@ -10113,10 +10134,10 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_dead(_41);
         bucket_mask = move _40 wrap.* const 7usize;
         storage_dead(_40);
-        goto bb15;
+        goto bb17;
     }
 
-    bb15: {
+    bb17: {
         storage_dead(_39);
         _21 = RawTableInner { bucket_mask: move _22, ctrl: copy ctrl, growth_left: move bucket_mask, items: const 0usize };
         storage_dead(_22);
@@ -10125,58 +10146,58 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_dead(ctrl);
         storage_dead(ptr_10);
         storage_dead(layout);
-        goto bb22;
+        goto bb24;
     }
 
-    bb16: {
+    bb18: {
         storage_dead(_25);
         storage_dead(_26);
         storage_live(_17);
-        _17 = alloc_err(move fallibility, move layout) -> bb17 (unwind: bb18);
+        _17 = alloc_err(move fallibility, move layout) -> bb19 (unwind: bb20);
     }
 
-    bb17: {
+    bb19: {
         _0 = Result::<RawTableInner, TryReserveError>::Err { _0: move _17 };
         storage_dead(_17);
         storage_dead(_11);
         storage_dead(ptr_10);
         storage_dead(layout);
-        goto bb22;
-    }
-
-    bb18: {
-        unwind_continue;
-    }
-
-    bb19: {
-        unwind_continue;
+        goto bb24;
     }
 
     bb20: {
-        storage_dead(_7);
-        storage_live(_5);
-        _5 = capacity_overflow(move fallibility) -> bb21 (unwind: bb23);
-    }
-
-    bb21: {
-        _0 = Result::<RawTableInner, TryReserveError>::Err { _0: move _5 };
-        storage_dead(_5);
-        goto bb22;
-    }
-
-    bb22: {
-        return;
-    }
-
-    bb23: {
         unwind_continue;
     }
 
+    bb21: {
+        unwind_continue;
+    }
+
+    bb22: {
+        storage_dead(_7);
+        storage_live(_5);
+        _5 = capacity_overflow(move fallibility) -> bb23 (unwind: bb25);
+    }
+
+    bb23: {
+        _0 = Result::<RawTableInner, TryReserveError>::Err { _0: move _5 };
+        storage_dead(_5);
+        goto bb24;
+    }
+
     bb24: {
-        undefined_behavior;
+        return;
     }
 
     bb25: {
+        unwind_continue;
+    }
+
+    bb26: {
+        undefined_behavior;
+    }
+
+    bb27: {
         unwind_continue;
     }
 }
@@ -10378,7 +10399,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         _0 = Option::<usize>::Some { _0: move buckets_9 };
         storage_dead(cap_8);
         storage_dead(_3);
-        goto bb39;
+        goto bb40;
     }
 
     bb19: {
@@ -10432,7 +10453,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(_33);
         storage_dead(_14);
         storage_dead(adjusted_cap);
-        goto bb39;
+        goto bb40;
     }
 
     bb24: {
@@ -10456,7 +10477,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         adjusted_cap = copy val ub./ const 7usize;
         storage_dead(_14);
         storage_live(m1);
-        m1 = saturating_sub::<usize>(move adjusted_cap, const 1usize) -> bb27 (unwind: bb40);
+        m1 = saturating_sub::<usize>(move adjusted_cap, const 1usize) -> bb27 (unwind: bb42);
     }
 
     bb27: {
@@ -10484,7 +10505,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(exp);
         storage_dead(_36);
         storage_dead(m1);
-        goto bb32;
+        goto bb33;
     }
 
     bb30: {
@@ -10495,12 +10516,15 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(_37);
         storage_dead(_36);
         storage_dead(m1);
-        assert(const true == false) (overflow) else panic;
-        buckets_39 = const 0usize;
-        goto bb32;
+        assert assert(const true == false) (overflow) -> bb32 (unwind: bb41);
     }
 
     bb32: {
+        buckets_39 = const 0usize;
+        goto bb33;
+    }
+
+    bb33: {
         storage_live(table_layout_50);
         storage_live(table_layout_51);
         table_layout_50 = copy table_layout_2.size;
@@ -10508,10 +10532,10 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(buckets_18);
         buckets_18 = copy buckets_39;
         storage_live(prod_47);
-        switch copy table_layout_50 -> 0usize: bb38, otherwise: bb33;
+        switch copy table_layout_50 -> 0usize: bb39, otherwise: bb34;
     }
 
-    bb33: {
+    bb34: {
         storage_live(b_43);
         storage_live(_44);
         storage_live(_45);
@@ -10527,43 +10551,47 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(_44);
         prod_47 = cast<u64, usize>(copy _42);
         storage_dead(_42);
-        if copy b_43 -> bb34 else -> bb37;
-    }
-
-    bb34: {
-        _48 = cold_path() -> bb35 (unwind: bb36);
+        if copy b_43 -> bb35 else -> bb38;
     }
 
     bb35: {
-        storage_dead(b_43);
-        prod_47 = const 18446744073709551615usize;
-        goto bb38;
+        _48 = cold_path() -> bb36 (unwind: bb37);
     }
 
     bb36: {
-        undefined_behavior;
+        storage_dead(b_43);
+        prod_47 = const 18446744073709551615usize;
+        goto bb39;
     }
 
     bb37: {
-        storage_dead(b_43);
-        goto bb38;
+        undefined_behavior;
     }
 
     bb38: {
+        storage_dead(b_43);
+        goto bb39;
+    }
+
+    bb39: {
         storage_dead(prod_47);
         storage_dead(buckets_18);
         storage_dead(table_layout_50);
         storage_dead(table_layout_51);
         _0 = Option::<usize>::Some { _0: move buckets_39 };
         storage_dead(adjusted_cap);
-        goto bb39;
-    }
-
-    bb39: {
-        return;
+        goto bb40;
     }
 
     bb40: {
+        return;
+    }
+
+    bb41: {
+        unwind_continue;
+    }
+
+    bb42: {
         undefined_behavior;
     }
 }

@@ -1083,13 +1083,16 @@ fn f1(a: &'_ [u8]) -> usize
         _5 = const 0usize;
         _6 = copy a.metadata;
         _7 = copy _5 < copy _6;
-        assert(move _7 == true) (bounds_check) else panic;
-        _4 = copy (*a)[copy _5];
-        _3 = move _4 < const 42u8;
-        if move _3 -> bb1 else -> bb4;
+        assert assert(move _7 == true) (bounds_check) -> bb1 (unwind: bb13);
     }
 
     bb1: {
+        _4 = copy (*a)[copy _5];
+        _3 = move _4 < const 42u8;
+        if move _3 -> bb2 else -> bb9;
+    }
+
+    bb2: {
         storage_dead(_5);
         storage_dead(_4);
         storage_live(_8);
@@ -1098,42 +1101,67 @@ fn f1(a: &'_ [u8]) -> usize
         _10 = const 1usize;
         _11 = copy a.metadata;
         _12 = copy _10 < copy _11;
-        assert(move _12 == true) (bounds_check) else panic;
-        _9 = copy (*a)[copy _10];
-        _8 = move _9 < const 16u8;
-        if move _8 -> bb2 else -> bb3;
-    }
-
-    bb2: {
-        storage_dead(_10);
-        storage_dead(_9);
-        _13 = copy sampled checked.+ const 100usize;
-        assert(move _13._1 == false) (overflow) else panic;
-        sampled = move _13._0;
-        goto bb5;
+        assert assert(move _12 == true) (bounds_check) -> bb3 (unwind: bb8);
     }
 
     bb3: {
-        storage_dead(_10);
-        storage_dead(_9);
-        goto bb5;
+        _9 = copy (*a)[copy _10];
+        _8 = move _9 < const 16u8;
+        if move _8 -> bb4 else -> bb7;
     }
 
     bb4: {
-        storage_dead(_5);
-        storage_dead(_4);
-        goto bb5;
+        storage_dead(_10);
+        storage_dead(_9);
+        _13 = copy sampled checked.+ const 100usize;
+        assert assert(move _13._1 == false) (overflow) -> bb5 (unwind: bb6);
     }
 
     bb5: {
+        sampled = move _13._0;
+        goto bb10;
+    }
+
+    bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        storage_dead(_10);
+        storage_dead(_9);
+        goto bb10;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        storage_dead(_5);
+        storage_dead(_4);
+        goto bb10;
+    }
+
+    bb10: {
         storage_dead(_8);
         storage_dead(_3);
         _14 = copy sampled checked.+ const 101usize;
-        assert(move _14._1 == false) (overflow) else panic;
+        assert assert(move _14._1 == false) (overflow) -> bb11 (unwind: bb12);
+    }
+
+    bb11: {
         sampled = move _14._0;
         _0 = copy sampled;
         storage_dead(sampled);
         return;
+    }
+
+    bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
+        unwind_continue;
     }
 }
 
@@ -1237,12 +1265,12 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_live(_5);
         storage_live(_6);
         _6 = &(*a) with_metadata(copy a.metadata);
-        _5 = chunks::<u8>(move _6, const 3usize) -> bb1 (unwind: bb20);
+        _5 = chunks::<u8>(move _6, const 3usize) -> bb1 (unwind: bb40);
     }
 
     bb1: {
         storage_dead(_6);
-        _4 = into_iter::<Chunks::<'_, u8>>(move _5) -> bb2 (unwind: bb19);
+        _4 = into_iter::<Chunks::<'_, u8>>(move _5) -> bb2 (unwind: bb39);
     }
 
     bb2: {
@@ -1258,13 +1286,13 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_live(_10);
         _10 = &mut iter;
         _9 = &two-phase-mut (*_10);
-        _8 = next::<'_, u8>(move _9) -> bb4 (unwind: bb18);
+        _8 = next::<'_, u8>(move _9) -> bb4 (unwind: bb38);
     }
 
     bb4: {
         storage_dead(_9);
         _11 = @discriminant(_8);
-        switch move _11 -> 0isize: bb5, 1isize: bb6, otherwise: bb17;
+        switch move _11 -> 0isize: bb5, 1isize: bb6, otherwise: bb37;
     }
 
     bb5: {
@@ -1286,7 +1314,10 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         _15 = const 0usize;
         _16 = copy bytes.metadata;
         _17 = copy _15 < copy _16;
-        assert(move _17 == true) (bounds_check) else panic;
+        assert assert(move _17 == true) (bounds_check) -> bb7 (unwind: bb36);
+    }
+
+    bb7: {
         _14 = copy (*bytes)[copy _15];
         b1 = cast<u8, i16>(move _14);
         storage_dead(_14);
@@ -1297,7 +1328,10 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         _20 = const 1usize;
         _21 = copy bytes.metadata;
         _22 = copy _20 < copy _21;
-        assert(move _22 == true) (bounds_check) else panic;
+        assert assert(move _22 == true) (bounds_check) -> bb8 (unwind: bb35);
+    }
+
+    bb8: {
         _19 = copy (*bytes)[copy _20];
         b2 = cast<u8, i16>(move _19);
         storage_dead(_19);
@@ -1308,7 +1342,10 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         _25 = const 2usize;
         _26 = copy bytes.metadata;
         _27 = copy _25 < copy _26;
-        assert(move _27 == true) (bounds_check) else panic;
+        assert assert(move _27 == true) (bounds_check) -> bb9 (unwind: bb34);
+    }
+
+    bb9: {
         _24 = copy (*bytes)[copy _25];
         b3 = cast<u8, i16>(move _24);
         storage_dead(_24);
@@ -1322,7 +1359,10 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_dead(_31);
         _32 = cast<i32, u32>(const 8i32);
         _33 = move _32 < const 16u32;
-        assert(move _33 == true) (overflow) else panic;
+        assert assert(move _33 == true) (overflow) -> bb10 (unwind: bb33);
+    }
+
+    bb10: {
         _29 = move _30 wrap.<< const 8i32;
         storage_dead(_30);
         storage_live(_34);
@@ -1336,7 +1376,10 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         _37 = copy b3;
         _38 = cast<i32, u32>(const 4i32);
         _39 = move _38 < const 16u32;
-        assert(move _39 == true) (overflow) else panic;
+        assert assert(move _39 == true) (overflow) -> bb11 (unwind: bb32);
+    }
+
+    bb11: {
         _36 = move _37 wrap.<< const 4i32;
         storage_dead(_37);
         storage_live(_40);
@@ -1344,7 +1387,10 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         _41 = copy b2;
         _42 = cast<i32, u32>(const 4i32);
         _43 = move _42 < const 16u32;
-        assert(move _43 == true) (overflow) else panic;
+        assert assert(move _43 == true) (overflow) -> bb12 (unwind: bb31);
+    }
+
+    bb12: {
         _40 = move _41 wrap.>> const 4i32;
         storage_dead(_41);
         d2 = move _36 | move _40;
@@ -1354,19 +1400,19 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         storage_live(_45);
         _45 = copy d1;
         _44 = move _45 < copy FIELD_MODULUS;
-        if move _44 -> bb7 else -> bb10;
+        if move _44 -> bb13 else -> bb20;
     }
 
-    bb7: {
+    bb13: {
         storage_dead(_45);
         storage_live(_46);
         storage_live(_47);
         _47 = copy sampled;
         _46 = move _47 < const 16usize;
-        if move _46 -> bb8 else -> bb9;
+        if move _46 -> bb14 else -> bb19;
     }
 
-    bb8: {
+    bb14: {
         storage_dead(_47);
         storage_live(_48);
         _48 = copy d1;
@@ -1375,46 +1421,60 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         _50 = &raw const (*result) with_metadata(copy result.metadata);
         _51 = copy _50.metadata;
         _52 = copy _49 < copy _51;
-        assert(move _52 == true) (bounds_check) else panic;
+        assert assert(move _52 == true) (bounds_check) -> bb15 (unwind: bb18);
+    }
+
+    bb15: {
         (*result)[copy _49] = move _48;
         storage_dead(_48);
         storage_dead(_49);
         _53 = copy sampled checked.+ const 1usize;
-        assert(move _53._1 == false) (overflow) else panic;
+        assert assert(move _53._1 == false) (overflow) -> bb16 (unwind: bb17);
+    }
+
+    bb16: {
         sampled = move _53._0;
-        goto bb11;
+        goto bb21;
     }
 
-    bb9: {
+    bb17: {
+        unwind_continue;
+    }
+
+    bb18: {
+        unwind_continue;
+    }
+
+    bb19: {
         storage_dead(_47);
-        goto bb11;
+        goto bb21;
     }
 
-    bb10: {
+    bb20: {
         storage_dead(_45);
-        goto bb11;
+        goto bb21;
     }
 
-    bb11: {
+    bb21: {
         storage_dead(_46);
         storage_dead(_44);
         storage_live(_54);
         storage_live(_55);
         _55 = copy d2;
         _54 = move _55 < copy FIELD_MODULUS;
-        if move _54 -> bb12 else -> bb15;
+        if move _54 -> bb22 else -> bb29;
     }
 
-    bb12: {
+    bb22: {
         storage_dead(_55);
         storage_live(_56);
         storage_live(_57);
         _57 = copy sampled;
         _56 = move _57 < const 16usize;
-        if move _56 -> bb13 else -> bb14;
+        if move _56 -> bb23 else -> bb28;
     }
 
-    bb13: {
+    bb23: {
         storage_dead(_57);
         storage_live(_58);
         _58 = copy d2;
@@ -1423,27 +1483,41 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         _60 = &raw const (*result) with_metadata(copy result.metadata);
         _61 = copy _60.metadata;
         _62 = copy _59 < copy _61;
-        assert(move _62 == true) (bounds_check) else panic;
+        assert assert(move _62 == true) (bounds_check) -> bb24 (unwind: bb27);
+    }
+
+    bb24: {
         (*result)[copy _59] = move _58;
         storage_dead(_58);
         storage_dead(_59);
         _63 = copy sampled checked.+ const 1usize;
-        assert(move _63._1 == false) (overflow) else panic;
+        assert assert(move _63._1 == false) (overflow) -> bb25 (unwind: bb26);
+    }
+
+    bb25: {
         sampled = move _63._0;
-        goto bb16;
+        goto bb30;
     }
 
-    bb14: {
+    bb26: {
+        unwind_continue;
+    }
+
+    bb27: {
+        unwind_continue;
+    }
+
+    bb28: {
         storage_dead(_57);
-        goto bb16;
+        goto bb30;
     }
 
-    bb15: {
+    bb29: {
         storage_dead(_55);
-        goto bb16;
+        goto bb30;
     }
 
-    bb16: {
+    bb30: {
         storage_dead(_56);
         storage_dead(_54);
         storage_dead(d2);
@@ -1457,19 +1531,43 @@ fn f2(a: &'_ [u8], result: &'_ mut [i16]) -> usize
         goto bb3;
     }
 
-    bb17: {
+    bb31: {
+        unwind_continue;
+    }
+
+    bb32: {
+        unwind_continue;
+    }
+
+    bb33: {
+        unwind_continue;
+    }
+
+    bb34: {
+        unwind_continue;
+    }
+
+    bb35: {
+        unwind_continue;
+    }
+
+    bb36: {
+        unwind_continue;
+    }
+
+    bb37: {
         undefined_behavior;
     }
 
-    bb18: {
+    bb38: {
         unwind_continue;
     }
 
-    bb19: {
+    bb39: {
         unwind_continue;
     }
 
-    bb20: {
+    bb40: {
         unwind_continue;
     }
 }
