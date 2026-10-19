@@ -1458,8 +1458,8 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         let fn_ty = fun.ty(self.local_decls)?;
         let mut extra_stts: Vec<StatementKind> = vec![];
         let fn_operand = match fn_ty.kind() {
-            ty::TyKind::RigidTy(ty::RigidTy::FnDef(fn_def, args)) => {
-                let instance = mir::mono::Instance::resolve(fn_def, &args)?;
+            ty::TyKind::RigidTy(ty::RigidTy::FnDef(fn_def, fn_generics)) => {
+                let instance = mir::mono::Instance::resolve(fn_def, &fn_generics)?;
 
                 let fn_id = self.register_fun_decl_id(span, instance);
                 let fn_ptr = FnPtr {
@@ -1482,6 +1482,28 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                             panic!("dyn variable without a deref?")
                         };
                         dyn_element_place = *dyn_ref_place.clone();
+                    }
+
+                    // Smart-pointer receivers (e.g. `Rc<dyn Trait>`, `Pin<&mut dyn Trait>`)
+                    // wrap the fat pointer: like rustc, descend through their non-1-ZST field
+                    // to reach it.
+                    let mut receiver_ty = args[0].ty(self.local_decls)?;
+                    while let ty::TyKind::RigidTy(ty::RigidTy::Adt(adt, generics)) =
+                        receiver_ty.kind()
+                        && !adt.is_box()
+                    {
+                        let (field_id, field_ty) = adt.variants()[0]
+                            .fields()
+                            .iter()
+                            .map(|field| field.ty_with_args(&generics))
+                            .enumerate()
+                            .find(|(_, ty)| !ty.layout().is_ok_and(|l| l.shape().is_1zst()))
+                            .expect("dyn receiver without a non-1-ZST field");
+                        dyn_element_place = dyn_element_place.project(
+                            ProjectionElem::Field(None, FieldId::new(field_id)),
+                            self.translate_ty(span, field_ty)?,
+                        );
+                        receiver_ty = field_ty;
                     }
 
                     let unit_ptr_ty = TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty();
