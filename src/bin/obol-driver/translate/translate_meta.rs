@@ -1,6 +1,7 @@
 //! Translate information about items: name, attributes, etc.
 
 extern crate rustc_ast_pretty;
+extern crate rustc_attr_ir;
 extern crate rustc_attr_parsing;
 extern crate rustc_hir;
 extern crate rustc_public;
@@ -600,6 +601,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             let lang_item = self
                 .tcx
                 .as_lang_item(internal_id)
+                .or_else(|| {
+                    // For weak lang items (e.g. `panic_impl`), rustc only maps the lang item to its
+                    // definition, so we look at the `#[lang]` attribute of their `extern` declaration.
+                    let attrs = is_extern.then(|| self.attributes_for(internal_id))?;
+                    rustc_attr_ir::find_attr!(&attrs, Lang(item) => *item)
+                })
                 .map(translate_from_rustc::translate_lang_item);
             let diagnostic_item = self
                 .tcx
@@ -642,18 +649,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         self.t_ctx.translate_span_from_smir(rspan)
     }
 
+    /// The linker symbol of an extern item, which respects e.g. `#[link_name]`.
     pub fn as_extern_name(&mut self, item: mir::mono::Instance) -> Option<String> {
-        let internal = rustc_public::rustc_internal::internal(self.t_ctx.tcx, item);
-        if self.t_ctx.tcx.is_foreign_item(internal.def_id()) {
-            let key = self.t_ctx.tcx.def_key(internal.def_id());
-            let data = key.disambiguated_data.data;
-            use rustc_hir::definitions::DefPathData::*;
-            match data {
-                ValueNs(name) | TypeNs(name) | MacroNs(name) => Some(name.to_string()),
-                _ => panic!("Extern item does not have a name: {:?}", key),
-            }
-        } else {
-            None
+        let tcx = self.t_ctx.tcx;
+        let def_id = rustc_public::rustc_internal::internal(tcx, item).def_id();
+        if !tcx.is_foreign_item(def_id) {
+            return None;
         }
+        let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
+        Some(tcx.symbol_name(instance).name.to_string())
     }
 }

@@ -6,6 +6,17 @@ struct () {}
 // Full name: test_crate::Type
 extern opaque type Type
 
+// Full name: test_crate::bar
+extern fn bar()
+= <extern:real_bar>
+
+// Full name: test_crate::STATIC
+extern fn STATIC() -> u8
+= <extern:REAL_STATIC>
+
+// Full name: test_crate::STATIC
+extern unsafe static STATIC: u8 = STATIC()
+
 // Full name: test_crate::use_type
 fn use_type(_x: &'_ Type)
 {
@@ -17,6 +28,36 @@ fn use_type(_x: &'_ Type)
         _0 = ();
         _0 = ();
         return;
+    }
+}
+
+// Full name: test_crate::use_link_names
+fn use_link_names() -> u8
+{
+    let _0: u8; // return
+    let _1: (); // anonymous local
+    let _2: *const u8; // anonymous local
+    let _3: *const u8; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        _1 = bar() -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_1);
+        storage_live(_2);
+        storage_live(_3);
+        _3 = &raw const STATIC;
+        _2 = move _3;
+        _0 = copy (*_2);
+        storage_dead(_2);
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
     }
 }
 
