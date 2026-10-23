@@ -1,68 +1,10 @@
 
 // Final ULLBC:
 
-// Full name: core::fmt::Error
-pub struct Error {}
-
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
-}
-
-// Full name: FakeTrait
-trait FakeTrait
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
-}
-
 struct () {}
 
-// Full name: core::result::Result::<(), Error>
-#[diagnostic_item("Result")]
-pub enum Result::<(), Error> {
-  Ok { _0: () },
-  Err { _0: Error },
-}
-
-// Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
-pub struct NonNull::<()> {
-  pointer: *const () is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ ()> {}
-
-// Full name: core::fmt::rt::ArgumentType::<'_>
-enum ArgumentType::<'_> {
-  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
-  Count { _0: u16 },
-}
-
-// Full name: core::fmt::rt::Argument::<'_>
-#[lang_item(FormatArgument)]
-pub struct Argument::<'_> {
-  ty: ArgumentType::<'_>,
-}
-
-// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
-pub struct NonNull::<Argument::<'_>> {
-  pointer: *const Argument::<'_> is !null,
-}
-
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
+// Full name: test_crate::Foo
+struct Foo {}
 
 // Full name: core::fmt::Arguments::<'_>
 #[lang_item(FormatArguments)]
@@ -75,57 +17,87 @@ struct str {
   _0: [u8],
 }
 
-// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
-{
-    let _0: Arguments::<'_>; // return
-    let s: &'_ str; // arg #1
-    let _2: NonNull::<u8>; // anonymous local
-    let _3: *const u8; // anonymous local
-    let _4: NonNull::<Argument::<'_>>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const str; // anonymous local
-    let _9: &'_ [u8]; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_8);
-        _8 = &raw const (*s) with_metadata(copy s.metadata);
-        _3 = cast<*const u8>(copy _8);
-        storage_dead(_8);
-        _2 = transmute<NonNull::<u8>>(copy _3);
-        storage_dead(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_9);
-        _9 = transmute<&'_ [u8]>(copy s);
-        _7 = noretag copy _9.metadata;
-        storage_dead(_9);
-        _6 = move _7 wrap.<< const 1i32;
-        storage_dead(_7);
-        _5 = move _6 | const 1usize;
-        storage_dead(_6);
-        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
-        storage_dead(_5);
-        _0 = Arguments::<'_> { template: move _2, args: move _4 };
-        storage_dead(_4);
-        storage_dead(_2);
-        return;
-    }
+struct (_, _)::<u8, bool> {
+  _0: u8,
+  _1: bool,
 }
 
-// Full name: test_crate::Foo
-struct Foo {}
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
 
-// Full name: std::io::stdio::_print
-pub fn _print(_1: Arguments::<'_>)
-= <missing>
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[lang_item(NonNull)]
+pub struct NonNull::<Argument::<'_>> {
+  pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::fmt::rt::Argument::<'_>
+#[lang_item(FormatArgument)]
+pub struct Argument::<'_> {
+  ty: ArgumentType::<'_>,
+}
+
+// Full name: core::fmt::rt::ArgumentType::<'_>
+enum ArgumentType::<'_> {
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
+}
+
+// Full name: core::ptr::non_null::NonNull::<()>
+#[lang_item(NonNull)]
+pub struct NonNull::<()> {
+  pointer: *const () is !null,
+}
+
+// Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
+pub struct Formatter::<'_> {
+  options: FormattingOptions,
+  buf: &'_ mut (dyn FakeTrait),
+}
+
+// Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
+pub enum Result::<(), Error> {
+  Ok { _0: () },
+  Err { _0: Error },
+}
+
+// Full name: core::marker::PhantomData::<&'_ ()>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ ()> {}
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::ops::drop::Drop
+#[lang_item(Drop)]
+trait Drop
+
+// Full name: test_crate::{impl Drop for Foo}
+impl "impl_Drop_for_Foo" Drop for Foo {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
 
 // Full name: test_crate::{impl Drop for Foo}::drop
 pub fn drop(self: &'_ mut Foo)
@@ -161,38 +133,6 @@ pub fn drop(self: &'_ mut Foo)
     bb4: {
         unwind_continue;
     }
-}
-
-// Full name: core::ptr::drop_glue::<Foo>
-#[lang_item(DropGlue)]
-fn drop_glue::<Foo>(_1: &'_ mut Foo)
-{
-    let _0: (); // return
-    let _1: &'_ mut Foo; // arg #1
-    let _2: &'_ mut Foo; // anonymous local
-    let _3: (); // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _0 = ();
-        _2 = &mut (*_1);
-        _3 = drop(move _2) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-struct (_, _)::<u8, bool> {
-  _0: u8,
-  _1: bool,
 }
 
 // Full name: test_crate::main
@@ -251,6 +191,82 @@ fn main()
 
     bb5: {
         unwind_terminate;
+    }
+}
+
+// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
+{
+    let _0: Arguments::<'_>; // return
+    let s: &'_ str; // arg #1
+    let _2: NonNull::<u8>; // anonymous local
+    let _3: *const u8; // anonymous local
+    let _4: NonNull::<Argument::<'_>>; // anonymous local
+    let _5: usize; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: *const str; // anonymous local
+    let _9: &'_ [u8]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_8);
+        _8 = &raw const (*s) with_metadata(copy s.metadata);
+        _3 = cast<*const u8>(copy _8);
+        storage_dead(_8);
+        _2 = transmute<NonNull::<u8>>(copy _3);
+        storage_dead(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_9);
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
+        storage_dead(_9);
+        _6 = move _7 wrap.<< const 1i32;
+        storage_dead(_7);
+        _5 = move _6 | const 1usize;
+        storage_dead(_6);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
+        storage_dead(_5);
+        _0 = Arguments::<'_> { template: move _2, args: move _4 };
+        storage_dead(_4);
+        storage_dead(_2);
+        return;
+    }
+}
+
+// Full name: std::io::stdio::_print
+pub fn _print(_1: Arguments::<'_>)
+= <missing>
+
+// Full name: core::ptr::drop_glue::<Foo>
+#[lang_item(DropGlue)]
+fn drop_glue::<Foo>(_1: &'_ mut Foo)
+{
+    let _0: (); // return
+    let _1: &'_ mut Foo; // arg #1
+    let _2: &'_ mut Foo; // anonymous local
+    let _3: (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        _0 = ();
+        _2 = &mut (*_1);
+        _3 = drop(move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
     }
 }
 

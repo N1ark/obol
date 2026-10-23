@@ -9,19 +9,10 @@ struct Foo::<bool> {
 }
 
 // Full name: test_crate::FooBool
-fn FooBool() -> Foo::<bool>
-{
-    let _0: Foo::<bool>; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = Foo::<bool> { value: const false };
-        return;
-    }
-}
-
-// Full name: test_crate::FooBool
 static FooBool: Foo::<bool> = FooBool()
+
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::main
 fn main()
@@ -43,6 +34,18 @@ fn main()
         storage_dead(_2);
         _0 = ();
         storage_dead(_b);
+        return;
+    }
+}
+
+// Full name: test_crate::FooBool
+fn FooBool() -> Foo::<bool>
+{
+    let _0: Foo::<bool>; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = Foo::<bool> { value: const false };
         return;
     }
 }

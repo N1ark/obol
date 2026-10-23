@@ -1,34 +1,19 @@
 
 // Final ULLBC:
 
-// Full name: core::intrinsics::integer_min::<u64>
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn integer_min::<u64>(a_1: u64, b_2: u64) -> u64
-= <intrinsic:integer_min>
-
-// Full name: core::cmp::impls::{impl Ord for u64}::min
-pub fn min(self: u64, other: u64) -> u64
-{
-    let _0: u64; // return
-    let self: u64; // arg #1
-    let other: u64; // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = integer_min::<u64>(move self, move other) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-}
-
 struct () {}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::cmp::Ord
+#[diagnostic_item("Ord")]
+trait Ord
+
+// Full name: core::cmp::impls::{impl Ord for u64}
+impl "impl_Ord_for_u64" Ord for u64 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
 
 // Full name: test_crate::main
 fn main()
@@ -53,6 +38,33 @@ fn main()
         unwind_continue;
     }
 }
+
+// Full name: core::cmp::impls::{impl Ord for u64}::min
+pub fn min(self: u64, other: u64) -> u64
+{
+    let _0: u64; // return
+    let self: u64; // arg #1
+    let other: u64; // arg #2
+
+    bb0: {
+        storage_live(_0);
+        _0 = integer_min::<u64>(move self, move other) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
+
+// Full name: core::intrinsics::integer_min::<u64>
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn integer_min::<u64>(a_1: u64, b_2: u64) -> u64
+= <intrinsic:integer_min>
 
 
 

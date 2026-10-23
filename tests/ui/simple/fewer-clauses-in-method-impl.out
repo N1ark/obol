@@ -3,17 +3,15 @@
 
 struct () {}
 
-// Full name: test_crate::{impl Trait for ()}::method::<()>
-fn method::<()>()
-{
-    let _0: (); // return
+// Full name: FakeTrait
+trait FakeTrait
 
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        _0 = ();
-        return;
-    }
+// Full name: test_crate::Trait
+trait Trait
+
+// Full name: test_crate::{impl Trait for ()}
+impl "impl_Trait_for_unit" Trait for () {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::main
@@ -33,6 +31,19 @@ fn main()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+// Full name: test_crate::{impl Trait for ()}::method::<()>
+fn method::<()>()
+{
+    let _0: (); // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        _0 = ();
+        return;
     }
 }
 

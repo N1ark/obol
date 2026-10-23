@@ -1,75 +1,37 @@
 
 // Final ULLBC:
 
-struct test_crate::foo::{const}::{closure}::{closure} {}
-
 struct () {}
+
+struct test_crate::foo::{const}::{closure}::{closure} {}
 
 struct (_,)::<()> {
   _0: (),
 }
 
-fn test_crate::foo::{const}::{closure}::<(), i8, extern "rust-call" fn(((),)), ()>(_1: &'_ test_crate::foo::{const}::{closure}::{closure}, spread_args: ((),))
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::main
+pub fn main()
 {
     let _0: (); // return
-    let _1: &'_ test_crate::foo::{const}::{closure}::{closure}; // arg #1
-    let spread_args: ((),); // arg #2
-    let x: (); // local
+    let _1: (); // anonymous local
+    let _2: (); // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(x);
         _0 = ();
-        x = noretag move spread_args._0;
-        _0 = ();
-        return;
-    }
-}
-
-// Full name: core::ops::function::FnOnce::call_once::<test_crate::foo::{const}::{closure}::{closure}, ((),)>
-pub fn call_once::<test_crate::foo::{const}::{closure}::{closure}, ((),)>(_1: test_crate::foo::{const}::{closure}::{closure}, _2: ((),))
-{
-    let _0: (); // return
-    let _1: test_crate::foo::{const}::{closure}::{closure}; // arg #1
-    let _2: ((),); // arg #2
-    let _3: &'_ mut test_crate::foo::{const}::{closure}::{closure}; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _0 = ();
-        _3 = &mut _1;
-        _0 = test_crate::foo::{const}::{closure}::<(), i8, extern "rust-call" fn(((),)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
+        storage_live(_1);
+        storage_live(_2);
+        _2 = ();
+        _1 = foo::<()>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: test_crate::foo::{const}::{closure}::{as_fn}
-fn {as_fn}(arg1: ())
-{
-    let _0: (); // return
-    let arg1: (); // arg #1
-    let args: ((),); // local
-    let state: test_crate::foo::{const}::{closure}::{closure}; // local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(args);
-        storage_live(state);
+        storage_dead(_2);
+        storage_dead(_1);
         _0 = ();
-        args = (move arg1,);
-        state = test_crate::foo::{const}::{closure}::{closure} {  };
-        _0 = call_once::<test_crate::foo::{const}::{closure}::{closure}, ((),)>(move state, move args) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
         return;
     }
 
@@ -111,31 +73,72 @@ fn foo::<()>(x: ())
     }
 }
 
-// Full name: test_crate::main
-pub fn main()
+// Full name: test_crate::foo::{const}::{closure}::{as_fn}
+fn {as_fn}(arg1: ())
 {
     let _0: (); // return
-    let _1: (); // anonymous local
-    let _2: (); // anonymous local
+    let arg1: (); // arg #1
+    let args: ((),); // local
+    let state: test_crate::foo::{const}::{closure}::{closure}; // local
 
     bb0: {
         storage_live(_0);
+        storage_live(args);
+        storage_live(state);
         _0 = ();
-        storage_live(_1);
-        storage_live(_2);
-        _2 = ();
-        _1 = foo::<()>(move _2) -> bb1 (unwind: bb2);
+        args = (move arg1,);
+        state = test_crate::foo::{const}::{closure}::{closure} {  };
+        _0 = call_once::<test_crate::foo::{const}::{closure}::{closure}, ((),)>(move state, move args) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(_2);
-        storage_dead(_1);
-        _0 = ();
         return;
     }
 
     bb2: {
         unwind_continue;
+    }
+}
+
+// Full name: core::ops::function::FnOnce::call_once::<test_crate::foo::{const}::{closure}::{closure}, ((),)>
+pub fn call_once::<test_crate::foo::{const}::{closure}::{closure}, ((),)>(_1: test_crate::foo::{const}::{closure}::{closure}, _2: ((),))
+{
+    let _0: (); // return
+    let _1: test_crate::foo::{const}::{closure}::{closure}; // arg #1
+    let _2: ((),); // arg #2
+    let _3: &'_ mut test_crate::foo::{const}::{closure}::{closure}; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _0 = ();
+        _3 = &mut _1;
+        _0 = test_crate::foo::{const}::{closure}::<(), i8, extern "rust-call" fn(((),)), ()>(move _3, move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+fn test_crate::foo::{const}::{closure}::<(), i8, extern "rust-call" fn(((),)), ()>(_1: &'_ test_crate::foo::{const}::{closure}::{closure}, spread_args: ((),))
+{
+    let _0: (); // return
+    let _1: &'_ test_crate::foo::{const}::{closure}::{closure}; // arg #1
+    let spread_args: ((),); // arg #2
+    let x: (); // local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(x);
+        _0 = ();
+        x = noretag move spread_args._0;
+        _0 = ();
+        return;
     }
 }
 

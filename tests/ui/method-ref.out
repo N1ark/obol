@@ -1,6 +1,8 @@
 
 // Final ULLBC:
 
+struct () {}
+
 // Full name: core::cmp::Ordering
 #[lang_item(OrderingEnum)]
 pub enum Ordering {
@@ -15,6 +17,213 @@ pub enum Ordering {
 pub enum Option::<Ordering> {
   None,
   Some { _0: Ordering },
+}
+
+struct str {
+  _0: [u8],
+}
+
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[lang_item(NonNull)]
+pub struct NonNull::<Argument::<'_>> {
+  pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
+
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
+}
+
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
+}
+
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
+
+// Full name: core::fmt::rt::Argument::<'_>
+#[lang_item(FormatArgument)]
+pub struct Argument::<'_> {
+  ty: ArgumentType::<'_>,
+}
+
+// Full name: core::ptr::non_null::NonNull::<str>
+#[lang_item(NonNull)]
+pub struct NonNull::<str> {
+  pointer: *const str is !null,
+}
+
+// Full name: core::marker::PhantomData::<&'_ str>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ str> {}
+
+// Full name: core::fmt::rt::ArgumentType::<'_>
+enum ArgumentType::<'_> {
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
+}
+
+// Full name: core::ptr::non_null::NonNull::<()>
+#[lang_item(NonNull)]
+pub struct NonNull::<()> {
+  pointer: *const () is !null,
+}
+
+// Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
+pub struct Formatter::<'_> {
+  options: FormattingOptions,
+  buf: &'_ mut (dyn FakeTrait),
+}
+
+// Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
+pub enum Result::<(), Error> {
+  Ok { _0: () },
+  Err { _0: Error },
+}
+
+// Full name: core::marker::PhantomData::<&'_ ()>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ ()> {}
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::Ord
+trait Ord
+
+// Full name: core::cmp::PartialOrd
+#[lang_item(PartialOrd)]
+#[diagnostic_item("PartialOrd")]
+trait PartialOrd
+
+// Full name: test_crate::{impl Ord for i32}
+impl "impl_Ord_for_i32" Ord for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<i32> for i32}
+impl "impl_PartialOrd_i32_for_i32" PartialOrd<i32> for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: test_crate::{impl Ord for i32}::cmp
+fn cmp(self: &'_ i32, other: &'_ i32) -> Ordering
+{
+    let _0: Ordering; // return
+    let self: &'_ i32; // arg #1
+    let other: &'_ i32; // arg #2
+    let _3: Option::<Ordering>; // anonymous local
+    let _4: &'_ i32; // anonymous local
+    let _5: &'_ i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &(*self);
+        storage_live(_5);
+        _5 = &(*other);
+        _3 = partial_cmp(move _4, move _5) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = unwrap::<Ordering>(move _3) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        storage_dead(_3);
+        return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
+
+// Full name: test_crate::main
+fn main()
+{
+    let _0: (); // return
+    let _1: (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(_1);
+        _1 = min::<i32>() -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_1);
+        _0 = ();
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
 }
 
 // Full name: core::cmp::impls::{impl PartialOrd<i32> for i32}::partial_cmp
@@ -43,78 +252,119 @@ pub fn partial_cmp(self: &'_ i32, other: &'_ i32) -> Option::<Ordering>
     }
 }
 
-// Full name: core::fmt::Error
-pub struct Error {}
+// Full name: core::option::{Option::<_>}::unwrap::<Ordering>
+#[track_caller]
+#[diagnostic_item("option_unwrap")]
+pub fn unwrap::<Ordering>(self: Option::<Ordering>) -> Ordering
+{
+    let val: Ordering; // return
+    let self: Option::<Ordering>; // arg #1
+    let _2: isize; // anonymous local
+    let _3: !; // anonymous local
 
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
+    bb0: {
+        storage_live(val);
+        storage_live(_2);
+        storage_live(_3);
+        _2 = @discriminant(self);
+        switch move _2 -> 0isize: bb1, 1isize: bb4, otherwise: bb5;
+    }
+
+    bb1: {
+        _3 = unwrap_failed() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        val = move (self as variant Option::<Ordering>::Some)._0;
+        return;
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
 }
 
-// Full name: FakeTrait
-trait FakeTrait
+// Full name: test_crate::min::<i32>
+fn min::<i32>()
+{
+    let _0: (); // return
+    let _1: cmp; // anonymous local
 
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(_1);
+        _1 = const cmp;
+        storage_dead(_1);
+        _0 = ();
+        return;
+    }
 }
 
-struct () {}
+// Full name: core::option::unwrap_failed
+#[track_caller]
+fn unwrap_failed() -> !
+{
+    let _0: !; // return
 
-// Full name: core::result::Result::<(), Error>
-#[diagnostic_item("Result")]
-pub enum Result::<(), Error> {
-  Ok { _0: () },
-  Err { _0: Error },
+    bb0: {
+        storage_live(_0);
+        _0 = panic(const "called `Option::unwrap()` on a `None` value") -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
 }
 
-// Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
-pub struct NonNull::<()> {
-  pointer: *const () is !null,
-}
+// Full name: core::panicking::panic
+#[track_caller]
+#[lang_item(Panic)]
+pub fn panic(expr: &'_ str) -> !
+{
+    let _0: !; // return
+    let expr: &'_ str; // arg #1
+    let _2: !; // anonymous local
+    let _3: Arguments::<'_>; // anonymous local
+    let _4: &'_ str; // anonymous local
 
-// Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ ()> {}
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy expr;
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
+    }
 
-// Full name: core::fmt::rt::ArgumentType::<'_>
-enum ArgumentType::<'_> {
-  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
-  Count { _0: u16 },
-}
+    bb1: {
+        storage_dead(_4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
+    }
 
-// Full name: core::fmt::rt::Argument::<'_>
-#[lang_item(FormatArgument)]
-pub struct Argument::<'_> {
-  ty: ArgumentType::<'_>,
-}
+    bb2: {
+        undefined_behavior;
+    }
 
-// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
-pub struct NonNull::<Argument::<'_>> {
-  pointer: *const Argument::<'_> is !null,
-}
+    bb3: {
+        unwind_continue;
+    }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
-struct str {
-  _0: [u8],
+    bb4: {
+        unwind_continue;
+    }
 }
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -159,85 +409,6 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         storage_dead(_4);
         storage_dead(_2);
         return;
-    }
-}
-
-// Full name: core::intrinsics::abort
-#[rustc_intrinsic]
-pub fn abort() -> !
-= <intrinsic:abort>
-
-// Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
-pub struct NonNull::<str> {
-  pointer: *const str is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ str> {}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::intrinsics::caller_location
-#[rustc_intrinsic]
-pub fn caller_location() -> &'_ Location::<'_>
-= <intrinsic:caller_location>
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
-// Full name: core::panicking::panic_fmt::panic_impl
-#[lang_item(PanicImpl)]
-extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
-= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
-
-// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
-{
-    let _0: PanicInfo::<'_>; // return
-    let message: &'_ Arguments::<'_>; // arg #1
-    let location: &'_ Location::<'_>; // arg #2
-    let can_unwind: bool; // arg #3
-    let force_no_backtrace: bool; // arg #4
-
-    bb0: {
-        storage_live(_0);
-        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        return;
-    }
-}
-
-// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
-#[track_caller]
-pub fn caller::<'_>() -> &'_ Location::<'_>
-{
-    let _0: &'_ Location::<'_>; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = caller_location() -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        undefined_behavior;
     }
 }
 
@@ -320,184 +491,56 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 }
 
-// Full name: core::panicking::panic
+// Full name: core::intrinsics::abort
+#[rustc_intrinsic]
+pub fn abort() -> !
+= <intrinsic:abort>
+
+// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
-#[lang_item(Panic)]
-pub fn panic(expr: &'_ str) -> !
+pub fn caller::<'_>() -> &'_ Location::<'_>
 {
-    let _0: !; // return
-    let expr: &'_ str; // arg #1
-    let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
+    let _0: &'_ Location::<'_>; // return
 
     bb0: {
         storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
+        _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
+        return;
     }
 
     bb2: {
         undefined_behavior;
     }
-
-    bb3: {
-        unwind_continue;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
 }
 
-// Full name: core::option::unwrap_failed
-#[track_caller]
-fn unwrap_failed() -> !
+// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
-    let _0: !; // return
+    let _0: PanicInfo::<'_>; // return
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
     bb0: {
         storage_live(_0);
-        _0 = panic(const "called `Option::unwrap()` on a `None` value") -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::option::{Option::<_>}::unwrap::<Ordering>
-#[track_caller]
-#[diagnostic_item("option_unwrap")]
-pub fn unwrap::<Ordering>(self: Option::<Ordering>) -> Ordering
-{
-    let val: Ordering; // return
-    let self: Option::<Ordering>; // arg #1
-    let _2: isize; // anonymous local
-    let _3: !; // anonymous local
-
-    bb0: {
-        storage_live(val);
-        storage_live(_2);
-        storage_live(_3);
-        _2 = @discriminant(self);
-        switch move _2 -> 0isize: bb1, 1isize: bb4, otherwise: bb5;
-    }
-
-    bb1: {
-        _3 = unwrap_failed() -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
-        unwind_continue;
-    }
-
-    bb4: {
-        val = move (self as variant Option::<Ordering>::Some)._0;
-        return;
-    }
-
-    bb5: {
-        undefined_behavior;
-    }
-}
-
-// Full name: test_crate::{impl Ord for i32}::cmp
-fn cmp(self: &'_ i32, other: &'_ i32) -> Ordering
-{
-    let _0: Ordering; // return
-    let self: &'_ i32; // arg #1
-    let other: &'_ i32; // arg #2
-    let _3: Option::<Ordering>; // anonymous local
-    let _4: &'_ i32; // anonymous local
-    let _5: &'_ i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = &(*self);
-        storage_live(_5);
-        _5 = &(*other);
-        _3 = partial_cmp(move _4, move _5) -> bb1 (unwind: bb4);
-    }
-
-    bb1: {
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = unwrap::<Ordering>(move _3) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        storage_dead(_3);
-        return;
-    }
-
-    bb3: {
-        unwind_continue;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-}
-
-// Full name: test_crate::min::<i32>
-fn min::<i32>()
-{
-    let _0: (); // return
-    let _1: cmp; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        storage_live(_1);
-        _1 = const cmp;
-        storage_dead(_1);
-        _0 = ();
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
         return;
     }
 }
 
-// Full name: test_crate::main
-fn main()
-{
-    let _0: (); // return
-    let _1: (); // anonymous local
+// Full name: core::panicking::panic_fmt::panic_impl
+#[lang_item(PanicImpl)]
+extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
+= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
 
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        storage_live(_1);
-        _1 = min::<i32>() -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        storage_dead(_1);
-        _0 = ();
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
+// Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
+pub fn caller_location() -> &'_ Location::<'_>
+= <intrinsic:caller_location>
 
 
 

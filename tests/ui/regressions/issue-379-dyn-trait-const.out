@@ -1,30 +1,28 @@
 
 // Final ULLBC:
 
+struct () {}
+
 // Full name: test_crate::S
 struct S {}
 
-struct () {}
+// Full name: test_crate::C
+const C: &'_ (dyn FakeTrait) = &anon_const_0 with_metadata(cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<S>))
 
-// Full name: core::ptr::drop_glue::<S>
-#[lang_item(DropGlue)]
-fn drop_glue::<S>(_1: &'_ mut S)
-{
-    let _0: (); // return
-    let _1: &'_ mut S; // arg #1
+vtable {vtable}::test_crate::MyTrait::<S>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(val))]
 
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
+// Full name: anon_const_0
+const anon_const_0: S = S {  }
 
 // Full name: FakeTrait
 trait FakeTrait
 
-// Full name: anon_const_0
-const anon_const_0: S = S {  }
+trait test_crate::MyTrait
+
+// Full name: test_crate::{impl test_crate::MyTrait for S}
+impl "impl_MyTrait_for_S" test_crate::MyTrait for S {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
 
 // Full name: test_crate::{impl test_crate::MyTrait for S}::val
 pub fn val(self: &'_ S) -> u32
@@ -38,11 +36,6 @@ pub fn val(self: &'_ S) -> u32
         return;
     }
 }
-
-vtable {vtable}::test_crate::MyTrait::<S>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(val))]
-
-// Full name: test_crate::C
-const C: &'_ (dyn FakeTrait) = &anon_const_0 with_metadata(cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<S>))
 
 // Full name: test_crate::get
 pub fn get() -> &'_ (dyn FakeTrait)
@@ -68,6 +61,20 @@ pub fn get() -> &'_ (dyn FakeTrait)
         storage_dead(_4);
         storage_dead(_2);
         storage_dead(_1);
+        return;
+    }
+}
+
+// Full name: core::ptr::drop_glue::<S>
+#[lang_item(DropGlue)]
+fn drop_glue::<S>(_1: &'_ mut S)
+{
+    let _0: (); // return
+    let _1: &'_ mut S; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
         return;
     }
 }

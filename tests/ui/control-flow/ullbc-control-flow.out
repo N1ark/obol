@@ -1,111 +1,45 @@
 
 // Final ULLBC:
 
-// Full name: core::cmp::impls::{impl PartialOrd<i32> for i32}::lt
-pub fn impl_PartialOrd_i32_for_i32::lt(self: &'_ i32, other: &'_ i32) -> bool
-{
-    let _0: bool; // return
-    let self: &'_ i32; // arg #1
-    let other: &'_ i32; // arg #2
-    let _3: i32; // anonymous local
-    let _4: i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _3 = copy (*self);
-        storage_live(_4);
-        _4 = copy (*other);
-        _0 = move _3 < move _4;
-        storage_dead(_4);
-        storage_dead(_3);
-        return;
-    }
-}
-
-// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
-pub fn impl_PartialOrd_usize_for_usize::lt(self: &'_ usize, other: &'_ usize) -> bool
-{
-    let _0: bool; // return
-    let self: &'_ usize; // arg #1
-    let other: &'_ usize; // arg #2
-    let _3: usize; // anonymous local
-    let _4: usize; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _3 = copy (*self);
-        storage_live(_4);
-        _4 = copy (*other);
-        _0 = move _3 < move _4;
-        storage_dead(_4);
-        storage_dead(_3);
-        return;
-    }
-}
-
-// Full name: core::fmt::Error
-pub struct Error {}
-
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
-}
-
-// Full name: FakeTrait
-trait FakeTrait
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
-}
-
 struct () {}
 
-// Full name: core::result::Result::<(), Error>
-#[diagnostic_item("Result")]
-pub enum Result::<(), Error> {
-  Ok { _0: () },
-  Err { _0: Error },
+// Full name: core::ops::range::Range::<i32>
+#[lang_item(Range)]
+pub struct Range::<i32> {
+  start: i32,
+  end: i32,
 }
 
-// Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
-pub struct NonNull::<()> {
-  pointer: *const () is !null,
+// Full name: core::option::Option::<i32>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<i32> {
+  None,
+  Some { _0: i32 },
 }
 
-// Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ ()> {}
-
-// Full name: core::fmt::rt::ArgumentType::<'_>
-enum ArgumentType::<'_> {
-  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
-  Count { _0: u16 },
+struct (_, _)::<usize, bool> {
+  _0: usize,
+  _1: bool,
 }
 
-// Full name: core::fmt::rt::Argument::<'_>
-#[lang_item(FormatArgument)]
-pub struct Argument::<'_> {
-  ty: ArgumentType::<'_>,
+// Full name: core::ops::range::Range::<usize>
+#[lang_item(Range)]
+pub struct Range::<usize> {
+  start: usize,
+  end: usize,
 }
 
-// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
-pub struct NonNull::<Argument::<'_>> {
-  pointer: *const Argument::<'_> is !null,
+// Full name: core::option::Option::<usize>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<usize> {
+  None,
+  Some { _0: usize },
 }
 
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
+struct str {
+  _0: [u8],
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -115,69 +49,47 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-struct str {
-  _0: [u8],
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
-{
-    let _0: Arguments::<'_>; // return
-    let s: &'_ str; // arg #1
-    let _2: NonNull::<u8>; // anonymous local
-    let _3: *const u8; // anonymous local
-    let _4: NonNull::<Argument::<'_>>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const str; // anonymous local
-    let _9: &'_ [u8]; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_8);
-        _8 = &raw const (*s) with_metadata(copy s.metadata);
-        _3 = cast<*const u8>(copy _8);
-        storage_dead(_8);
-        _2 = transmute<NonNull::<u8>>(copy _3);
-        storage_dead(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_9);
-        _9 = transmute<&'_ [u8]>(copy s);
-        _7 = noretag copy _9.metadata;
-        storage_dead(_9);
-        _6 = move _7 wrap.<< const 1i32;
-        storage_dead(_7);
-        _5 = move _6 | const 1usize;
-        storage_dead(_6);
-        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
-        storage_dead(_5);
-        _0 = Arguments::<'_> { template: move _2, args: move _4 };
-        storage_dead(_4);
-        storage_dead(_2);
-        return;
-    }
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
 }
 
-struct (_, _)::<Arguments::<'_>, bool> {
-  _0: Arguments::<'_>,
+// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[lang_item(NonNull)]
+pub struct NonNull::<Argument::<'_>> {
+  pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
+
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
+}
+
+struct (_, _)::<i32, bool> {
+  _0: i32,
   _1: bool,
 }
-
-// Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
-pub struct NonNull::<str> {
-  pointer: *const str is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::panic::location::Location::<'_>
 #[lang_item(PanicLocation)]
@@ -197,745 +109,129 @@ pub struct PanicInfo::<'_> {
   force_no_backtrace: bool,
 }
 
-// Full name: core::panicking::panic_fmt::panic_impl
-#[lang_item(PanicImpl)]
-extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
-= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
-
-// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
-{
-    let _0: PanicInfo::<'_>; // return
-    let message: &'_ Arguments::<'_>; // arg #1
-    let location: &'_ Location::<'_>; // arg #2
-    let can_unwind: bool; // arg #3
-    let force_no_backtrace: bool; // arg #4
-
-    bb0: {
-        storage_live(_0);
-        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        return;
-    }
-}
-
-// Full name: core::intrinsics::caller_location
-#[rustc_intrinsic]
-pub fn caller_location() -> &'_ Location::<'_>
-= <intrinsic:caller_location>
-
-// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
-#[track_caller]
-pub fn caller::<'_>() -> &'_ Location::<'_>
-{
-    let _0: &'_ Location::<'_>; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = caller_location() -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-}
-
-// Full name: core::intrinsics::abort
-#[rustc_intrinsic]
-pub fn abort() -> !
-= <intrinsic:abort>
-
-// Full name: core::panicking::panic_fmt
-#[track_caller]
-#[lang_item(PanicFmt)]
-pub fn panic_fmt(fmt: Arguments::<'_>) -> !
-{
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: !; // anonymous local
-    let pi: PanicInfo::<'_>; // local
-    let _5: &'_ Arguments::<'_>; // anonymous local
-    let _6: &'_ Arguments::<'_>; // anonymous local
-    let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ PanicInfo::<'_>; // anonymous local
-    let _9: &'_ PanicInfo::<'_>; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        _2 = const false;
-        if move _2 -> bb1 else -> bb4;
-    }
-
-    bb1: {
-        storage_live(_3);
-        _3 = abort() -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb10);
-    }
-
-    bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
-    }
-
-    bb6: {
-        storage_dead(_7);
-        storage_dead(_5);
-        storage_dead(_6);
-        storage_live(_8);
-        storage_live(_9);
-        _9 = &pi;
-        _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::panicking::panic_nounwind_fmt::compiletime
-#[track_caller]
-fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
-{
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let force_no_backtrace: bool; // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::panicking::panic_nounwind_fmt
-#[track_caller]
-pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
-{
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = copy fmt;
-        storage_live(_5);
-        _5 = copy force_no_backtrace;
-        _3 = (move _4, move _5);
-        storage_dead(_5);
-        storage_dead(_4);
-        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_terminate;
-    }
-}
-
-#[track_caller]
-fn core::hint::unreachable_unchecked::precondition_check()
-{
-    let _0: (); // return
-    let msg: &'_ str; // local
-    let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: NonNull::<u8>; // anonymous local
-    let _5: *const u8; // anonymous local
-    let _6: NonNull::<Argument::<'_>>; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: usize; // anonymous local
-    let _10: *const str; // anonymous local
-    let _11: &'_ [u8]; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(msg);
-        storage_live(_2);
-        _0 = ();
-        msg = const "unsafe precondition(s) violated: hint::unreachable_unchecked must never be reached\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
-        storage_live(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_10);
-        _10 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _5 = cast<*const u8>(copy _10);
-        storage_dead(_10);
-        _4 = transmute<NonNull::<u8>>(copy _5);
-        storage_dead(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_8);
-        storage_live(_9);
-        storage_live(_11);
-        _11 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: hint::unreachable_unchecked must never be reached\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _9 = noretag copy _11.metadata;
-        storage_dead(_11);
-        _8 = move _9 wrap.<< const 1i32;
-        storage_dead(_9);
-        _7 = move _8 | const 1usize;
-        storage_dead(_8);
-        _6 = transmute<NonNull::<Argument::<'_>>>(move _7);
-        storage_dead(_7);
-        _3 = Arguments::<'_> { template: move _4, args: move _6 };
-        storage_dead(_6);
-        storage_dead(_4);
-        _2 = panic_nounwind_fmt(move _3, const false) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-}
-
-// Full name: core::intrinsics::assume
-#[rustc_intrinsic]
-pub fn assume(b_1: bool)
-= <intrinsic:assume>
-
-// Full name: core::intrinsics::cold_path
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn cold_path()
-= <intrinsic:cold_path>
-
-struct (_, _)::<i32, bool> {
-  _0: i32,
-  _1: bool,
-}
-
-// Full name: core::option::Option::<i32>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<i32> {
-  None,
-  Some { _0: i32 },
-}
-
-// Full name: core::iter::range::{impl Step for i32}::forward_unchecked
-pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
-{
-    let val: i32; // return
-    let start: i32; // arg #1
-    let n: usize; // arg #2
-    let self: Option::<i32>; // local
-    let rhs: u32; // local
-    let _5: i32; // anonymous local
-    let a: i32; // local
-    let _7: bool; // anonymous local
-    let _8: (i32, bool); // anonymous local
-    let b: bool; // local
-    let _10: bool; // anonymous local
-    let _11: (); // anonymous local
-    let _12: (); // anonymous local
-    let _13: bool; // anonymous local
-    let _14: (); // anonymous local
-    let _15: Option::<i32>; // anonymous local
-
-    bb0: {
-        storage_live(val);
-        storage_live(_11);
-        storage_live(_12);
-        storage_live(_14);
-        storage_live(self);
-        storage_live(rhs);
-        rhs = cast<u32>(copy n);
-        storage_live(a);
-        storage_live(b);
-        storage_live(_5);
-        _5 = cast<i32>(copy rhs);
-        storage_live(_8);
-        _8 = copy start checked.+ copy _5;
-        a = copy _8._0;
-        storage_live(_7);
-        _7 = copy _8._1;
-        storage_dead(_8);
-        storage_live(_10);
-        _10 = copy _5 < const 0i32;
-        b = copy _7 ^ move _10;
-        storage_dead(_10);
-        storage_dead(_7);
-        storage_dead(_5);
-        if copy b -> bb1 else -> bb8;
-    }
-
-    bb1: {
-        _11 = cold_path() -> bb2 (unwind: bb7);
-    }
-
-    bb2: {
-        storage_live(_15);
-        _15 = Option::<i32>::None {  };
-        self = move _15;
-        storage_dead(b);
-        storage_dead(a);
-        storage_dead(rhs);
-        storage_live(_13);
-        _13 = ub_checks;
-        _14 = assume(move _13) -> bb3 (unwind: bb6);
-    }
-
-    bb3: {
-        _12 = core::hint::unreachable_unchecked::precondition_check() -> bb4 (unwind: bb5);
-    }
-
-    bb4: {
-        undefined_behavior;
-    }
-
-    bb5: {
-        undefined_behavior;
-    }
-
-    bb6: {
-        undefined_behavior;
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        self = Option::<i32>::Some { _0: copy a };
-        storage_dead(b);
-        storage_dead(a);
-        storage_dead(rhs);
-        val = move (self as variant Option::<i32>::Some)._0;
-        storage_dead(self);
-        return;
-    }
-}
-
 struct (_, _)::<u64, bool> {
   _0: u64,
   _1: bool,
 }
 
-#[track_caller]
-fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
-{
-    let _0: (); // return
-    let lhs: usize; // arg #1
-    let rhs: usize; // arg #2
-    let msg: &'_ str; // local
-    let _4: !; // anonymous local
-    let _5: Arguments::<'_>; // anonymous local
-    let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
-    let _8: u64; // anonymous local
-    let _9: u64; // anonymous local
-    let _10: NonNull::<u8>; // anonymous local
-    let _11: *const u8; // anonymous local
-    let _12: NonNull::<Argument::<'_>>; // anonymous local
-    let _13: usize; // anonymous local
-    let _14: usize; // anonymous local
-    let _15: usize; // anonymous local
-    let _16: *const str; // anonymous local
-    let _17: &'_ [u8]; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(msg);
-        storage_live(_4);
-        storage_live(_6);
-        _0 = ();
-        storage_live(_7);
-        storage_live(_8);
-        _8 = cast<u64>(copy lhs);
-        storage_live(_9);
-        _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.+ move _9;
-        storage_dead(_9);
-        storage_dead(_8);
-        _6 = copy _7._1;
-        storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
-    }
-
-    bb1: {
-        msg = const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
-        storage_live(_5);
-        storage_live(_10);
-        storage_live(_11);
-        storage_live(_16);
-        _16 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _11 = cast<*const u8>(copy _16);
-        storage_dead(_16);
-        _10 = transmute<NonNull::<u8>>(copy _11);
-        storage_dead(_11);
-        storage_live(_12);
-        storage_live(_13);
-        storage_live(_14);
-        storage_live(_15);
-        storage_live(_17);
-        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _15 = noretag copy _17.metadata;
-        storage_dead(_17);
-        _14 = move _15 wrap.<< const 1i32;
-        storage_dead(_15);
-        _13 = move _14 | const 1usize;
-        storage_dead(_14);
-        _12 = transmute<NonNull::<Argument::<'_>>>(move _13);
-        storage_dead(_13);
-        _5 = Arguments::<'_> { template: move _10, args: move _12 };
-        storage_dead(_12);
-        storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        return;
-    }
-}
-
-// Full name: core::iter::range::{impl Step for usize}::forward_unchecked
-pub fn impl_Step_for_usize::forward_unchecked(start: usize, n: usize) -> usize
-{
-    let _0: usize; // return
-    let start: usize; // arg #1
-    let n: usize; // arg #2
-    let _3: (); // anonymous local
-    let _4: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = ub_checks;
-        if move _4 -> bb1 else -> bb3;
-    }
-
-    bb1: {
-        _3 = core::num::{usize}::unchecked_add::precondition_check(copy start, copy n) -> bb3 (unwind: bb2);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
-        _0 = copy start ub.+ copy n;
-        return;
-    }
-}
-
-// Full name: core::ops::range::Range::<i32>
-#[lang_item(Range)]
-pub struct Range::<i32> {
-  start: i32,
-  end: i32,
-}
-
-// Full name: core::iter::range::{impl RangeIteratorImpl for Range::<_>}::spec_next::<i32>
-fn spec_next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
-{
-    let _0: Option::<i32>; // return
-    let self: &'_ mut Range::<i32>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: &'_ i32; // anonymous local
-    let _4: &'_ i32; // anonymous local
-    let old: i32; // local
-    let _6: i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _3 = &(*self).start;
-        storage_live(_4);
-        _4 = &(*self).end;
-        _2 = impl_PartialOrd_i32_for_i32::lt(move _3, move _4) -> bb1 (unwind: bb7);
-    }
-
-    bb1: {
-        if move _2 -> bb2 else -> bb5;
-    }
-
-    bb2: {
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_live(old);
-        old = copy (*self).start;
-        storage_live(_6);
-        _6 = impl_Step_for_i32::forward_unchecked(copy old, const 1usize) -> bb3 (unwind: bb4);
-    }
-
-    bb3: {
-        (*self).start = move _6;
-        storage_dead(_6);
-        _0 = Option::<i32>::Some { _0: copy old };
-        storage_dead(old);
-        goto bb6;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
-        storage_dead(_4);
-        storage_dead(_3);
-        _0 = Option::<i32>::None {  };
-        goto bb6;
-    }
-
-    bb6: {
-        storage_dead(_2);
-        return;
-    }
-
-    bb7: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::option::Option::<usize>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<usize> {
-  None,
-  Some { _0: usize },
-}
-
-// Full name: core::ops::range::Range::<usize>
-#[lang_item(Range)]
-pub struct Range::<usize> {
-  start: usize,
-  end: usize,
-}
-
-// Full name: core::iter::range::{impl RangeIteratorImpl for Range::<_>}::spec_next::<usize>
-fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
-{
-    let _0: Option::<usize>; // return
-    let self: &'_ mut Range::<usize>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: &'_ usize; // anonymous local
-    let _4: &'_ usize; // anonymous local
-    let old: usize; // local
-    let _6: usize; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _3 = &(*self).start;
-        storage_live(_4);
-        _4 = &(*self).end;
-        _2 = impl_PartialOrd_usize_for_usize::lt(move _3, move _4) -> bb1 (unwind: bb7);
-    }
-
-    bb1: {
-        if move _2 -> bb2 else -> bb5;
-    }
-
-    bb2: {
-        storage_dead(_4);
-        storage_dead(_3);
-        storage_live(old);
-        old = copy (*self).start;
-        storage_live(_6);
-        _6 = impl_Step_for_usize::forward_unchecked(copy old, const 1usize) -> bb3 (unwind: bb4);
-    }
-
-    bb3: {
-        (*self).start = move _6;
-        storage_dead(_6);
-        _0 = Option::<usize>::Some { _0: copy old };
-        storage_dead(old);
-        goto bb6;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
-        storage_dead(_4);
-        storage_dead(_3);
-        _0 = Option::<usize>::None {  };
-        goto bb6;
-    }
-
-    bb6: {
-        storage_dead(_2);
-        return;
-    }
-
-    bb7: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::iter::range::{impl Iterator for Range::<_>}::next::<i32>
-pub fn next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
-{
-    let _0: Option::<i32>; // return
-    let self: &'_ mut Range::<i32>; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = spec_next::<i32>(move self) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::iter::range::{impl Iterator for Range::<_>}::next::<usize>
-pub fn next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
-{
-    let _0: Option::<usize>; // return
-    let self: &'_ mut Range::<usize>; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = spec_next::<usize>(move self) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::iter::traits::collect::{impl IntoIterator for I}::into_iter::<Range::<i32>>
-pub fn into_iter::<Range::<i32>>(self: Range::<i32>) -> Range::<i32>
-{
-    let _0: Range::<i32>; // return
-    let self: Range::<i32>; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = move self;
-        return;
-    }
-}
-
-// Full name: core::iter::traits::collect::{impl IntoIterator for I}::into_iter::<Range::<usize>>
-pub fn into_iter::<Range::<usize>>(self: Range::<usize>) -> Range::<usize>
-{
-    let _0: Range::<usize>; // return
-    let self: Range::<usize>; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = move self;
-        return;
-    }
-}
-
-// Full name: core::panicking::panic
-#[track_caller]
-#[lang_item(Panic)]
-pub fn panic(expr: &'_ str) -> !
-{
-    let _0: !; // return
-    let expr: &'_ str; // arg #1
-    let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
-    }
-
-    bb1: {
-        storage_dead(_4);
-        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
-        unwind_continue;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-}
-
-struct (_, _)::<usize, bool> {
-  _0: usize,
+struct (_, _)::<Arguments::<'_>, bool> {
+  _0: Arguments::<'_>,
   _1: bool,
+}
+
+// Full name: core::fmt::rt::Argument::<'_>
+#[lang_item(FormatArgument)]
+pub struct Argument::<'_> {
+  ty: ArgumentType::<'_>,
+}
+
+// Full name: core::ptr::non_null::NonNull::<str>
+#[lang_item(NonNull)]
+pub struct NonNull::<str> {
+  pointer: *const str is !null,
+}
+
+// Full name: core::marker::PhantomData::<&'_ str>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ str> {}
+
+// Full name: core::fmt::rt::ArgumentType::<'_>
+enum ArgumentType::<'_> {
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
+}
+
+// Full name: core::ptr::non_null::NonNull::<()>
+#[lang_item(NonNull)]
+pub struct NonNull::<()> {
+  pointer: *const () is !null,
+}
+
+// Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
+pub struct Formatter::<'_> {
+  options: FormattingOptions,
+  buf: &'_ mut (dyn FakeTrait),
+}
+
+// Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
+pub enum Result::<(), Error> {
+  Ok { _0: () },
+  Err { _0: Error },
+}
+
+// Full name: core::marker::PhantomData::<&'_ ()>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ ()> {}
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::iter::traits::collect::IntoIterator
+#[diagnostic_item("IntoIterator")]
+trait IntoIterator
+
+// Full name: core::iter::traits::iterator::Iterator
+#[lang_item(Iterator)]
+#[diagnostic_item("Iterator")]
+trait Iterator
+
+// Full name: core::iter::range::RangeIteratorImpl
+trait RangeIteratorImpl
+
+// Full name: core::cmp::PartialOrd
+#[lang_item(PartialOrd)]
+#[diagnostic_item("PartialOrd")]
+trait PartialOrd
+
+// Full name: core::iter::range::Step
+#[diagnostic_item("range_step")]
+trait Step
+
+// Full name: core::iter::traits::collect::{impl IntoIterator for I}
+impl<I> "impl_IntoIterator_for_T" IntoIterator for I {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::iter::range::{impl Iterator for Range::<_>}
+impl<A> Iterator for Range::<_> {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::iter::range::{impl RangeIteratorImpl for Range::<_>}
+impl<T> RangeIteratorImpl for Range::<_> {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<i32> for i32}
+impl "impl_PartialOrd_i32_for_i32" PartialOrd<i32> for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::iter::range::{impl Step for i32}
+impl "impl_Step_for_i32" Step for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}
+impl "impl_PartialOrd_usize_for_usize" PartialOrd<usize> for usize {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::iter::range::{impl Step for usize}
+impl "impl_Step_for_usize" Step for usize {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::nested_loops_enum
@@ -1180,6 +476,791 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb30: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::iter::traits::collect::{impl IntoIterator for I}::into_iter::<Range::<i32>>
+pub fn into_iter::<Range::<i32>>(self: Range::<i32>) -> Range::<i32>
+{
+    let _0: Range::<i32>; // return
+    let self: Range::<i32>; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = move self;
+        return;
+    }
+}
+
+// Full name: core::iter::range::{impl Iterator for Range::<_>}::next::<i32>
+pub fn next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
+{
+    let _0: Option::<i32>; // return
+    let self: &'_ mut Range::<i32>; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = spec_next::<i32>(move self) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::iter::traits::collect::{impl IntoIterator for I}::into_iter::<Range::<usize>>
+pub fn into_iter::<Range::<usize>>(self: Range::<usize>) -> Range::<usize>
+{
+    let _0: Range::<usize>; // return
+    let self: Range::<usize>; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = move self;
+        return;
+    }
+}
+
+// Full name: core::iter::range::{impl Iterator for Range::<_>}::next::<usize>
+pub fn next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
+{
+    let _0: Option::<usize>; // return
+    let self: &'_ mut Range::<usize>; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = spec_next::<usize>(move self) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::panicking::panic
+#[track_caller]
+#[lang_item(Panic)]
+pub fn panic(expr: &'_ str) -> !
+{
+    let _0: !; // return
+    let expr: &'_ str; // arg #1
+    let _2: !; // anonymous local
+    let _3: Arguments::<'_>; // anonymous local
+    let _4: &'_ str; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy expr;
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        storage_dead(_4);
+        _2 = panic_fmt(move _3) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::iter::range::{impl RangeIteratorImpl for Range::<_>}::spec_next::<i32>
+fn spec_next::<i32>(self: &'_ mut Range::<i32>) -> Option::<i32>
+{
+    let _0: Option::<i32>; // return
+    let self: &'_ mut Range::<i32>; // arg #1
+    let _2: bool; // anonymous local
+    let _3: &'_ i32; // anonymous local
+    let _4: &'_ i32; // anonymous local
+    let old: i32; // local
+    let _6: i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        _3 = &(*self).start;
+        storage_live(_4);
+        _4 = &(*self).end;
+        _2 = impl_PartialOrd_i32_for_i32::lt(move _3, move _4) -> bb1 (unwind: bb7);
+    }
+
+    bb1: {
+        if move _2 -> bb2 else -> bb5;
+    }
+
+    bb2: {
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_live(old);
+        old = copy (*self).start;
+        storage_live(_6);
+        _6 = impl_Step_for_i32::forward_unchecked(copy old, const 1usize) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        (*self).start = move _6;
+        storage_dead(_6);
+        _0 = Option::<i32>::Some { _0: copy old };
+        storage_dead(old);
+        goto bb6;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        storage_dead(_4);
+        storage_dead(_3);
+        _0 = Option::<i32>::None {  };
+        goto bb6;
+    }
+
+    bb6: {
+        storage_dead(_2);
+        return;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::iter::range::{impl RangeIteratorImpl for Range::<_>}::spec_next::<usize>
+fn spec_next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
+{
+    let _0: Option::<usize>; // return
+    let self: &'_ mut Range::<usize>; // arg #1
+    let _2: bool; // anonymous local
+    let _3: &'_ usize; // anonymous local
+    let _4: &'_ usize; // anonymous local
+    let old: usize; // local
+    let _6: usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        _3 = &(*self).start;
+        storage_live(_4);
+        _4 = &(*self).end;
+        _2 = impl_PartialOrd_usize_for_usize::lt(move _3, move _4) -> bb1 (unwind: bb7);
+    }
+
+    bb1: {
+        if move _2 -> bb2 else -> bb5;
+    }
+
+    bb2: {
+        storage_dead(_4);
+        storage_dead(_3);
+        storage_live(old);
+        old = copy (*self).start;
+        storage_live(_6);
+        _6 = impl_Step_for_usize::forward_unchecked(copy old, const 1usize) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        (*self).start = move _6;
+        storage_dead(_6);
+        _0 = Option::<usize>::Some { _0: copy old };
+        storage_dead(old);
+        goto bb6;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        storage_dead(_4);
+        storage_dead(_3);
+        _0 = Option::<usize>::None {  };
+        goto bb6;
+    }
+
+    bb6: {
+        storage_dead(_2);
+        return;
+    }
+
+    bb7: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
+{
+    let _0: Arguments::<'_>; // return
+    let s: &'_ str; // arg #1
+    let _2: NonNull::<u8>; // anonymous local
+    let _3: *const u8; // anonymous local
+    let _4: NonNull::<Argument::<'_>>; // anonymous local
+    let _5: usize; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: *const str; // anonymous local
+    let _9: &'_ [u8]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_8);
+        _8 = &raw const (*s) with_metadata(copy s.metadata);
+        _3 = cast<*const u8>(copy _8);
+        storage_dead(_8);
+        _2 = transmute<NonNull::<u8>>(copy _3);
+        storage_dead(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_9);
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
+        storage_dead(_9);
+        _6 = move _7 wrap.<< const 1i32;
+        storage_dead(_7);
+        _5 = move _6 | const 1usize;
+        storage_dead(_6);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
+        storage_dead(_5);
+        _0 = Arguments::<'_> { template: move _2, args: move _4 };
+        storage_dead(_4);
+        storage_dead(_2);
+        return;
+    }
+}
+
+// Full name: core::panicking::panic_fmt
+#[track_caller]
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
+{
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let _2: bool; // anonymous local
+    let _3: !; // anonymous local
+    let pi: PanicInfo::<'_>; // local
+    let _5: &'_ Arguments::<'_>; // anonymous local
+    let _6: &'_ Arguments::<'_>; // anonymous local
+    let _7: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
+    let _9: &'_ PanicInfo::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = const false;
+        if move _2 -> bb1 else -> bb4;
+    }
+
+    bb1: {
+        storage_live(_3);
+        _3 = abort() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
+    }
+
+    bb5: {
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
+    }
+
+    bb6: {
+        storage_dead(_7);
+        storage_dead(_5);
+        storage_dead(_6);
+        storage_live(_8);
+        storage_live(_9);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<i32> for i32}::lt
+pub fn impl_PartialOrd_i32_for_i32::lt(self: &'_ i32, other: &'_ i32) -> bool
+{
+    let _0: bool; // return
+    let self: &'_ i32; // arg #1
+    let other: &'_ i32; // arg #2
+    let _3: i32; // anonymous local
+    let _4: i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
+
+// Full name: core::iter::range::{impl Step for i32}::forward_unchecked
+pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
+{
+    let val: i32; // return
+    let start: i32; // arg #1
+    let n: usize; // arg #2
+    let self: Option::<i32>; // local
+    let rhs: u32; // local
+    let _5: i32; // anonymous local
+    let a: i32; // local
+    let _7: bool; // anonymous local
+    let _8: (i32, bool); // anonymous local
+    let b: bool; // local
+    let _10: bool; // anonymous local
+    let _11: (); // anonymous local
+    let _12: (); // anonymous local
+    let _13: bool; // anonymous local
+    let _14: (); // anonymous local
+    let _15: Option::<i32>; // anonymous local
+
+    bb0: {
+        storage_live(val);
+        storage_live(_11);
+        storage_live(_12);
+        storage_live(_14);
+        storage_live(self);
+        storage_live(rhs);
+        rhs = cast<u32>(copy n);
+        storage_live(a);
+        storage_live(b);
+        storage_live(_5);
+        _5 = cast<i32>(copy rhs);
+        storage_live(_8);
+        _8 = copy start checked.+ copy _5;
+        a = copy _8._0;
+        storage_live(_7);
+        _7 = copy _8._1;
+        storage_dead(_8);
+        storage_live(_10);
+        _10 = copy _5 < const 0i32;
+        b = copy _7 ^ move _10;
+        storage_dead(_10);
+        storage_dead(_7);
+        storage_dead(_5);
+        if copy b -> bb1 else -> bb8;
+    }
+
+    bb1: {
+        _11 = cold_path() -> bb2 (unwind: bb7);
+    }
+
+    bb2: {
+        storage_live(_15);
+        _15 = Option::<i32>::None {  };
+        self = move _15;
+        storage_dead(b);
+        storage_dead(a);
+        storage_dead(rhs);
+        storage_live(_13);
+        _13 = ub_checks;
+        _14 = assume(move _13) -> bb3 (unwind: bb6);
+    }
+
+    bb3: {
+        _12 = core::hint::unreachable_unchecked::precondition_check() -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        self = Option::<i32>::Some { _0: copy a };
+        storage_dead(b);
+        storage_dead(a);
+        storage_dead(rhs);
+        val = move (self as variant Option::<i32>::Some)._0;
+        storage_dead(self);
+        return;
+    }
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
+pub fn impl_PartialOrd_usize_for_usize::lt(self: &'_ usize, other: &'_ usize) -> bool
+{
+    let _0: bool; // return
+    let self: &'_ usize; // arg #1
+    let other: &'_ usize; // arg #2
+    let _3: usize; // anonymous local
+    let _4: usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
+
+// Full name: core::iter::range::{impl Step for usize}::forward_unchecked
+pub fn impl_Step_for_usize::forward_unchecked(start: usize, n: usize) -> usize
+{
+    let _0: usize; // return
+    let start: usize; // arg #1
+    let n: usize; // arg #2
+    let _3: (); // anonymous local
+    let _4: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = ub_checks;
+        if move _4 -> bb1 else -> bb3;
+    }
+
+    bb1: {
+        _3 = core::num::{usize}::unchecked_add::precondition_check(copy start, copy n) -> bb3 (unwind: bb2);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        _0 = copy start ub.+ copy n;
+        return;
+    }
+}
+
+// Full name: core::intrinsics::abort
+#[rustc_intrinsic]
+pub fn abort() -> !
+= <intrinsic:abort>
+
+// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
+pub fn caller::<'_>() -> &'_ Location::<'_>
+{
+    let _0: &'_ Location::<'_>; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = caller_location() -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
+
+// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
+{
+    let _0: PanicInfo::<'_>; // return
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
+
+    bb0: {
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        return;
+    }
+}
+
+// Full name: core::panicking::panic_fmt::panic_impl
+#[lang_item(PanicImpl)]
+extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
+= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
+
+// Full name: core::intrinsics::cold_path
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn cold_path()
+= <intrinsic:cold_path>
+
+// Full name: core::intrinsics::assume
+#[rustc_intrinsic]
+pub fn assume(b_1: bool)
+= <intrinsic:assume>
+
+#[track_caller]
+fn core::hint::unreachable_unchecked::precondition_check()
+{
+    let _0: (); // return
+    let msg: &'_ str; // local
+    let _2: !; // anonymous local
+    let _3: Arguments::<'_>; // anonymous local
+    let _4: NonNull::<u8>; // anonymous local
+    let _5: *const u8; // anonymous local
+    let _6: NonNull::<Argument::<'_>>; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: usize; // anonymous local
+    let _9: usize; // anonymous local
+    let _10: *const str; // anonymous local
+    let _11: &'_ [u8]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(msg);
+        storage_live(_2);
+        _0 = ();
+        msg = const "unsafe precondition(s) violated: hint::unreachable_unchecked must never be reached\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_10);
+        _10 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _5 = cast<*const u8>(copy _10);
+        storage_dead(_10);
+        _4 = transmute<NonNull::<u8>>(copy _5);
+        storage_dead(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_8);
+        storage_live(_9);
+        storage_live(_11);
+        _11 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: hint::unreachable_unchecked must never be reached\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _9 = noretag copy _11.metadata;
+        storage_dead(_11);
+        _8 = move _9 wrap.<< const 1i32;
+        storage_dead(_9);
+        _7 = move _8 | const 1usize;
+        storage_dead(_8);
+        _6 = transmute<NonNull::<Argument::<'_>>>(move _7);
+        storage_dead(_7);
+        _3 = Arguments::<'_> { template: move _4, args: move _6 };
+        storage_dead(_6);
+        storage_dead(_4);
+        _2 = panic_nounwind_fmt(move _3, const false) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
+
+#[track_caller]
+fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
+{
+    let _0: (); // return
+    let lhs: usize; // arg #1
+    let rhs: usize; // arg #2
+    let msg: &'_ str; // local
+    let _4: !; // anonymous local
+    let _5: Arguments::<'_>; // anonymous local
+    let _6: bool; // anonymous local
+    let _7: (u64, bool); // anonymous local
+    let _8: u64; // anonymous local
+    let _9: u64; // anonymous local
+    let _10: NonNull::<u8>; // anonymous local
+    let _11: *const u8; // anonymous local
+    let _12: NonNull::<Argument::<'_>>; // anonymous local
+    let _13: usize; // anonymous local
+    let _14: usize; // anonymous local
+    let _15: usize; // anonymous local
+    let _16: *const str; // anonymous local
+    let _17: &'_ [u8]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(msg);
+        storage_live(_4);
+        storage_live(_6);
+        _0 = ();
+        storage_live(_7);
+        storage_live(_8);
+        _8 = cast<u64>(copy lhs);
+        storage_live(_9);
+        _9 = cast<u64>(copy rhs);
+        _7 = move _8 checked.+ move _9;
+        storage_dead(_9);
+        storage_dead(_8);
+        _6 = copy _7._1;
+        storage_dead(_7);
+        if copy _6 -> bb1 else -> bb4;
+    }
+
+    bb1: {
+        msg = const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        storage_live(_5);
+        storage_live(_10);
+        storage_live(_11);
+        storage_live(_16);
+        _16 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _11 = cast<*const u8>(copy _16);
+        storage_dead(_16);
+        _10 = transmute<NonNull::<u8>>(copy _11);
+        storage_dead(_11);
+        storage_live(_12);
+        storage_live(_13);
+        storage_live(_14);
+        storage_live(_15);
+        storage_live(_17);
+        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _15 = noretag copy _17.metadata;
+        storage_dead(_17);
+        _14 = move _15 wrap.<< const 1i32;
+        storage_dead(_15);
+        _13 = move _14 | const 1usize;
+        storage_dead(_14);
+        _12 = transmute<NonNull::<Argument::<'_>>>(move _13);
+        storage_dead(_13);
+        _5 = Arguments::<'_> { template: move _10, args: move _12 };
+        storage_dead(_12);
+        storage_dead(_10);
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        return;
+    }
+}
+
+// Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
+pub fn caller_location() -> &'_ Location::<'_>
+= <intrinsic:caller_location>
+
+// Full name: core::panicking::panic_nounwind_fmt
+#[track_caller]
+pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
+{
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
+    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _4: Arguments::<'_>; // anonymous local
+    let _5: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = copy fmt;
+        storage_live(_5);
+        _5 = copy force_no_backtrace;
+        _3 = (move _4, move _5);
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
+        unwind_terminate;
+    }
+}
+
+// Full name: core::panicking::panic_nounwind_fmt::compiletime
+#[track_caller]
+fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
+{
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
+
+    bb0: {
+        storage_live(_0);
+        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
         unwind_continue;
     }
 }

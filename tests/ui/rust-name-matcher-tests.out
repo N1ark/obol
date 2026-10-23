@@ -3,9 +3,22 @@
 
 struct () {}
 
+// Full name: test_crate::Generic::<i32>
+struct Generic::<i32> {
+  value: i32,
+}
+
+// Full name: test_crate::Generic::<&'_ str>
+struct Generic::<&'_ str> {
+  value: &'_ str,
+}
+
 struct str {
   _0: [u8],
 }
+
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::foo::bar
 #[pattern::fail("test_crate::foo::bar::_")]
@@ -30,14 +43,55 @@ fn bar()
     }
 }
 
-// Full name: test_crate::Generic::<i32>
-struct Generic::<i32> {
-  value: i32,
-}
+// Full name: test_crate::use_generic
+#[pattern::pass("test_crate::use_generic")]
+fn use_generic()
+{
+    let _0: (); // return
+    let _int_generic: Generic::<i32>; // local
+    let _str_generic: Generic::<&'_ str>; // local
+    let _3: &'_ i32; // anonymous local
+    let _4: &'_ Generic::<i32>; // anonymous local
 
-// Full name: test_crate::Generic::<&'_ str>
-struct Generic::<&'_ str> {
-  value: &'_ str,
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(_int_generic);
+        _int_generic = new::<i32>(const 42i32) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
+        storage_live(_str_generic);
+        _str_generic = new::<&'_ str>(const "hello") -> bb2 (unwind: bb5);
+    }
+
+    bb2: {
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &_int_generic;
+        _3 = get::<i32>(move _4) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        storage_dead(_4);
+        storage_dead(_3);
+        _0 = ();
+        storage_dead(_str_generic);
+        storage_dead(_int_generic);
+        return;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        unwind_continue;
+    }
 }
 
 // Full name: test_crate::{Generic::<_>}::new::<i32>
@@ -93,57 +147,6 @@ fn get::<i32>(self: &'_ Generic::<i32>) -> &'_ i32
         _0 = &(*_2);
         storage_dead(_2);
         return;
-    }
-}
-
-// Full name: test_crate::use_generic
-#[pattern::pass("test_crate::use_generic")]
-fn use_generic()
-{
-    let _0: (); // return
-    let _int_generic: Generic::<i32>; // local
-    let _str_generic: Generic::<&'_ str>; // local
-    let _3: &'_ i32; // anonymous local
-    let _4: &'_ Generic::<i32>; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        storage_live(_int_generic);
-        _int_generic = new::<i32>(const 42i32) -> bb1 (unwind: bb6);
-    }
-
-    bb1: {
-        storage_live(_str_generic);
-        _str_generic = new::<&'_ str>(const "hello") -> bb2 (unwind: bb5);
-    }
-
-    bb2: {
-        storage_live(_3);
-        storage_live(_4);
-        _4 = &_int_generic;
-        _3 = get::<i32>(move _4) -> bb3 (unwind: bb4);
-    }
-
-    bb3: {
-        storage_dead(_4);
-        storage_dead(_3);
-        _0 = ();
-        storage_dead(_str_generic);
-        storage_dead(_int_generic);
-        return;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
-        unwind_continue;
     }
 }
 

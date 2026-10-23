@@ -3,27 +3,25 @@
 
 struct () {}
 
-struct (_, _)<T0, T1> {
-  _0: T0,
-  _1: T1,
-}
-
 struct (_, _)::<u8, u16> {
   _0: u8,
   _1: u16,
 }
 
-// Full name: test_crate::{impl Fst for (A, B)}::fst::<u8, u16>
-fn fst::<u8, u16>(self: (u8, u16)) -> u8
-{
-    let _0: u8; // return
-    let self: (u8, u16); // arg #1
+struct (_, _)<T0, T1> {
+  _0: T0,
+  _1: T1,
+}
 
-    bb0: {
-        storage_live(_0);
-        _0 = move self._0;
-        return;
-    }
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::Fst
+trait Fst
+
+// Full name: test_crate::{impl Fst for (A, B)}
+impl<A, B> "impl_Fst_for_tuple" Fst for (A, B) {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::main
@@ -51,6 +49,19 @@ fn main()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+// Full name: test_crate::{impl Fst for (A, B)}::fst::<u8, u16>
+fn fst::<u8, u16>(self: (u8, u16)) -> u8
+{
+    let _0: u8; // return
+    let self: (u8, u16); // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = move self._0;
+        return;
     }
 }
 

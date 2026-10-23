@@ -3,16 +3,15 @@
 
 struct () {}
 
-// Full name: test_crate::{impl Foo for u64}::bar::<bool>
-fn bar::<bool>() -> u64
-{
-    let _0: u64; // return
+// Full name: FakeTrait
+trait FakeTrait
 
-    bb0: {
-        storage_live(_0);
-        _0 = const 0u64;
-        return;
-    }
+// Full name: test_crate::Foo
+trait Foo
+
+// Full name: test_crate::{impl Foo for u64}
+impl "impl_Foo_for_u64" Foo for u64 {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::main
@@ -36,6 +35,18 @@ fn main()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+// Full name: test_crate::{impl Foo for u64}::bar::<bool>
+fn bar::<bool>() -> u64
+{
+    let _0: u64; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = const 0u64;
+        return;
     }
 }
 

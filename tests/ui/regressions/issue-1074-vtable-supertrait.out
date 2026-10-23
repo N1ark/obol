@@ -1,30 +1,25 @@
 
 // Final ULLBC:
 
+struct () {}
+
 // Full name: test_crate::MyStruct
 pub struct MyStruct {}
 
-struct () {}
+// Full name: anon_const_0
+const anon_const_0: MyStruct = MyStruct {  }
 
-// Full name: core::ptr::drop_glue::<MyStruct>
-#[lang_item(DropGlue)]
-fn drop_glue::<MyStruct>(_1: &'_ mut MyStruct)
-{
-    let _0: (); // return
-    let _1: &'_ mut MyStruct; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
+vtable {vtable}::test_crate::MyTrait::<MyStruct>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<MyStruct>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(impl_MyTrait_for_MyStruct::foo))]
 
 // Full name: FakeTrait
 trait FakeTrait
 
-// Full name: anon_const_0
-const anon_const_0: MyStruct = MyStruct {  }
+trait test_crate::MyTrait
+
+// Full name: test_crate::{impl test_crate::MyTrait for MyStruct}
+impl "impl_MyTrait_for_MyStruct" test_crate::MyTrait for MyStruct {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
 
 // Full name: test_crate::{impl test_crate::MyTrait for MyStruct}::foo
 pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
@@ -39,8 +34,6 @@ pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
         return;
     }
 }
-
-vtable {vtable}::test_crate::MyTrait::<MyStruct>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<MyStruct>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(impl_MyTrait_for_MyStruct::foo))]
 
 // Full name: test_crate::main
 fn main()
@@ -91,6 +84,23 @@ fn main()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+pub fn test_crate::MyTrait::foo::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
+= <opaque>
+
+// Full name: core::ptr::drop_glue::<MyStruct>
+#[lang_item(DropGlue)]
+fn drop_glue::<MyStruct>(_1: &'_ mut MyStruct)
+{
+    let _0: (); // return
+    let _1: &'_ mut MyStruct; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
     }
 }
 

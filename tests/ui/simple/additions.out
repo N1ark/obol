@@ -1,64 +1,15 @@
 
 // Final ULLBC:
 
-#[rustc_intrinsic]
-pub fn core::intrinsics::saturating_add::<u8>(a_1: u8, b_2: u8) -> u8
-= <intrinsic:saturating_add>
-
-// Full name: core::num::{u8}::wrapping_add
-pub fn wrapping_add(self: u8, rhs: u8) -> u8
-{
-    let _0: u8; // return
-    let self: u8; // arg #1
-    let rhs: u8; // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = copy self wrap.+ copy rhs;
-        return;
-    }
-}
+struct () {}
 
 struct (_, _)::<u8, bool> {
   _0: u8,
   _1: bool,
 }
 
-// Full name: core::num::{u8}::overflowing_add
-pub fn overflowing_add(self: u8, rhs: u8) -> (u8, bool)
-{
-    let _0: (u8, bool); // return
-    let self: u8; // arg #1
-    let rhs: u8; // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = copy self checked.+ copy rhs;
-        return;
-    }
-}
-
-pub fn core::num::{u8}::saturating_add(self: u8, rhs: u8) -> u8
-{
-    let _0: u8; // return
-    let self: u8; // arg #1
-    let rhs: u8; // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = core::intrinsics::saturating_add::<u8>(move self, move rhs) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-}
-
-struct () {}
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::main
 fn main()
@@ -105,6 +56,58 @@ fn main()
         unwind_continue;
     }
 }
+
+// Full name: core::num::{u8}::wrapping_add
+pub fn wrapping_add(self: u8, rhs: u8) -> u8
+{
+    let _0: u8; // return
+    let self: u8; // arg #1
+    let rhs: u8; // arg #2
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy self wrap.+ copy rhs;
+        return;
+    }
+}
+
+// Full name: core::num::{u8}::overflowing_add
+pub fn overflowing_add(self: u8, rhs: u8) -> (u8, bool)
+{
+    let _0: (u8, bool); // return
+    let self: u8; // arg #1
+    let rhs: u8; // arg #2
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy self checked.+ copy rhs;
+        return;
+    }
+}
+
+pub fn core::num::{u8}::saturating_add(self: u8, rhs: u8) -> u8
+{
+    let _0: u8; // return
+    let self: u8; // arg #1
+    let rhs: u8; // arg #2
+
+    bb0: {
+        storage_live(_0);
+        _0 = core::intrinsics::saturating_add::<u8>(move self, move rhs) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
+
+#[rustc_intrinsic]
+pub fn core::intrinsics::saturating_add::<u8>(a_1: u8, b_2: u8) -> u8
+= <intrinsic:saturating_add>
 
 
 

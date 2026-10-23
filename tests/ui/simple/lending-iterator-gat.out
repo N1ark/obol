@@ -1,209 +1,7 @@
 
 // Final ULLBC:
 
-// Full name: core::fmt::Error
-pub struct Error {}
-
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
-}
-
-// Full name: FakeTrait
-trait FakeTrait
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
-}
-
 struct () {}
-
-// Full name: core::result::Result::<(), Error>
-#[diagnostic_item("Result")]
-pub enum Result::<(), Error> {
-  Ok { _0: () },
-  Err { _0: Error },
-}
-
-// Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
-pub struct NonNull::<()> {
-  pointer: *const () is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ ()> {}
-
-// Full name: core::fmt::rt::ArgumentType::<'_>
-enum ArgumentType::<'_> {
-  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
-  Count { _0: u16 },
-}
-
-// Full name: core::fmt::rt::Argument::<'_>
-#[lang_item(FormatArgument)]
-pub struct Argument::<'_> {
-  ty: ArgumentType::<'_>,
-}
-
-// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
-pub struct NonNull::<Argument::<'_>> {
-  pointer: *const Argument::<'_> is !null,
-}
-
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
-// Full name: core::ptr::drop_glue::<&'_ i32>
-#[lang_item(DropGlue)]
-fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
-{
-    let _0: (); // return
-    let _1: &'_ mut &'_ i32; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
-
-// Full name: core::fmt::num::imp::{impl Display for i32}::fmt
-pub fn impl_Display_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl UpperHex for i32}::fmt
-pub fn impl_UpperHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl LowerHex for i32}::fmt
-pub fn impl_LowerHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for i32}::fmt
-pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-{
-    let _0: Result::<(), Error>; // return
-    let self: &'_ i32; // arg #1
-    let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: bool; // anonymous local
-    let _4: bool; // anonymous local
-    let _5: u32; // anonymous local
-    let _6: u32; // anonymous local
-    let _7: u32; // anonymous local
-    let _8: u32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = copy (*f).options.flags;
-        _5 = move _6 & const 33554432u32;
-        storage_dead(_6);
-        _3 = move _5 != const 0u32;
-        storage_dead(_5);
-        if move _3 -> bb1 else -> bb3;
-    }
-
-    bb1: {
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
-        storage_live(_4);
-        storage_live(_7);
-        storage_live(_8);
-        _8 = copy (*f).options.flags;
-        _7 = move _8 & const 67108864u32;
-        storage_dead(_8);
-        _4 = move _7 != const 0u32;
-        storage_dead(_7);
-        if move _4 -> bb4 else -> bb6;
-    }
-
-    bb4: {
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
-        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb7 (unwind: bb9);
-    }
-
-    bb7: {
-        storage_dead(_4);
-        goto bb8;
-    }
-
-    bb8: {
-        storage_dead(_3);
-        return;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>
-pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-{
-    let _0: Result::<(), Error>; // return
-    let self: &'_ &'_ i32; // arg #1
-    let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: &'_ i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _3 = noretag copy (*self);
-        _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-#[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
-
-// Full name: core::option::Option::<Arguments::<'_>>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<Arguments::<'_>> {
-  None,
-  Some { _0: Arguments::<'_> },
-}
 
 // Full name: core::option::Option::<&'_ i32>
 #[lang_item(Option)]
@@ -213,71 +11,8 @@ pub enum Option::<&'_ i32> {
   Some { _0: &'_ i32 },
 }
 
-// Full name: core::panicking::AssertKind
-pub enum AssertKind {
-  Eq,
-  Ne,
-  Match,
-}
-
-// Full name: core::panicking::assert_failed_inner
-#[track_caller]
-fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
-= <missing>
-
-// Full name: core::panicking::assert_failed::<i32, i32>
-#[track_caller]
-pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32, args: Option::<Arguments::<'_>>) -> !
-{
-    let _0: !; // return
-    let kind: AssertKind; // arg #1
-    let left: &'_ i32; // arg #2
-    let right: &'_ i32; // arg #3
-    let args: Option::<Arguments::<'_>>; // arg #4
-    let _5: &'_ (dyn FakeTrait); // anonymous local
-    let _6: &'_ &'_ i32; // anonymous local
-    let _7: &'_ (dyn FakeTrait); // anonymous local
-    let _8: &'_ &'_ i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &left;
-        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
-        storage_live(_7);
-        storage_live(_8);
-        _8 = &right;
-        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
-        _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: anon_const_0
-const anon_const_0: i32 = 42i32
-
-// Full name: anon_const_1
-const anon_const_1: i32 = 42i32
-
-struct (_, _)::<i32, bool> {
-  _0: i32,
-  _1: bool,
-}
-
-struct (_,)::<&'_ mut i32> {
-  _0: &'_ mut i32,
-}
-
-struct (_,)::<&'_ i32> {
-  _0: &'_ i32,
+struct test_crate::main::{closure}::{closure} {
+  upvar_0: &'_ mut i32,
 }
 
 struct (_, _)::<&'_ i32, &'_ i32> {
@@ -285,167 +20,155 @@ struct (_, _)::<&'_ i32, &'_ i32> {
   _1: &'_ i32,
 }
 
-// Full name: test_crate::{impl LendingIterator for Option::<&'_ missing(@Type1)>}::next::<'_, i32>
-pub fn next::<'_, i32>(self: &'_ mut Option::<&'_ i32>) -> Option::<&'_ i32>
-{
-    let _0: Option::<&'_ i32>; // return
-    let self: &'_ mut Option::<&'_ i32>; // arg #1
-    let _2: isize; // anonymous local
-    let item_3: &'_ mut &'_ i32; // local
-    let item_4: &'_ i32; // local
-    let _5: Option::<&'_ i32>; // anonymous local
-    let _6: &'_ i32; // anonymous local
-    let _7: &'_ i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_7);
-        _2 = @discriminant((*self));
-        switch move _2 -> 1isize: bb1, otherwise: bb2;
-    }
-
-    bb1: {
-        storage_live(item_3);
-        item_3 = &mut ((*self) as variant Option::<&'_ i32>::Some)._0;
-        storage_live(item_4);
-        _7 = noretag copy (*item_3);
-        item_4 = &(*_7);
-        storage_live(_5);
-        _5 = Option::<&'_ i32>::None {  };
-        (*self) = move _5;
-        storage_dead(_5);
-        storage_live(_6);
-        _6 = &(*item_4);
-        _0 = Option::<&'_ i32>::Some { _0: move _6 };
-        storage_dead(_6);
-        storage_dead(item_4);
-        storage_dead(item_3);
-        goto bb3;
-    }
-
-    bb2: {
-        _0 = Option::<&'_ i32>::None {  };
-        goto bb3;
-    }
-
-    bb3: {
-        return;
-    }
+// Full name: core::panicking::AssertKind
+pub enum AssertKind {
+  Eq,
+  Ne,
+  Match,
 }
 
-struct test_crate::main::{closure}::{closure} {
-  upvar_0: &'_ mut i32,
+// Full name: core::option::Option::<Arguments::<'_>>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<Arguments::<'_>> {
+  None,
+  Some { _0: Arguments::<'_> },
 }
 
-fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mut i32,)>(_1: &'_ mut test_crate::main::{closure}::{closure}, spread_args: (&'_ i32,))
-{
-    let _0: (); // return
-    let _1: &'_ mut test_crate::main::{closure}::{closure}; // arg #1
-    let spread_args: (&'_ i32,); // arg #2
-    let item: &'_ i32; // local
-    let _4: i32; // anonymous local
-    let _5: (i32, bool); // anonymous local
-    let _6: &'_ mut i32; // anonymous local
-    let _7: &'_ mut i32; // anonymous local
-    let _8: &'_ mut i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(item);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_8);
-        _0 = ();
-        item = noretag move spread_args._0;
-        storage_live(_4);
-        _4 = copy (*item);
-        _6 = noretag copy (*_1).upvar_0;
-        _5 = copy (*_6) checked.+ copy _4;
-        _7 = noretag copy (*_1).upvar_0;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        _8 = noretag copy (*_1).upvar_0;
-        (*_8) = move _5._0;
-        _0 = ();
-        storage_dead(_4);
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
+struct (_,)::<&'_ i32> {
+  _0: &'_ i32,
 }
 
-// Full name: test_crate::for_each::<Option::<&'_ i32>, test_crate::main::{closure}::{closure}>
-pub fn for_each::<Option::<&'_ i32>, test_crate::main::{closure}::{closure}>(iter: Option::<&'_ i32>, f: test_crate::main::{closure}::{closure})
-{
-    let _0: (); // return
-    let iter: Option::<&'_ i32>; // arg #1
-    let f: test_crate::main::{closure}::{closure}; // arg #2
-    let _3: (); // anonymous local
-    let _4: Option::<&'_ i32>; // anonymous local
-    let _5: &'_ mut Option::<&'_ i32>; // anonymous local
-    let _6: isize; // anonymous local
-    let item: &'_ i32; // local
-    let _8: &'_ mut test_crate::main::{closure}::{closure}; // anonymous local
-    let _9: (&'_ i32,); // anonymous local
-    let _10: &'_ i32; // anonymous local
+struct (_,)::<&'_ mut i32> {
+  _0: &'_ mut i32,
+}
 
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_6);
-        _0 = ();
-        goto bb1;
-    }
+struct (_, _)::<i32, bool> {
+  _0: i32,
+  _1: bool,
+}
 
-    bb1: {
-        storage_live(_4);
-        storage_live(_5);
-        _5 = &two-phase-mut iter;
-        _4 = next::<'_, i32>(move _5) -> bb2 (unwind: bb6);
-    }
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
 
-    bb2: {
-        storage_dead(_5);
-        _6 = @discriminant(_4);
-        switch move _6 -> 1isize: bb3, otherwise: bb5;
-    }
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
 
-    bb3: {
-        storage_live(item);
-        item = move (_4 as variant Option::<&'_ i32>::Some)._0;
-        storage_live(_8);
-        _8 = &mut f;
-        storage_live(_9);
-        storage_live(_10);
-        _10 = move item;
-        _9 = (move _10,);
-        _3 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mut i32,)>(move _8, move _9) -> bb4 (unwind: bb6);
-    }
+// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[lang_item(NonNull)]
+pub struct NonNull::<Argument::<'_>> {
+  pointer: *const Argument::<'_> is !null,
+}
 
-    bb4: {
-        storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(_8);
-        storage_dead(item);
-        storage_dead(_4);
-        goto bb1;
-    }
+// Full name: core::fmt::rt::Argument::<'_>
+#[lang_item(FormatArgument)]
+pub struct Argument::<'_> {
+  ty: ArgumentType::<'_>,
+}
 
-    bb5: {
-        _0 = ();
-        storage_dead(_4);
-        return;
-    }
+// Full name: core::fmt::rt::ArgumentType::<'_>
+enum ArgumentType::<'_> {
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
+}
 
-    bb6: {
-        unwind_continue;
-    }
+// Full name: core::ptr::non_null::NonNull::<()>
+#[lang_item(NonNull)]
+pub struct NonNull::<()> {
+  pointer: *const () is !null,
+}
+
+// Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
+pub struct Formatter::<'_> {
+  options: FormattingOptions,
+  buf: &'_ mut (dyn FakeTrait),
+}
+
+// Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
+pub enum Result::<(), Error> {
+  Ok { _0: () },
+  Err { _0: Error },
+}
+
+// Full name: core::marker::PhantomData::<&'_ ()>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ ()> {}
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+// Full name: anon_const_0
+const anon_const_0: i32 = 42i32
+
+// Full name: anon_const_1
+const anon_const_1: i32 = 42i32
+
+#[diagnostic_item("Debug")]
+vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::LendingIterator
+trait LendingIterator
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
+
+// Full name: core::fmt::LowerHex
+trait LowerHex
+
+// Full name: core::fmt::UpperHex
+trait UpperHex
+
+// Full name: core::fmt::Display
+#[diagnostic_item("Display")]
+trait Display
+
+// Full name: test_crate::{impl LendingIterator for Option::<&'_ missing(@Type1)>}
+impl<'a, _, T> LendingIterator for Option::<&'_ missing(@Type1)> {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
+impl<'_, _, T> core::fmt::Debug for &'_ T {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl core::fmt::Debug for i32}
+impl "impl_Debug_for_i32" core::fmt::Debug for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl LowerHex for i32}
+impl "impl_LowerHex_for_i32" LowerHex for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl UpperHex for i32}
+impl "impl_UpperHex_for_i32" UpperHex for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::imp::{impl Display for i32}
+impl "impl_Display_for_i32" Display for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::main
@@ -584,6 +307,329 @@ pub fn main()
         unwind_continue;
     }
 }
+
+// Full name: test_crate::for_each::<Option::<&'_ i32>, test_crate::main::{closure}::{closure}>
+pub fn for_each::<Option::<&'_ i32>, test_crate::main::{closure}::{closure}>(iter: Option::<&'_ i32>, f: test_crate::main::{closure}::{closure})
+{
+    let _0: (); // return
+    let iter: Option::<&'_ i32>; // arg #1
+    let f: test_crate::main::{closure}::{closure}; // arg #2
+    let _3: (); // anonymous local
+    let _4: Option::<&'_ i32>; // anonymous local
+    let _5: &'_ mut Option::<&'_ i32>; // anonymous local
+    let _6: isize; // anonymous local
+    let item: &'_ i32; // local
+    let _8: &'_ mut test_crate::main::{closure}::{closure}; // anonymous local
+    let _9: (&'_ i32,); // anonymous local
+    let _10: &'_ i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_6);
+        _0 = ();
+        goto bb1;
+    }
+
+    bb1: {
+        storage_live(_4);
+        storage_live(_5);
+        _5 = &two-phase-mut iter;
+        _4 = next::<'_, i32>(move _5) -> bb2 (unwind: bb6);
+    }
+
+    bb2: {
+        storage_dead(_5);
+        _6 = @discriminant(_4);
+        switch move _6 -> 1isize: bb3, otherwise: bb5;
+    }
+
+    bb3: {
+        storage_live(item);
+        item = move (_4 as variant Option::<&'_ i32>::Some)._0;
+        storage_live(_8);
+        _8 = &mut f;
+        storage_live(_9);
+        storage_live(_10);
+        _10 = move item;
+        _9 = (move _10,);
+        _3 = test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mut i32,)>(move _8, move _9) -> bb4 (unwind: bb6);
+    }
+
+    bb4: {
+        storage_dead(_10);
+        storage_dead(_9);
+        storage_dead(_8);
+        storage_dead(item);
+        storage_dead(_4);
+        goto bb1;
+    }
+
+    bb5: {
+        _0 = ();
+        storage_dead(_4);
+        return;
+    }
+
+    bb6: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::panicking::assert_failed::<i32, i32>
+#[track_caller]
+pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32, args: Option::<Arguments::<'_>>) -> !
+{
+    let _0: !; // return
+    let kind: AssertKind; // arg #1
+    let left: &'_ i32; // arg #2
+    let right: &'_ i32; // arg #3
+    let args: Option::<Arguments::<'_>>; // arg #4
+    let _5: &'_ (dyn FakeTrait); // anonymous local
+    let _6: &'_ &'_ i32; // anonymous local
+    let _7: &'_ (dyn FakeTrait); // anonymous local
+    let _8: &'_ &'_ i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &left;
+        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = &right;
+        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
+        _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: test_crate::{impl LendingIterator for Option::<&'_ missing(@Type1)>}::next::<'_, i32>
+pub fn next::<'_, i32>(self: &'_ mut Option::<&'_ i32>) -> Option::<&'_ i32>
+{
+    let _0: Option::<&'_ i32>; // return
+    let self: &'_ mut Option::<&'_ i32>; // arg #1
+    let _2: isize; // anonymous local
+    let item_3: &'_ mut &'_ i32; // local
+    let item_4: &'_ i32; // local
+    let _5: Option::<&'_ i32>; // anonymous local
+    let _6: &'_ i32; // anonymous local
+    let _7: &'_ i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_7);
+        _2 = @discriminant((*self));
+        switch move _2 -> 1isize: bb1, otherwise: bb2;
+    }
+
+    bb1: {
+        storage_live(item_3);
+        item_3 = &mut ((*self) as variant Option::<&'_ i32>::Some)._0;
+        storage_live(item_4);
+        _7 = noretag copy (*item_3);
+        item_4 = &(*_7);
+        storage_live(_5);
+        _5 = Option::<&'_ i32>::None {  };
+        (*self) = move _5;
+        storage_dead(_5);
+        storage_live(_6);
+        _6 = &(*item_4);
+        _0 = Option::<&'_ i32>::Some { _0: move _6 };
+        storage_dead(_6);
+        storage_dead(item_4);
+        storage_dead(item_3);
+        goto bb3;
+    }
+
+    bb2: {
+        _0 = Option::<&'_ i32>::None {  };
+        goto bb3;
+    }
+
+    bb3: {
+        return;
+    }
+}
+
+fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mut i32,)>(_1: &'_ mut test_crate::main::{closure}::{closure}, spread_args: (&'_ i32,))
+{
+    let _0: (); // return
+    let _1: &'_ mut test_crate::main::{closure}::{closure}; // arg #1
+    let spread_args: (&'_ i32,); // arg #2
+    let item: &'_ i32; // local
+    let _4: i32; // anonymous local
+    let _5: (i32, bool); // anonymous local
+    let _6: &'_ mut i32; // anonymous local
+    let _7: &'_ mut i32; // anonymous local
+    let _8: &'_ mut i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(item);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_8);
+        _0 = ();
+        item = noretag move spread_args._0;
+        storage_live(_4);
+        _4 = copy (*item);
+        _6 = noretag copy (*_1).upvar_0;
+        _5 = copy (*_6) checked.+ copy _4;
+        _7 = noretag copy (*_1).upvar_0;
+        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        _8 = noretag copy (*_1).upvar_0;
+        (*_8) = move _5._0;
+        _0 = ();
+        storage_dead(_4);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::panicking::assert_failed_inner
+#[track_caller]
+fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
+= <missing>
+
+// Full name: core::ptr::drop_glue::<&'_ i32>
+#[lang_item(DropGlue)]
+fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
+{
+    let _0: (); // return
+    let _1: &'_ mut &'_ i32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
+    }
+}
+
+// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>
+pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+{
+    let _0: Result::<(), Error>; // return
+    let self: &'_ &'_ i32; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
+    let _3: &'_ i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = noretag copy (*self);
+        _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::fmt::num::{impl core::fmt::Debug for i32}::fmt
+pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+{
+    let _0: Result::<(), Error>; // return
+    let self: &'_ i32; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
+    let _3: bool; // anonymous local
+    let _4: bool; // anonymous local
+    let _5: u32; // anonymous local
+    let _6: u32; // anonymous local
+    let _7: u32; // anonymous local
+    let _8: u32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = copy (*f).options.flags;
+        _5 = move _6 & const 33554432u32;
+        storage_dead(_6);
+        _3 = move _5 != const 0u32;
+        storage_dead(_5);
+        if move _3 -> bb1 else -> bb3;
+    }
+
+    bb1: {
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
+        storage_live(_4);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = copy (*f).options.flags;
+        _7 = move _8 & const 67108864u32;
+        storage_dead(_8);
+        _4 = move _7 != const 0u32;
+        storage_dead(_7);
+        if move _4 -> bb4 else -> bb6;
+    }
+
+    bb4: {
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
+    }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb7 (unwind: bb9);
+    }
+
+    bb7: {
+        storage_dead(_4);
+        goto bb8;
+    }
+
+    bb8: {
+        storage_dead(_3);
+        return;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::fmt::num::{impl LowerHex for i32}::fmt
+pub fn impl_LowerHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
+
+// Full name: core::fmt::num::{impl UpperHex for i32}::fmt
+pub fn impl_UpperHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
+
+// Full name: core::fmt::num::imp::{impl Display for i32}::fmt
+pub fn impl_Display_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
 
 
 

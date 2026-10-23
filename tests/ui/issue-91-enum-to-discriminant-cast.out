@@ -9,6 +9,26 @@ enum Foo {
   B,
 }
 
+// Full name: test_crate::Ordering
+enum Ordering {
+  Less,
+  Equal,
+  Greater,
+}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::clone::Clone
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
+trait Clone
+
+// Full name: test_crate::{impl Clone for Foo}
+impl "impl_Clone_for_Foo" Clone for Foo {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
 // Full name: test_crate::{impl Clone for Foo}::clone
 #[inline(hint)]
 pub fn clone(self: &'_ Foo) -> Foo
@@ -21,13 +41,6 @@ pub fn clone(self: &'_ Foo) -> Foo
         _0 = copy (*self);
         return;
     }
-}
-
-// Full name: test_crate::Ordering
-enum Ordering {
-  Less,
-  Equal,
-  Greater,
 }
 
 // Full name: test_crate::main

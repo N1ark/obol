@@ -1,309 +1,18 @@
 
 // Final ULLBC:
 
-// Full name: core::fmt::Error
-pub struct Error {}
-
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
-}
-
-// Full name: FakeTrait
-trait FakeTrait
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub struct Formatter::<'_> {
-  options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
-}
-
 struct () {}
 
-// Full name: core::result::Result::<(), Error>
-#[diagnostic_item("Result")]
-pub enum Result::<(), Error> {
-  Ok { _0: () },
-  Err { _0: Error },
+struct (_, _)::<&'_ i32, &'_ i32> {
+  _0: &'_ i32,
+  _1: &'_ i32,
 }
 
-// Full name: core::ptr::non_null::NonNull::<()>
-#[lang_item(NonNull)]
-pub struct NonNull::<()> {
-  pointer: *const () is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ ()>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ ()> {}
-
-// Full name: core::fmt::rt::ArgumentType::<'_>
-enum ArgumentType::<'_> {
-  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
-  Count { _0: u16 },
-}
-
-// Full name: core::fmt::rt::Argument::<'_>
-#[lang_item(FormatArgument)]
-pub struct Argument::<'_> {
-  ty: ArgumentType::<'_>,
-}
-
-// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
-pub struct NonNull::<Argument::<'_>> {
-  pointer: *const Argument::<'_> is !null,
-}
-
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
-struct str {
-  _0: [u8],
-}
-
-// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
-{
-    let _0: Arguments::<'_>; // return
-    let s: &'_ str; // arg #1
-    let _2: NonNull::<u8>; // anonymous local
-    let _3: *const u8; // anonymous local
-    let _4: NonNull::<Argument::<'_>>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const str; // anonymous local
-    let _9: &'_ [u8]; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_8);
-        _8 = &raw const (*s) with_metadata(copy s.metadata);
-        _3 = cast<*const u8>(copy _8);
-        storage_dead(_8);
-        _2 = transmute<NonNull::<u8>>(copy _3);
-        storage_dead(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_9);
-        _9 = transmute<&'_ [u8]>(copy s);
-        _7 = noretag copy _9.metadata;
-        storage_dead(_9);
-        _6 = move _7 wrap.<< const 1i32;
-        storage_dead(_7);
-        _5 = move _6 | const 1usize;
-        storage_dead(_6);
-        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
-        storage_dead(_5);
-        _0 = Arguments::<'_> { template: move _2, args: move _4 };
-        storage_dead(_4);
-        storage_dead(_2);
-        return;
-    }
-}
-
-// Full name: core::ptr::drop_glue::<&'_ i32>
-#[lang_item(DropGlue)]
-fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
-{
-    let _0: (); // return
-    let _1: &'_ mut &'_ i32; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
-
-// Full name: core::fmt::num::imp::{impl Display for i32}::fmt
-pub fn impl_Display_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl UpperHex for i32}::fmt
-pub fn impl_UpperHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl LowerHex for i32}::fmt
-pub fn impl_LowerHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl core::fmt::Debug for i32}::fmt
-pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-{
-    let _0: Result::<(), Error>; // return
-    let self: &'_ i32; // arg #1
-    let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: bool; // anonymous local
-    let _4: bool; // anonymous local
-    let _5: u32; // anonymous local
-    let _6: u32; // anonymous local
-    let _7: u32; // anonymous local
-    let _8: u32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = copy (*f).options.flags;
-        _5 = move _6 & const 33554432u32;
-        storage_dead(_6);
-        _3 = move _5 != const 0u32;
-        storage_dead(_5);
-        if move _3 -> bb1 else -> bb3;
-    }
-
-    bb1: {
-        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-
-    bb3: {
-        storage_live(_4);
-        storage_live(_7);
-        storage_live(_8);
-        _8 = copy (*f).options.flags;
-        _7 = move _8 & const 67108864u32;
-        storage_dead(_8);
-        _4 = move _7 != const 0u32;
-        storage_dead(_7);
-        if move _4 -> bb4 else -> bb6;
-    }
-
-    bb4: {
-        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
-        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb7 (unwind: bb9);
-    }
-
-    bb7: {
-        storage_dead(_4);
-        goto bb8;
-    }
-
-    bb8: {
-        storage_dead(_3);
-        return;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>
-pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-{
-    let _0: Result::<(), Error>; // return
-    let self: &'_ &'_ i32; // arg #1
-    let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: &'_ i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        _3 = noretag copy (*self);
-        _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-#[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
-
-// Full name: core::intrinsics::abort
-#[rustc_intrinsic]
-pub fn abort() -> !
-= <intrinsic:abort>
-
-// Full name: core::intrinsics::cold_path
-#[miri::intrinsic_fallback_is_spec]
-#[rustc_intrinsic]
-pub fn cold_path()
-= <intrinsic:cold_path>
-
-// Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
-pub struct NonNull::<str> {
-  pointer: *const str is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ str> {}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::intrinsics::caller_location
-#[rustc_intrinsic]
-pub fn caller_location() -> &'_ Location::<'_>
-= <intrinsic:caller_location>
-
-// Full name: core::intrinsics::ctpop::<usize>
-#[rustc_intrinsic]
-pub fn ctpop::<usize>(x_1: usize) -> u32
-= <intrinsic:ctpop>
-
-#[rustc_intrinsic]
-pub fn core::intrinsics::copy_nonoverlapping::<i32>(src_1: *const i32, dst_2: *mut i32, count_3: usize)
-= <intrinsic:copy_nonoverlapping>
-
-// Full name: core::mem::SizedTypeProperties::SIZE::<i32>
-#[lang_item(SizeOf)]
-pub const SIZE::<i32>: usize = 4usize
-
-// Full name: core::mem::SizedTypeProperties::ALIGN::<i32>
-#[lang_item(AlignOf)]
-pub const ALIGN::<i32>: usize = 4usize
-
-// Full name: core::option::Option::<usize>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<usize> {
-  None,
-  Some { _0: usize },
+// Full name: core::panicking::AssertKind
+pub enum AssertKind {
+  Eq,
+  Ne,
+  Match,
 }
 
 // Full name: core::option::Option::<Arguments::<'_>>
@@ -314,24 +23,45 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
-// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
-#[track_caller]
-pub fn caller::<'_>() -> &'_ Location::<'_>
-{
-    let _0: &'_ Location::<'_>; // return
+struct str {
+  _0: [u8],
+}
 
-    bb0: {
-        storage_live(_0);
-        _0 = caller_location() -> bb1 (unwind: bb2);
-    }
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
 
-    bb1: {
-        return;
-    }
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
 
-    bb2: {
-        undefined_behavior;
-    }
+// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[lang_item(NonNull)]
+pub struct NonNull::<Argument::<'_>> {
+  pointer: *const Argument::<'_> is !null,
+}
+
+struct (_, _)::<Arguments::<'_>, bool> {
+  _0: Arguments::<'_>,
+  _1: bool,
+}
+
+// Full name: core::option::Option::<usize>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<usize> {
+  None,
+  Some { _0: usize },
+}
+
+struct (_, _)::<u64, bool> {
+  _0: u64,
+  _1: bool,
 }
 
 // Full name: core::panic::panic_info::PanicInfo::<'_>
@@ -343,214 +73,316 @@ pub struct PanicInfo::<'_> {
   force_no_backtrace: bool,
 }
 
-// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
-{
-    let _0: PanicInfo::<'_>; // return
-    let message: &'_ Arguments::<'_>; // arg #1
-    let location: &'_ Location::<'_>; // arg #2
-    let can_unwind: bool; // arg #3
-    let force_no_backtrace: bool; // arg #4
-
-    bb0: {
-        storage_live(_0);
-        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        return;
-    }
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
 }
 
-// Full name: core::panicking::panic_fmt::panic_impl
-#[lang_item(PanicImpl)]
-extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
-= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
+}
 
-// Full name: core::panicking::panic_fmt
-#[track_caller]
-#[lang_item(PanicFmt)]
-pub fn panic_fmt(fmt: Arguments::<'_>) -> !
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
+
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+// Full name: core::fmt::rt::Argument::<'_>
+#[lang_item(FormatArgument)]
+pub struct Argument::<'_> {
+  ty: ArgumentType::<'_>,
+}
+
+// Full name: core::ptr::non_null::NonNull::<str>
+#[lang_item(NonNull)]
+pub struct NonNull::<str> {
+  pointer: *const str is !null,
+}
+
+// Full name: core::marker::PhantomData::<&'_ str>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ str> {}
+
+// Full name: core::fmt::rt::ArgumentType::<'_>
+enum ArgumentType::<'_> {
+  Placeholder { value: NonNull::<()>, formatter: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>, _lifetime: PhantomData::<&'_ ()> },
+  Count { _0: u16 },
+}
+
+// Full name: core::ptr::non_null::NonNull::<()>
+#[lang_item(NonNull)]
+pub struct NonNull::<()> {
+  pointer: *const () is !null,
+}
+
+// Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
+pub struct Formatter::<'_> {
+  options: FormattingOptions,
+  buf: &'_ mut (dyn FakeTrait),
+}
+
+// Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
+pub enum Result::<(), Error> {
+  Ok { _0: () },
+  Err { _0: Error },
+}
+
+// Full name: core::marker::PhantomData::<&'_ ()>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ ()> {}
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+// Full name: anon_const_0
+const anon_const_0: i32 = 42i32
+
+// Full name: anon_const_1
+const anon_const_1: i32 = 42i32
+
+#[diagnostic_item("Debug")]
+vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
+
+// Full name: core::mem::SizedTypeProperties::SIZE::<i32>
+#[lang_item(SizeOf)]
+pub const SIZE::<i32>: usize = 4usize
+
+// Full name: core::mem::SizedTypeProperties::ALIGN::<i32>
+#[lang_item(AlignOf)]
+pub const ALIGN::<i32>: usize = 4usize
+
+// Full name: FakeTrait
+trait FakeTrait
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
+
+// Full name: core::fmt::LowerHex
+trait LowerHex
+
+// Full name: core::fmt::UpperHex
+trait UpperHex
+
+// Full name: core::fmt::Display
+#[diagnostic_item("Display")]
+trait Display
+
+// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
+impl<'_, _, T> core::fmt::Debug for &'_ T {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl core::fmt::Debug for i32}
+impl "impl_Debug_for_i32" core::fmt::Debug for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl LowerHex for i32}
+impl "impl_LowerHex_for_i32" LowerHex for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl UpperHex for i32}
+impl "impl_UpperHex_for_i32" UpperHex for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::imp::{impl Display for i32}
+impl "impl_Display_for_i32" Display for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: test_crate::main
+fn main()
 {
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: !; // anonymous local
-    let pi: PanicInfo::<'_>; // local
-    let _5: &'_ Arguments::<'_>; // anonymous local
-    let _6: &'_ Arguments::<'_>; // anonymous local
-    let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ PanicInfo::<'_>; // anonymous local
-    let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let _0: (); // return
+    let x: i32; // local
+    let _2: (); // anonymous local
+    let _3: &'_ mut i32; // anonymous local
+    let _4: &'_ mut i32; // anonymous local
+    let _5: &'_ i32; // anonymous local
+    let _6: &'_ i32; // anonymous local
+    let _7: (&'_ i32, &'_ i32); // anonymous local
+    let _8: &'_ i32; // anonymous local
+    let _9: &'_ i32; // anonymous local
+    let left_val: &'_ i32; // local
+    let right_val: &'_ i32; // local
+    let _12: bool; // anonymous local
+    let _13: i32; // anonymous local
+    let _14: i32; // anonymous local
+    let kind: AssertKind; // local
+    let _16: !; // anonymous local
+    let _17: AssertKind; // anonymous local
+    let _18: &'_ i32; // anonymous local
+    let _19: &'_ i32; // anonymous local
+    let _20: &'_ i32; // anonymous local
+    let _21: &'_ i32; // anonymous local
+    let _22: Option::<Arguments::<'_>>; // anonymous local
+    let _23: &'_ i32; // anonymous local
+    let _24: &'_ i32; // anonymous local
+    let _25: &'_ i32; // anonymous local
+    let _26: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_23);
+        storage_live(_24);
+        _0 = ();
+        storage_live(x);
+        x = const 0i32;
         storage_live(_2);
-        _2 = const false;
-        if move _2 -> bb1 else -> bb4;
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &mut x;
+        _3 = &two-phase-mut (*_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_25);
+        _25 = &anon_const_0;
+        _24 = move _25;
+        _6 = &(*_24);
+        _5 = &(*_6);
+        _2 = write::<i32>(move _3, move _5) -> bb1 (unwind: bb6);
     }
 
     bb1: {
-        storage_live(_3);
-        _3 = abort() -> bb2 (unwind: bb3);
+        storage_dead(_5);
+        storage_dead(_3);
+        storage_dead(_6);
+        storage_dead(_4);
+        storage_dead(_2);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = &x;
+        storage_live(_9);
+        storage_live(_26);
+        _26 = &anon_const_1;
+        _23 = move _26;
+        _9 = &(*_23);
+        _7 = (move _8, move _9);
+        storage_dead(_9);
+        storage_dead(_8);
+        storage_live(left_val);
+        left_val = copy _7._0;
+        storage_live(right_val);
+        right_val = copy _7._1;
+        storage_live(_12);
+        storage_live(_13);
+        _13 = copy (*left_val);
+        storage_live(_14);
+        _14 = copy (*right_val);
+        _12 = move _13 == move _14;
+        if move _12 -> bb2 else -> bb3;
     }
 
     bb2: {
-        undefined_behavior;
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_dead(_12);
+        storage_dead(right_val);
+        storage_dead(left_val);
+        storage_dead(_7);
+        _0 = ();
+        storage_dead(x);
+        return;
     }
 
     bb3: {
-        undefined_behavior;
+        storage_dead(_14);
+        storage_dead(_13);
+        storage_live(kind);
+        kind = AssertKind::Eq {  };
+        storage_live(_16);
+        storage_live(_17);
+        _17 = move kind;
+        storage_live(_18);
+        storage_live(_19);
+        _19 = &(*left_val);
+        _18 = &(*_19);
+        storage_live(_20);
+        storage_live(_21);
+        _21 = &(*right_val);
+        _20 = &(*_21);
+        storage_live(_22);
+        _22 = Option::<Arguments::<'_>>::None {  };
+        _16 = assert_failed::<i32, i32>(move _17, move _18, move _20, move _22) -> bb4 (unwind: bb5);
     }
 
     bb4: {
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
-        storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb10);
+        undefined_behavior;
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
+        unwind_continue;
     }
 
     bb6: {
-        storage_dead(_7);
-        storage_dead(_5);
-        storage_dead(_6);
-        storage_live(_8);
-        storage_live(_9);
-        _9 = &pi;
-        _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
         unwind_continue;
     }
 }
 
-struct (_, _)::<Arguments::<'_>, bool> {
-  _0: Arguments::<'_>,
-  _1: bool,
-}
-
-// Full name: core::panicking::panic_nounwind_fmt::compiletime
-#[track_caller]
-fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
+// Full name: test_crate::write::<i32>
+fn write::<i32>(x: &'_ mut i32, y: &'_ i32)
 {
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let force_no_backtrace: bool; // arg #2
+    let _0: (); // return
+    let x: &'_ mut i32; // arg #1
+    let y: &'_ i32; // arg #2
+    let _3: (); // anonymous local
+    let _4: *const i32; // anonymous local
+    let _5: *mut i32; // anonymous local
 
     bb0: {
         storage_live(_0);
-        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::panicking::panic_nounwind_fmt
-#[track_caller]
-pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
-{
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
+        _0 = ();
         storage_live(_3);
         storage_live(_4);
-        _4 = copy fmt;
+        _4 = &raw const (*y);
         storage_live(_5);
-        _5 = copy force_no_backtrace;
-        _3 = (move _4, move _5);
+        _5 = &raw mut (*x);
+        _3 = core::ptr::copy_nonoverlapping::<i32>(move _4, move _5, const 1usize) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         storage_dead(_5);
         storage_dead(_4);
-        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_terminate;
-    }
-}
-
-// Full name: core::panicking::panic_nounwind
-#[lang_item(PanicNounwind)]
-pub fn panic_nounwind(expr: &'_ str) -> !
-{
-    let _0: !; // return
-    let expr: &'_ str; // arg #1
-    let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_4);
-        _4 = copy expr;
-        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
-    }
-
-    bb1: {
-        storage_dead(_4);
-        _2 = panic_nounwind_fmt(move _3, const false) -> bb2 (unwind: bb3);
+        storage_dead(_3);
+        _0 = ();
+        return;
     }
 
     bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        unwind_terminate;
+        unwind_continue;
     }
 }
-
-// Full name: core::panicking::AssertKind
-pub enum AssertKind {
-  Eq,
-  Ne,
-  Match,
-}
-
-// Full name: core::panicking::assert_failed_inner
-#[track_caller]
-fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
-= <missing>
 
 // Full name: core::panicking::assert_failed::<i32, i32>
 #[track_caller]
@@ -588,174 +420,41 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
     }
 }
 
-// Full name: core::ptr::const_ptr::{*const T}::is_aligned_to::<()>
-pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
+#[diagnostic_item("ptr_copy_nonoverlapping")]
+pub fn core::ptr::copy_nonoverlapping::<i32>(src: *const i32, dst: *mut i32, count: usize)
 {
-    let _0: bool; // return
-    let self: *const (); // arg #1
-    let align: usize; // arg #2
-    let _3: bool; // anonymous local
-    let _4: !; // anonymous local
-    let _5: Arguments::<'_>; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: u32; // anonymous local
-    let _10: *const (); // anonymous local
-    let s: &'_ str; // local
-    let _12: NonNull::<u8>; // anonymous local
-    let _13: *const u8; // anonymous local
-    let _14: NonNull::<Argument::<'_>>; // anonymous local
-    let _15: usize; // anonymous local
-    let _16: usize; // anonymous local
-    let _17: usize; // anonymous local
-    let _18: *const str; // anonymous local
-    let _19: &'_ [u8]; // anonymous local
+    let _0: (); // return
+    let src: *const i32; // arg #1
+    let dst: *mut i32; // arg #2
+    let count: usize; // arg #3
+    let _4: (); // anonymous local
+    let _5: *const (); // anonymous local
+    let _6: *mut (); // anonymous local
+    let _7: bool; // anonymous local
+    let _8: (); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_4);
-        storage_live(_3);
-        storage_live(_9);
-        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb6);
-    }
-
-    bb1: {
-        _3 = move _9 == const 1u32;
-        storage_dead(_9);
-        if move _3 -> bb2 else -> bb3;
-    }
-
-    bb2: {
-        storage_dead(_3);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_10);
-        _10 = cast<*const ()>(copy self);
-        _7 = transmute<usize>(copy _10);
-        storage_dead(_10);
         storage_live(_8);
-        _8 = copy align wrap.- const 1usize;
-        _6 = move _7 & move _8;
-        storage_dead(_8);
-        storage_dead(_7);
-        _0 = move _6 == const 0usize;
-        storage_dead(_6);
-        return;
-    }
-
-    bb3: {
-        storage_live(_5);
-        storage_live(s);
-        s = const "is_aligned_to: align is not a power-of-two";
-        storage_live(_12);
-        storage_live(_13);
-        storage_live(_18);
-        _18 = &raw const (*s) with_metadata(copy s.metadata);
-        _13 = cast<*const u8>(copy _18);
-        storage_dead(_18);
-        _12 = transmute<NonNull::<u8>>(copy _13);
-        storage_dead(_13);
-        storage_live(_14);
-        storage_live(_15);
-        storage_live(_16);
-        storage_live(_17);
-        storage_live(_19);
-        _19 = transmute<&'_ [u8]>(const "is_aligned_to: align is not a power-of-two");
-        _17 = noretag copy _19.metadata;
-        storage_dead(_19);
-        _16 = move _17 wrap.<< const 1i32;
-        storage_dead(_17);
-        _15 = move _16 | const 1usize;
-        storage_dead(_16);
-        _14 = transmute<NonNull::<Argument::<'_>>>(move _15);
-        storage_dead(_15);
-        _5 = Arguments::<'_> { template: move _12, args: move _14 };
-        storage_dead(_14);
-        storage_dead(_12);
-        storage_dead(s);
-        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
-    }
-
-    bb4: {
-        undefined_behavior;
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
-        undefined_behavior;
-    }
-}
-
-struct (_, _)::<u64, bool> {
-  _0: u64,
-  _1: bool,
-}
-
-// Full name: core::ub_checks::maybe_is_nonoverlapping::runtime
-fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
-{
-    let _0: bool; // return
-    let src: *const (); // arg #1
-    let dst: *const (); // arg #2
-    let size_3: usize; // arg #3
-    let count: usize; // arg #4
-    let src_usize: usize; // local
-    let dst_usize: usize; // local
-    let _7: !; // anonymous local
-    let size_8: usize; // local
-    let _9: Option::<usize>; // anonymous local
-    let diff: usize; // local
-    let _11: u64; // anonymous local
-    let b: bool; // local
-    let _13: (u64, bool); // anonymous local
-    let _14: u64; // anonymous local
-    let _15: u64; // anonymous local
-    let a: usize; // local
-    let _17: (); // anonymous local
-    let _18: bool; // anonymous local
-
-    bb0: {
-        storage_live(_0);
+        _0 = ();
         storage_live(_7);
-        storage_live(diff);
-        storage_live(_17);
-        storage_live(src_usize);
-        src_usize = transmute<usize>(copy src);
-        storage_live(dst_usize);
-        dst_usize = transmute<usize>(copy dst);
-        storage_live(_9);
-        storage_live(b);
-        storage_live(a);
-        storage_live(_13);
-        storage_live(_14);
-        _14 = cast<u64>(copy size_3);
-        storage_live(_15);
-        _15 = cast<u64>(copy count);
-        _13 = move _14 checked.* move _15;
-        storage_dead(_15);
-        storage_dead(_14);
-        storage_live(_11);
-        _11 = copy _13._0;
-        b = copy _13._1;
-        storage_dead(_13);
-        a = cast<usize>(copy _11);
-        storage_dead(_11);
-        if copy b -> bb1 else -> bb6;
+        _7 = ub_checks;
+        if move _7 -> bb1 else -> bb4;
     }
 
     bb1: {
-        _17 = cold_path() -> bb2 (unwind: bb5);
+        storage_live(_5);
+        _5 = cast<*const ()>(copy src);
+        storage_live(_6);
+        _6 = cast<*mut ()>(copy dst);
+        _4 = precondition_check(move _5, move _6, copy SIZE::<i32>, copy ALIGN::<i32>, copy count) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(a);
-        storage_dead(b);
-        storage_dead(_9);
-        _7 = panic_nounwind(const "is_nonoverlapping: `size_of::<T>() * count` overflows a usize") -> bb3 (unwind: bb4);
+        storage_dead(_6);
+        storage_dead(_5);
+        goto bb4;
     }
 
     bb3: {
@@ -763,44 +462,22 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
     }
 
     bb4: {
-        undefined_behavior;
+        _8 = core::intrinsics::copy_nonoverlapping::<i32>(copy src, copy dst, copy count) -> bb5 (unwind: bb6);
     }
 
     bb5: {
-        undefined_behavior;
+        return;
     }
 
     bb6: {
-        _9 = Option::<usize>::Some { _0: copy a };
-        storage_dead(a);
-        storage_dead(b);
-        storage_live(size_8);
-        size_8 = copy (_9 as variant Option::<usize>::Some)._0;
-        storage_dead(_9);
-        storage_live(_18);
-        _18 = copy src_usize < copy dst_usize;
-        if move _18 -> bb7 else -> bb8;
-    }
-
-    bb7: {
-        diff = copy dst_usize wrap.- copy src_usize;
-        goto bb9;
-    }
-
-    bb8: {
-        diff = copy src_usize wrap.- copy dst_usize;
-        goto bb9;
-    }
-
-    bb9: {
-        storage_dead(_18);
-        _0 = move diff >= copy size_8;
-        storage_dead(size_8);
-        storage_dead(dst_usize);
-        storage_dead(src_usize);
-        return;
+        undefined_behavior;
     }
 }
+
+// Full name: core::panicking::assert_failed_inner
+#[track_caller]
+fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
+= <missing>
 
 // Full name: core::ptr::copy_nonoverlapping::precondition_check
 #[track_caller]
@@ -1025,53 +702,105 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
     }
 }
 
-#[diagnostic_item("ptr_copy_nonoverlapping")]
-pub fn core::ptr::copy_nonoverlapping::<i32>(src: *const i32, dst: *mut i32, count: usize)
+#[rustc_intrinsic]
+pub fn core::intrinsics::copy_nonoverlapping::<i32>(src_1: *const i32, dst_2: *mut i32, count_3: usize)
+= <intrinsic:copy_nonoverlapping>
+
+// Full name: core::ptr::const_ptr::{*const T}::is_aligned_to::<()>
+pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
 {
-    let _0: (); // return
-    let src: *const i32; // arg #1
-    let dst: *mut i32; // arg #2
-    let count: usize; // arg #3
-    let _4: (); // anonymous local
-    let _5: *const (); // anonymous local
-    let _6: *mut (); // anonymous local
-    let _7: bool; // anonymous local
-    let _8: (); // anonymous local
+    let _0: bool; // return
+    let self: *const (); // arg #1
+    let align: usize; // arg #2
+    let _3: bool; // anonymous local
+    let _4: !; // anonymous local
+    let _5: Arguments::<'_>; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: usize; // anonymous local
+    let _9: u32; // anonymous local
+    let _10: *const (); // anonymous local
+    let s: &'_ str; // local
+    let _12: NonNull::<u8>; // anonymous local
+    let _13: *const u8; // anonymous local
+    let _14: NonNull::<Argument::<'_>>; // anonymous local
+    let _15: usize; // anonymous local
+    let _16: usize; // anonymous local
+    let _17: usize; // anonymous local
+    let _18: *const str; // anonymous local
+    let _19: &'_ [u8]; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_4);
-        storage_live(_8);
-        _0 = ();
-        storage_live(_7);
-        _7 = ub_checks;
-        if move _7 -> bb1 else -> bb4;
+        storage_live(_3);
+        storage_live(_9);
+        _9 = ctpop::<usize>(copy align) -> bb1 (unwind: bb6);
     }
 
     bb1: {
-        storage_live(_5);
-        _5 = cast<*const ()>(copy src);
-        storage_live(_6);
-        _6 = cast<*mut ()>(copy dst);
-        _4 = precondition_check(move _5, move _6, copy SIZE::<i32>, copy ALIGN::<i32>, copy count) -> bb2 (unwind: bb3);
+        _3 = move _9 == const 1u32;
+        storage_dead(_9);
+        if move _3 -> bb2 else -> bb3;
     }
 
     bb2: {
+        storage_dead(_3);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_10);
+        _10 = cast<*const ()>(copy self);
+        _7 = transmute<usize>(copy _10);
+        storage_dead(_10);
+        storage_live(_8);
+        _8 = copy align wrap.- const 1usize;
+        _6 = move _7 & move _8;
+        storage_dead(_8);
+        storage_dead(_7);
+        _0 = move _6 == const 0usize;
         storage_dead(_6);
-        storage_dead(_5);
-        goto bb4;
+        return;
     }
 
     bb3: {
-        undefined_behavior;
+        storage_live(_5);
+        storage_live(s);
+        s = const "is_aligned_to: align is not a power-of-two";
+        storage_live(_12);
+        storage_live(_13);
+        storage_live(_18);
+        _18 = &raw const (*s) with_metadata(copy s.metadata);
+        _13 = cast<*const u8>(copy _18);
+        storage_dead(_18);
+        _12 = transmute<NonNull::<u8>>(copy _13);
+        storage_dead(_13);
+        storage_live(_14);
+        storage_live(_15);
+        storage_live(_16);
+        storage_live(_17);
+        storage_live(_19);
+        _19 = transmute<&'_ [u8]>(const "is_aligned_to: align is not a power-of-two");
+        _17 = noretag copy _19.metadata;
+        storage_dead(_19);
+        _16 = move _17 wrap.<< const 1i32;
+        storage_dead(_17);
+        _15 = move _16 | const 1usize;
+        storage_dead(_16);
+        _14 = transmute<NonNull::<Argument::<'_>>>(move _15);
+        storage_dead(_15);
+        _5 = Arguments::<'_> { template: move _12, args: move _14 };
+        storage_dead(_14);
+        storage_dead(_12);
+        storage_dead(s);
+        _4 = panic_fmt(move _5) -> bb4 (unwind: bb5);
     }
 
     bb4: {
-        _8 = core::intrinsics::copy_nonoverlapping::<i32>(copy src, copy dst, copy count) -> bb5 (unwind: bb6);
+        undefined_behavior;
     }
 
     bb5: {
-        return;
+        unwind_continue;
     }
 
     bb6: {
@@ -1079,44 +808,245 @@ pub fn core::ptr::copy_nonoverlapping::<i32>(src: *const i32, dst: *mut i32, cou
     }
 }
 
-// Full name: anon_const_0
-const anon_const_0: i32 = 42i32
-
-// Full name: anon_const_1
-const anon_const_1: i32 = 42i32
-
-struct (_, _)::<&'_ i32, &'_ i32> {
-  _0: &'_ i32,
-  _1: &'_ i32,
-}
-
-// Full name: test_crate::write::<i32>
-fn write::<i32>(x: &'_ mut i32, y: &'_ i32)
+// Full name: core::panicking::panic_nounwind_fmt
+#[track_caller]
+pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
-    let _0: (); // return
-    let x: &'_ mut i32; // arg #1
-    let y: &'_ i32; // arg #2
-    let _3: (); // anonymous local
-    let _4: *const i32; // anonymous local
-    let _5: *mut i32; // anonymous local
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
+    let _3: (Arguments::<'_>, bool); // anonymous local
+    let _4: Arguments::<'_>; // anonymous local
+    let _5: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
-        _0 = ();
         storage_live(_3);
         storage_live(_4);
-        _4 = &raw const (*y);
+        _4 = copy fmt;
         storage_live(_5);
-        _5 = &raw mut (*x);
-        _3 = core::ptr::copy_nonoverlapping::<i32>(move _4, move _5, const 1usize) -> bb1 (unwind: bb2);
+        _5 = copy force_no_backtrace;
+        _3 = (move _4, move _5);
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = compiletime(move _3._0, move _3._1) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_dead(_3);
-        _0 = ();
+        undefined_behavior;
+    }
+
+    bb2: {
+        unwind_terminate;
+    }
+}
+
+// Full name: core::ub_checks::maybe_is_nonoverlapping::runtime
+fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
+{
+    let _0: bool; // return
+    let src: *const (); // arg #1
+    let dst: *const (); // arg #2
+    let size_3: usize; // arg #3
+    let count: usize; // arg #4
+    let src_usize: usize; // local
+    let dst_usize: usize; // local
+    let _7: !; // anonymous local
+    let size_8: usize; // local
+    let _9: Option::<usize>; // anonymous local
+    let diff: usize; // local
+    let _11: u64; // anonymous local
+    let b: bool; // local
+    let _13: (u64, bool); // anonymous local
+    let _14: u64; // anonymous local
+    let _15: u64; // anonymous local
+    let a: usize; // local
+    let _17: (); // anonymous local
+    let _18: bool; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_7);
+        storage_live(diff);
+        storage_live(_17);
+        storage_live(src_usize);
+        src_usize = transmute<usize>(copy src);
+        storage_live(dst_usize);
+        dst_usize = transmute<usize>(copy dst);
+        storage_live(_9);
+        storage_live(b);
+        storage_live(a);
+        storage_live(_13);
+        storage_live(_14);
+        _14 = cast<u64>(copy size_3);
+        storage_live(_15);
+        _15 = cast<u64>(copy count);
+        _13 = move _14 checked.* move _15;
+        storage_dead(_15);
+        storage_dead(_14);
+        storage_live(_11);
+        _11 = copy _13._0;
+        b = copy _13._1;
+        storage_dead(_13);
+        a = cast<usize>(copy _11);
+        storage_dead(_11);
+        if copy b -> bb1 else -> bb6;
+    }
+
+    bb1: {
+        _17 = cold_path() -> bb2 (unwind: bb5);
+    }
+
+    bb2: {
+        storage_dead(a);
+        storage_dead(b);
+        storage_dead(_9);
+        _7 = panic_nounwind(const "is_nonoverlapping: `size_of::<T>() * count` overflows a usize") -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+
+    bb6: {
+        _9 = Option::<usize>::Some { _0: copy a };
+        storage_dead(a);
+        storage_dead(b);
+        storage_live(size_8);
+        size_8 = copy (_9 as variant Option::<usize>::Some)._0;
+        storage_dead(_9);
+        storage_live(_18);
+        _18 = copy src_usize < copy dst_usize;
+        if move _18 -> bb7 else -> bb8;
+    }
+
+    bb7: {
+        diff = copy dst_usize wrap.- copy src_usize;
+        goto bb9;
+    }
+
+    bb8: {
+        diff = copy src_usize wrap.- copy dst_usize;
+        goto bb9;
+    }
+
+    bb9: {
+        storage_dead(_18);
+        _0 = move diff >= copy size_8;
+        storage_dead(size_8);
+        storage_dead(dst_usize);
+        storage_dead(src_usize);
         return;
+    }
+}
+
+// Full name: core::intrinsics::ctpop::<usize>
+#[rustc_intrinsic]
+pub fn ctpop::<usize>(x_1: usize) -> u32
+= <intrinsic:ctpop>
+
+// Full name: core::panicking::panic_fmt
+#[track_caller]
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
+{
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let _2: bool; // anonymous local
+    let _3: !; // anonymous local
+    let pi: PanicInfo::<'_>; // local
+    let _5: &'_ Arguments::<'_>; // anonymous local
+    let _6: &'_ Arguments::<'_>; // anonymous local
+    let _7: &'_ Location::<'_>; // anonymous local
+    let _8: &'_ PanicInfo::<'_>; // anonymous local
+    let _9: &'_ PanicInfo::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = const false;
+        if move _2 -> bb1 else -> bb4;
+    }
+
+    bb1: {
+        storage_live(_3);
+        _3 = abort() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &fmt;
+        _5 = &(*_6);
+        storage_live(_7);
+        _7 = caller::<'_>() -> bb5 (unwind: bb10);
+    }
+
+    bb5: {
+        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
+    }
+
+    bb6: {
+        storage_dead(_7);
+        storage_dead(_5);
+        storage_dead(_6);
+        storage_live(_8);
+        storage_live(_9);
+        _9 = &pi;
+        _8 = &(*_9);
+        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::panicking::panic_nounwind_fmt::compiletime
+#[track_caller]
+fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
+{
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let force_no_backtrace: bool; // arg #2
+
+    bb0: {
+        storage_live(_0);
+        _0 = panic_fmt(move fmt) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
     }
 
     bb2: {
@@ -1124,124 +1054,231 @@ fn write::<i32>(x: &'_ mut i32, y: &'_ i32)
     }
 }
 
-// Full name: test_crate::main
-fn main()
+// Full name: core::intrinsics::cold_path
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn cold_path()
+= <intrinsic:cold_path>
+
+// Full name: core::panicking::panic_nounwind
+#[lang_item(PanicNounwind)]
+pub fn panic_nounwind(expr: &'_ str) -> !
 {
-    let _0: (); // return
-    let x: i32; // local
-    let _2: (); // anonymous local
-    let _3: &'_ mut i32; // anonymous local
-    let _4: &'_ mut i32; // anonymous local
-    let _5: &'_ i32; // anonymous local
-    let _6: &'_ i32; // anonymous local
-    let _7: (&'_ i32, &'_ i32); // anonymous local
-    let _8: &'_ i32; // anonymous local
-    let _9: &'_ i32; // anonymous local
-    let left_val: &'_ i32; // local
-    let right_val: &'_ i32; // local
-    let _12: bool; // anonymous local
-    let _13: i32; // anonymous local
-    let _14: i32; // anonymous local
-    let kind: AssertKind; // local
-    let _16: !; // anonymous local
-    let _17: AssertKind; // anonymous local
-    let _18: &'_ i32; // anonymous local
-    let _19: &'_ i32; // anonymous local
-    let _20: &'_ i32; // anonymous local
-    let _21: &'_ i32; // anonymous local
-    let _22: Option::<Arguments::<'_>>; // anonymous local
-    let _23: &'_ i32; // anonymous local
-    let _24: &'_ i32; // anonymous local
-    let _25: &'_ i32; // anonymous local
-    let _26: &'_ i32; // anonymous local
+    let _0: !; // return
+    let expr: &'_ str; // arg #1
+    let _2: !; // anonymous local
+    let _3: Arguments::<'_>; // anonymous local
+    let _4: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_23);
-        storage_live(_24);
-        _0 = ();
-        storage_live(x);
-        x = const 0i32;
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
-        _4 = &mut x;
-        _3 = &two-phase-mut (*_4);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_25);
-        _25 = &anon_const_0;
-        _24 = move _25;
-        _6 = &(*_24);
-        _5 = &(*_6);
-        _2 = write::<i32>(move _3, move _5) -> bb1 (unwind: bb6);
+        _4 = copy expr;
+        _3 = from_str::<'_>(move _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        storage_dead(_5);
-        storage_dead(_3);
-        storage_dead(_6);
         storage_dead(_4);
-        storage_dead(_2);
-        storage_live(_7);
-        storage_live(_8);
-        _8 = &x;
-        storage_live(_9);
-        storage_live(_26);
-        _26 = &anon_const_1;
-        _23 = move _26;
-        _9 = &(*_23);
-        _7 = (move _8, move _9);
-        storage_dead(_9);
-        storage_dead(_8);
-        storage_live(left_val);
-        left_val = copy _7._0;
-        storage_live(right_val);
-        right_val = copy _7._1;
-        storage_live(_12);
-        storage_live(_13);
-        _13 = copy (*left_val);
-        storage_live(_14);
-        _14 = copy (*right_val);
-        _12 = move _13 == move _14;
-        if move _12 -> bb2 else -> bb3;
+        _2 = panic_nounwind_fmt(move _3, const false) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        storage_dead(_14);
-        storage_dead(_13);
-        storage_dead(_12);
-        storage_dead(right_val);
-        storage_dead(left_val);
-        storage_dead(_7);
-        _0 = ();
-        storage_dead(x);
-        return;
+        undefined_behavior;
     }
 
     bb3: {
-        storage_dead(_14);
-        storage_dead(_13);
-        storage_live(kind);
-        kind = AssertKind::Eq {  };
-        storage_live(_16);
-        storage_live(_17);
-        _17 = move kind;
-        storage_live(_18);
-        storage_live(_19);
-        _19 = &(*left_val);
-        _18 = &(*_19);
-        storage_live(_20);
-        storage_live(_21);
-        _21 = &(*right_val);
-        _20 = &(*_21);
-        storage_live(_22);
-        _22 = Option::<Arguments::<'_>>::None {  };
-        _16 = assert_failed::<i32, i32>(move _17, move _18, move _20, move _22) -> bb4 (unwind: bb5);
+        undefined_behavior;
     }
 
     bb4: {
+        unwind_terminate;
+    }
+}
+
+// Full name: core::intrinsics::abort
+#[rustc_intrinsic]
+pub fn abort() -> !
+= <intrinsic:abort>
+
+// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
+pub fn caller::<'_>() -> &'_ Location::<'_>
+{
+    let _0: &'_ Location::<'_>; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = caller_location() -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
         undefined_behavior;
+    }
+}
+
+// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
+{
+    let _0: PanicInfo::<'_>; // return
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
+
+    bb0: {
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        return;
+    }
+}
+
+// Full name: core::panicking::panic_fmt::panic_impl
+#[lang_item(PanicImpl)]
+extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
+= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
+
+// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
+{
+    let _0: Arguments::<'_>; // return
+    let s: &'_ str; // arg #1
+    let _2: NonNull::<u8>; // anonymous local
+    let _3: *const u8; // anonymous local
+    let _4: NonNull::<Argument::<'_>>; // anonymous local
+    let _5: usize; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: *const str; // anonymous local
+    let _9: &'_ [u8]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_8);
+        _8 = &raw const (*s) with_metadata(copy s.metadata);
+        _3 = cast<*const u8>(copy _8);
+        storage_dead(_8);
+        _2 = transmute<NonNull::<u8>>(copy _3);
+        storage_dead(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_9);
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
+        storage_dead(_9);
+        _6 = move _7 wrap.<< const 1i32;
+        storage_dead(_7);
+        _5 = move _6 | const 1usize;
+        storage_dead(_6);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
+        storage_dead(_5);
+        _0 = Arguments::<'_> { template: move _2, args: move _4 };
+        storage_dead(_4);
+        storage_dead(_2);
+        return;
+    }
+}
+
+// Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
+pub fn caller_location() -> &'_ Location::<'_>
+= <intrinsic:caller_location>
+
+// Full name: core::ptr::drop_glue::<&'_ i32>
+#[lang_item(DropGlue)]
+fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
+{
+    let _0: (); // return
+    let _1: &'_ mut &'_ i32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
+    }
+}
+
+// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>
+pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+{
+    let _0: Result::<(), Error>; // return
+    let self: &'_ &'_ i32; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
+    let _3: &'_ i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = noretag copy (*self);
+        _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::fmt::num::{impl core::fmt::Debug for i32}::fmt
+pub fn impl_Debug_for_i32::fmt(self: &'_ i32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+{
+    let _0: Result::<(), Error>; // return
+    let self: &'_ i32; // arg #1
+    let f: &'_ mut Formatter::<'_>; // arg #2
+    let _3: bool; // anonymous local
+    let _4: bool; // anonymous local
+    let _5: u32; // anonymous local
+    let _6: u32; // anonymous local
+    let _7: u32; // anonymous local
+    let _8: u32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = copy (*f).options.flags;
+        _5 = move _6 & const 33554432u32;
+        storage_dead(_6);
+        _3 = move _5 != const 0u32;
+        storage_dead(_5);
+        if move _3 -> bb1 else -> bb3;
+    }
+
+    bb1: {
+        _0 = impl_LowerHex_for_i32::fmt(move self, move f) -> bb8 (unwind: bb2);
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+
+    bb3: {
+        storage_live(_4);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = copy (*f).options.flags;
+        _7 = move _8 & const 67108864u32;
+        storage_dead(_8);
+        _4 = move _7 != const 0u32;
+        storage_dead(_7);
+        if move _4 -> bb4 else -> bb6;
+    }
+
+    bb4: {
+        _0 = impl_UpperHex_for_i32::fmt(move self, move f) -> bb7 (unwind: bb5);
     }
 
     bb5: {
@@ -1249,9 +1286,35 @@ fn main()
     }
 
     bb6: {
+        _0 = impl_Display_for_i32::fmt(move self, move f) -> bb7 (unwind: bb9);
+    }
+
+    bb7: {
+        storage_dead(_4);
+        goto bb8;
+    }
+
+    bb8: {
+        storage_dead(_3);
+        return;
+    }
+
+    bb9: {
         unwind_continue;
     }
 }
+
+// Full name: core::fmt::num::{impl LowerHex for i32}::fmt
+pub fn impl_LowerHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
+
+// Full name: core::fmt::num::{impl UpperHex for i32}::fmt
+pub fn impl_UpperHex_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
+
+// Full name: core::fmt::num::imp::{impl Display for i32}::fmt
+pub fn impl_Display_for_i32::fmt(_1: &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
 
 
 

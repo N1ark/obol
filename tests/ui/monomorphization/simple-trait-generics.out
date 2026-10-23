@@ -3,25 +3,20 @@
 
 struct () {}
 
-// Full name: core::ptr::drop_glue::<i32>
-#[lang_item(DropGlue)]
-fn drop_glue::<i32>(_1: &'_ mut i32)
-{
-    let _0: (); // return
-    let _1: &'_ mut i32; // arg #1
+// Full name: anon_const_0
+const anon_const_0: i32 = 42i32
 
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
+vtable {vtable}::test_crate::Trait::<i32, bool>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Trait_bool_for_i32::comsume))]
 
 // Full name: FakeTrait
 trait FakeTrait
 
-// Full name: anon_const_0
-const anon_const_0: i32 = 42i32
+trait test_crate::Trait
+
+// Full name: test_crate::{impl test_crate::Trait<bool> for i32}
+impl "impl_Trait_bool_for_i32" test_crate::Trait<bool> for i32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
 
 // Full name: test_crate::{impl test_crate::Trait<bool> for i32}::comsume
 fn impl_Trait_bool_for_i32::comsume(self: &'_ i32) -> bool
@@ -35,8 +30,6 @@ fn impl_Trait_bool_for_i32::comsume(self: &'_ i32) -> bool
         return;
     }
 }
-
-vtable {vtable}::test_crate::Trait::<i32, bool>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Trait_bool_for_i32::comsume))]
 
 // Full name: test_crate::main
 fn main()
@@ -87,6 +80,23 @@ fn main()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+fn test_crate::Trait::comsume::<(dyn FakeTrait), bool>(_1: &'_ (dyn FakeTrait)) -> bool
+= <opaque>
+
+// Full name: core::ptr::drop_glue::<i32>
+#[lang_item(DropGlue)]
+fn drop_glue::<i32>(_1: &'_ mut i32)
+{
+    let _0: (); // return
+    let _1: &'_ mut i32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
     }
 }
 

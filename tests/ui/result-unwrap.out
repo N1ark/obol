@@ -1,18 +1,18 @@
 
 // Final ULLBC:
 
-// Full name: core::fmt::Error
-pub struct Error {}
+struct () {}
 
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
+// Full name: core::result::Result::<u32, u32>
+#[diagnostic_item("Result")]
+pub enum Result::<u32, u32> {
+  Ok { _0: u32 },
+  Err { _0: u32 },
 }
 
-// Full name: FakeTrait
-trait FakeTrait
+struct str {
+  _0: [u8],
+}
 
 // Full name: core::fmt::Formatter::<'_>
 #[diagnostic_item("Formatter")]
@@ -21,14 +21,136 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-struct () {}
-
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
   Ok { _0: () },
   Err { _0: Error },
 }
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+#[diagnostic_item("Debug")]
+vtable {vtable}::core::fmt::Debug::<u32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<u32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Debug_for_u32::fmt))]
+
+// Full name: FakeTrait
+trait FakeTrait
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
+
+// Full name: core::fmt::LowerHex
+trait LowerHex
+
+// Full name: core::fmt::UpperHex
+trait UpperHex
+
+// Full name: core::fmt::Display
+#[diagnostic_item("Display")]
+trait Display
+
+// Full name: core::fmt::num::{impl core::fmt::Debug for u32}
+impl "impl_Debug_for_u32" core::fmt::Debug for u32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl LowerHex for u32}
+impl "impl_LowerHex_for_u32" LowerHex for u32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::{impl UpperHex for u32}
+impl "impl_UpperHex_for_u32" UpperHex for u32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::fmt::num::imp::{impl Display for u32}
+impl "impl_Display_for_u32" Display for u32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+fn test_crate::unwrap(res: Result::<u32, u32>) -> u32
+{
+    let _0: u32; // return
+    let res: Result::<u32, u32>; // arg #1
+    let _2: Result::<u32, u32>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = copy res;
+        _0 = core::result::{Result::<_, _>}::unwrap::<u32, u32>(move _2) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_2);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+#[track_caller]
+pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u32>) -> u32
+{
+    let t: u32; // return
+    let self: Result::<u32, u32>; // arg #1
+    let _2: isize; // anonymous local
+    let e: u32; // local
+    let _4: !; // anonymous local
+    let _5: &'_ (dyn FakeTrait); // anonymous local
+    let _6: &'_ u32; // anonymous local
+
+    bb0: {
+        storage_live(t);
+        storage_live(_2);
+        storage_live(_4);
+        _2 = @discriminant(self);
+        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb5;
+    }
+
+    bb1: {
+        t = move (self as variant Result::<u32, u32>::Ok)._0;
+        return;
+    }
+
+    bb2: {
+        storage_live(e);
+        e = move (self as variant Result::<u32, u32>::Err)._0;
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &e;
+        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<u32>)>(copy _6);
+        _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+
+    bb5: {
+        undefined_behavior;
+    }
+}
+
+// Full name: core::result::unwrap_failed
+#[track_caller]
+fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
+= <missing>
 
 // Full name: core::ptr::drop_glue::<u32>
 #[lang_item(DropGlue)]
@@ -43,18 +165,6 @@ fn drop_glue::<u32>(_1: &'_ mut u32)
         return;
     }
 }
-
-// Full name: core::fmt::num::imp::{impl Display for u32}::fmt
-pub fn impl_Display_for_u32::fmt(_1: &'_ u32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl UpperHex for u32}::fmt
-pub fn impl_UpperHex_for_u32::fmt(_1: &'_ u32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
-
-// Full name: core::fmt::num::{impl LowerHex for u32}::fmt
-pub fn impl_LowerHex_for_u32::fmt(_1: &'_ u32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <missing>
 
 // Full name: core::fmt::num::{impl core::fmt::Debug for u32}::fmt
 pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
@@ -129,94 +239,17 @@ pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Res
     }
 }
 
-#[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<u32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<u32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Debug_for_u32::fmt))]
-
-// Full name: core::result::Result::<u32, u32>
-#[diagnostic_item("Result")]
-pub enum Result::<u32, u32> {
-  Ok { _0: u32 },
-  Err { _0: u32 },
-}
-
-struct str {
-  _0: [u8],
-}
-
-// Full name: core::result::unwrap_failed
-#[track_caller]
-fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
+// Full name: core::fmt::num::{impl LowerHex for u32}::fmt
+pub fn impl_LowerHex_for_u32::fmt(_1: &'_ u32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 = <missing>
 
-#[track_caller]
-pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u32>) -> u32
-{
-    let t: u32; // return
-    let self: Result::<u32, u32>; // arg #1
-    let _2: isize; // anonymous local
-    let e: u32; // local
-    let _4: !; // anonymous local
-    let _5: &'_ (dyn FakeTrait); // anonymous local
-    let _6: &'_ u32; // anonymous local
+// Full name: core::fmt::num::{impl UpperHex for u32}::fmt
+pub fn impl_UpperHex_for_u32::fmt(_1: &'_ u32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
 
-    bb0: {
-        storage_live(t);
-        storage_live(_2);
-        storage_live(_4);
-        _2 = @discriminant(self);
-        switch move _2 -> 0isize: bb1, 1isize: bb2, otherwise: bb5;
-    }
-
-    bb1: {
-        t = move (self as variant Result::<u32, u32>::Ok)._0;
-        return;
-    }
-
-    bb2: {
-        storage_live(e);
-        e = move (self as variant Result::<u32, u32>::Err)._0;
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &e;
-        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<u32>)>(copy _6);
-        _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb3 (unwind: bb4);
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
-        undefined_behavior;
-    }
-}
-
-fn test_crate::unwrap(res: Result::<u32, u32>) -> u32
-{
-    let _0: u32; // return
-    let res: Result::<u32, u32>; // arg #1
-    let _2: Result::<u32, u32>; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        _2 = copy res;
-        _0 = core::result::{Result::<_, _>}::unwrap::<u32, u32>(move _2) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        storage_dead(_2);
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
+// Full name: core::fmt::num::imp::{impl Display for u32}::fmt
+pub fn impl_Display_for_u32::fmt(_1: &'_ u32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <missing>
 
 
 

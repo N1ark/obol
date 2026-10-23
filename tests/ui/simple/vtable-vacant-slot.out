@@ -8,25 +8,20 @@ struct S {
   _0: *const (),
 }
 
-// Full name: core::ptr::drop_glue::<S>
-#[lang_item(DropGlue)]
-fn drop_glue::<S>(_1: &'_ mut S)
-{
-    let _0: (); // return
-    let _1: &'_ mut S; // arg #1
+// Full name: anon_const_0
+const anon_const_0: S = S { _0: no-provenance 0 }
 
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
+vtable {vtable}::test_crate::T::<S>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 8, no-provenance 8, no-provenance 0, cast<*const ()>(fnptr(impl_T_for_S::dyn_callable))]
 
 // Full name: FakeTrait
 trait FakeTrait
 
-// Full name: anon_const_0
-const anon_const_0: S = S { _0: no-provenance 0 }
+trait test_crate::T
+
+// Full name: test_crate::{impl test_crate::T for S}
+impl "impl_T_for_S" test_crate::T for S {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
 
 // Full name: test_crate::{impl test_crate::T for S}::dyn_callable
 fn impl_T_for_S::dyn_callable(self: &'_ S) -> u8
@@ -40,8 +35,6 @@ fn impl_T_for_S::dyn_callable(self: &'_ S) -> u8
         return;
     }
 }
-
-vtable {vtable}::test_crate::T::<S>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 8, no-provenance 8, no-provenance 0, cast<*const ()>(fnptr(impl_T_for_S::dyn_callable))]
 
 // Full name: test_crate::main
 fn main()
@@ -92,6 +85,23 @@ fn main()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+fn test_crate::T::dyn_callable::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait)) -> u8
+= <opaque>
+
+// Full name: core::ptr::drop_glue::<S>
+#[lang_item(DropGlue)]
+fn drop_glue::<S>(_1: &'_ mut S)
+{
+    let _0: (); // return
+    let _1: &'_ mut S; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
     }
 }
 

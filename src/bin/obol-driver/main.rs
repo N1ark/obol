@@ -98,12 +98,6 @@ fn run_passes(ctx: &mut TransformCtx) {
         mixed_body(&simplify_output::remove_unused_locals::Transform),
         // Remove the useless `StatementKind::Nop`s.
         mixed_body(&simplify_output::remove_nops::Transform),
-        // Reorder the graph of dependencies and compute the strictly connex components to:
-        // - compute the order in which to extract the definitions
-        // - find the recursive definitions
-        // - group the mutually recursive definitions
-        // This is done last to account for the final item graph, not the initial one.
-        global(&add_missing_info::reorder_decls::Transform),
     ]);
 }
 

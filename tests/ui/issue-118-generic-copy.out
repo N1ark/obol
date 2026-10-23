@@ -6,6 +6,19 @@ struct () {}
 // Full name: test_crate::Foo
 struct Foo {}
 
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::clone::Clone
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
+trait Clone
+
+// Full name: test_crate::{impl Clone for Foo}
+impl "impl_Clone_for_Foo" Clone for Foo {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
 // Full name: test_crate::{impl Clone for Foo}::clone
 #[inline(hint)]
 pub fn clone(self: &'_ Foo) -> Foo

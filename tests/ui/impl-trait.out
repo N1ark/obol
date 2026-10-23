@@ -1,20 +1,18 @@
 
 // Final ULLBC:
 
-// Full name: core::clone::impls::{impl Clone for u32}::clone
-pub fn clone(self: &'_ u32) -> u32
-{
-    let _0: u32; // return
-    let self: &'_ u32; // arg #1
+struct () {}
 
-    bb0: {
-        storage_live(_0);
-        _0 = copy (*self);
-        return;
-    }
+struct test_crate::wrap::{closure}::{closure} {}
+
+// Full name: test_crate::WrapClone::<&'_ u32>
+pub struct WrapClone::<&'_ u32> {
+  _0: &'_ u32,
 }
 
-struct () {}
+struct (_,)::<&'_ u32> {
+  _0: &'_ u32,
+}
 
 // Full name: anon_const_0
 const anon_const_0: u32 = 42u32
@@ -22,8 +20,33 @@ const anon_const_0: u32 = 42u32
 // Full name: anon_const_1
 const anon_const_1: u32 = 42u32
 
-struct (_,)::<&'_ u32> {
-  _0: &'_ u32,
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::Foo
+trait Foo
+
+// Full name: test_crate::RPITIT
+trait RPITIT
+
+// Full name: core::clone::Clone
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
+trait Clone
+
+// Full name: test_crate::{impl Foo for ()}
+impl "impl_Foo_for_unit" Foo for () {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: test_crate::{impl RPITIT for ()}
+impl "impl_RPITIT_for_unit" RPITIT for () {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::clone::impls::{impl Clone for u32}
+impl "impl_Clone_for_u32" Clone for u32 {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl Foo for ()}::get_ty
@@ -125,45 +148,6 @@ pub fn make_foo()
     }
 }
 
-// Full name: test_crate::WrapClone::<&'_ u32>
-pub struct WrapClone::<&'_ u32> {
-  _0: &'_ u32,
-}
-
-struct test_crate::wrap::{closure}::{closure} {}
-
-// Full name: test_crate::wrap::<u32>
-pub fn wrap::<u32>() -> test_crate::wrap::{closure}::{closure}
-{
-    let _0: test_crate::wrap::{closure}::{closure}; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = test_crate::wrap::{closure}::{closure} {  };
-        return;
-    }
-}
-
-fn test_crate::wrap::{closure}::<u32, i32, extern "rust-call" fn((&'_ u32,)) -> WrapClone::<&'_ u32>, ()>(_1: test_crate::wrap::{closure}::{closure}, spread_args: (&'_ u32,)) -> WrapClone::<&'_ u32>
-{
-    let _0: WrapClone::<&'_ u32>; // return
-    let _1: test_crate::wrap::{closure}::{closure}; // arg #1
-    let spread_args: (&'_ u32,); // arg #2
-    let x: &'_ u32; // local
-    let _4: &'_ u32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(x);
-        x = noretag move spread_args._0;
-        storage_live(_4);
-        _4 = &(*x);
-        _0 = WrapClone::<&'_ u32> { _0: move _4 };
-        storage_dead(_4);
-        return;
-    }
-}
-
 // Full name: test_crate::use_wrap
 pub fn use_wrap()
 {
@@ -218,6 +202,51 @@ pub fn use_wrap()
 
     bb4: {
         unwind_continue;
+    }
+}
+
+// Full name: core::clone::impls::{impl Clone for u32}::clone
+pub fn clone(self: &'_ u32) -> u32
+{
+    let _0: u32; // return
+    let self: &'_ u32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy (*self);
+        return;
+    }
+}
+
+// Full name: test_crate::wrap::<u32>
+pub fn wrap::<u32>() -> test_crate::wrap::{closure}::{closure}
+{
+    let _0: test_crate::wrap::{closure}::{closure}; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = test_crate::wrap::{closure}::{closure} {  };
+        return;
+    }
+}
+
+fn test_crate::wrap::{closure}::<u32, i32, extern "rust-call" fn((&'_ u32,)) -> WrapClone::<&'_ u32>, ()>(_1: test_crate::wrap::{closure}::{closure}, spread_args: (&'_ u32,)) -> WrapClone::<&'_ u32>
+{
+    let _0: WrapClone::<&'_ u32>; // return
+    let _1: test_crate::wrap::{closure}::{closure}; // arg #1
+    let spread_args: (&'_ u32,); // arg #2
+    let x: &'_ u32; // local
+    let _4: &'_ u32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(x);
+        x = noretag move spread_args._0;
+        storage_live(_4);
+        _4 = &(*x);
+        _0 = WrapClone::<&'_ u32> { _0: move _4 };
+        storage_dead(_4);
+        return;
     }
 }
 

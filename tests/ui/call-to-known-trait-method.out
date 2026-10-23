@@ -1,18 +1,6 @@
 
 // Final ULLBC:
 
-// Full name: core::default::{impl Default for bool}::default
-pub fn impl_Default_for_bool::default() -> bool
-{
-    let _0: bool; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = const false;
-        return;
-    }
-}
-
 struct () {}
 
 struct (_, _)::<u8, bool> {
@@ -23,6 +11,121 @@ struct (_, _)::<u8, bool> {
 // Full name: test_crate::Struct::<bool>
 struct Struct::<bool> {
   _0: bool,
+}
+
+// Full name: alloc::string::String
+#[lang_item(String)]
+pub struct String {
+  vec: Vec::<u8, Global>,
+}
+
+// Full name: alloc::vec::Vec::<u8, Global>
+#[diagnostic_item("Vec")]
+pub struct Vec::<u8, Global> {
+  buf: RawVec::<u8, Global>,
+  len: usize,
+}
+
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: alloc::raw_vec::RawVec::<u8, Global>
+struct RawVec::<u8, Global> {
+  inner: RawVecInner::<Global>,
+  _marker: PhantomData::<u8>,
+}
+
+// Full name: alloc::raw_vec::RawVecInner::<Global>
+struct RawVecInner::<Global> {
+  ptr: Unique::<u8>,
+  cap: UsizeNoHighBit,
+  alloc: Global,
+}
+
+// Full name: core::marker::PhantomData::<u8>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<u8> {}
+
+// Full name: core::ptr::unique::Unique::<u8>
+pub struct Unique::<u8> {
+  pointer: NonNull::<u8>,
+  _marker: PhantomData::<u8>,
+}
+
+// Full name: core::num::niche_types::UsizeNoHighBit
+pub struct UsizeNoHighBit {
+  _0: usize is 0usize..=9223372036854775807usize,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::default::Default
+#[diagnostic_item("Default")]
+trait Default
+
+// Full name: test_crate::Trait
+trait Trait
+
+// Full name: test_crate::{impl Default for Struct::<_>}
+impl<A> Default for Struct::<_> {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: test_crate::{impl Trait<B> for Struct::<_>}
+impl<A, B> Trait<B> for Struct::<_> {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::default::{impl Default for bool}
+impl "impl_Default_for_bool" Default for bool {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: test_crate::main
+fn main()
+{
+    let _0: (); // return
+    let _x: (u8, bool); // local
+    let _y: Struct::<bool>; // local
+    let _3: (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(_x);
+        _x = (const 0u8, const false);
+        storage_live(_y);
+        _y = {impl Default for Struct::<_>}::default::<bool>() -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        storage_live(_3);
+        _3 = method::<u8, bool, String>() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        storage_dead(_3);
+        _0 = ();
+        storage_dead(_y);
+        storage_dead(_x);
+        return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
 }
 
 // Full name: test_crate::{impl Default for Struct::<_>}::default::<bool>
@@ -62,42 +165,15 @@ fn method::<u8, bool, String>()
     }
 }
 
-// Full name: test_crate::main
-fn main()
+// Full name: core::default::{impl Default for bool}::default
+pub fn impl_Default_for_bool::default() -> bool
 {
-    let _0: (); // return
-    let _x: (u8, bool); // local
-    let _y: Struct::<bool>; // local
-    let _3: (); // anonymous local
+    let _0: bool; // return
 
     bb0: {
         storage_live(_0);
-        _0 = ();
-        storage_live(_x);
-        _x = (const 0u8, const false);
-        storage_live(_y);
-        _y = {impl Default for Struct::<_>}::default::<bool>() -> bb1 (unwind: bb4);
-    }
-
-    bb1: {
-        storage_live(_3);
-        _3 = method::<u8, bool, String>() -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        storage_dead(_3);
-        _0 = ();
-        storage_dead(_y);
-        storage_dead(_x);
+        _0 = const false;
         return;
-    }
-
-    bb3: {
-        unwind_continue;
-    }
-
-    bb4: {
-        unwind_continue;
     }
 }
 

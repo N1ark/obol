@@ -3,44 +3,22 @@
 
 struct () {}
 
-#[rustc_intrinsic]
-pub fn core::intrinsics::assume(b_1: bool)
-= <intrinsic:assume>
-
-// Full name: core::ptr::const_ptr::{*const T}::read::<u32>
-#[track_caller]
-pub fn read::<u32>(self: *const u32) -> u32
-{
-    let _0: u32; // return
-    let self: *const u32; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = copy (*self);
-        return;
-    }
-}
-
-// Full name: core::ptr::null::<u32>
-#[diagnostic_item("ptr_null")]
-pub fn null::<u32>() -> *const u32
-{
-    let _0: *const u32; // return
-    let _1: *const u32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_1);
-        _1 = cast<*const u32>(const 0usize);
-        _0 = move _1;
-        return;
-    }
-}
-
 struct (_, _)::<usize, bool> {
   _0: usize,
   _1: bool,
 }
+
+// Full name: test_crate::Foo
+union Foo {
+  one: u64,
+  two: [u32; 2usize],
+}
+
+// Full name: test_crate::COUNTER
+static mut COUNTER: usize = COUNTER()
+
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::call_unsafe_fn
 fn call_unsafe_fn()
@@ -109,21 +87,6 @@ fn deref_raw_ptr()
     }
 }
 
-// Full name: test_crate::COUNTER
-fn COUNTER() -> usize
-{
-    let _0: usize; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = const 0usize;
-        return;
-    }
-}
-
-// Full name: test_crate::COUNTER
-static mut COUNTER: usize = COUNTER()
-
 // Full name: test_crate::access_mutable_static
 fn access_mutable_static()
 {
@@ -154,12 +117,6 @@ fn access_mutable_static()
     bb2: {
         unwind_continue;
     }
-}
-
-// Full name: test_crate::Foo
-union Foo {
-  one: u64,
-  two: [u32; 2usize],
 }
 
 // Full name: test_crate::access_union_field
@@ -203,6 +160,52 @@ fn test_crate::assume()
         undefined_behavior;
     }
 }
+
+// Full name: core::ptr::null::<u32>
+#[diagnostic_item("ptr_null")]
+pub fn null::<u32>() -> *const u32
+{
+    let _0: *const u32; // return
+    let _1: *const u32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        _1 = cast<*const u32>(const 0usize);
+        _0 = move _1;
+        return;
+    }
+}
+
+// Full name: core::ptr::const_ptr::{*const T}::read::<u32>
+#[track_caller]
+pub fn read::<u32>(self: *const u32) -> u32
+{
+    let _0: u32; // return
+    let self: *const u32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = copy (*self);
+        return;
+    }
+}
+
+// Full name: test_crate::COUNTER
+fn COUNTER() -> usize
+{
+    let _0: usize; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = const 0usize;
+        return;
+    }
+}
+
+#[rustc_intrinsic]
+pub fn core::intrinsics::assume(b_1: bool)
+= <intrinsic:assume>
 
 
 

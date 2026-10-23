@@ -3,53 +3,21 @@
 
 struct () {}
 
-struct (_, _)::<i32, bool> {
-  _0: i32,
-  _1: bool,
+struct test_crate::foo::{closure}::{closure} {
+  upvar_0: &'_ mut i32,
 }
 
 struct (_,)::<&'_ mut i32> {
   _0: &'_ mut i32,
 }
 
-struct test_crate::foo::{closure}::{closure} {
-  upvar_0: &'_ mut i32,
+struct (_, _)::<i32, bool> {
+  _0: i32,
+  _1: bool,
 }
 
-fn test_crate::foo::{closure}::<i16, extern "rust-call" fn(()), (&'_ mut i32,)>(_1: &'_ mut test_crate::foo::{closure}::{closure}, spread_args: ())
-{
-    let _0: (); // return
-    let _1: &'_ mut test_crate::foo::{closure}::{closure}; // arg #1
-    let spread_args: (); // arg #2
-    let _3: (i32, bool); // anonymous local
-    let _4: &'_ mut i32; // anonymous local
-    let _5: &'_ mut i32; // anonymous local
-    let _6: &'_ mut i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_6);
-        _0 = ();
-        _4 = noretag copy (*_1).upvar_0;
-        _3 = copy (*_4) checked.+ const 1i32;
-        _5 = noretag copy (*_1).upvar_0;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        _6 = noretag copy (*_1).upvar_0;
-        (*_6) = move _3._0;
-        _0 = ();
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::foo
 fn foo()
@@ -87,6 +55,41 @@ fn foo()
         storage_dead(closure);
         storage_dead(rx);
         storage_dead(x);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+fn test_crate::foo::{closure}::<i16, extern "rust-call" fn(()), (&'_ mut i32,)>(_1: &'_ mut test_crate::foo::{closure}::{closure}, spread_args: ())
+{
+    let _0: (); // return
+    let _1: &'_ mut test_crate::foo::{closure}::{closure}; // arg #1
+    let spread_args: (); // arg #2
+    let _3: (i32, bool); // anonymous local
+    let _4: &'_ mut i32; // anonymous local
+    let _5: &'_ mut i32; // anonymous local
+    let _6: &'_ mut i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        _0 = ();
+        _4 = noretag copy (*_1).upvar_0;
+        _3 = copy (*_4) checked.+ const 1i32;
+        _5 = noretag copy (*_1).upvar_0;
+        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        _6 = noretag copy (*_1).upvar_0;
+        (*_6) = move _3._0;
+        _0 = ();
         return;
     }
 

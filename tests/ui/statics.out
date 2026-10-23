@@ -3,11 +3,26 @@
 
 struct () {}
 
-// Full name: anon_const_0
-const anon_const_0: usize = 0usize
+// Full name: test_crate::non_copy_static::Foo
+struct Foo {}
 
 // Full name: test_crate::constant::CONST
 const CONST: usize = 0usize
+
+// Full name: anon_const_0
+const anon_const_0: usize = 0usize
+
+// Full name: test_crate::shared_static::SHARED_STATIC
+static SHARED_STATIC: usize = SHARED_STATIC()
+
+// Full name: test_crate::mut_static::MUT_STATIC
+static mut MUT_STATIC: usize = MUT_STATIC()
+
+// Full name: test_crate::non_copy_static::FOO
+static FOO: Foo = FOO()
+
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::constant
 fn constant()
@@ -43,21 +58,6 @@ fn constant()
         return;
     }
 }
-
-// Full name: test_crate::shared_static::SHARED_STATIC
-fn SHARED_STATIC() -> usize
-{
-    let _0: usize; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = const 0usize;
-        return;
-    }
-}
-
-// Full name: test_crate::shared_static::SHARED_STATIC
-static SHARED_STATIC: usize = SHARED_STATIC()
 
 // Full name: test_crate::shared_static
 fn shared_static()
@@ -104,21 +104,6 @@ fn shared_static()
         return;
     }
 }
-
-// Full name: test_crate::mut_static::MUT_STATIC
-fn MUT_STATIC() -> usize
-{
-    let _0: usize; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = const 0usize;
-        return;
-    }
-}
-
-// Full name: test_crate::mut_static::MUT_STATIC
-static mut MUT_STATIC: usize = MUT_STATIC()
 
 // Full name: test_crate::mut_static
 fn mut_static()
@@ -188,38 +173,6 @@ fn mut_static()
     }
 }
 
-// Full name: test_crate::non_copy_static::Foo
-struct Foo {}
-
-// Full name: test_crate::non_copy_static::FOO
-fn FOO() -> Foo
-{
-    let _0: Foo; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = Foo {  };
-        return;
-    }
-}
-
-// Full name: test_crate::non_copy_static::FOO
-static FOO: Foo = FOO()
-
-// Full name: test_crate::non_copy_static::{Foo}::method
-fn method(self: &'_ Foo)
-{
-    let _0: (); // return
-    let self: &'_ Foo; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        _0 = ();
-        return;
-    }
-}
-
 // Full name: test_crate::non_copy_static
 fn non_copy_static()
 {
@@ -248,6 +201,56 @@ fn non_copy_static()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+// Full name: test_crate::non_copy_static::{Foo}::method
+fn method(self: &'_ Foo)
+{
+    let _0: (); // return
+    let self: &'_ Foo; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        _0 = ();
+        return;
+    }
+}
+
+// Full name: test_crate::shared_static::SHARED_STATIC
+fn SHARED_STATIC() -> usize
+{
+    let _0: usize; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = const 0usize;
+        return;
+    }
+}
+
+// Full name: test_crate::mut_static::MUT_STATIC
+fn MUT_STATIC() -> usize
+{
+    let _0: usize; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = const 0usize;
+        return;
+    }
+}
+
+// Full name: test_crate::non_copy_static::FOO
+fn FOO() -> Foo
+{
+    let _0: Foo; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = Foo {  };
+        return;
     }
 }
 

@@ -3,26 +3,13 @@
 
 struct () {}
 
-// Full name: core::ptr::null::<()>
-#[diagnostic_item("ptr_null")]
-pub fn null::<()>() -> *const ()
-{
-    let _0: *const (); // return
-    let _1: *const (); // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_1);
-        _1 = cast<*const ()>(const 0usize);
-        _0 = move _1;
-        return;
-    }
-}
-
 // Full name: test_crate::Foo
 struct Foo {
   _0: *const (),
 }
+
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::main
 fn main()
@@ -49,6 +36,22 @@ fn main()
 
     bb2: {
         unwind_continue;
+    }
+}
+
+// Full name: core::ptr::null::<()>
+#[diagnostic_item("ptr_null")]
+pub fn null::<()>() -> *const ()
+{
+    let _0: *const (); // return
+    let _1: *const (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        _1 = cast<*const ()>(const 0usize);
+        _0 = move _1;
+        return;
     }
 }
 

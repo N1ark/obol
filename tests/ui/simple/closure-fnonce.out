@@ -1,27 +1,21 @@
 
 // Final ULLBC:
 
+struct () {}
+
 // Full name: test_crate::NotCopy
 struct NotCopy {}
 
-struct () {}
-
-// Full name: core::mem::drop::<NotCopy>
-#[diagnostic_item("mem_drop")]
-pub fn drop::<NotCopy>(_x: NotCopy)
-{
-    let _0: (); // return
-    let _x: NotCopy; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
+struct test_crate::main::{closure}::{closure} {
+  upvar_0: NotCopy,
 }
 
 struct (_,)::<u8> {
   _0: u8,
+}
+
+struct (_,)::<NotCopy> {
+  _0: NotCopy,
 }
 
 struct (_, _)::<u8, bool> {
@@ -29,12 +23,67 @@ struct (_, _)::<u8, bool> {
   _1: bool,
 }
 
-struct (_,)::<NotCopy> {
-  _0: NotCopy,
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::main
+fn main()
+{
+    let _0: (); // return
+    let z: NotCopy; // local
+    let _2: u8; // anonymous local
+    let _3: test_crate::main::{closure}::{closure}; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(z);
+        z = NotCopy {  };
+        storage_live(_2);
+        storage_live(_3);
+        _3 = test_crate::main::{closure}::{closure} { upvar_0: move z };
+        _2 = apply_to_zero_once::<test_crate::main::{closure}::{closure}>(move _3) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_3);
+        storage_dead(_2);
+        _0 = ();
+        storage_dead(z);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
 }
 
-struct test_crate::main::{closure}::{closure} {
-  upvar_0: NotCopy,
+// Full name: test_crate::apply_to_zero_once::<test_crate::main::{closure}::{closure}>
+fn apply_to_zero_once::<test_crate::main::{closure}::{closure}>(f: test_crate::main::{closure}::{closure}) -> u8
+{
+    let _0: u8; // return
+    let f: test_crate::main::{closure}::{closure}; // arg #1
+    let _2: test_crate::main::{closure}::{closure}; // anonymous local
+    let _3: (u8,); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = move f;
+        storage_live(_3);
+        _3 = (const 0u8,);
+        _0 = test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(move _2, move _3) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_3);
+        storage_dead(_2);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
 }
 
 fn test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(_1: test_crate::main::{closure}::{closure}, spread_args: (u8,)) -> u8
@@ -83,63 +132,17 @@ fn test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCo
     }
 }
 
-// Full name: test_crate::apply_to_zero_once::<test_crate::main::{closure}::{closure}>
-fn apply_to_zero_once::<test_crate::main::{closure}::{closure}>(f: test_crate::main::{closure}::{closure}) -> u8
-{
-    let _0: u8; // return
-    let f: test_crate::main::{closure}::{closure}; // arg #1
-    let _2: test_crate::main::{closure}::{closure}; // anonymous local
-    let _3: (u8,); // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        _2 = move f;
-        storage_live(_3);
-        _3 = (const 0u8,);
-        _0 = test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCopy,)>(move _2, move _3) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        storage_dead(_3);
-        storage_dead(_2);
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: test_crate::main
-fn main()
+// Full name: core::mem::drop::<NotCopy>
+#[diagnostic_item("mem_drop")]
+pub fn drop::<NotCopy>(_x: NotCopy)
 {
     let _0: (); // return
-    let z: NotCopy; // local
-    let _2: u8; // anonymous local
-    let _3: test_crate::main::{closure}::{closure}; // anonymous local
+    let _x: NotCopy; // arg #1
 
     bb0: {
         storage_live(_0);
         _0 = ();
-        storage_live(z);
-        z = NotCopy {  };
-        storage_live(_2);
-        storage_live(_3);
-        _3 = test_crate::main::{closure}::{closure} { upvar_0: move z };
-        _2 = apply_to_zero_once::<test_crate::main::{closure}::{closure}>(move _3) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        storage_dead(_3);
-        storage_dead(_2);
-        _0 = ();
-        storage_dead(z);
         return;
-    }
-
-    bb2: {
-        unwind_continue;
     }
 }
 

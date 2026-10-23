@@ -1,53 +1,11 @@
 
 // Final ULLBC:
 
-// Full name: core::fmt::Error
-pub opaque type Error
-
-// Full name: core::fmt::Formatter::<'_>
-#[diagnostic_item("Formatter")]
-pub opaque type Formatter::<'_>
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub opaque type Arguments::<'_>
-
 struct () {}
 
-// Full name: core::result::Result::<(), Error>
-#[diagnostic_item("Result")]
-pub enum Result::<(), Error> {
-  Ok { _0: () },
-  Err { _0: Error },
-}
-
-// Full name: core::ptr::drop_glue::<&'_ i32>
-#[lang_item(DropGlue)]
-fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
-{
-    let _0: (); // return
-    let _1: &'_ mut &'_ i32; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        return;
-    }
-}
-
-// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>
-pub fn fmt::<'_, i32>(_1: &'_ &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
-= <opaque>
-
-#[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr(fmt::<'_, i32>))]
-
-// Full name: core::option::Option::<Arguments::<'_>>
-#[lang_item(Option)]
-#[diagnostic_item("Option")]
-pub enum Option::<Arguments::<'_>> {
-  None,
-  Some { _0: Arguments::<'_> },
+struct (_, _)::<&'_ i32, &'_ i32> {
+  _0: &'_ i32,
+  _1: &'_ i32,
 }
 
 // Full name: core::panicking::AssertKind
@@ -57,56 +15,47 @@ pub enum AssertKind {
   Match,
 }
 
-// Full name: FakeTrait
-trait FakeTrait
-
-// Full name: core::panicking::assert_failed_inner
-#[track_caller]
-fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
-= <missing>
-
-// Full name: core::panicking::assert_failed::<i32, i32>
-#[track_caller]
-pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32, args: Option::<Arguments::<'_>>) -> !
-{
-    let _0: !; // return
-    let kind: AssertKind; // arg #1
-    let left: &'_ i32; // arg #2
-    let right: &'_ i32; // arg #3
-    let args: Option::<Arguments::<'_>>; // arg #4
-    let _5: &'_ (dyn FakeTrait); // anonymous local
-    let _6: &'_ &'_ i32; // anonymous local
-    let _7: &'_ (dyn FakeTrait); // anonymous local
-    let _8: &'_ &'_ i32; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_5);
-        storage_live(_6);
-        _6 = &left;
-        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
-        storage_live(_7);
-        storage_live(_8);
-        _8 = &right;
-        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
-        _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        undefined_behavior;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
+// Full name: core::option::Option::<Arguments::<'_>>
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option::<Arguments::<'_>> {
+  None,
+  Some { _0: Arguments::<'_> },
 }
+
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub opaque type Arguments::<'_>
+
+// Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
+pub opaque type Formatter::<'_>
+
+// Full name: core::result::Result::<(), Error>
+#[diagnostic_item("Result")]
+pub enum Result::<(), Error> {
+  Ok { _0: () },
+  Err { _0: Error },
+}
+
+// Full name: core::fmt::Error
+pub opaque type Error
 
 // Full name: anon_const_0
 const anon_const_0: i32 = 42i32
 
-struct (_, _)::<&'_ i32, &'_ i32> {
-  _0: &'_ i32,
-  _1: &'_ i32,
+#[diagnostic_item("Debug")]
+vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr(fmt::<'_, i32>))]
+
+// Full name: FakeTrait
+trait FakeTrait
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
+
+// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
+impl<'_, _, T> core::fmt::Debug for &'_ T {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::main
@@ -204,6 +153,65 @@ fn main()
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::assert_failed::<i32, i32>
+#[track_caller]
+pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32, args: Option::<Arguments::<'_>>) -> !
+{
+    let _0: !; // return
+    let kind: AssertKind; // arg #1
+    let left: &'_ i32; // arg #2
+    let right: &'_ i32; // arg #3
+    let args: Option::<Arguments::<'_>>; // arg #4
+    let _5: &'_ (dyn FakeTrait); // anonymous local
+    let _6: &'_ &'_ i32; // anonymous local
+    let _7: &'_ (dyn FakeTrait); // anonymous local
+    let _8: &'_ &'_ i32; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_5);
+        storage_live(_6);
+        _6 = &left;
+        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
+        storage_live(_7);
+        storage_live(_8);
+        _8 = &right;
+        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
+        _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::panicking::assert_failed_inner
+#[track_caller]
+fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
+= <missing>
+
+// Full name: core::ptr::drop_glue::<&'_ i32>
+#[lang_item(DropGlue)]
+fn drop_glue::<&'_ i32>(_1: &'_ mut &'_ i32)
+{
+    let _0: (); // return
+    let _1: &'_ mut &'_ i32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
+    }
+}
+
+// Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>
+pub fn fmt::<'_, i32>(_1: &'_ &'_ i32, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+= <opaque>
 
 
 

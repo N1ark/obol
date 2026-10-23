@@ -1,9 +1,7 @@
 
 // Final ULLBC:
 
-struct (_,)::<u32> {
-  _0: u32,
-}
+struct () {}
 
 // Full name: core::option::Option::<u32>
 #[lang_item(Option)]
@@ -11,81 +9,6 @@ struct (_,)::<u32> {
 pub enum Option::<u32> {
   None,
   Some { _0: u32 },
-}
-
-// Full name: core::option::Option::Some::<u32>
-pub fn Some::<u32>(_1: u32) -> Option::<u32>
-{
-    let _0: Option::<u32>; // return
-    let _1: u32; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = Option::<u32>::Some { _0: move _1 };
-        return;
-    }
-}
-
-// Full name: core::ops::function::FnOnce::call_once::<Some::<u32>, (u32,)>
-pub fn call_once::<Some::<u32>, (u32,)>(_1: Some::<u32>, _2: (u32,)) -> Option::<u32>
-{
-    let _0: Option::<u32>; // return
-    let _1: Some::<u32>; // arg #1
-    let _2: (u32,); // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = Some::<u32>(move _2._0) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
-}
-
-// Full name: core::result::Result::<u32, u8>
-#[diagnostic_item("Result")]
-pub enum Result::<u32, u8> {
-  Ok { _0: u32 },
-  Err { _0: u8 },
-}
-
-// Full name: core::result::Result::Ok::<u32, u8>
-pub fn Ok::<u32, u8>(_1: u32) -> Result::<u32, u8>
-{
-    let _0: Result::<u32, u8>; // return
-    let _1: u32; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = Result::<u32, u8>::Ok { _0: move _1 };
-        return;
-    }
-}
-
-// Full name: core::ops::function::FnOnce::call_once::<Ok::<u32, u8>, (u32,)>
-pub fn call_once::<Ok::<u32, u8>, (u32,)>(_1: Ok::<u32, u8>, _2: (u32,)) -> Result::<u32, u8>
-{
-    let _0: Result::<u32, u8>; // return
-    let _1: Ok::<u32, u8>; // arg #1
-    let _2: (u32,); // arg #2
-
-    bb0: {
-        storage_live(_0);
-        _0 = Ok::<u32, u8>(move _2._0) -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        unwind_continue;
-    }
 }
 
 // Full name: core::option::Option::<Option::<u32>>
@@ -102,6 +25,81 @@ pub enum Option::<Option::<u32>> {
 pub enum Option::<Result::<u32, u8>> {
   None,
   Some { _0: Result::<u32, u8> },
+}
+
+struct (_,)::<u32> {
+  _0: u32,
+}
+
+// Full name: core::result::Result::<u32, u8>
+#[diagnostic_item("Result")]
+pub enum Result::<u32, u8> {
+  Ok { _0: u32 },
+  Err { _0: u8 },
+}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::wrap_some
+pub fn wrap_some(x: Option::<u32>) -> Option::<Option::<u32>>
+{
+    let _0: Option::<Option::<u32>>; // return
+    let x: Option::<u32>; // arg #1
+    let _2: Option::<u32>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = copy x;
+        _0 = map::<u32, Option::<u32>, Some::<u32>>(move _2, const Some::<u32>) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_2);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: test_crate::wrap_ok
+pub fn wrap_ok(x: Option::<u32>) -> Option::<Result::<u32, u8>>
+{
+    let _0: Option::<Result::<u32, u8>>; // return
+    let x: Option::<u32>; // arg #1
+    let _2: Option::<u32>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = copy x;
+        _0 = map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(move _2, const Ok::<u32, u8>) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        storage_dead(_2);
+        return;
+    }
+
+    bb2: {
+        unwind_continue;
+    }
+}
+
+// Full name: core::option::Option::Some::<u32>
+pub fn Some::<u32>(_1: u32) -> Option::<u32>
+{
+    let _0: Option::<u32>; // return
+    let _1: u32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = Option::<u32>::Some { _0: move _1 };
+        return;
+    }
 }
 
 // Full name: core::option::{Option::<_>}::map::<u32, Option::<u32>, Some::<u32>>
@@ -158,6 +156,19 @@ pub fn map::<u32, Option::<u32>, Some::<u32>>(self: Option::<u32>, f: Some::<u32
 
     bb6: {
         undefined_behavior;
+    }
+}
+
+// Full name: core::result::Result::Ok::<u32, u8>
+pub fn Ok::<u32, u8>(_1: u32) -> Result::<u32, u8>
+{
+    let _0: Result::<u32, u8>; // return
+    let _1: u32; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = Result::<u32, u8>::Ok { _0: move _1 };
+        return;
     }
 }
 
@@ -218,24 +229,19 @@ pub fn map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(self: Option::<u32>, f: Ok::
     }
 }
 
-struct () {}
-
-// Full name: test_crate::wrap_some
-pub fn wrap_some(x: Option::<u32>) -> Option::<Option::<u32>>
+// Full name: core::ops::function::FnOnce::call_once::<Some::<u32>, (u32,)>
+pub fn call_once::<Some::<u32>, (u32,)>(_1: Some::<u32>, _2: (u32,)) -> Option::<u32>
 {
-    let _0: Option::<Option::<u32>>; // return
-    let x: Option::<u32>; // arg #1
-    let _2: Option::<u32>; // anonymous local
+    let _0: Option::<u32>; // return
+    let _1: Some::<u32>; // arg #1
+    let _2: (u32,); // arg #2
 
     bb0: {
         storage_live(_0);
-        storage_live(_2);
-        _2 = copy x;
-        _0 = map::<u32, Option::<u32>, Some::<u32>>(move _2, const Some::<u32>) -> bb1 (unwind: bb2);
+        _0 = Some::<u32>(move _2._0) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(_2);
         return;
     }
 
@@ -244,22 +250,19 @@ pub fn wrap_some(x: Option::<u32>) -> Option::<Option::<u32>>
     }
 }
 
-// Full name: test_crate::wrap_ok
-pub fn wrap_ok(x: Option::<u32>) -> Option::<Result::<u32, u8>>
+// Full name: core::ops::function::FnOnce::call_once::<Ok::<u32, u8>, (u32,)>
+pub fn call_once::<Ok::<u32, u8>, (u32,)>(_1: Ok::<u32, u8>, _2: (u32,)) -> Result::<u32, u8>
 {
-    let _0: Option::<Result::<u32, u8>>; // return
-    let x: Option::<u32>; // arg #1
-    let _2: Option::<u32>; // anonymous local
+    let _0: Result::<u32, u8>; // return
+    let _1: Ok::<u32, u8>; // arg #1
+    let _2: (u32,); // arg #2
 
     bb0: {
         storage_live(_0);
-        storage_live(_2);
-        _2 = copy x;
-        _0 = map::<u32, Result::<u32, u8>, Ok::<u32, u8>>(move _2, const Ok::<u32, u8>) -> bb1 (unwind: bb2);
+        _0 = Ok::<u32, u8>(move _2._0) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_dead(_2);
         return;
     }
 

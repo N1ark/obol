@@ -1,24 +1,43 @@
 
 // Final ULLBC:
 
-// Full name: core::marker::PhantomData::<List::<&'_ mut u32>>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<List::<&'_ mut u32>> {}
+struct () {}
 
-// Full name: alloc::alloc::Global
-#[lang_item(GlobalAlloc)]
-pub struct Global {}
-
-// Full name: core::ptr::non_null::NonNull::<List::<&'_ mut u32>>
-#[lang_item(NonNull)]
-pub struct NonNull::<List::<&'_ mut u32>> {
-  pointer: *const List::<&'_ mut u32> is !null,
+// Full name: test_crate::Foo3::<&'_ mut u32>
+struct Foo3::<&'_ mut u32> {
+  _0: Foo2::<&'_ mut u32>,
 }
 
-// Full name: core::ptr::unique::Unique::<List::<&'_ mut u32>>
-pub struct Unique::<List::<&'_ mut u32>> {
-  pointer: NonNull::<List::<&'_ mut u32>>,
-  _marker: PhantomData::<List::<&'_ mut u32>>,
+// Full name: test_crate::List::<&'_ mut u32>
+enum List::<&'_ mut u32> {
+  Nil,
+  Cons { _0: ListNode::<&'_ mut u32> },
+}
+
+// Full name: test_crate::ArrayWrapper::<&'_ mut u32, 1usize>
+struct ArrayWrapper::<&'_ mut u32, 1usize> {
+  _0: [&'_ mut u32; 1usize],
+}
+
+// Full name: test_crate::ArrayWrapper::<&'_ mut u32, 2usize>
+struct ArrayWrapper::<&'_ mut u32, 2usize> {
+  _0: [&'_ mut u32; 2usize],
+}
+
+// Full name: test_crate::Foo2::<&'_ mut u32>
+struct Foo2::<&'_ mut u32> {
+  _0: Foo1::<&'_ mut u32>,
+}
+
+// Full name: test_crate::ListNode::<&'_ mut u32>
+struct ListNode::<&'_ mut u32> {
+  val: &'_ mut u32,
+  next: Box::<List::<&'_ mut u32>, Global>,
+}
+
+// Full name: test_crate::Foo1::<&'_ mut u32>
+struct Foo1::<&'_ mut u32> {
+  _0: &'_ mut u32,
 }
 
 // Full name: alloc::boxed::Box::<List::<&'_ mut u32>, Global>
@@ -29,34 +48,28 @@ pub struct Box::<List::<&'_ mut u32>, Global> {
   _1: Global,
 }
 
-// Full name: test_crate::List::<&'_ mut u32>
-enum List::<&'_ mut u32> {
-  Nil,
-  Cons { _0: ListNode::<&'_ mut u32> },
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: core::ptr::unique::Unique::<List::<&'_ mut u32>>
+pub struct Unique::<List::<&'_ mut u32>> {
+  pointer: NonNull::<List::<&'_ mut u32>>,
+  _marker: PhantomData::<List::<&'_ mut u32>>,
 }
 
-// Full name: test_crate::ListNode::<&'_ mut u32>
-struct ListNode::<&'_ mut u32> {
-  val: &'_ mut u32,
-  next: Box::<List::<&'_ mut u32>, Global>,
+// Full name: core::ptr::non_null::NonNull::<List::<&'_ mut u32>>
+#[lang_item(NonNull)]
+pub struct NonNull::<List::<&'_ mut u32>> {
+  pointer: *const List::<&'_ mut u32> is !null,
 }
 
-struct () {}
+// Full name: core::marker::PhantomData::<List::<&'_ mut u32>>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<List::<&'_ mut u32>> {}
 
-// Full name: test_crate::Foo1::<&'_ mut u32>
-struct Foo1::<&'_ mut u32> {
-  _0: &'_ mut u32,
-}
-
-// Full name: test_crate::Foo2::<&'_ mut u32>
-struct Foo2::<&'_ mut u32> {
-  _0: Foo1::<&'_ mut u32>,
-}
-
-// Full name: test_crate::Foo3::<&'_ mut u32>
-struct Foo3::<&'_ mut u32> {
-  _0: Foo2::<&'_ mut u32>,
-}
+// Full name: FakeTrait
+trait FakeTrait
 
 // Full name: test_crate::use_foo
 fn use_foo(_1: Foo3::<&'_ mut u32>)
@@ -84,16 +97,6 @@ fn use_list_mut(_1: &'_ List::<&'_ mut u32>)
         _0 = ();
         return;
     }
-}
-
-// Full name: test_crate::ArrayWrapper::<&'_ mut u32, 1usize>
-struct ArrayWrapper::<&'_ mut u32, 1usize> {
-  _0: [&'_ mut u32; 1usize],
-}
-
-// Full name: test_crate::ArrayWrapper::<&'_ mut u32, 2usize>
-struct ArrayWrapper::<&'_ mut u32, 2usize> {
-  _0: [&'_ mut u32; 2usize],
 }
 
 // Full name: test_crate::use_const_generic

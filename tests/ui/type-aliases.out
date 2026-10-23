@@ -3,28 +3,14 @@
 
 struct () {}
 
-struct (_, _)::<u8, u8> {
-  _0: u8,
-  _1: u8,
-}
-
 // Full name: test_crate::Holder::<u32>
 pub struct Holder::<u32> {
   _0: u32,
 }
 
-// Full name: test_crate::{impl Sink<u8> for Holder::<u32>}::sink
-pub fn {impl Sink<u8> for Holder::<u32>}::sink(self: Holder::<u32>)
-{
-    let _0: (); // return
-    let self: Holder::<u32>; // arg #1
-
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        _0 = ();
-        return;
-    }
+struct (_, _)::<u8, u8> {
+  _0: u8,
+  _1: u8,
 }
 
 // Full name: test_crate::PolyWrap::<u32>
@@ -32,25 +18,27 @@ pub struct PolyWrap::<u32> {
   _0: u32,
 }
 
-// Full name: test_crate::{impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>
-pub fn {impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>(self: PolyWrap::<u32>)
-{
-    let _0: (); // return
-    let self: PolyWrap::<u32>; // arg #1
+// Full name: FakeTrait
+trait FakeTrait
 
-    bb0: {
-        storage_live(_0);
-        _0 = ();
-        _0 = ();
-        return;
-    }
+// Full name: test_crate::Sink
+trait Sink
+
+// Full name: test_crate::{impl Sink<u8> for Holder::<u32>}
+impl Sink<u8> for Holder::<u32> {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
-// Full name: test_crate::feed::<u32>
-pub fn feed::<u32>(_x: u8)
+// Full name: test_crate::{impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}
+impl<T> Sink<type_error("unsupported alias type")> for PolyWrap::<_> {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: test_crate::{impl Sink<u8> for Holder::<u32>}::sink
+pub fn {impl Sink<u8> for Holder::<u32>}::sink(self: Holder::<u32>)
 {
     let _0: (); // return
-    let _x: u8; // arg #1
+    let self: Holder::<u32>; // arg #1
 
     bb0: {
         storage_live(_0);
@@ -123,6 +111,34 @@ pub fn main()
 
     bb6: {
         unwind_continue;
+    }
+}
+
+// Full name: test_crate::{impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>
+pub fn {impl Sink<type_error("unsupported alias type")> for PolyWrap::<_>}::sink::<u32>(self: PolyWrap::<u32>)
+{
+    let _0: (); // return
+    let self: PolyWrap::<u32>; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        _0 = ();
+        return;
+    }
+}
+
+// Full name: test_crate::feed::<u32>
+pub fn feed::<u32>(_x: u8)
+{
+    let _0: (); // return
+    let _x: u8; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        _0 = ();
+        return;
     }
 }
 

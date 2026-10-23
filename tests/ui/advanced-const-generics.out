@@ -1,18 +1,13 @@
 
 // Final ULLBC:
 
-// Full name: core::fmt::Error
-pub struct Error {}
+struct () {}
 
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
+// Full name: test_crate::Foo
+enum Foo {
+  A,
+  B,
 }
-
-// Full name: FakeTrait
-trait FakeTrait
 
 // Full name: core::fmt::Formatter::<'_>
 #[diagnostic_item("Formatter")]
@@ -21,12 +16,6 @@ pub struct Formatter::<'_> {
   buf: &'_ mut (dyn FakeTrait),
 }
 
-struct str {
-  _0: [u8],
-}
-
-struct () {}
-
 // Full name: core::result::Result::<(), Error>
 #[diagnostic_item("Result")]
 pub enum Result::<(), Error> {
@@ -34,14 +23,47 @@ pub enum Result::<(), Error> {
   Err { _0: Error },
 }
 
-// Full name: core::fmt::{Formatter::<'_>}::write_str::<'_>
-pub fn write_str::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str) -> Result::<(), Error>
-= <missing>
+struct str {
+  _0: [u8],
+}
 
-// Full name: test_crate::Foo
-enum Foo {
-  A,
-  B,
+// Full name: core::fmt::Formatter::<'_>
+#[diagnostic_item("Formatter")]
+pub struct Formatter::<'_> {
+  options: FormattingOptions,
+  buf: &'_ mut (dyn FakeTrait),
+}
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: core::cmp::PartialEq
+#[lang_item(PartialEq)]
+#[diagnostic_item("PartialEq")]
+trait PartialEq
+
+// Full name: core::fmt::Debug
+#[diagnostic_item("Debug")]
+trait Debug
+
+// Full name: test_crate::{impl PartialEq<Foo> for Foo}
+impl "impl_PartialEq_Foo_for_Foo" PartialEq<Foo> for Foo {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: test_crate::{impl Debug for Foo}
+impl "impl_Debug_for_Foo" Debug for Foo {
+    vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl PartialEq<Foo> for Foo}::eq
@@ -140,6 +162,10 @@ pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
         undefined_behavior;
     }
 }
+
+// Full name: core::fmt::{Formatter::<'_>}::write_str::<'_>
+pub fn write_str::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str) -> Result::<(), Error>
+= <missing>
 
 
 
