@@ -524,7 +524,6 @@ impl ItemTransCtx<'_, '_> {
     fn translate_global_alloc_value(
         &mut self,
         def: &mir::alloc::AllocId,
-        rty: Option<ty::Ty>,
     ) -> Result<ConstantExpr, Error> {
         let alloc: mir::alloc::GlobalAlloc = def.clone().into();
         match alloc {
@@ -536,18 +535,6 @@ impl ItemTransCtx<'_, '_> {
                 let alloc_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, def);
                 let src = ConstSource::Global(GlobalRef::Alloc(alloc_id));
                 self.read_const(Span::dummy(), src, ReadMode::Structured)
-            }
-            mir::alloc::GlobalAlloc::TypeId { ty: type_id_ty } => {
-                let span = Span::dummy();
-                let Some(output_ty) = rty else {
-                    raise_error!(self, span, "TypeId global missing type annotation")
-                };
-                let output = self.translate_ty(span, output_ty)?;
-                let translated_ty = self.translate_ty(span, type_id_ty)?;
-                Ok(ConstantExpr::new(
-                    ConstantExprKind::TypeId(translated_ty),
-                    output,
-                ))
             }
             _ => {
                 panic!("Cannot translate global value: {def:?}")
@@ -592,7 +579,7 @@ impl ItemTransCtx<'_, '_> {
                         let init = self.register_fun_decl_id(span, instance);
                         self.call_initializer(init, translated_ty.clone())
                     }
-                    None => self.translate_global_alloc_value(def, ty)?,
+                    None => self.translate_global_alloc_value(def)?,
                 };
                 (self.translate_static_kind(static_def), value)
             }
@@ -601,12 +588,11 @@ impl ItemTransCtx<'_, '_> {
                 // allocation itself.
                 size = Size::new(mem.bytes.len() as u64);
                 align = Size::new(mem.align);
-                let value = self.translate_global_alloc_value(def, ty)?;
+                let value = self.translate_global_alloc_value(def)?;
                 (GlobalKind::AnonConst, value)
             }
             mir::alloc::GlobalAlloc::TypeId { .. } => {
-                let value = self.translate_global_alloc_value(def, ty)?;
-                (GlobalKind::AnonConst, value)
+                unreachable!("Shouldn't reach a TypeId global")
             }
             mir::alloc::GlobalAlloc::VTable(..) => {
                 panic!("Shouldn't reach a VTable global")

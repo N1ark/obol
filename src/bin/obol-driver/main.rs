@@ -76,9 +76,6 @@ fn run_passes(ctx: &mut TransformCtx) {
         CowBox::Borrowed(&control_flow::merge_goto_chains::Transform),
         // Reconstruct the asserts
         CowBox::Borrowed(&resugar::reconstruct_asserts::Transform),
-        // Replace TypeId construction constants with ConstantExprKind::TypeId(T) before
-        // simplify_constants desugars them into statement sequences.
-        transform::uneval_typeid::Transform::new(ctx),
         // Reconstruct pointer null-checks to avoid reasoning about pointer-to-integer transmutations.
         CowBox::Borrowed(&transform::reconstruct_ptr_null_checks::Transform),
         // Desugar the constants to other values/operands as much as possible.
