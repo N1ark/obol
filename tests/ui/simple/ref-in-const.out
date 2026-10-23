@@ -125,14 +125,40 @@ pub struct FormattingOptions {
 // Full name: core::fmt::Error
 pub struct Error {}
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 8usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 8usize]>,
+}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 8usize]> {
+  value: [u8; 8usize],
+}
+
 // Full name: test_crate::SOME_INT
-const SOME_INT: &'_ &'_ i32 = &anon_const_0
+const SOME_INT: &'_ &'_ i32 = cast<&'_ &'_ i32>(&raw const anon_const_0)
 
 // Full name: anon_const_0
-const anon_const_0: &'_ i32 = &anon_const_2
+const anon_const_0: MaybeUninit::<[u8; 8usize]> = RawMemory(&anon_const_2[0], &anon_const_2[1], &anon_const_2[2], &anon_const_2[3], &anon_const_2[4], &anon_const_2[5], &anon_const_2[6], &anon_const_2[7])
 
 // Full name: anon_const_2
-const anon_const_2: i32 = 0i32
+const anon_const_2: MaybeUninit::<[u8; 4usize]> = RawMemory(0x00, 0x00, 0x00, 0x00)
 
 // Full name: FakeTrait
 trait FakeTrait

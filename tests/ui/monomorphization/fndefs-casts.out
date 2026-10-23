@@ -3,15 +3,28 @@
 
 struct () {}
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
 struct (_,)::<&'_ u32> {
   _0: &'_ u32,
 }
 
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
+}
+
 // Full name: anon_const_0
-const anon_const_0: char = 'x'
+const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x78, 0x00, 0x00, 0x00)
 
 // Full name: anon_const_1
-const anon_const_1: u32 = 13u32
+const anon_const_1: MaybeUninit::<[u8; 4usize]> = RawMemory(0x0d, 0x00, 0x00, 0x00)
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -47,7 +60,9 @@ fn main()
     let _25: &'_ char; // anonymous local
     let _26: (); // anonymous local
     let _27: &'_ char; // anonymous local
-    let _28: &'_ char; // anonymous local
+    let _28: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _29: *const char; // anonymous local
+    let _30: &'_ char; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -129,8 +144,12 @@ fn main()
         storage_live(_24);
         storage_live(_25);
         storage_live(_28);
-        _28 = &anon_const_0;
-        _27 = move _28;
+        _28 = &raw const anon_const_0;
+        storage_live(_29);
+        _29 = cast<*const char>(move _28);
+        storage_live(_30);
+        _30 = &(*_29);
+        _27 = move _30;
         _25 = &(*_27);
         _24 = &(*_25);
         _22 = (move _23)(move _24) -> bb5 (unwind: bb8);
@@ -233,7 +252,9 @@ fn takes_closure::<foo::<u32>>(c: foo::<u32>)
     let _4: &'_ u32; // anonymous local
     let _5: &'_ u32; // anonymous local
     let _6: &'_ u32; // anonymous local
-    let _7: &'_ u32; // anonymous local
+    let _7: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _8: *const u32; // anonymous local
+    let _9: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -245,8 +266,12 @@ fn takes_closure::<foo::<u32>>(c: foo::<u32>)
         storage_live(_4);
         storage_live(_5);
         storage_live(_7);
-        _7 = &anon_const_1;
-        _6 = move _7;
+        _7 = &raw const anon_const_1;
+        storage_live(_8);
+        _8 = cast<*const u32>(move _7);
+        storage_live(_9);
+        _9 = &(*_8);
+        _6 = move _9;
         _5 = &(*_6);
         _4 = &(*_5);
         _3 = (move _4,);

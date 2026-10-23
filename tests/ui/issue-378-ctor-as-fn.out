@@ -28,6 +28,13 @@ enum Bar::<'_, i32> {
   Variant { _0: &'_ i32 },
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
 // Full name: alloc::vec::Vec::<u8, Global>
 #[diagnostic_item("Vec")]
 pub struct Vec::<u8, Global> {
@@ -161,6 +168,12 @@ pub struct PanicInfo::<'_> {
   force_no_backtrace: bool,
 }
 
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
+}
+
 // Full name: core::fmt::rt::Argument::<'_>
 #[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
@@ -286,7 +299,7 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_0
-const anon_const_0: i32 = 42i32
+const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
 
 // Full name: core::mem::SizedTypeProperties::LAYOUT::<u8>
 pub const LAYOUT::<u8>: Layout = Layout { size: 1usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl0 {  } } }
@@ -339,7 +352,9 @@ fn main()
     let _17: &'_ i32; // anonymous local
     let _18: *mut Foo; // anonymous local
     let _19: (); // anonymous local
-    let _20: &'_ i32; // anonymous local
+    let _20: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _21: *const i32; // anonymous local
+    let _22: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -402,8 +417,12 @@ fn main()
         storage_live(_15);
         storage_live(_16);
         storage_live(_20);
-        _20 = &anon_const_0;
-        _17 = move _20;
+        _20 = &raw const anon_const_0;
+        storage_live(_21);
+        _21 = cast<*const i32>(move _20);
+        storage_live(_22);
+        _22 = &(*_21);
+        _17 = move _22;
         _16 = &(*_17);
         _15 = &(*_16);
         _13 = Variant::<'_, i32>(move _15) -> bb6 (unwind: bb7);

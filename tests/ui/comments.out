@@ -45,6 +45,13 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
 struct str {
   _0: [u8],
 }
@@ -54,6 +61,12 @@ struct str {
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -115,7 +128,7 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_0
-const anon_const_0: u32 = 9u32
+const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x09, 0x00, 0x00, 0x00)
 
 // Full name: test_crate::CONSTANT
 const CONSTANT: u32 = 42u32
@@ -512,7 +525,9 @@ fn foo()
     let _32: &'_ u32; // anonymous local
     let _33: Option::<Arguments::<'_>>; // anonymous local
     let _34: &'_ u32; // anonymous local
-    let _35: &'_ u32; // anonymous local
+    let _35: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _36: *const u32; // anonymous local
+    let _37: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -583,8 +598,12 @@ fn foo()
         _17 = &a[copy _18];
         storage_live(_20);
         storage_live(_35);
-        _35 = &anon_const_0;
-        _34 = move _35;
+        _35 = &raw const anon_const_0;
+        storage_live(_36);
+        _36 = cast<*const u32>(move _35);
+        storage_live(_37);
+        _37 = &(*_36);
+        _34 = move _37;
         _20 = &(*_34);
         _16 = (move _17, move _20);
         storage_dead(_20);

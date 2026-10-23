@@ -8,8 +8,21 @@ struct (_, _)::<i32, i32> {
   _1: i32,
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 8usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 8usize]>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 8usize]> {
+  value: [u8; 8usize],
+}
+
 // Full name: anon_const_0
-const anon_const_0: (i32, i32) = (11i32, 22i32)
+const anon_const_0: MaybeUninit::<[u8; 8usize]> = RawMemory(0x0b, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00)
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -20,7 +33,9 @@ fn main()
     let _0: (); // return
     let x: &'_ (i32, i32); // local
     let _2: &'_ (i32, i32); // anonymous local
-    let _3: &'_ (i32, i32); // anonymous local
+    let _3: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
+    let _4: *const (i32, i32); // anonymous local
+    let _5: &'_ (i32, i32); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -28,8 +43,12 @@ fn main()
         _0 = ();
         storage_live(x);
         storage_live(_3);
-        _3 = &anon_const_0;
-        _2 = move _3;
+        _3 = &raw const anon_const_0;
+        storage_live(_4);
+        _4 = cast<*const (i32, i32)>(move _3);
+        storage_live(_5);
+        _5 = &(*_4);
+        _2 = move _5;
         x = &(*_2);
         _ = (*x)._0;
         _0 = ();

@@ -9,11 +9,24 @@ struct A {}
 // Full name: test_crate::B
 struct B {}
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 0usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 0usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 0usize]>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 0usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 0usize]> {
+  value: [u8; 0usize],
+}
+
 // Full name: anon_const_0
-const anon_const_0: A = A {  }
+const anon_const_0: MaybeUninit::<[u8; 0usize]> = RawMemory()
 
 // Full name: anon_const_1
-const anon_const_1: B = B {  }
+const anon_const_1: MaybeUninit::<[u8; 0usize]> = RawMemory()
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -28,8 +41,12 @@ fn main()
     let _4: &'_ B; // anonymous local
     let _5: &'_ B; // anonymous local
     let _6: &'_ A; // anonymous local
-    let _7: &'_ A; // anonymous local
-    let _8: &'_ B; // anonymous local
+    let _7: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
+    let _8: *const A; // anonymous local
+    let _9: &'_ A; // anonymous local
+    let _10: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
+    let _11: *const B; // anonymous local
+    let _12: &'_ B; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -39,8 +56,12 @@ fn main()
         storage_live(_1);
         storage_live(_2);
         storage_live(_7);
-        _7 = &anon_const_0;
-        _6 = move _7;
+        _7 = &raw const anon_const_0;
+        storage_live(_8);
+        _8 = cast<*const A>(move _7);
+        storage_live(_9);
+        _9 = &(*_8);
+        _6 = move _9;
         _2 = &(*_6);
         _1 = method::<A>(move _2) -> bb1 (unwind: bb4);
     }
@@ -50,9 +71,13 @@ fn main()
         storage_dead(_1);
         storage_live(_3);
         storage_live(_4);
-        storage_live(_8);
-        _8 = &anon_const_1;
-        _5 = move _8;
+        storage_live(_10);
+        _10 = &raw const anon_const_1;
+        storage_live(_11);
+        _11 = cast<*const B>(move _10);
+        storage_live(_12);
+        _12 = &(*_11);
+        _5 = move _12;
         _4 = &(*_5);
         _3 = method::<B>(move _4) -> bb2 (unwind: bb3);
     }

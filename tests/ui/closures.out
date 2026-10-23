@@ -53,6 +53,13 @@ struct (_,)::<&'_ usize> {
   _0: &'_ usize,
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 8usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 8usize]>,
+}
+
 struct (_, _)::<&'_ u32, &'_ u32> {
   _0: &'_ u32,
   _1: &'_ u32,
@@ -238,6 +245,13 @@ pub enum Result::<(), Error> {
 #[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 62usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 62usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 62usize]>,
+}
+
 struct (_, _)::<Arguments::<'_>, bool> {
   _0: Arguments::<'_>,
   _1: bool,
@@ -286,6 +300,18 @@ pub struct PanicInfo::<'_> {
   force_no_backtrace: bool,
 }
 
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 62usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 62usize]> {
+  value: [u8; 62usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 8usize]> {
+  value: [u8; 8usize],
+}
+
 // Full name: core::fmt::FormattingOptions
 pub struct FormattingOptions {
   flags: u32,
@@ -323,7 +349,7 @@ pub struct Range::<usize> {
 }
 
 // Full name: anon_const_0
-const anon_const_0: usize = 15usize
+const anon_const_0: MaybeUninit::<[u8; 8usize]> = RawMemory(0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
 
 // Full name: core::mem::SizedTypeProperties::IS_ZST::<i32>
 pub const IS_ZST::<i32>: bool = false
@@ -333,7 +359,7 @@ pub const IS_ZST::<i32>: bool = false
 pub const SIZE::<i32>: usize = 4usize
 
 // Full name: anon_const_7
-const anon_const_7: [u8; 62usize] = [33u8, 109u8, 101u8, 109u8, 58u8, 58u8, 99u8, 111u8, 110u8, 106u8, 117u8, 114u8, 101u8, 95u8, 122u8, 115u8, 116u8, 32u8, 105u8, 110u8, 118u8, 111u8, 107u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 116u8, 121u8, 112u8, 101u8, 32u8, 192u8, 25u8, 44u8, 32u8, 119u8, 104u8, 105u8, 99u8, 104u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 122u8, 101u8, 114u8, 111u8, 45u8, 115u8, 105u8, 122u8, 101u8, 100u8, 0u8]
+const anon_const_7: MaybeUninit::<[u8; 62usize]> = RawMemory(0x21, 0x6d, 0x65, 0x6d, 0x3a, 0x3a, 0x63, 0x6f, 0x6e, 0x6a, 0x75, 0x72, 0x65, 0x5f, 0x7a, 0x73, 0x74, 0x20, 0x69, 0x6e, 0x76, 0x6f, 0x6b, 0x65, 0x64, 0x20, 0x6f, 0x6e, 0x20, 0x74, 0x79, 0x70, 0x65, 0x20, 0xc0, 0x19, 0x2c, 0x20, 0x77, 0x68, 0x69, 0x63, 0x68, 0x20, 0x69, 0x73, 0x20, 0x6e, 0x6f, 0x74, 0x20, 0x7a, 0x65, 0x72, 0x6f, 0x2d, 0x73, 0x69, 0x7a, 0x65, 0x64, 0x00)
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -929,7 +955,9 @@ fn test_fnmut_with_ref()
     let _7: &'_ usize; // anonymous local
     let _8: &'_ usize; // anonymous local
     let _9: &'_ usize; // anonymous local
-    let _10: &'_ usize; // anonymous local
+    let _10: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
+    let _11: *const usize; // anonymous local
+    let _12: &'_ usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -949,8 +977,12 @@ fn test_fnmut_with_ref()
         storage_live(_7);
         storage_live(_8);
         storage_live(_10);
-        _10 = &anon_const_0;
-        _9 = move _10;
+        _10 = &raw const anon_const_0;
+        storage_live(_11);
+        _11 = cast<*const usize>(move _10);
+        storage_live(_12);
+        _12 = &(*_11);
+        _9 = move _12;
         _8 = &(*_9);
         _7 = &(*_8);
         _6 = (move _7,);
@@ -3042,7 +3074,9 @@ pub fn conjure_zst::<i32>() -> i32
     let _14: NonNull::<Argument::<'_>>; // anonymous local
     let _15: (); // anonymous local
     let _16: PhantomData::<&'_ ()>; // anonymous local
-    let _17: &'_ [u8; 62usize]; // anonymous local
+    let _17: *const MaybeUninit::<[u8; 62usize]>; // anonymous local
+    let _18: *const [u8; 62usize]; // anonymous local
+    let _19: &'_ [u8; 62usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3097,8 +3131,12 @@ pub fn conjure_zst::<i32>() -> i32
         args_7 = &args_5;
         storage_live(_13);
         storage_live(_17);
-        _17 = &anon_const_7;
-        _13 = transmute<NonNull::<u8>>(move _17);
+        _17 = &raw const anon_const_7;
+        storage_live(_18);
+        _18 = cast<*const [u8; 62usize]>(move _17);
+        storage_live(_19);
+        _19 = &(*_18);
+        _13 = transmute<NonNull::<u8>>(move _19);
         storage_live(_14);
         _14 = transmute<NonNull::<Argument::<'_>>>(copy args_7);
         _4 = Arguments::<'_> { template: move _13, args: move _14 };

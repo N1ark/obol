@@ -23,6 +23,13 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
 struct str {
   _0: [u8],
 }
@@ -107,6 +114,12 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
+}
+
 // Full name: core::fmt::rt::Argument::<'_>
 #[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
@@ -164,10 +177,10 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_0
-const anon_const_0: i32 = 42i32
+const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
 
 // Full name: anon_const_1
-const anon_const_1: i32 = 42i32
+const anon_const_1: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
 
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
@@ -249,8 +262,12 @@ fn main()
     let _22: Option::<Arguments::<'_>>; // anonymous local
     let _23: &'_ i32; // anonymous local
     let _24: &'_ i32; // anonymous local
-    let _25: &'_ i32; // anonymous local
-    let _26: &'_ i32; // anonymous local
+    let _25: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _26: *const i32; // anonymous local
+    let _27: &'_ i32; // anonymous local
+    let _28: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _29: *const i32; // anonymous local
+    let _30: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -267,8 +284,12 @@ fn main()
         storage_live(_5);
         storage_live(_6);
         storage_live(_25);
-        _25 = &anon_const_0;
-        _24 = move _25;
+        _25 = &raw const anon_const_0;
+        storage_live(_26);
+        _26 = cast<*const i32>(move _25);
+        storage_live(_27);
+        _27 = &(*_26);
+        _24 = move _27;
         _6 = &(*_24);
         _5 = &(*_6);
         _2 = write::<i32>(move _3, move _5) -> bb1 (unwind: bb6);
@@ -284,9 +305,13 @@ fn main()
         storage_live(_8);
         _8 = &x;
         storage_live(_9);
-        storage_live(_26);
-        _26 = &anon_const_1;
-        _23 = move _26;
+        storage_live(_28);
+        _28 = &raw const anon_const_1;
+        storage_live(_29);
+        _29 = cast<*const i32>(move _28);
+        storage_live(_30);
+        _30 = &(*_29);
+        _23 = move _30;
         _9 = &(*_23);
         _7 = (move _8, move _9);
         storage_dead(_9);

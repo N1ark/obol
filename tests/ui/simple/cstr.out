@@ -10,9 +10,6 @@ pub struct CStr {
   inner: [i8],
 }
 
-// Full name: anon_const_0
-const anon_const_0: CStr = CStr { inner: [49i8, 50i8, 51i8, 0i8] }
-
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -21,18 +18,21 @@ fn main()
 {
     let _0: (); // return
     let _1: &'_ CStr; // anonymous local
-    let _2: &'_ CStr; // anonymous local
+    let _2: CStr; // anonymous local
     let _3: &'_ CStr; // anonymous local
+    let _4: &'_ CStr; // anonymous local
 
     bb0: {
         storage_live(_0);
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = &anon_const_0;
+        _2 = CStr { inner: const [49i8, 50i8, 51i8, 0i8] };
         storage_live(_3);
-        _3 = unsize_cast<&'_ CStr, 4usize>(move _2);
-        _1 = move _3;
+        _3 = &_2;
+        storage_live(_4);
+        _4 = unsize_cast<&'_ CStr, 4usize>(move _3);
+        _1 = move _4;
         storage_dead(_1);
         _0 = ();
         return;

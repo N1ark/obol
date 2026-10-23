@@ -8,11 +8,37 @@ pub struct Ref::<'_, ()> {
   _0: &'_ (),
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 8usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 8usize]>,
+}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 0usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 0usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 0usize]>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 0usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 0usize]> {
+  value: [u8; 0usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 8usize]> {
+  value: [u8; 8usize],
+}
+
 // Full name: anon_const_0
-const anon_const_0: Ref::<'_, ()> = Ref::<'_, ()> { _0: &anon_const_1 }
+const anon_const_0: MaybeUninit::<[u8; 8usize]> = RawMemory(&anon_const_1[0], &anon_const_1[1], &anon_const_1[2], &anon_const_1[3], &anon_const_1[4], &anon_const_1[5], &anon_const_1[6], &anon_const_1[7])
 
 // Full name: anon_const_1
-const anon_const_1: () = ()
+const anon_const_1: MaybeUninit::<[u8; 0usize]> = RawMemory()
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -23,7 +49,9 @@ fn main()
     let _0: (); // return
     let _1: &'_ Ref::<'_, ()>; // anonymous local
     let _2: &'_ Ref::<'_, ()>; // anonymous local
-    let _3: &'_ Ref::<'_, ()>; // anonymous local
+    let _3: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
+    let _4: *const Ref::<'_, ()>; // anonymous local
+    let _5: &'_ Ref::<'_, ()>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -31,8 +59,12 @@ fn main()
         _0 = ();
         storage_live(_1);
         storage_live(_3);
-        _3 = &anon_const_0;
-        _2 = move _3;
+        _3 = &raw const anon_const_0;
+        storage_live(_4);
+        _4 = cast<*const Ref::<'_, ()>>(move _3);
+        storage_live(_5);
+        _5 = &(*_4);
+        _2 = move _5;
         _1 = &(*_2);
         storage_dead(_1);
         _0 = ();

@@ -15,11 +15,24 @@ enum E2 {
   B,
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 1usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 1usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 1usize]>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 1usize]> {
+  value: [u8; 1usize],
+}
+
 // Full name: anon_const_0
-const anon_const_0: E1 = E1::A {  }
+const anon_const_0: MaybeUninit::<[u8; 1usize]> = RawMemory(0x00)
 
 // Full name: anon_const_1
-const anon_const_1: E2 = E2::A {  }
+const anon_const_1: MaybeUninit::<[u8; 1usize]> = RawMemory(0x00)
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -36,8 +49,12 @@ fn main()
     let _6: &'_ E2; // anonymous local
     let _7: &'_ E2; // anonymous local
     let _8: &'_ E1; // anonymous local
-    let _9: &'_ E1; // anonymous local
-    let _10: &'_ E2; // anonymous local
+    let _9: *const MaybeUninit::<[u8; 1usize]>; // anonymous local
+    let _10: *const E1; // anonymous local
+    let _11: &'_ E1; // anonymous local
+    let _12: *const MaybeUninit::<[u8; 1usize]>; // anonymous local
+    let _13: *const E2; // anonymous local
+    let _14: &'_ E2; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -48,8 +65,12 @@ fn main()
         storage_live(_2);
         storage_live(_3);
         storage_live(_9);
-        _9 = &anon_const_0;
-        _8 = move _9;
+        _9 = &raw const anon_const_0;
+        storage_live(_10);
+        _10 = cast<*const E1>(move _9);
+        storage_live(_11);
+        _11 = &(*_10);
+        _8 = move _11;
         _3 = &(*_8);
         _2 = &(*_3);
         _1 = @discriminant((*_2));
@@ -59,9 +80,13 @@ fn main()
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);
-        storage_live(_10);
-        _10 = &anon_const_1;
-        _7 = move _10;
+        storage_live(_12);
+        _12 = &raw const anon_const_1;
+        storage_live(_13);
+        _13 = cast<*const E2>(move _12);
+        storage_live(_14);
+        _14 = &(*_13);
+        _7 = move _14;
         _6 = &(*_7);
         _5 = &(*_6);
         _4 = @discriminant((*_5));

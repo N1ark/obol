@@ -24,6 +24,13 @@ pub enum Option::<u32> {
   Some { _0: u32 },
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
 // Full name: std::hash::random::RandomState
 pub struct RandomState {
   k0: u64,
@@ -201,6 +208,13 @@ pub struct NonNull::<Argument::<'_>> {
 // Full name: core::marker::PhantomData::<&'_ ()>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 2usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 2usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 2usize]>,
+}
 
 // Full name: core::hash::sip::SipHasher13
 pub struct SipHasher13 {
@@ -521,20 +535,6 @@ struct (_,)::<&'_ mut &'_ mut RawTableInner> {
   _0: &'_ mut &'_ mut RawTableInner,
 }
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 2usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 2usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 2usize]>,
-}
-
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 1usize]>
 #[lang_item(MaybeUninit)]
 pub union MaybeUninit::<[u8; 1usize]> {
@@ -657,44 +657,10 @@ pub enum Result::<!, AllocError> {
 // Full name: core::alloc::AllocError
 pub struct AllocError {}
 
-// Full name: core::marker::PhantomData::<(u32, u32)>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<(u32, u32)> {}
-
-// Full name: core::fmt::Error
-pub struct Error {}
-
-// Full name: core::fmt::FormattingOptions
-pub struct FormattingOptions {
-  flags: u32,
-  width: u16,
-  precision: u16,
-}
-
-// Full name: core::num::niche_types::NonZeroU64Inner
-pub struct NonZeroU64Inner {
-  _0: u64 is 1u64..=18446744073709551615u64,
-}
-
-// Full name: core::num::niche_types::NonZeroUsizeInner
-pub struct NonZeroUsizeInner {
-  _0: usize is 1usize..=18446744073709551615usize,
-}
-
-// Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
-pub struct NonNull::<str> {
-  pointer: *const str is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ str> {}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 2usize]>
 #[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
+pub struct ManuallyDrop::<[u8; 2usize]> {
+  value: [u8; 2usize],
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
@@ -715,11 +681,45 @@ pub struct ManuallyDrop::<[u8; 8usize]> {
   value: [u8; 8usize],
 }
 
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 2usize]>
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
 #[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 2usize]> {
-  value: [u8; 2usize],
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
 }
+
+// Full name: core::marker::PhantomData::<(u32, u32)>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<(u32, u32)> {}
+
+// Full name: core::fmt::Error
+pub struct Error {}
+
+// Full name: core::fmt::FormattingOptions
+pub struct FormattingOptions {
+  flags: u32,
+  width: u16,
+  precision: u16,
+}
+
+// Full name: core::num::niche_types::NonZeroUsizeInner
+pub struct NonZeroUsizeInner {
+  _0: usize is 1usize..=18446744073709551615usize,
+}
+
+// Full name: core::num::niche_types::NonZeroU64Inner
+pub struct NonZeroU64Inner {
+  _0: u64 is 1u64..=18446744073709551615u64,
+}
+
+// Full name: core::ptr::non_null::NonNull::<str>
+#[lang_item(NonNull)]
+pub struct NonNull::<str> {
+  pointer: *const str is !null,
+}
+
+// Full name: core::marker::PhantomData::<&'_ str>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::mem::alignment::AlignmentEnum
 enum AlignmentEnum {
@@ -815,10 +815,10 @@ struct (_,)::<&'_ RandomState> {
 }
 
 // Full name: anon_const_0
-const anon_const_0: u32 = 22u32
+const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x16, 0x00, 0x00, 0x00)
 
 // Full name: anon_const_1
-const anon_const_1: u32 = 22u32
+const anon_const_1: MaybeUninit::<[u8; 4usize]> = RawMemory(0x16, 0x00, 0x00, 0x00)
 
 // Full name: hashbrown::raw::SizedTypeProperties::IS_ZERO_SIZED::<(u32, u32)>
 const IS_ZERO_SIZED::<(u32, u32)>: bool = false
@@ -839,7 +839,7 @@ vtable FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (
 vtable FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>)), cast<*const ()>(fnptr(hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>))]
 
 // Full name: anon_const_3
-const anon_const_3: [u8; 2usize] = [192u8, 0u8]
+const anon_const_3: MaybeUninit::<[u8; 2usize]> = RawMemory(0xc0, 0x00)
 
 // Full name: {vtable}::core::ops::function::Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>
 #[lang_item(Fn)]
@@ -852,10 +852,10 @@ const NEEDS_DROP::<(u32, u32)>: bool = false
 const TABLE_LAYOUT::<(u32, u32), Global>: TableLayout = TableLayout { size: 8usize, ctrl_align: 8usize }
 
 // Full name: hashbrown::raw::{RawTableInner}::NEW
-const NEW: RawTableInner = RawTableInner { bucket_mask: 0usize, ctrl: NonNull::<u8> { pointer: &raw const anon_const_6 }, growth_left: 0usize, items: 0usize }
+const NEW: RawTableInner = RawTableInner { bucket_mask: 0usize, ctrl: NonNull::<u8> { pointer: cast<*const u8 is !null>(&raw const anon_const_6) }, growth_left: 0usize, items: 0usize }
 
 // Full name: anon_const_6
-const anon_const_6: u64 = 18446744073709551615u64
+const anon_const_6: MaybeUninit::<[u8; 8usize]> = RawMemory(0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff)
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -1007,8 +1007,12 @@ pub fn get_or_insert(map: &'_ mut std::collections::hash::map::HashMap::<u32, u3
     let _14: &'_ u32; // anonymous local
     let _15: &'_ u32; // anonymous local
     let _16: &'_ u32; // anonymous local
-    let _17: &'_ u32; // anonymous local
-    let _18: &'_ u32; // anonymous local
+    let _17: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _18: *const u32; // anonymous local
+    let _19: &'_ u32; // anonymous local
+    let _20: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _21: *const u32; // anonymous local
+    let _22: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1021,8 +1025,12 @@ pub fn get_or_insert(map: &'_ mut std::collections::hash::map::HashMap::<u32, u3
         storage_live(_4);
         storage_live(_5);
         storage_live(_17);
-        _17 = &anon_const_0;
-        _16 = move _17;
+        _17 = &raw const anon_const_0;
+        storage_live(_18);
+        _18 = cast<*const u32>(move _17);
+        storage_live(_19);
+        _19 = &(*_18);
+        _16 = move _19;
         _5 = &(*_16);
         _4 = &(*_5);
         _2 = std::collections::hash::map::{std::collections::hash::map::HashMap::<_, _, _, _>}::get::<u32, u32, RandomState, Global, u32>(move _3, move _4) -> bb1 (unwind: bb10);
@@ -1051,9 +1059,13 @@ pub fn get_or_insert(map: &'_ mut std::collections::hash::map::HashMap::<u32, u3
         _12 = &(*map);
         storage_live(_13);
         storage_live(_14);
-        storage_live(_18);
-        _18 = &anon_const_1;
-        _15 = move _18;
+        storage_live(_20);
+        _20 = &raw const anon_const_1;
+        storage_live(_21);
+        _21 = cast<*const u32>(move _20);
+        storage_live(_22);
+        _22 = &(*_21);
+        _15 = move _22;
         _14 = &(*_15);
         _13 = &(*_14);
         _11 = index::<'_, u32, u32, u32, RandomState, Global>(move _12, move _13) -> bb4 (unwind: bb5);
@@ -2150,7 +2162,9 @@ pub fn panic_display::<&'_ str>(x: &'_ &'_ str) -> !
     let _12: NonNull::<u8>; // anonymous local
     let _13: NonNull::<Argument::<'_>>; // anonymous local
     let _14: PhantomData::<&'_ ()>; // anonymous local
-    let _15: &'_ [u8; 2usize]; // anonymous local
+    let _15: *const MaybeUninit::<[u8; 2usize]>; // anonymous local
+    let _16: *const [u8; 2usize]; // anonymous local
+    let _17: &'_ [u8; 2usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2182,8 +2196,12 @@ pub fn panic_display::<&'_ str>(x: &'_ &'_ str) -> !
         args_6 = &args_4;
         storage_live(_12);
         storage_live(_15);
-        _15 = &anon_const_3;
-        _12 = transmute<NonNull::<u8>>(move _15);
+        _15 = &raw const anon_const_3;
+        storage_live(_16);
+        _16 = cast<*const [u8; 2usize]>(move _15);
+        storage_live(_17);
+        _17 = &(*_16);
+        _12 = transmute<NonNull::<u8>>(move _17);
         storage_live(_13);
         _13 = transmute<NonNull::<Argument::<'_>>>(copy args_6);
         _3 = Arguments::<'_> { template: move _12, args: move _13 };

@@ -28,6 +28,13 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
 struct test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure} {
   upvar_0: &'_ i32,
 }
@@ -53,6 +60,12 @@ struct (_,)::<&'_ i32> {
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -114,13 +127,13 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_0
-const anon_const_0: i32 = 42i32
+const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
 
 // Full name: anon_const_1
-const anon_const_1: u32 = 0u32
+const anon_const_1: MaybeUninit::<[u8; 4usize]> = RawMemory(0x00, 0x00, 0x00, 0x00)
 
 // Full name: anon_const_2
-const anon_const_2: u32 = 1u32
+const anon_const_2: MaybeUninit::<[u8; 4usize]> = RawMemory(0x01, 0x00, 0x00, 0x00)
 
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
@@ -205,7 +218,9 @@ fn main()
     let _23: &'_ i32; // anonymous local
     let _24: Option::<Arguments::<'_>>; // anonymous local
     let _25: &'_ i32; // anonymous local
-    let _26: &'_ i32; // anonymous local
+    let _26: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _27: *const i32; // anonymous local
+    let _28: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -238,8 +253,12 @@ fn main()
         _6 = &_7;
         storage_live(_11);
         storage_live(_26);
-        _26 = &anon_const_0;
-        _25 = move _26;
+        _26 = &raw const anon_const_0;
+        storage_live(_27);
+        _27 = cast<*const i32>(move _26);
+        storage_live(_28);
+        _28 = &(*_27);
+        _25 = move _28;
         _11 = &(*_25);
         _5 = (move _6, move _11);
         storage_dead(_11);
@@ -329,8 +348,12 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
     let _16: &'_ u32; // anonymous local
     let _17: &'_ u32; // anonymous local
     let _18: &'_ i32; // anonymous local
-    let _19: &'_ u32; // anonymous local
-    let _20: &'_ u32; // anonymous local
+    let _19: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _20: *const u32; // anonymous local
+    let _21: &'_ u32; // anonymous local
+    let _22: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
+    let _23: *const u32; // anonymous local
+    let _24: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -362,8 +385,12 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         storage_live(_11);
         storage_live(_12);
         storage_live(_19);
-        _19 = &anon_const_1;
-        _17 = move _19;
+        _19 = &raw const anon_const_1;
+        storage_live(_20);
+        _20 = cast<*const u32>(move _19);
+        storage_live(_21);
+        _21 = &(*_20);
+        _17 = move _21;
         _12 = &(*_17);
         _11 = &(*_12);
         _10 = (move _11,);
@@ -378,9 +405,13 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
-        storage_live(_20);
-        _20 = &anon_const_2;
-        _16 = move _20;
+        storage_live(_22);
+        _22 = &raw const anon_const_2;
+        storage_live(_23);
+        _23 = cast<*const u32>(move _22);
+        storage_live(_24);
+        _24 = &(*_23);
+        _16 = move _24;
         _15 = &(*_16);
         _14 = &(*_15);
         _13 = (move _14,);

@@ -35,6 +35,13 @@ struct str {
   _0: [u8],
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 8usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 8usize]>,
+}
+
 // Full name: core::fmt::Arguments::<'_>
 #[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
@@ -97,6 +104,12 @@ pub struct PanicInfo::<'_> {
   force_no_backtrace: bool,
 }
 
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 8usize]> {
+  value: [u8; 8usize],
+}
+
 // Full name: core::fmt::rt::Argument::<'_>
 #[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
@@ -154,10 +167,10 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_1
-const anon_const_1: isize = 1isize
+const anon_const_1: MaybeUninit::<[u8; 8usize]> = RawMemory(0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
 
 // Full name: anon_const_3
-const anon_const_3: isize = 0isize
+const anon_const_3: MaybeUninit::<[u8; 8usize]> = RawMemory(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
 
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ isize>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ isize>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, isize>))]
@@ -253,8 +266,12 @@ fn main()
     let _44: Option::<Arguments::<'_>>; // anonymous local
     let _45: &'_ isize; // anonymous local
     let _46: &'_ isize; // anonymous local
-    let _47: &'_ isize; // anonymous local
-    let _48: &'_ isize; // anonymous local
+    let _47: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
+    let _48: *const isize; // anonymous local
+    let _49: &'_ isize; // anonymous local
+    let _50: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
+    let _51: *const isize; // anonymous local
+    let _52: &'_ isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -289,8 +306,12 @@ fn main()
         _6 = &_7;
         storage_live(_9);
         storage_live(_47);
-        _47 = &anon_const_1;
-        _46 = move _47;
+        _47 = &raw const anon_const_1;
+        storage_live(_48);
+        _48 = cast<*const isize>(move _47);
+        storage_live(_49);
+        _49 = &(*_48);
+        _46 = move _49;
         _9 = &(*_46);
         _5 = (move _6, move _9);
         storage_dead(_9);
@@ -357,9 +378,13 @@ fn main()
         storage_dead(_30);
         _28 = &_29;
         storage_live(_31);
-        storage_live(_48);
-        _48 = &anon_const_3;
-        _45 = move _48;
+        storage_live(_50);
+        _50 = &raw const anon_const_3;
+        storage_live(_51);
+        _51 = cast<*const isize>(move _50);
+        storage_live(_52);
+        _52 = &(*_51);
+        _45 = move _52;
         _31 = &(*_45);
         _27 = (move _28, move _31);
         storage_dead(_31);

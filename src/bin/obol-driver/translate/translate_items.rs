@@ -4,6 +4,7 @@ extern crate rustc_public;
 extern crate rustc_span;
 
 use log::trace;
+use rustc_const_uneval::{ConstSource, GlobalRef, ReadMode};
 use rustc_public::{CrateDef, mir, ty};
 
 use charon_lib::{ast::*, ids::IndexVec, raise_error, register_error};
@@ -526,14 +527,15 @@ impl ItemTransCtx<'_, '_> {
         rty: Option<ty::Ty>,
     ) -> Result<ConstantExpr, Error> {
         let alloc: mir::alloc::GlobalAlloc = def.clone().into();
-        let (const_expr, _ty) = match alloc {
+        match alloc {
             mir::alloc::GlobalAlloc::Static(def) => {
                 let span = self.translate_span_from_smir(&def.span());
-                let alloc = def.eval_initializer()?;
-                self.translate_alloc_to_const(span, &alloc, rty)?
+                self.read_static_value(span, def)
             }
-            mir::alloc::GlobalAlloc::Memory(mem) => {
-                self.translate_alloc_to_const(Span::dummy(), &mem, rty)?
+            mir::alloc::GlobalAlloc::Memory(_) => {
+                let alloc_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, def);
+                let src = ConstSource::Global(GlobalRef::Alloc(alloc_id));
+                self.read_const(Span::dummy(), src, ReadMode::Structured)
             }
             mir::alloc::GlobalAlloc::TypeId { ty: type_id_ty } => {
                 let span = Span::dummy();
@@ -542,15 +544,15 @@ impl ItemTransCtx<'_, '_> {
                 };
                 let output = self.translate_ty(span, output_ty)?;
                 let translated_ty = self.translate_ty(span, type_id_ty)?;
-                let const_val =
-                    ConstantExpr::new(ConstantExprKind::TypeId(translated_ty), output.clone());
-                (const_val, output)
+                Ok(ConstantExpr::new(
+                    ConstantExprKind::TypeId(translated_ty),
+                    output,
+                ))
             }
             _ => {
                 panic!("Cannot translate global value: {def:?}")
             }
-        };
-        Ok(const_expr)
+        }
     }
 
     // Translate one global.
@@ -693,8 +695,8 @@ impl ItemTransCtx<'_, '_> {
             (value, ty)
         } else {
             // Evaluate the static's initializer directly into the global's value.
-            let alloc = def.eval_initializer()?;
-            self.translate_alloc_to_const(span, &alloc, Some(def.ty()))?
+            let ty = self.translate_ty(span, def.ty())?;
+            (self.read_static_value(span, def)?, ty)
         };
 
         let global_kind = self.translate_static_kind(def);

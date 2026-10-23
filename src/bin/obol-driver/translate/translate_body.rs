@@ -729,11 +729,8 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             mir::Operand::Constant(const_op) => {
                 let ty = self.translate_ty(span, const_op.ty())?;
                 let cexpr = match &const_op.const_.kind() {
-                    ty::ConstantKind::Allocated(alloc) => {
-                        self.translate_allocation(span, alloc, ty.kind(), const_op.ty())?
-                    }
-                    ty::ConstantKind::ZeroSized => {
-                        self.translate_zst_constant(span, ty.kind(), const_op.ty())?
+                    ty::ConstantKind::Allocated(_) | ty::ConstantKind::ZeroSized => {
+                        self.translate_const_value(span, &const_op.const_)?
                     }
                     ty::ConstantKind::Param(_) => ConstantExpr::new(
                         ConstantExprKind::Opaque("Unhandled: Param".into()),

@@ -17,6 +17,13 @@ pub enum Result::<(), core::io::error::Error> {
   Err { _0: core::io::error::Error },
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 5usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 5usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 5usize]>,
+}
+
 // Full name: alloc::raw_vec::RawVec::<u8, Global>
 struct RawVec::<u8, Global> {
   inner: RawVecInner::<Global>,
@@ -510,6 +517,12 @@ pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>> {
   Break { _0: Result::<!, AllocError> },
 }
 
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 5usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 5usize]> {
+  value: [u8; 5usize],
+}
+
 // Full name: core::marker::PhantomData::<ErrorData::<CustomOwner>>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<ErrorData::<CustomOwner>> {}
@@ -564,7 +577,7 @@ pub struct FormattingOptions {
 }
 
 // Full name: anon_const_0
-const anon_const_0: [u8; 5usize] = [104u8, 101u8, 108u8, 108u8, 111u8]
+const anon_const_0: MaybeUninit::<[u8; 5usize]> = RawMemory(0x68, 0x65, 0x6c, 0x6c, 0x6f)
 
 // Full name: core::mem::SizedTypeProperties::ALIGNMENT::<u8>
 pub const ALIGNMENT::<u8>: Alignment = Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl0 {  } }
@@ -664,7 +677,9 @@ fn main()
     let _9: (); // anonymous local
     let _10: *mut Vec::<u8, Global>; // anonymous local
     let _11: (); // anonymous local
-    let _12: &'_ [u8; 5usize]; // anonymous local
+    let _12: *const MaybeUninit::<[u8; 5usize]>; // anonymous local
+    let _13: *const [u8; 5usize]; // anonymous local
+    let _14: &'_ [u8; 5usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -686,8 +701,12 @@ fn main()
         storage_live(_6);
         storage_live(_7);
         storage_live(_12);
-        _12 = &anon_const_0;
-        _7 = move _12;
+        _12 = &raw const anon_const_0;
+        storage_live(_13);
+        _13 = cast<*const [u8; 5usize]>(move _12);
+        storage_live(_14);
+        _14 = &(*_13);
+        _7 = move _14;
         _6 = &(*_7);
         _5 = unsize_cast<&'_ [u8], 5usize>(move _6);
         storage_dead(_6);

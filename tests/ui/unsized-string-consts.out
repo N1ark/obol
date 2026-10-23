@@ -13,6 +13,13 @@ struct str {
   _0: [u8],
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 5usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 5usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 5usize]>,
+}
+
 // Full name: alloc::vec::Vec::<u8, Global>
 #[diagnostic_item("Vec")]
 pub struct Vec::<u8, Global> {
@@ -316,6 +323,12 @@ pub struct PanicInfo::<'_> {
   force_no_backtrace: bool,
 }
 
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 5usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 5usize]> {
+  value: [u8; 5usize],
+}
+
 // Full name: core::fmt::rt::Argument::<'_>
 #[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
@@ -379,7 +392,7 @@ static FOO: &'static str = FOO()
 static BAR: &'static [u8] = BAR()
 
 // Full name: anon_const_3
-const anon_const_3: [u8; 5usize] = [104u8, 101u8, 108u8, 108u8, 111u8]
+const anon_const_3: MaybeUninit::<[u8; 5usize]> = RawMemory(0x68, 0x65, 0x6c, 0x6c, 0x6f)
 
 // Full name: core::mem::SizedTypeProperties::LAYOUT::<u8>
 pub const LAYOUT::<u8>: Layout = Layout { size: 1usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl0 {  } } }
@@ -568,15 +581,21 @@ fn BAR() -> &'static [u8]
     let _0: &'_ [u8]; // return
     let _1: &'_ [u8; 5usize]; // anonymous local
     let _2: &'_ [u8; 5usize]; // anonymous local
-    let _3: &'_ [u8; 5usize]; // anonymous local
+    let _3: *const MaybeUninit::<[u8; 5usize]>; // anonymous local
+    let _4: *const [u8; 5usize]; // anonymous local
+    let _5: &'_ [u8; 5usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_1);
         storage_live(_2);
         storage_live(_3);
-        _3 = &anon_const_3;
-        _2 = move _3;
+        _3 = &raw const anon_const_3;
+        storage_live(_4);
+        _4 = cast<*const [u8; 5usize]>(move _3);
+        storage_live(_5);
+        _5 = &(*_4);
+        _2 = move _5;
         _1 = &(*_2);
         _0 = unsize_cast<&'_ [u8], 5usize>(move _1);
         storage_dead(_2);
