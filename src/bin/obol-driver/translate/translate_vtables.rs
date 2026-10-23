@@ -40,11 +40,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     ) -> ConstantExpr {
         let global_ty = Self::vtable_global_ty(&principal);
         let id = self.register_vtable(span, ty, principal);
-        let global = ConstantExpr::new(
-            ConstantExprKind::Global(GlobalDeclRef {
+        let global = GlobalPlace::new_global(
+            GlobalDeclRef {
                 id,
                 generics: Box::new(GenericArgs::empty()),
-            }),
+            },
             global_ty.clone(),
         );
         let ptr = ConstantExpr::new(
@@ -52,7 +52,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             TyKind::RawPtr(global_ty, RefKind::Shared).into_ty(),
         );
         let erased_ty = Self::vtable_entry_ty();
-        ConstantExpr::new(ConstantExprKind::Cast(ptr, erased_ty.clone()), erased_ty)
+        ConstantExpr::new(
+            ConstantExprKind::Cast(ptr, CastKind::RawPtr(erased_ty.clone())),
+            erased_ty,
+        )
     }
 
     /// A function pointer to the given instance, erased to `*const ()` (like charon's
@@ -72,7 +75,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         let fn_ptr = ConstantExpr::new(ConstantExprKind::FnPtr(fn_ptr), fn_ptr_ty);
         let erased_ty = Self::vtable_entry_ty();
         Ok(ConstantExpr::new(
-            ConstantExprKind::Cast(fn_ptr, erased_ty.clone()),
+            ConstantExprKind::Cast(fn_ptr, CastKind::RawPtr(erased_ty.clone())),
             erased_ty,
         ))
     }

@@ -398,9 +398,9 @@ fn precondition_check(ptr: *mut ())
         storage_live(_6);
         storage_live(_15);
         storage_live(_16);
-        _16 = cast<usize, *mut ()>(const 0usize);
+        _16 = cast<*mut ()>(const 0usize);
         _15 = copy ptr != move _16;
-        _6 = cast<bool, usize>(move _15);
+        _6 = cast<usize>(move _15);
         storage_dead(_15);
         _2 = move _6 == const 0usize;
         storage_dead(_6);
@@ -414,23 +414,23 @@ fn precondition_check(ptr: *mut ())
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -497,7 +497,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         storage_live(_12);
         storage_live(_13);
         _13 = &raw const (*self_1).borrow.value;
-        _12 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _13);
+        _12 = cast<*mut isize>(copy _13);
         storage_dead(_13);
         self_9 = copy (*_12);
         storage_dead(_12);
@@ -512,7 +512,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         storage_live(_14);
         storage_live(_15);
         _15 = &raw const (*self_1).borrow.value;
-        _14 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _15);
+        _14 = cast<*mut isize>(copy _15);
         storage_dead(_15);
         (*_14) = copy b_8;
         storage_dead(_14);
@@ -527,7 +527,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
         storage_live(value);
         storage_live(ptr);
         _16 = &raw const (*self_1).value;
-        ptr = cast<*const UnsafeCell::<bool>, *mut bool>(copy _16);
+        ptr = cast<*mut bool>(copy _16);
         storage_live(_19);
         _19 = ub_checks;
         if move _19 -> bb2 else -> bb5;
@@ -535,7 +535,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
 
     bb2: {
         storage_live(_18);
-        _18 = cast<*const UnsafeCell::<bool>, *mut ()>(copy _16);
+        _18 = cast<*mut ()>(copy _16);
         _17 = precondition_check(move _18) -> bb3 (unwind: bb4);
     }
 
@@ -549,7 +549,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
     }
 
     bb5: {
-        value = transmute<*const UnsafeCell::<bool>, NonNull::<bool>>(copy _16);
+        value = transmute<NonNull::<bool>>(copy _16);
         storage_dead(ptr);
         storage_live(_7);
         _7 = Ref::<'_, bool> { value: copy value, borrow: copy b_4 };
@@ -596,21 +596,21 @@ pub fn drop::<'_>(self: &'_ mut BorrowRef::<'_>)
         storage_live(_5);
         _0 = ();
         storage_live(_2);
-        _4 = copy (*self).borrow;
+        _4 = noretag copy (*self).borrow;
         storage_live(_6);
         storage_live(_7);
         _7 = &raw const (*_4).value;
-        _6 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _7);
+        _6 = cast<*mut isize>(copy _7);
         storage_dead(_7);
         _2 = copy (*_6);
         storage_dead(_6);
-        _5 = copy (*self).borrow;
+        _5 = noretag copy (*self).borrow;
         storage_live(_3);
         _3 = copy _2 wrap.- const 1isize;
         storage_live(_8);
         storage_live(_9);
         _9 = &raw const (*_5).value;
-        _8 = cast<*const UnsafeCell::<isize>, *mut isize>(copy _9);
+        _8 = cast<*mut isize>(copy _9);
         storage_dead(_9);
         (*_8) = copy _3;
         storage_dead(_8);

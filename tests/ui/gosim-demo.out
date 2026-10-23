@@ -82,9 +82,9 @@ pub fn core::fmt::{Arguments::<'_>}::new::<'_, 7usize, 1usize>(template: &'_ [u8
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = transmute<&'_ [u8; 7usize], NonNull::<u8>>(copy template);
+        _3 = transmute<NonNull::<u8>>(copy template);
         storage_live(_4);
-        _4 = transmute<&'_ [Argument::<'_>; 1usize], NonNull::<Argument::<'_>>>(copy args);
+        _4 = transmute<NonNull::<Argument::<'_>>>(copy args);
         _0 = Arguments::<'_> { template: move _3, args: move _4 };
         storage_dead(_4);
         storage_dead(_3);
@@ -188,7 +188,7 @@ pub fn {impl Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &'_ mut Form
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self);
+        _3 = noretag copy (*self);
         _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
@@ -219,11 +219,11 @@ pub fn new_debug::<'_, &'_ i32>(x: &'_ &'_ i32) -> Argument::<'_>
         storage_live(_2);
         storage_live(_3);
         _6 = &raw const (*x);
-        _3 = transmute<*const &'_ i32, NonNull::<()>>(copy _6);
+        _3 = transmute<NonNull::<()>>(copy _6);
         storage_live(_4);
         storage_live(_5);
-        _5 = cast<{impl Debug for &'_ T}::fmt::<'_, i32>, fn(&'_ &'_ i32, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(const {impl Debug for &'_ T}::fmt::<'_, i32>);
-        _4 = transmute<fn(&'_ &'_ i32, &'_ mut Formatter::<'_>) -> Result::<(), Error>, unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(copy _5);
+        _5 = fn_def_to_fn_ptr(const {impl Debug for &'_ T}::fmt::<'_, i32>);
+        _4 = transmute<unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(copy _5);
         storage_dead(_5);
         storage_live(_7);
         _7 = PhantomData::<&'_ ()> {  };
@@ -499,9 +499,9 @@ fn precondition_check(lhs: usize, rhs: usize)
         _0 = ();
         storage_live(_7);
         storage_live(_8);
-        _8 = cast<usize, u64>(copy lhs);
+        _8 = cast<u64>(copy lhs);
         storage_live(_9);
-        _9 = cast<usize, u64>(copy rhs);
+        _9 = cast<u64>(copy rhs);
         _7 = move _8 checked.- move _9;
         storage_dead(_9);
         storage_dead(_8);
@@ -517,23 +517,23 @@ fn precondition_check(lhs: usize, rhs: usize)
         storage_live(_11);
         storage_live(_16);
         _16 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _11 = cast<*const str, *const u8>(copy _16);
+        _11 = cast<*const u8>(copy _16);
         storage_dead(_16);
-        _10 = transmute<*const u8, NonNull::<u8>>(copy _11);
+        _10 = transmute<NonNull::<u8>>(copy _11);
         storage_dead(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_sub cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _15 = copy _17.metadata;
+        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_sub cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
         storage_dead(_15);
         _13 = move _14 | const 1usize;
         storage_dead(_14);
-        _12 = transmute<usize, NonNull::<Argument::<'_>>>(move _13);
+        _12 = transmute<NonNull::<Argument::<'_>>>(move _13);
         storage_dead(_13);
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
@@ -596,50 +596,53 @@ pub fn into_iter::<'_, i32>(self_1: &'_ [i32]) -> Iter::<'_, i32>
     let _8: *const [i32]; // anonymous local
     let _9: *mut i32; // anonymous local
     let _10: *mut [i32]; // anonymous local
-    let _11: PhantomData::<&'_ i32>; // anonymous local
+    let _11: usize; // anonymous local
+    let _12: PhantomData::<&'_ i32>; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(end_or_len);
         storage_live(len);
-        len = copy self_1.metadata;
+        len = noretag copy self_1.metadata;
         storage_live(ptr);
         storage_live(self_4);
         storage_live(_8);
         _8 = &raw const (*self_1) with_metadata(copy self_1.metadata);
-        self_4 = transmute<*const [i32], NonNull::<[i32]>>(copy _8);
+        self_4 = transmute<NonNull::<[i32]>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
-        _10 = transmute<NonNull::<[i32]>, *mut [i32]>(copy self_4);
-        _9 = cast<*mut [i32], *mut i32>(copy _10);
+        _10 = transmute<*mut [i32]>(copy self_4);
+        _9 = cast<*mut i32>(copy _10);
         storage_dead(_10);
-        ptr = transmute<*mut i32, NonNull::<i32>>(copy _9);
+        ptr = transmute<NonNull::<i32>>(copy _9);
         storage_dead(_9);
         storage_dead(self_4);
         if copy IS_ZST::<i32> -> bb1 else -> bb2;
     }
 
     bb1: {
-        end_or_len = transmute<usize, *const i32>(copy len);
+        end_or_len = transmute<*const i32>(copy len);
         goto bb3;
     }
 
     bb2: {
         storage_live(_6);
         storage_live(self_7);
-        self_7 = transmute<NonNull::<i32>, *mut i32>(copy ptr);
-        _6 = copy self_7 offset copy len;
+        self_7 = transmute<*mut i32>(copy ptr);
+        storage_live(_11);
+        _11 = copy len ub.* const size_of::<i32>();
+        _6 = &raw mut (*self_7).offset!(copy _11);
         storage_dead(self_7);
-        end_or_len = cast<*mut i32, *const i32>(copy _6);
+        end_or_len = cast<*const i32>(copy _6);
         storage_dead(_6);
         goto bb3;
     }
 
     bb3: {
-        storage_live(_11);
-        _11 = PhantomData::<&'_ i32> {  };
-        _0 = Iter::<'_, i32> { ptr: copy ptr, end_or_len: copy end_or_len, _marker: move _11 };
+        storage_live(_12);
+        _12 = PhantomData::<&'_ i32> {  };
+        _0 = Iter::<'_, i32> { ptr: copy ptr, end_or_len: copy end_or_len, _marker: move _12 };
         storage_dead(ptr);
         storage_dead(len);
         storage_dead(end_or_len);
@@ -666,8 +669,9 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
     let _13: *mut i32; // anonymous local
     let _14: *const i32; // anonymous local
     let _15: bool; // anonymous local
-    let _16: Option::<&'_ i32>; // anonymous local
+    let _16: usize; // anonymous local
     let _17: Option::<&'_ i32>; // anonymous local
+    let _18: Option::<&'_ i32>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -683,14 +687,14 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
 
     bb1: {
         storage_live(len);
-        len = transmute<*const i32, usize>(copy end_or_len);
+        len = transmute<usize>(copy end_or_len);
         switch copy len -> 0usize: bb2, otherwise: bb3;
     }
 
     bb2: {
-        storage_live(_16);
-        _16 = Option::<&'_ i32>::None {  };
-        _0 = move _16;
+        storage_live(_17);
+        _17 = Option::<&'_ i32>::None {  };
+        _0 = move _17;
         storage_dead(len);
         goto bb9;
     }
@@ -711,7 +715,7 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
 
     bb6: {
         addr = copy len ub.- const 1usize;
-        (*self).end_or_len = transmute<usize, *const i32>(copy addr);
+        (*self).end_or_len = transmute<*const i32>(copy addr);
         storage_dead(len);
         goto bb11;
     }
@@ -719,10 +723,10 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
     bb7: {
         storage_live(_6);
         storage_live(_7);
-        _7 = transmute<*const i32, NonNull::<i32>>(copy end_or_len);
-        _11 = transmute<NonNull::<i32>, *mut i32>(copy ptr);
+        _7 = transmute<NonNull::<i32>>(copy end_or_len);
+        _11 = transmute<*mut i32>(copy ptr);
         storage_live(_12);
-        _12 = transmute<NonNull::<i32>, *mut i32>(copy _7);
+        _12 = transmute<*mut i32>(copy _7);
         _6 = copy _11 == copy _12;
         storage_dead(_12);
         if move _6 -> bb8 else -> bb10;
@@ -730,9 +734,9 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
 
     bb8: {
         storage_dead(_7);
-        storage_live(_17);
-        _17 = Option::<&'_ i32>::None {  };
-        _0 = move _17;
+        storage_live(_18);
+        _18 = Option::<&'_ i32>::None {  };
+        _0 = move _18;
         storage_dead(_6);
         goto bb9;
     }
@@ -748,8 +752,10 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
         storage_dead(_6);
         storage_live(_8);
         storage_live(_13);
-        _13 = copy _11 offset const 1usize;
-        _8 = transmute<*mut i32, NonNull::<i32>>(copy _13);
+        storage_live(_16);
+        _16 = const 1usize ub.* const size_of::<i32>();
+        _13 = &raw mut (*_11).offset!(copy _16);
+        _8 = transmute<NonNull::<i32>>(copy _13);
         storage_dead(_13);
         (*self).ptr = move _8;
         storage_dead(_8);
@@ -759,7 +765,7 @@ pub fn next::<'_, i32>(self: &'_ mut Iter::<'_, i32>) -> Option::<&'_ i32>
     bb11: {
         storage_live(_9);
         storage_live(_14);
-        _14 = transmute<NonNull::<i32>, *const i32>(copy ptr);
+        _14 = transmute<*const i32>(copy ptr);
         _9 = &(*_14);
         storage_dead(_14);
         _0 = Option::<&'_ i32>::Some { _0: copy _9 };
@@ -870,7 +876,7 @@ fn debug_slice::<i32>(slice: &'_ [i32])
         storage_live(args_14);
         storage_live(_15);
         storage_live(_16);
-        _21 = copy args_12._0;
+        _21 = noretag copy args_12._0;
         _16 = &(*_21);
         _15 = new_debug::<'_, &'_ i32>(move _16) -> bb6 (unwind: bb11);
     }
@@ -960,7 +966,7 @@ fn main()
         _5 = move _6;
         _4 = &(*_5);
         _3 = &(*_4);
-        _2 = unsize_cast<&'_ [i32; 3usize], &'_ [i32], 3usize>(move _3);
+        _2 = unsize_cast<&'_ [i32], 3usize>(move _3);
         storage_dead(_3);
         _1 = debug_slice::<i32>(move _2) -> bb1 (unwind: bb2);
     }

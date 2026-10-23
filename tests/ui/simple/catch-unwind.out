@@ -401,7 +401,7 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
         storage_live(_3);
         storage_live(_7);
         storage_live(_8);
-        _8 = transmute<Alignment, usize>(copy alignment);
+        _8 = transmute<usize>(copy alignment);
         _7 = const 9223372036854775808usize ub.- move _8;
         storage_dead(_8);
         _3 = copy size <= move _7;
@@ -421,23 +421,23 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
         storage_live(_10);
         storage_live(_15);
         _15 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _10 = cast<*const str, *const u8>(copy _15);
+        _10 = cast<*const u8>(copy _15);
         storage_dead(_15);
-        _9 = transmute<*const u8, NonNull::<u8>>(copy _10);
+        _9 = transmute<NonNull::<u8>>(copy _10);
         storage_dead(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_16);
-        _16 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: Layout::from_size_alignment_unchecked requires that the rounded-up allocation size does not exceed isize::MAX\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _14 = copy _16.metadata;
+        _16 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: Layout::from_size_alignment_unchecked requires that the rounded-up allocation size does not exceed isize::MAX\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _14 = noretag copy _16.metadata;
         storage_dead(_16);
         _13 = move _14 wrap.<< const 1i32;
         storage_dead(_14);
         _12 = move _13 | const 1usize;
         storage_dead(_13);
-        _11 = transmute<usize, NonNull::<Argument::<'_>>>(move _12);
+        _11 = transmute<NonNull::<Argument::<'_>>>(move _12);
         storage_dead(_12);
         _6 = Arguments::<'_> { template: move _9, args: move _11 };
         storage_dead(_11);
@@ -575,23 +575,23 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: Alignment::new_unchecked requires a power of two\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: Alignment::new_unchecked requires a power of two\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -699,8 +699,8 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
         ptr_15 = copy (*self)._0._marker;
         storage_live(layout);
         storage_live(val);
-        _4 = transmute<NonNull::<(dyn FakeTrait)>, *mut (dyn FakeTrait)>(copy ptr_14);
-        val = transmute<NonNull::<(dyn FakeTrait)>, *const (dyn FakeTrait)>(copy ptr_14);
+        _4 = transmute<*mut (dyn FakeTrait)>(copy ptr_14);
+        val = transmute<*const (dyn FakeTrait)>(copy ptr_14);
         storage_live(alignment);
         size = size_of_val::<(dyn FakeTrait)>(copy val) -> bb1 (unwind: bb14);
     }
@@ -725,7 +725,7 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
     }
 
     bb5: {
-        alignment = transmute<usize, Alignment>(copy align);
+        alignment = transmute<Alignment>(copy align);
         storage_dead(align);
         storage_live(_17);
         _17 = ub_checks;
@@ -751,8 +751,8 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
         storage_live(_6);
         _6 = &(*self)._1;
         storage_live(_13);
-        _13 = cast<*mut (dyn FakeTrait), *mut u8>(copy _4);
-        unique = transmute<*mut u8, NonNull::<u8>>(copy _13);
+        _13 = cast<*mut u8>(copy _4);
+        unique = transmute<NonNull::<u8>>(copy _13);
         storage_dead(_13);
         _5 = deallocate(move _6, move unique, move layout) -> bb10 (unwind: bb12);
     }
@@ -806,7 +806,7 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
         storage_live(_7);
         storage_live(_8);
         _0 = ();
-        _6 = transmute<NonNull::<(dyn FakeTrait)>, *const (dyn FakeTrait)>(copy (*_1)._0.pointer);
+        _6 = transmute<*const (dyn FakeTrait)>(copy (*_1)._0.pointer);
         _7 = &raw mut (*_6) with_metadata(copy _6.metadata);
         _8 = (copy (*_7.metadata))(move _7) -> bb1 (unwind: bb4);
     }
@@ -977,11 +977,11 @@ pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f:
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
-        _5 = cast<do_call::<test_crate::main::{closure}::{closure}, ()>, unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>)>(const do_call::<test_crate::main::{closure}::{closure}, ()>);
+        _5 = fn_def_to_fn_ptr(const do_call::<test_crate::main::{closure}::{closure}, ()>);
         storage_live(_6);
         _6 = &raw mut data;
         storage_live(_7);
-        _7 = cast<do_catch::<test_crate::main::{closure}::{closure}, ()>, unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>, *mut u8)>(const do_catch::<test_crate::main::{closure}::{closure}, ()>);
+        _7 = fn_def_to_fn_ptr(const do_catch::<test_crate::main::{closure}::{closure}, ()>);
         _4 = core::intrinsics::catch_unwind::<Data::<test_crate::main::{closure}::{closure}, ()>>(move _5, move _6, move _7) -> bb1 (unwind: bb5);
     }
 

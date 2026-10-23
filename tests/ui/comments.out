@@ -193,7 +193,7 @@ pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, u32>(self: &'_ &'_ u32, f: &
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self);
+        _3 = noretag copy (*self);
         _0 = impl_Debug_for_u32::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
@@ -248,11 +248,11 @@ pub fn assert_failed::<u32, u32>(kind: AssertKind, left: &'_ u32, right: &'_ u32
         storage_live(_5);
         storage_live(_6);
         _6 = &left;
-        _5 = unsize_cast<&'_ &'_ u32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ u32>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ u32>)>(copy _6);
         storage_live(_7);
         storage_live(_8);
         _8 = &right;
-        _7 = unsize_cast<&'_ &'_ u32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ u32>)>(copy _8);
+        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ u32>)>(copy _8);
         _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
@@ -274,7 +274,7 @@ pub fn len::<u32>(self: &'_ [u32]) -> usize
 
     bb0: {
         storage_live(_0);
-        _0 = copy self.metadata;
+        _0 = noretag copy self.metadata;
         return;
     }
 }
@@ -401,7 +401,7 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_12);
         storage_live(_13);
         _13 = copy i;
-        _14 = copy s.metadata;
+        _14 = noretag copy s.metadata;
         _15 = copy _13 < copy _14;
         assert assert(move _15 == true) (bounds_check) -> bb6 (unwind: bb11);
     }
@@ -850,7 +850,7 @@ pub fn thing()
         _0 = ();
         storage_live(x);
         storage_live(_2);
-        _3 = cast<i32, u32>(const 3i32);
+        _3 = cast<u32>(const 3i32);
         _4 = move _3 < const 32u32;
         assert assert(move _4 == true) (overflow) -> bb1 (unwind: bb6);
     }

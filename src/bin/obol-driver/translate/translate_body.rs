@@ -132,6 +132,60 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
         let current_block = mem::replace(&mut self.current_block, target);
         self.blocks.set_slot(current_block, block);
     }
+
+    /// Assign an rvalue to a fresh local, unless the rvalue is a move in which case we just use the
+    /// moved place.
+    fn rval_to_place(&mut self, span: Span, rvalue: Rvalue, ty: Ty) -> Place {
+        if let Rvalue::Use(Operand::Move(place), WithRetag::No) = rvalue {
+            return place;
+        }
+        let place = self.locals.new_var(None, ty);
+        let local = place.as_local().unwrap();
+        self.statements
+            .push(Statement::new(span, StatementKind::StorageLive(local)));
+        self.statements.push(Statement::new(
+            span,
+            StatementKind::Assign(place.clone(), rvalue),
+        ));
+        place
+    }
+
+    /// `ptr.offset(count)` becomes `&raw (*ptr).offset(count * size_of::<T>())`, where `*const T`
+    /// (or `*mut T`) is `tgt_ty`, the type of the resulting pointer.
+    fn translate_ptr_offset(
+        &mut self,
+        span: Span,
+        ptr: Operand,
+        count: Operand,
+        tgt_ty: &Ty,
+    ) -> Result<Rvalue, Error> {
+        let TyKind::RawPtr(pointee, kind) = tgt_ty.kind() else {
+            raise_error!(self, span, "`Offset` on a non-raw-pointer type")
+        };
+        let ptr = match ptr {
+            Operand::Copy(p) | Operand::Move(p) => p,
+            op @ Operand::Const(_) => {
+                let ty = op.ty().clone();
+                self.rval_to_place(span, Rvalue::Use(op, WithRetag::No), ty)
+            }
+        };
+        let count_ty = count.ty().clone();
+        let size = ConstantExpr::new(ConstantExprKind::SizeOf(pointee.clone()), count_ty.clone());
+        // MIR's `Offset` is UB if it goes out of bounds.
+        let bytes = Rvalue::BinaryOp(BinOp::Mul(OverflowMode::UB), count, Operand::Const(size));
+        let bytes = Operand::Copy(self.rval_to_place(span, bytes, count_ty));
+        let offset = ProjectionElem::Offset {
+            bytes: Box::new(bytes),
+            in_bounds: true,
+            ty: pointee.clone(),
+            ty_is_sized: None,
+        };
+        Ok(Rvalue::RawPtr {
+            place: ptr.deref().project(offset, pointee.clone()),
+            kind: *kind,
+            ptr_metadata: Operand::mk_const_unit(),
+        })
+    }
 }
 
 impl<'tcx, 'tctx, 'ictx, 'bctx> Deref for BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
@@ -447,7 +501,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             mir::BinOp::Shr => BinOp::Shr(OverflowMode::Wrap),
             mir::BinOp::ShrUnchecked => BinOp::Shr(OverflowMode::UB),
             mir::BinOp::Cmp => BinOp::Cmp,
-            mir::BinOp::Offset => BinOp::Offset,
+            mir::BinOp::Offset => unreachable!("handled in `translate_rvalue`"),
         })
     }
 
@@ -813,16 +867,15 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let tgt_ty = self.translate_ty(span, *mir_tgt_ty)?;
 
                 // Translate the operand
-                let (mut operand, src_ty) = self.translate_operand_with_type(span, mir_operand)?;
+                let mut operand = self.translate_operand(span, mir_operand)?;
 
-                let cast_kind = match cast_kind {
+                let mut cast_kind = match cast_kind {
                     mir::CastKind::IntToInt
                     | mir::CastKind::IntToFloat
                     | mir::CastKind::FloatToInt
                     | mir::CastKind::FloatToFloat => {
                         let tgt_ty = *tgt_ty.kind().as_scalar().unwrap();
-                        let src_ty = *src_ty.kind().as_scalar().unwrap();
-                        CastKind::Scalar(src_ty, tgt_ty)
+                        CastKind::Scalar(tgt_ty)
                     }
                     mir::CastKind::PointerCoercion(
                         mir::PointerCoercion::ClosureFnPointer(_),
@@ -843,19 +896,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                             ConstantExprKind::FnDef(fn_ptr),
                             src_ty.clone(),
                         ));
-                        CastKind::FnPtr(src_ty, tgt_ty)
+                        CastKind::FnDefToFnPtr
                     }
-                    mir::CastKind::PointerExposeAddress => {
-                        let Some(tgt_scalar) = tgt_ty.kind().as_scalar().copied() else {
-                            raise_error!(self, span, "Pointer exposed to a non-scalar type")
-                        };
-                        CastKind::PtrExposeProvenance(src_ty, tgt_scalar)
-                    }
+                    mir::CastKind::PointerExposeAddress => CastKind::PtrExposeProvenance,
                     mir::CastKind::PointerWithExposedProvenance => {
-                        let Some(src_scalar) = src_ty.kind().as_scalar().copied() else {
-                            raise_error!(self, span, "Pointer built from a non-scalar type")
-                        };
-                        CastKind::PtrWithExposedProvenance(src_scalar, tgt_ty)
+                        CastKind::PtrWithExposedProvenance(tgt_ty.clone())
                     }
                     mir::CastKind::PtrToPtr
                     | mir::CastKind::FnPtrToPtr
@@ -863,23 +908,60 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         mir::PointerCoercion::MutToConstPointer
                         | mir::PointerCoercion::ArrayToPointer,
                         ..,
-                    ) => CastKind::RawPtr(src_ty, tgt_ty),
-                    mir::CastKind::PointerCoercion(
-                        mir::PointerCoercion::UnsafeFnPointer
-                        | mir::PointerCoercion::ReifyFnPointer(_),
-                        ..,
-                    ) => CastKind::FnPtr(src_ty, tgt_ty),
+                    ) => CastKind::RawPtr(tgt_ty.clone()),
+                    mir::CastKind::PointerCoercion(mir::PointerCoercion::ReifyFnPointer(_), ..) => {
+                        CastKind::FnDefToFnPtr
+                    }
+                    mir::CastKind::PointerCoercion(mir::PointerCoercion::UnsafeFnPointer, ..) => {
+                        CastKind::FnPtrToUnsafe
+                    }
                     mir::CastKind::Subtype
                     | mir::CastKind::Transmute
-                    | mir::CastKind::BoxDerefTransmute => CastKind::Transmute(src_ty, tgt_ty),
+                    | mir::CastKind::BoxDerefTransmute => CastKind::Transmute(tgt_ty.clone()),
                     mir::CastKind::PointerCoercion(mir::PointerCoercion::Unsize) => {
                         let mir_src_ty = mir_operand.ty(self.local_decls)?;
                         let unsizing_meta =
                             self.translate_unsizing_metadata(span, mir_src_ty, *mir_tgt_ty)?;
-                        CastKind::Unsize(src_ty.clone(), tgt_ty.clone(), unsizing_meta)
+                        CastKind::Unsize(tgt_ty.clone(), unsizing_meta)
                     }
                 };
+
+                // We're more precise than rustc: we separate "cast to fn ptr" and "safety cast",
+                // so we reconstruct the distinction here.
+                if let CastKind::FnDefToFnPtr = cast_kind {
+                    let tcx = self.t_ctx.tcx;
+                    let op_ty = rustc_internal::internal(tcx, mir_operand.ty(self.local_decls)?);
+                    let sig = match op_ty.kind() {
+                        rustc_middle::ty::FnDef(..) => op_ty.fn_sig(tcx),
+                        rustc_middle::ty::Closure(_, args) => tcx
+                            .signature_unclosure(args.as_closure().sig(), rustc_hir::Safety::Safe),
+                        _ => raise_error!(self, span, "Expected a function definition or closure"),
+                    };
+                    let fn_ptr_ty = rustc_middle::ty::Ty::new_fn_ptr(tcx, sig);
+                    let intermediate_ty =
+                        self.translate_ty(span, rustc_internal::stable(fn_ptr_ty))?;
+                    let (TyKind::FnPtr(interm), TyKind::FnPtr(target)) =
+                        (intermediate_ty.kind(), tgt_ty.kind())
+                    else {
+                        raise_error!(self, span, "Expected function pointers in fn pointer cast")
+                    };
+                    if interm.skip_binder.is_unsafe != target.skip_binder.is_unsafe {
+                        let local = self.rval_to_place(
+                            span,
+                            Rvalue::UnaryOp(UnOp::Cast(CastKind::FnDefToFnPtr), operand),
+                            intermediate_ty.clone(),
+                        );
+                        operand = Operand::Move(local);
+                        cast_kind = CastKind::FnPtrToUnsafe;
+                    }
+                }
+
                 Ok(Rvalue::UnaryOp(UnOp::Cast(cast_kind), operand))
+            }
+            mir::Rvalue::BinaryOp(mir::BinOp::Offset, ptr, count) => {
+                let ptr = self.translate_operand(span, ptr)?;
+                let count = self.translate_operand(span, count)?;
+                self.translate_ptr_offset(span, ptr, count, tgt_ty)
             }
             mir::Rvalue::BinaryOp(binop, left, right) => Ok(Rvalue::BinaryOp(
                 self.translate_binaryop_kind(span, *binop)?,
@@ -1255,7 +1337,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     let drop_pointer = ptr_place
                         .project(ProjectionElem::PtrMetadata, unit_ptr_ptr_ptr_ty)
                         .deref();
-                    FnOperand::Dynamic(Operand::Copy(drop_pointer))
+                    FnOperand::Dynamic(Operand::Copy(drop_pointer), RegionArgs::empty())
                 } else {
                     FnOperand::Regular(fn_ptr)
                 };
@@ -1520,18 +1602,26 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     ));
                     let vtable_ptr =
                         dyn_element_place.project(ProjectionElem::PtrMetadata, unit_ptr_ptr_ptr_ty);
-                    let fn_pointer =
-                        Rvalue::BinaryOp(BinOp::Offset, Operand::Copy(vtable_ptr), offset);
+                    let fn_pointer = self.translate_ptr_offset(
+                        span,
+                        Operand::Copy(vtable_ptr),
+                        offset,
+                        &unit_ptr_ptr_ty,
+                    )?;
                     let fn_pointer_place = self.locals.new_var(None, unit_ptr_ptr_ty.clone());
                     extra_stts.push(StatementKind::Assign(fn_pointer_place.clone(), fn_pointer));
-                    FnOperand::Dynamic(Operand::Copy(fn_pointer_place.deref()))
+                    FnOperand::Dynamic(Operand::Copy(fn_pointer_place.deref()), RegionArgs::empty())
                 } else {
                     FnOperand::Regular(fn_ptr)
                 }
             }
             _ => {
                 let fun = self.translate_operand(span, fun)?;
-                FnOperand::Dynamic(fun)
+                let regions = match fun.ty().kind() {
+                    TyKind::FnPtr(sig) => RegionArgs::erased(sig.regions.len()),
+                    _ => RegionArgs::empty(),
+                };
+                FnOperand::Dynamic(fun, regions)
             }
         };
         let call = Call {

@@ -403,23 +403,23 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this: 
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _6 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -487,23 +487,23 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
         storage_live(_10);
         storage_live(_15);
         _15 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _10 = cast<*const str, *const u8>(copy _15);
+        _10 = cast<*const u8>(copy _15);
         storage_dead(_15);
-        _9 = transmute<*const u8, NonNull::<u8>>(copy _10);
+        _9 = transmute<NonNull::<u8>>(copy _10);
         storage_dead(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_16);
-        _16 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the range is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _14 = copy _16.metadata;
+        _16 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the range is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _14 = noretag copy _16.metadata;
         storage_dead(_16);
         _13 = move _14 wrap.<< const 1i32;
         storage_dead(_14);
         _12 = move _13 | const 1usize;
         storage_dead(_13);
-        _11 = transmute<usize, NonNull::<Argument::<'_>>>(move _12);
+        _11 = transmute<NonNull::<Argument::<'_>>>(move _12);
         storage_dead(_12);
         _8 = Arguments::<'_> { template: move _9, args: move _11 };
         storage_dead(_11);
@@ -567,7 +567,7 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
         storage_live(_8);
         _0 = ();
         storage_live(self_3);
-        self_5 = copy (*self_1).array_mut;
+        self_5 = noretag copy (*self_1).array_mut;
         index = copy (*self_1).initialized;
         storage_live(_6);
         storage_live(slice);
@@ -579,7 +579,7 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
 
     bb1: {
         storage_live(_9);
-        _9 = copy self_5.metadata;
+        _9 = noretag copy self_5.metadata;
         _8 = {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(const 0usize, copy index, move _9) -> bb2 (unwind: bb3);
     }
 
@@ -594,7 +594,7 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
 
     bb4: {
         storage_live(_10);
-        _10 = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut MaybeUninit::<[u8; 1usize]>>(copy slice);
+        _10 = cast<*mut MaybeUninit::<[u8; 1usize]>>(copy slice);
         _6 = *mut  (copy _10, copy index);
         storage_dead(_10);
         storage_dead(slice);
@@ -607,7 +607,7 @@ pub fn drop::<'_, [u8; 1usize]>(self_1: &'_ mut Guard::<'_, [u8; 1usize]>)
     bb5: {
         storage_live(_12);
         _12 = &raw mut (*self_3) with_metadata(copy self_3.metadata);
-        to_drop = cast<*mut [MaybeUninit::<[u8; 1usize]>], *mut [[u8; 1usize]]>(copy _12);
+        to_drop = cast<*mut [[u8; 1usize]]>(copy _12);
         storage_live(_13);
         _13 = &mut (*to_drop) with_metadata(copy to_drop.metadata);
         _2 = drop_glue::<[[u8; 1usize]]>(move _13) -> bb6 (unwind: bb8);
@@ -699,7 +699,7 @@ fn of_usize::<0usize>(x: usize) -> [u8; 1usize]
         storage_live(_2);
         storage_live(_3);
         _3 = copy x;
-        _2 = cast<usize, u8>(move _3);
+        _2 = cast<u8>(move _3);
         storage_dead(_3);
         _0 = [move _2];
         storage_dead(_2);
@@ -718,7 +718,7 @@ fn test_crate::test::{closure}::<[u8; 1usize], i16, extern "rust-call" fn((usize
     bb0: {
         storage_live(_0);
         storage_live(i);
-        i = move spread_args._0;
+        i = noretag move spread_args._0;
         storage_live(_4);
         _4 = copy i;
         _0 = of_usize::<0usize>(move _4) -> bb1 (unwind: bb2);
@@ -747,7 +747,7 @@ fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::<[u8; 
     bb0: {
         storage_live(_0);
         storage_live(a);
-        a = move spread_args._0;
+        a = noretag move spread_args._0;
         storage_live(_4);
         storage_live(_5);
         _5 = &mut (*_1).upvar_0;
@@ -818,9 +818,9 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _0 = ();
         storage_live(_7);
         storage_live(_8);
-        _8 = cast<usize, u64>(copy lhs);
+        _8 = cast<u64>(copy lhs);
         storage_live(_9);
-        _9 = cast<usize, u64>(copy rhs);
+        _9 = cast<u64>(copy rhs);
         _7 = move _8 checked.+ move _9;
         storage_dead(_9);
         storage_dead(_8);
@@ -836,23 +836,23 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         storage_live(_11);
         storage_live(_16);
         _16 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _11 = cast<*const str, *const u8>(copy _16);
+        _11 = cast<*const u8>(copy _16);
         storage_dead(_16);
-        _10 = transmute<*const u8, NonNull::<u8>>(copy _11);
+        _10 = transmute<NonNull::<u8>>(copy _11);
         storage_dead(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _15 = copy _17.metadata;
+        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
         storage_dead(_15);
         _13 = move _14 | const 1usize;
         storage_dead(_14);
-        _12 = transmute<usize, NonNull::<Argument::<'_>>>(move _13);
+        _12 = transmute<NonNull::<Argument::<'_>>>(move _13);
         storage_dead(_13);
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
@@ -953,8 +953,8 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         storage_live(_5);
         _5 = copy guard.initialized;
         storage_live(_6);
-        _15 = copy guard.array_mut;
-        _6 = copy _15.metadata;
+        _15 = noretag copy guard.array_mut;
+        _6 = noretag copy _15.metadata;
         _4 = move _5 < move _6;
         if move _4 -> bb2 else -> bb23;
     }
@@ -998,7 +998,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
         item = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, [u8; 1usize]>::Continue)._0;
         storage_dead(_7);
         storage_live(self_24);
-        self_23 = copy guard.array_mut;
+        self_23 = noretag copy guard.array_mut;
         storage_live(index);
         index = copy guard.initialized;
         storage_live(_38);
@@ -1008,7 +1008,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait:
 
     bb6: {
         storage_live(_26);
-        _26 = copy self_23.metadata;
+        _26 = noretag copy self_23.metadata;
         _25 = impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(copy index, move _26) -> bb7 (unwind: bb8);
     }
 
@@ -1169,7 +1169,7 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
         storage_live(_4);
         storage_live(_5);
         _5 = &mut array_2;
-        _4 = unsize_cast<&'_ mut [MaybeUninit::<[u8; 1usize]>; 1usize], &'_ mut [MaybeUninit::<[u8; 1usize]>], 1usize>(copy _5);
+        _4 = unsize_cast<&'_ mut [MaybeUninit::<[u8; 1usize]>], 1usize>(copy _5);
         _3 = try_from_fn_erased::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>(move _4, move cb) -> bb1 (unwind: bb12);
     }
 
@@ -1187,7 +1187,7 @@ pub fn try_from_fn::<NeverShortCircuit::<[u8; 1usize]>, core::ops::try_trait::{N
     }
 
     bb3: {
-        _8 = transmute<[MaybeUninit::<[u8; 1usize]>; 1usize], [[u8; 1usize]; 1usize]>(copy array_9);
+        _8 = transmute<[[u8; 1usize]; 1usize]>(copy array_9);
         storage_dead(array_9);
         _0 = from_output::<[[u8; 1usize]; 1usize]>(move _8) -> bb4 (unwind: bb5);
     }

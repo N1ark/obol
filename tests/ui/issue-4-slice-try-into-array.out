@@ -88,7 +88,7 @@ pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, ()>(self: &'_ &'_ (), f: &'_
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self);
+        _3 = noretag copy (*self);
         _0 = impl_Debug_for_unit::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
@@ -126,7 +126,7 @@ pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_
         storage_live(_5);
         _5 = &(*self)._0;
         _4 = &_5;
-        _3 = unsize_cast<&'_ &'_ (), &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ ()>)>(copy _4);
+        _3 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ ()>)>(copy _4);
         _0 = debug_tuple_field1_finish::<'_>(move f, const "TryFromSliceError", move _3) -> bb1 (unwind: bb2);
     }
 
@@ -192,7 +192,7 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
         storage_live(_9);
         storage_live(_4);
         storage_live(_5);
-        _5 = copy slice.metadata;
+        _5 = noretag copy slice.metadata;
         _4 = move _5 == const 4usize;
         if move _4 -> bb1 else -> bb2;
     }
@@ -202,8 +202,8 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
         storage_live(ptr);
         storage_live(self_7);
         _9 = &raw const (*slice) with_metadata(copy slice.metadata);
-        self_7 = cast<*const [u8], *const u8>(copy _9);
-        ptr = cast<*const [u8], *const [u8; 4usize]>(copy _9);
+        self_7 = cast<*const u8>(copy _9);
+        ptr = cast<*const [u8; 4usize]>(copy _9);
         storage_dead(self_7);
         storage_live(_8);
         _8 = &(*ptr);
@@ -219,7 +219,7 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
         storage_dead(self_3);
         storage_live(_12);
         storage_live(v_11);
-        _12 = copy (self_2 as variant Result::<&'_ [u8; 4usize], TryFromSliceError>::Ok)._0;
+        _12 = noretag copy (self_2 as variant Result::<&'_ [u8; 4usize], TryFromSliceError>::Ok)._0;
         v_11 = copy (*_12);
         _0 = Result::<[u8; 4usize], TryFromSliceError>::Ok { _0: copy v_11 };
         storage_dead(v_11);
@@ -326,7 +326,7 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
         storage_live(_5);
         storage_live(_6);
         _6 = &e;
-        _5 = unsize_cast<&'_ TryFromSliceError, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<TryFromSliceError>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<TryFromSliceError>)>(copy _6);
         _4 = unwrap_failed(const "called `Result::unwrap()` on an `Err` value", move _5) -> bb3 (unwind: bb4);
     }
 

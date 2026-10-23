@@ -181,7 +181,7 @@ pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self);
+        _3 = noretag copy (*self);
         _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
@@ -244,11 +244,11 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
         storage_live(_5);
         storage_live(_6);
         _6 = &left;
-        _5 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
         storage_live(_7);
         storage_live(_8);
         _8 = &right;
-        _7 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
+        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
         _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
@@ -309,7 +309,7 @@ pub fn next::<'_, i32>(self: &'_ mut Option::<&'_ i32>) -> Option::<&'_ i32>
         storage_live(item_3);
         item_3 = &mut ((*self) as variant Option::<&'_ i32>::Some)._0;
         storage_live(item_4);
-        _7 = copy (*item_3);
+        _7 = noretag copy (*item_3);
         item_4 = &(*_7);
         storage_live(_5);
         _5 = Option::<&'_ i32>::None {  };
@@ -358,17 +358,17 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mu
         storage_live(_7);
         storage_live(_8);
         _0 = ();
-        item = move spread_args._0;
+        item = noretag move spread_args._0;
         storage_live(_4);
         _4 = copy (*item);
-        _6 = copy (*_1).upvar_0;
+        _6 = noretag copy (*_1).upvar_0;
         _5 = copy (*_6) checked.+ copy _4;
-        _7 = copy (*_1).upvar_0;
+        _7 = noretag copy (*_1).upvar_0;
         assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        _8 = copy (*_1).upvar_0;
+        _8 = noretag copy (*_1).upvar_0;
         (*_8) = move _5._0;
         _0 = ();
         storage_dead(_4);

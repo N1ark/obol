@@ -1070,7 +1070,7 @@ fn shl_i32(x: i32, y: i32) -> i32
         _3 = copy x;
         storage_live(_4);
         _4 = copy y;
-        _5 = cast<i32, u32>(copy _4);
+        _5 = cast<u32>(copy _4);
         _6 = move _5 < const 32u32;
         assert assert(move _6 == true) (overflow) -> bb1 (unwind: bb2);
     }
@@ -1106,7 +1106,7 @@ fn shr_i32(x: i32, y: i32) -> i32
         _3 = copy x;
         storage_live(_4);
         _4 = copy y;
-        _5 = cast<i32, u32>(copy _4);
+        _5 = cast<u32>(copy _4);
         _6 = move _5 < const 32u32;
         assert assert(move _6 == true) (overflow) -> bb1 (unwind: bb2);
     }
@@ -1142,7 +1142,7 @@ fn shr_i32_manual_cast(x: i32, y: i32) -> i32
         storage_live(_4);
         storage_live(_5);
         _5 = copy y;
-        _4 = cast<i32, u32>(move _5);
+        _4 = cast<u32>(move _5);
         storage_dead(_5);
         _6 = copy _4 < const 32u32;
         assert assert(move _6 == true) (overflow) -> bb1 (unwind: bb2);
@@ -1176,7 +1176,7 @@ fn index_slice_ignore_value(x: &'_ [u32])
         _0 = ();
         storage_live(_2);
         _2 = const 0usize;
-        _3 = copy x.metadata;
+        _3 = noretag copy x.metadata;
         _4 = copy _2 < copy _3;
         assert assert(move _4 == true) (bounds_check) -> bb1 (unwind: bb2);
     }
@@ -1266,7 +1266,7 @@ fn div_unsigned_to_slice(result: &'_ mut [u32], x: u32)
         storage_live(_5);
         _5 = const 0usize;
         _6 = &raw const (*result) with_metadata(copy result.metadata);
-        _7 = copy _6.metadata;
+        _7 = noretag copy _6.metadata;
         _8 = copy _5 < copy _7;
         assert assert(move _8 == true) (bounds_check) -> bb2 (unwind: bb3);
     }
@@ -1331,7 +1331,7 @@ fn div_signed_to_slice(result: &'_ mut [i32], x: i32)
         storage_live(_8);
         _8 = const 0usize;
         _9 = &raw const (*result) with_metadata(copy result.metadata);
-        _10 = copy _9.metadata;
+        _10 = noretag copy _9.metadata;
         _11 = copy _8 < copy _10;
         assert assert(move _11 == true) (bounds_check) -> bb3 (unwind: bb4);
     }
@@ -1387,7 +1387,7 @@ fn add_to_slice(result: &'_ mut [u32], x: u32)
         storage_live(_5);
         _5 = const 0usize;
         _6 = &raw const (*result) with_metadata(copy result.metadata);
-        _7 = copy _6.metadata;
+        _7 = noretag copy _6.metadata;
         _8 = copy _5 < copy _7;
         assert assert(move _8 == true) (bounds_check) -> bb2 (unwind: bb3);
     }
@@ -1451,7 +1451,7 @@ fn add_to_slice2(result: &'_ mut [u8], i: usize, x: u8)
         _6 = move _8._0;
         storage_dead(_7);
         _9 = &raw const (*result) with_metadata(copy result.metadata);
-        _10 = copy _9.metadata;
+        _10 = noretag copy _9.metadata;
         _11 = copy _6 < copy _10;
         assert assert(move _11 == true) (bounds_check) -> bb3 (unwind: bb4);
     }

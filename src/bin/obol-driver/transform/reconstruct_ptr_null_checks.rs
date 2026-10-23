@@ -5,11 +5,11 @@
 //! test takes one of two shapes:
 //! ```text
 //! // optimized MIR: the comparison is a `switch` terminator
-//! _23 := transmute<*mut u8, usize>(copy raw_ptr_6);
+//! _23 := transmute<usize>(copy raw_ptr_6);
 //! switch copy _23 -> [0: bb20, otherwise: bb21]
 //!
 //! // built MIR: the comparison is a `== 0` / `!= 0` statement
-//! _3 := transmute<*const u8, usize>(copy _2);
+//! _3 := transmute<usize>(copy _2);
 //! _0 := move _3 == const 0usize;
 //! ```
 //!
@@ -18,7 +18,7 @@
 //! that the comparison stays in the pointer world:
 //! ```text
 //! _tmp := copy raw_ptr_6 != const (no-provenance 0);
-//! _23 := cast<bool, usize>(move _tmp);
+//! _23 := cast<usize>(move _tmp);
 //! switch copy _23 -> [0: bb20, otherwise: bb21]
 //! ```
 //! The new value assigned to `_23` is `0` if and only if the pointer is null, exactly like the
@@ -122,10 +122,8 @@ fn match_transmuted_null_check(
     block: &BlockData,
     st: &Statement,
 ) -> Option<LocalId> {
-    let StatementKind::Assign(
-        place,
-        Rvalue::UnaryOp(UnOp::Cast(CastKind::Transmute(src_ty, tgt_ty)), _),
-    ) = &st.kind
+    let StatementKind::Assign(place, Rvalue::UnaryOp(UnOp::Cast(CastKind::Transmute(tgt_ty)), op)) =
+        &st.kind
     else {
         return None;
     };
@@ -139,7 +137,7 @@ fn match_transmuted_null_check(
     if usages[result] != 2 {
         return None;
     }
-    let (TyKind::RawPtr(pointee, _) | TyKind::Ref(_, pointee, _)) = src_ty.kind() else {
+    let (TyKind::RawPtr(pointee, _) | TyKind::Ref(_, pointee, _)) = op.ty().kind() else {
         return None;
     };
     if !matches!(pointee.get_ptr_metadata(&ctx.translated), PtrMetadata::None) {
@@ -180,7 +178,7 @@ impl UllbcPass for Transform {
         decl.transform_ullbc_statements(ctx, |ctx, st: &mut Statement| {
             let StatementKind::Assign(
                 place,
-                Rvalue::UnaryOp(UnOp::Cast(CastKind::Transmute(src_ty, tgt_ty)), op),
+                Rvalue::UnaryOp(UnOp::Cast(CastKind::Transmute(tgt_ty)), op),
             ) = &st.kind
             else {
                 return;
@@ -196,7 +194,7 @@ impl UllbcPass for Transform {
             };
             let tgt_lit_ty = *tgt_lit_ty;
             let dest = place.clone();
-            let src_ty = src_ty.clone();
+            let src_ty = op.ty().clone();
             let operand = op.clone();
 
             // `(p != null) as usize` is `0` exactly when `transmute::<_, usize>(p)` is, so the
@@ -211,7 +209,7 @@ impl UllbcPass for Transform {
             ctx.insert_assn_stmt(
                 dest,
                 Rvalue::UnaryOp(
-                    UnOp::Cast(CastKind::Scalar(ScalarTy::Bool, tgt_lit_ty)),
+                    UnOp::Cast(CastKind::Scalar(tgt_lit_ty)),
                     Operand::Move(tmp.clone()),
                 ),
             );

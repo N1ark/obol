@@ -95,23 +95,23 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         storage_live(_3);
         storage_live(_8);
         _8 = &raw const (*s) with_metadata(copy s.metadata);
-        _3 = cast<*const str, *const u8>(copy _8);
+        _3 = cast<*const u8>(copy _8);
         storage_dead(_8);
-        _2 = transmute<*const u8, NonNull::<u8>>(copy _3);
+        _2 = transmute<NonNull::<u8>>(copy _3);
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);
         storage_live(_7);
         storage_live(_9);
-        _9 = transmute<&'_ str, &'_ [u8]>(copy s);
-        _7 = copy _9.metadata;
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
         storage_dead(_9);
         _6 = move _7 wrap.<< const 1i32;
         storage_dead(_7);
         _5 = move _6 | const 1usize;
         storage_dead(_6);
-        _4 = transmute<usize, NonNull::<Argument::<'_>>>(move _5);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
         storage_dead(_5);
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
@@ -442,13 +442,13 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_live(_4);
         storage_live(overflow);
         storage_live(rhs);
-        rhs = cast<usize, isize>(copy size);
+        rhs = cast<isize>(copy size);
         storage_live(b);
         storage_live(_12);
         storage_live(_13);
-        _13 = cast<isize, i64>(copy count);
+        _13 = cast<i64>(copy count);
         storage_live(_14);
-        _14 = cast<isize, i64>(copy rhs);
+        _14 = cast<i64>(copy rhs);
         _12 = move _13 checked.* move _14;
         storage_dead(_14);
         storage_dead(_13);
@@ -456,7 +456,7 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         _10 = copy _12._0;
         b = copy _12._1;
         storage_dead(_12);
-        byte_offset = cast<i64, isize>(copy _10);
+        byte_offset = cast<isize>(copy _10);
         storage_dead(_10);
         if copy b -> bb1 else -> bb4;
     }
@@ -480,15 +480,15 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_dead(b);
         storage_dead(rhs);
         storage_live(self);
-        self = transmute<*const (), usize>(copy this);
+        self = transmute<usize>(copy this);
         storage_live(_20);
         storage_live(_17);
-        _17 = cast<isize, usize>(copy byte_offset);
+        _17 = cast<usize>(copy byte_offset);
         storage_live(_21);
         storage_live(_22);
-        _22 = cast<usize, u64>(copy self);
+        _22 = cast<u64>(copy self);
         storage_live(_23);
-        _23 = cast<usize, u64>(copy _17);
+        _23 = cast<u64>(copy _17);
         _21 = move _22 checked.+ move _23;
         storage_dead(_23);
         storage_dead(_22);
@@ -518,23 +518,23 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_live(_25);
         storage_live(_30);
         _30 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _25 = cast<*const str, *const u8>(copy _30);
+        _25 = cast<*const u8>(copy _30);
         storage_dead(_30);
-        _24 = transmute<*const u8, NonNull::<u8>>(copy _25);
+        _24 = transmute<NonNull::<u8>>(copy _25);
         storage_dead(_25);
         storage_live(_26);
         storage_live(_27);
         storage_live(_28);
         storage_live(_29);
         storage_live(_31);
-        _31 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: ptr::offset requires the address calculation to not overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _29 = copy _31.metadata;
+        _31 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: ptr::offset requires the address calculation to not overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _29 = noretag copy _31.metadata;
         storage_dead(_31);
         _28 = move _29 wrap.<< const 1i32;
         storage_dead(_29);
         _27 = move _28 | const 1usize;
         storage_dead(_28);
-        _26 = transmute<usize, NonNull::<Argument::<'_>>>(move _27);
+        _26 = transmute<NonNull::<Argument::<'_>>>(move _27);
         storage_dead(_27);
         _7 = Arguments::<'_> { template: move _24, args: move _26 };
         storage_dead(_26);
@@ -561,6 +561,7 @@ pub fn offset::<i32>(self: *const i32, count: isize) -> *const i32
     let _3: (); // anonymous local
     let _4: *const (); // anonymous local
     let _5: bool; // anonymous local
+    let _6: isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -572,7 +573,7 @@ pub fn offset::<i32>(self: *const i32, count: isize) -> *const i32
 
     bb1: {
         storage_live(_4);
-        _4 = cast<*const i32, *const ()>(copy self);
+        _4 = cast<*const ()>(copy self);
         _3 = precondition_check(move _4, copy count, copy SIZE::<i32>) -> bb2 (unwind: bb3);
     }
 
@@ -586,7 +587,9 @@ pub fn offset::<i32>(self: *const i32, count: isize) -> *const i32
     }
 
     bb4: {
-        _0 = copy self offset copy count;
+        storage_live(_6);
+        _6 = copy count ub.* const size_of::<i32>();
+        _0 = &raw const (*self).offset!(copy _6);
         return;
     }
 }
@@ -602,7 +605,7 @@ pub fn as_ptr::<i32>(self: &'_ [i32]) -> *const i32
         storage_live(_0);
         storage_live(_2);
         _2 = &raw const (*self) with_metadata(copy self.metadata);
-        _0 = cast<*const [i32], *const i32>(copy _2);
+        _0 = cast<*const i32>(copy _2);
         storage_dead(_2);
         return;
     }
@@ -631,7 +634,7 @@ fn main()
         storage_live(_3);
         storage_live(_4);
         _4 = &s;
-        _3 = unsize_cast<&'_ [i32; 2usize], &'_ [i32], 2usize>(move _4);
+        _3 = unsize_cast<&'_ [i32], 2usize>(move _4);
         storage_dead(_4);
         ptr = as_ptr::<i32>(move _3) -> bb1 (unwind: bb8);
     }

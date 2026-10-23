@@ -86,34 +86,38 @@ fn main()
     let _10: &'_ (dyn FakeTrait); // anonymous local
     let _11: &'_ u32; // anonymous local
     let _12: &'_ i32; // anonymous local
-    let _13: *const *const (); // anonymous local
+    let _13: usize; // anonymous local
     let _14: *const *const (); // anonymous local
-    let _15: &'_ i32; // anonymous local
-    let _16: &'_ u32; // anonymous local
+    let _15: usize; // anonymous local
+    let _16: *const *const (); // anonymous local
+    let _17: &'_ i32; // anonymous local
+    let _18: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_11);
         storage_live(_12);
-        storage_live(_13);
         storage_live(_14);
+        storage_live(_16);
         _0 = ();
         storage_live(a);
         storage_live(_2);
         storage_live(_3);
-        storage_live(_15);
-        _15 = &anon_const_0;
-        _12 = move _15;
+        storage_live(_17);
+        _17 = &anon_const_0;
+        _12 = move _17;
         _3 = &(*_12);
         _2 = &(*_3);
-        a = unsize_cast<&'_ i32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<i32, bool>)>(move _2);
+        a = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<i32, bool>)>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
         _5 = &(*a) with_metadata(copy a.metadata);
-        _13 = copy _5.metadata offset const 3usize;
-        _4 = (copy (*_13))(move _5) -> bb1 (unwind: bb4);
+        storage_live(_13);
+        _13 = const 3usize ub.* const size_of::<*const ()>();
+        _14 = &raw const (*_5.metadata).offset!(copy _13);
+        _4 = (copy (*_14))(move _5) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -122,19 +126,21 @@ fn main()
         storage_live(b);
         storage_live(_7);
         storage_live(_8);
-        storage_live(_16);
-        _16 = &anon_const_1;
-        _11 = move _16;
+        storage_live(_18);
+        _18 = &anon_const_1;
+        _11 = move _18;
         _8 = &(*_11);
         _7 = &(*_8);
-        b = unsize_cast<&'_ u32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<u32, usize>)>(move _7);
+        b = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<u32, usize>)>(move _7);
         storage_dead(_7);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         _10 = &(*b) with_metadata(copy b.metadata);
-        _14 = copy _10.metadata offset const 3usize;
-        _9 = (copy (*_14))(move _10) -> bb2 (unwind: bb3);
+        storage_live(_15);
+        _15 = const 3usize ub.* const size_of::<*const ()>();
+        _16 = &raw const (*_10.metadata).offset!(copy _15);
+        _9 = (copy (*_16))(move _10) -> bb2 (unwind: bb3);
     }
 
     bb2: {

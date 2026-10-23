@@ -20,7 +20,7 @@ fn test_crate::foo::{const}::{closure}::<(), i8, extern "rust-call" fn(((),)), (
         storage_live(_0);
         storage_live(x);
         _0 = ();
-        x = move spread_args._0;
+        x = noretag move spread_args._0;
         _0 = ();
         return;
     }
@@ -86,15 +86,12 @@ fn foo::<()>(x: ())
     let f: fn(()); // local
     let _3: fn(()); // anonymous local
     let _4: (); // anonymous local
-    let _5: fn(()); // anonymous local
 
     bb0: {
         storage_live(_0);
         _0 = ();
         storage_live(f);
-        storage_live(_5);
-        _5 = cast<{as_fn}<test_crate::foo::{const}::{closure}::{closure}, ((),)>, fn(())>(const {as_fn}<test_crate::foo::{const}::{closure}::{closure}, ((),)>);
-        f = move _5;
+        f = const fnptr({as_fn}<test_crate::foo::{const}::{closure}::{closure}, ((),)>);
         storage_live(_3);
         _3 = copy f;
         storage_live(_4);

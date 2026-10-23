@@ -358,23 +358,23 @@ fn core::hint::assert_unchecked::precondition_check(cond: bool)
         storage_live(_6);
         storage_live(_11);
         _11 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _6 = cast<*const str, *const u8>(copy _11);
+        _6 = cast<*const u8>(copy _11);
         storage_dead(_11);
-        _5 = transmute<*const u8, NonNull::<u8>>(copy _6);
+        _5 = transmute<NonNull::<u8>>(copy _6);
         storage_dead(_6);
         storage_live(_7);
         storage_live(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_12);
-        _12 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: hint::assert_unchecked must never be called when the condition is false\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _10 = copy _12.metadata;
+        _12 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: hint::assert_unchecked must never be called when the condition is false\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _10 = noretag copy _12.metadata;
         storage_dead(_12);
         _9 = move _10 wrap.<< const 1i32;
         storage_dead(_10);
         _8 = move _9 | const 1usize;
         storage_dead(_9);
-        _7 = transmute<usize, NonNull::<Argument::<'_>>>(move _8);
+        _7 = transmute<NonNull::<Argument::<'_>>>(move _8);
         storage_dead(_8);
         _4 = Arguments::<'_> { template: move _5, args: move _7 };
         storage_dead(_7);
@@ -541,12 +541,12 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
         storage_live(true_ptr);
         storage_live(_17);
         _17 = &raw mut true_val_4;
-        true_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _17);
+        true_ptr = cast<*mut usize>(copy _17);
         storage_dead(_17);
         storage_live(false_ptr);
         storage_live(_18);
         _18 = &raw mut false_val_5;
-        false_ptr = cast<*mut MaybeUninit::<usize>, *mut usize>(copy _18);
+        false_ptr = cast<*mut usize>(copy _18);
         storage_dead(_18);
         storage_live(guard_8);
         guard_8 = core::intrinsics::select_unpredictable::<*mut usize>(copy condition, copy true_ptr, copy false_ptr) -> bb1 (unwind: bb12);
@@ -584,7 +584,7 @@ pub fn core::hint::select_unpredictable::<usize>(condition: bool, true_val_2: us
     }
 
     bb5: {
-        _0 = transmute<MaybeUninit::<usize>, usize>(copy self);
+        _0 = transmute<usize>(copy self);
         storage_dead(self);
         storage_dead(guard_10);
         storage_dead(guard_8);
@@ -679,23 +679,23 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(this: usiz
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _6 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -737,7 +737,7 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ u32,)) -> Order
         storage_live(_0);
         storage_live(x);
         storage_live(_7);
-        x = move spread_args._0;
+        x = noretag move spread_args._0;
         storage_live(_4);
         _4 = &(*x);
         storage_live(_5);
@@ -834,7 +834,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
         storage_live(_49);
         storage_live(_50);
         storage_live(size);
-        size = copy self.metadata;
+        size = noretag copy self.metadata;
         storage_live(_4);
         _4 = copy size;
         switch copy _4 -> 0usize: bb1, otherwise: bb2;
@@ -887,7 +887,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
 
     bb5: {
         storage_live(_31);
-        _31 = copy self.metadata;
+        _31 = noretag copy self.metadata;
         _30 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy mid, move _31) -> bb6 (unwind: bb7);
     }
 
@@ -903,7 +903,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
     bb8: {
         storage_live(_32);
         storage_live(_33);
-        _33 = copy self.metadata;
+        _33 = noretag copy self.metadata;
         _32 = copy mid < move _33;
         storage_dead(_33);
         _45 = assume(move _32) -> bb9 (unwind: bb12);
@@ -963,7 +963,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
 
     bb14: {
         storage_live(_37);
-        _37 = copy self.metadata;
+        _37 = noretag copy self.metadata;
         _36 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy index, move _37) -> bb15 (unwind: bb16);
     }
 
@@ -978,7 +978,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
 
     bb17: {
         storage_live(_38);
-        _39 = copy self.metadata;
+        _39 = noretag copy self.metadata;
         _38 = copy index < copy _39;
         _46 = assume(move _38) -> bb18 (unwind: bb35);
     }
@@ -1038,7 +1038,7 @@ pub fn binary_search_by::<'_, u32, test_crate::main::{closure}::{closure}>(self:
         storage_live(_26);
         storage_live(_27);
         _27 = copy _40 == const -1i8;
-        _26 = cast<bool, usize>(move _27);
+        _26 = cast<usize>(move _27);
         storage_dead(_27);
         result = move base wrap.+ move _26;
         storage_dead(_26);
@@ -1114,14 +1114,14 @@ fn main()
         storage_live(_4);
         _4 = &a;
         _3 = &(*_4);
-        b = unsize_cast<&'_ [u32; 5usize], &'_ [u32], 5usize>(move _3);
+        b = unsize_cast<&'_ [u32], 5usize>(move _3);
         storage_dead(_3);
         storage_dead(_4);
         storage_live(res);
         storage_live(_6);
         storage_live(_7);
         _7 = &a;
-        _6 = unsize_cast<&'_ [u32; 5usize], &'_ [u32], 5usize>(move _7);
+        _6 = unsize_cast<&'_ [u32], 5usize>(move _7);
         storage_dead(_7);
         storage_live(_8);
         _8 = test_crate::main::{closure}::{closure} {  };

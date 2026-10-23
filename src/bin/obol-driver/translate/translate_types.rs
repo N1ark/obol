@@ -87,11 +87,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         }
     }
 
-    pub(crate) fn dummy_trait_ref(&self) -> TraitRef {
-        TraitRef::new(
+    pub(crate) fn dummy_trait_ref(&self) -> PolyTraitRef {
+        PolyTraitRef::empty(TraitRef::new(
             TraitRefKind::Dyn,
-            RegionBinder::empty(self.dummy_trait_decl_ref()),
-        )
+            self.dummy_trait_decl_ref(),
+        ))
     }
 
     pub(crate) fn dummy_dyn_ty(&self) -> TyKind {

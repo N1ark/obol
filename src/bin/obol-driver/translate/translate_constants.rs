@@ -1,5 +1,6 @@
 extern crate rustc_abi;
 extern crate rustc_apfloat;
+extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_public_bridge;
@@ -60,6 +61,24 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             .ok_or_else(|| format!("Found uninitialized bytes when reading {bytes:?}").into())
     }
 
+    /// If a fn pointer to `instance` is a closure `call_once` shim that ignores its closure
+    /// argument, return that closure: the pointer then targets the closure-as-fn item.
+    fn closure_as_fn_target(
+        &self,
+        instance: mir::mono::Instance,
+        expected_inputs: Option<usize>,
+    ) -> Option<(ty::ClosureDef, ty::GenericArgs)> {
+        if let Ok(fn_abi) = instance.fn_abi()
+            && expected_inputs.is_none_or(|n| fn_abi.args.len() == n + 1)
+            && let Some(closure_arg) = fn_abi.args.first()
+            && closure_arg.mode == abi::PassMode::Ignore
+            && let ty::TyKind::RigidTy(ty::RigidTy::Closure(closure, args)) = closure_arg.ty.kind()
+        {
+            return Some((closure, args));
+        }
+        None
+    }
+
     /// Register a fn pointer's target, mapping closure `call_once` shims to the closure-as-fn item.
     fn register_fn_ptr_target(
         &mut self,
@@ -67,15 +86,26 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         instance: mir::mono::Instance,
         expected_inputs: Option<usize>,
     ) -> FunDeclId {
-        if let Ok(fn_abi) = instance.fn_abi()
-            && expected_inputs.is_none_or(|n| fn_abi.args.len() == n + 1)
-            && let Some(closure_arg) = fn_abi.args.first()
-            && closure_arg.mode == abi::PassMode::Ignore
-            && let ty::TyKind::RigidTy(ty::RigidTy::Closure(closure, args)) = closure_arg.ty.kind()
-        {
+        if let Some((closure, args)) = self.closure_as_fn_target(instance, expected_inputs) {
             return self.register_closure_as_fn_id(span, closure, args);
         }
         self.register_fun_decl_id(span, instance)
+    }
+
+    /// The type of fn pointers to the target of a fn pointer to `instance` (see
+    /// [`Self::register_fn_ptr_target`]).
+    fn fn_ptr_target_ty(&mut self, span: Span, instance: mir::mono::Instance) -> Result<Ty, Error> {
+        let tcx = self.t_ctx.tcx;
+        let sig = if let Some((_, args)) = self.closure_as_fn_target(instance, None) {
+            let args = rustc_public::rustc_internal::internal(tcx, args);
+            tcx.signature_unclosure(args.as_closure().sig(), rustc_hir::Safety::Safe)
+        } else {
+            let instance = rustc_public::rustc_internal::internal(tcx, instance);
+            let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
+            instance.ty(tcx, typing_env).fn_sig(tcx)
+        };
+        let fn_ptr_ty = rustc_middle::ty::Ty::new_fn_ptr(tcx, sig);
+        self.translate_ty(span, rustc_public::rustc_internal::stable(fn_ptr_ty))
     }
 
     pub fn as_charon_bytes(
@@ -84,7 +114,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         alloc: &ty::Allocation,
         offset: usize,
         size: usize,
-    ) -> Vec<Byte> {
+    ) -> Result<Vec<Byte>, Error> {
         let mut bytes: Vec<Byte> = alloc.bytes.as_slice()[offset..offset + size]
             .iter()
             .map(|b| match b {
@@ -99,14 +129,16 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             let prov = match prov_alloc {
                 mir::alloc::GlobalAlloc::Function(fun) => {
                     let id = self.register_fn_ptr_target(span, fun, None);
-                    Provenance::Function(FnPtr {
+                    let fn_ptr_ty = self.fn_ptr_target_ty(span, fun)?;
+                    let fn_ptr = FnPtr {
                         kind: Box::new(FnPtrKind::Fun(id)),
                         generics: Box::new(GenericArgs::empty()),
-                    })
+                    };
+                    GlobalProvenance::Function(fn_ptr, fn_ptr_ty)
                 }
                 _ => {
                     let id = self.register_global_decl_id(span, prov.0, None);
-                    Provenance::Global(GlobalDeclRef {
+                    GlobalProvenance::Global(GlobalDeclRef {
                         id,
                         generics: Box::new(GenericArgs::empty()),
                     })
@@ -121,7 +153,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             }
         }
 
-        bytes
+        Ok(bytes)
     }
 
     fn provenance_at<'a>(
@@ -259,12 +291,13 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             ConstantExprKind::Array(sub_constants),
                             Ty::mk_array(subty.clone(), len.clone(), None),
                         );
+                        let place = GlobalPlace::new_value(sub_constant);
                         let metadata = Some(UnsizingMetadata::Length(len));
 
                         if let TyKind::RawPtr(_, rk) = ty {
-                            ConstantExprKind::Ptr(*rk, sub_constant, metadata)
+                            ConstantExprKind::Ptr(*rk, place, metadata)
                         } else {
-                            ConstantExprKind::Ref(sub_constant, metadata)
+                            ConstantExprKind::Ref(place, metadata)
                         }
                     }
                     // The pointer points directly at a function (e.g. `f as *mut ()`
@@ -358,18 +391,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                             }
                             _ => GenericArgs::empty(),
                         };
-                        let sub_constant = ConstantExpr::new(
-                            ConstantExprKind::Global(GlobalDeclRef {
+                        let place = GlobalPlace::new_global(
+                            GlobalDeclRef {
                                 id,
                                 generics: Box::new(generics),
-                            }),
+                            },
                             glob_ty,
                         );
 
                         if let TyKind::RawPtr(_, rk) = ty {
-                            ConstantExprKind::Ptr(*rk, sub_constant, metadata)
+                            ConstantExprKind::Ptr(*rk, place, metadata)
                         } else {
-                            ConstantExprKind::Ref(sub_constant, metadata)
+                            ConstantExprKind::Ref(place, metadata)
                         }
                     }
                 }
@@ -529,7 +562,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     ty::AdtKind::Union => {
                         return Ok(ConstantExpr::new(
                             ConstantExprKind::RawMemory(
-                                self.as_charon_bytes(span, alloc, offset, size),
+                                self.as_charon_bytes(span, alloc, offset, size)?,
                             ),
                             ty.clone().into_ty(),
                         ));
@@ -606,7 +639,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     }
                     _ => {
                         trace!("Gave up for raw memory of fndef with alloc {glob_alloc:?}");
-                        ConstantExprKind::RawMemory(self.as_charon_bytes(span, alloc, offset, size))
+                        ConstantExprKind::RawMemory(
+                            self.as_charon_bytes(span, alloc, offset, size)?,
+                        )
                     }
                 }
             }
@@ -658,7 +693,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             | TyKind::FnDef(..)
             | TyKind::PtrMetadata(..) => {
                 trace!("Gave up for raw memory of type {ty:?} with alloc {alloc:?}");
-                ConstantExprKind::RawMemory(self.as_charon_bytes(span, alloc, offset, size))
+                ConstantExprKind::RawMemory(self.as_charon_bytes(span, alloc, offset, size)?)
             }
             TyKind::Adt(tref) => {
                 unreachable!("Unhandled builtin type in constant: {:?}", tref.builtin);
@@ -835,7 +870,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             None => {
                 let size = alloc.bytes.len();
                 let maybe_uninit = self.maybe_uninit_bytes(span, size)?;
-                let bytes = self.as_charon_bytes(span, &alloc, 0, size);
+                let bytes = self.as_charon_bytes(span, &alloc, 0, size)?;
                 let const_val =
                     ConstantExpr::new(ConstantExprKind::RawMemory(bytes), maybe_uninit.clone());
                 Ok((const_val, maybe_uninit))

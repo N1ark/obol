@@ -60,7 +60,7 @@ pub fn vcgez_s8(a: int8x8_t) -> uint8x8_t
 
     bb1: {
         storage_live(_3);
-        _3 = transmute<Simd::<i8, 8usize>, int8x8_t>(copy b);
+        _3 = transmute<int8x8_t>(copy b);
         _0 = simd_ge::<int8x8_t, uint8x8_t>(move a, move _3) -> bb2 (unwind: bb3);
     }
 
@@ -100,7 +100,7 @@ pub fn vcltz_s8(a: int8x8_t) -> uint8x8_t
 
     bb1: {
         storage_live(_3);
-        _3 = transmute<Simd::<i8, 8usize>, int8x8_t>(copy b);
+        _3 = transmute<int8x8_t>(copy b);
         _0 = simd_lt::<int8x8_t, uint8x8_t>(move a, move _3) -> bb2 (unwind: bb3);
     }
 
@@ -137,10 +137,10 @@ pub fn read_unaligned::<uint8x8_t>(src: *const uint8x8_t) -> uint8x8_t
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = cast<*const uint8x8_t, *const Unaligned::<uint8x8_t>>(copy src);
+        _2 = cast<*const Unaligned::<uint8x8_t>>(copy src);
         storage_live(_3);
         _3 = copy (*_2);
-        _0 = transmute<Unaligned::<uint8x8_t>, uint8x8_t>(copy _3);
+        _0 = transmute<uint8x8_t>(copy _3);
         storage_dead(_3);
         return;
     }
@@ -154,7 +154,7 @@ pub fn core::ptr::const_ptr::{*const T}::cast::<u8, uint8x8_t>(self: *const u8) 
 
     bb0: {
         storage_live(_0);
-        _0 = cast<*const u8, *const uint8x8_t>(copy self);
+        _0 = cast<*const uint8x8_t>(copy self);
         return;
     }
 }
@@ -200,7 +200,7 @@ pub fn core::ptr::mut_ptr::{*mut T}::cast::<u8, uint8x8_t>(self: *mut u8) -> *mu
 
     bb0: {
         storage_live(_0);
-        _0 = cast<*mut u8, *mut uint8x8_t>(copy self);
+        _0 = cast<*mut uint8x8_t>(copy self);
         return;
     }
 }
@@ -220,7 +220,7 @@ pub fn write_unaligned::<uint8x8_t>(dst: *mut uint8x8_t, src: uint8x8_t)
         storage_live(_0);
         storage_live(_3);
         _0 = ();
-        _3 = cast<*mut uint8x8_t, *mut Unaligned::<uint8x8_t>>(copy dst);
+        _3 = cast<*mut Unaligned::<uint8x8_t>>(copy dst);
         storage_live(_4);
         _4 = Unaligned::<uint8x8_t> { _0: copy src };
         (*_3) = copy _4;
@@ -397,7 +397,7 @@ pub fn vreinterpret_s8_u8(a: uint8x8_t) -> int8x8_t
 
     bb0: {
         storage_live(_0);
-        _0 = transmute<uint8x8_t, int8x8_t>(copy a);
+        _0 = transmute<int8x8_t>(copy a);
         return;
     }
 }
@@ -410,7 +410,7 @@ pub fn vreinterpret_u64_u8(a: uint8x8_t) -> uint64x1_t
 
     bb0: {
         storage_live(_0);
-        _0 = transmute<uint8x8_t, uint64x1_t>(copy a);
+        _0 = transmute<uint64x1_t>(copy a);
         return;
     }
 }
@@ -626,23 +626,23 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         storage_live(_3);
         storage_live(_8);
         _8 = &raw const (*s) with_metadata(copy s.metadata);
-        _3 = cast<*const str, *const u8>(copy _8);
+        _3 = cast<*const u8>(copy _8);
         storage_dead(_8);
-        _2 = transmute<*const u8, NonNull::<u8>>(copy _3);
+        _2 = transmute<NonNull::<u8>>(copy _3);
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);
         storage_live(_7);
         storage_live(_9);
-        _9 = transmute<&'_ str, &'_ [u8]>(copy s);
-        _7 = copy _9.metadata;
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
         storage_dead(_9);
         _6 = move _7 wrap.<< const 1i32;
         storage_dead(_7);
         _5 = move _6 | const 1usize;
         storage_dead(_6);
-        _4 = transmute<usize, NonNull::<Argument::<'_>>>(move _5);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
         storage_dead(_5);
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
@@ -666,7 +666,7 @@ pub fn {impl Display for &'_ T}::fmt::<'_, str>(self: &'_ &'_ str, f: &'_ mut Fo
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self);
+        _3 = noretag copy (*self);
         _0 = impl_Display_for_str::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
@@ -1012,17 +1012,17 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_live(diff);
         storage_live(_17);
         storage_live(src_usize);
-        src_usize = transmute<*const (), usize>(copy src);
+        src_usize = transmute<usize>(copy src);
         storage_live(dst_usize);
-        dst_usize = transmute<*const (), usize>(copy dst);
+        dst_usize = transmute<usize>(copy dst);
         storage_live(_9);
         storage_live(b);
         storage_live(a);
         storage_live(_13);
         storage_live(_14);
-        _14 = cast<usize, u64>(copy size_3);
+        _14 = cast<u64>(copy size_3);
         storage_live(_15);
-        _15 = cast<usize, u64>(copy count);
+        _15 = cast<u64>(copy count);
         _13 = move _14 checked.* move _15;
         storage_dead(_15);
         storage_dead(_14);
@@ -1030,7 +1030,7 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         _11 = copy _13._0;
         b = copy _13._1;
         storage_dead(_13);
-        a = cast<u64, usize>(copy _11);
+        a = cast<usize>(copy _11);
         storage_dead(_11);
         if copy b -> bb1 else -> bb6;
     }
@@ -1138,8 +1138,8 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_6);
         storage_live(_7);
         storage_live(_10);
-        _10 = cast<*const (), *const ()>(copy self);
-        _7 = transmute<*const (), usize>(copy _10);
+        _10 = cast<*const ()>(copy self);
+        _7 = transmute<usize>(copy _10);
         storage_dead(_10);
         storage_live(_8);
         _8 = copy align wrap.- const 1usize;
@@ -1159,23 +1159,23 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_13);
         storage_live(_18);
         _18 = &raw const (*s) with_metadata(copy s.metadata);
-        _13 = cast<*const str, *const u8>(copy _18);
+        _13 = cast<*const u8>(copy _18);
         storage_dead(_18);
-        _12 = transmute<*const u8, NonNull::<u8>>(copy _13);
+        _12 = transmute<NonNull::<u8>>(copy _13);
         storage_dead(_13);
         storage_live(_14);
         storage_live(_15);
         storage_live(_16);
         storage_live(_17);
         storage_live(_19);
-        _19 = transmute<&'_ str, &'_ [u8]>(const "is_aligned_to: align is not a power-of-two");
-        _17 = copy _19.metadata;
+        _19 = transmute<&'_ [u8]>(const "is_aligned_to: align is not a power-of-two");
+        _17 = noretag copy _19.metadata;
         storage_dead(_19);
         _16 = move _17 wrap.<< const 1i32;
         storage_dead(_17);
         _15 = move _16 | const 1usize;
         storage_dead(_16);
-        _14 = transmute<usize, NonNull::<Argument::<'_>>>(move _15);
+        _14 = transmute<NonNull::<Argument::<'_>>>(move _15);
         storage_dead(_15);
         _5 = Arguments::<'_> { template: move _12, args: move _14 };
         storage_dead(_14);
@@ -1281,9 +1281,9 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
         storage_live(_17);
         storage_live(_29);
         storage_live(_31);
-        _31 = cast<usize, *const ()>(const 0usize);
+        _31 = cast<*const ()>(const 0usize);
         _29 = copy src != move _31;
-        _17 = cast<bool, usize>(move _29);
+        _17 = cast<usize>(move _29);
         storage_dead(_29);
         _16 = move _17 == const 0usize;
         storage_dead(_17);
@@ -1296,7 +1296,7 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
     bb8: {
         storage_dead(is_zst);
         storage_live(_10);
-        ptr = cast<*mut (), *const ()>(copy dst);
+        ptr = cast<*const ()>(copy dst);
         storage_live(_18);
         _18 = is_aligned_to::<()>(copy ptr, move align) -> bb9 (unwind: bb18);
     }
@@ -1319,9 +1319,9 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
         storage_live(_20);
         storage_live(_30);
         storage_live(_32);
-        _32 = cast<usize, *mut ()>(const 0usize);
+        _32 = cast<*mut ()>(const 0usize);
         _30 = copy dst != move _32;
-        _20 = cast<bool, usize>(move _30);
+        _20 = cast<usize>(move _30);
         storage_dead(_30);
         _19 = move _20 == const 0usize;
         storage_dead(_20);
@@ -1382,23 +1382,23 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
         storage_live(_22);
         storage_live(_27);
         _27 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _22 = cast<*const str, *const u8>(copy _27);
+        _22 = cast<*const u8>(copy _27);
         storage_dead(_27);
-        _21 = transmute<*const u8, NonNull::<u8>>(copy _22);
+        _21 = transmute<NonNull::<u8>>(copy _22);
         storage_dead(_22);
         storage_live(_23);
         storage_live(_24);
         storage_live(_25);
         storage_live(_26);
         storage_live(_28);
-        _28 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: ptr::copy_nonoverlapping requires that both pointer arguments are aligned and non-null and the specified memory ranges do not overlap\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _26 = copy _28.metadata;
+        _28 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: ptr::copy_nonoverlapping requires that both pointer arguments are aligned and non-null and the specified memory ranges do not overlap\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _26 = noretag copy _28.metadata;
         storage_dead(_28);
         _25 = move _26 wrap.<< const 1i32;
         storage_dead(_26);
         _24 = move _25 | const 1usize;
         storage_dead(_25);
-        _23 = transmute<usize, NonNull::<Argument::<'_>>>(move _24);
+        _23 = transmute<NonNull::<Argument::<'_>>>(move _24);
         storage_dead(_24);
         _14 = Arguments::<'_> { template: move _21, args: move _23 };
         storage_dead(_23);
@@ -1659,23 +1659,23 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(this: usiz
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _6 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -1753,12 +1753,14 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
     let _50: usize; // anonymous local
     let _51: bool; // anonymous local
     let _52: usize; // anonymous local
-    let _53: bool; // anonymous local
-    let _54: (); // anonymous local
-    let _55: bool; // anonymous local
-    let _56: (); // anonymous local
+    let _53: usize; // anonymous local
+    let _54: bool; // anonymous local
+    let _55: (); // anonymous local
+    let _56: usize; // anonymous local
     let _57: bool; // anonymous local
     let _58: (); // anonymous local
+    let _59: bool; // anonymous local
+    let _60: (); // anonymous local
 
     bb0: {
         storage_live(out);
@@ -1768,9 +1770,9 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         storage_live(_45);
         storage_live(_48);
         storage_live(_49);
-        storage_live(_54);
-        storage_live(_56);
+        storage_live(_55);
         storage_live(_58);
+        storage_live(_60);
         storage_live(i);
         i = const 0usize;
         out = const 0u64;
@@ -1792,30 +1794,32 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         storage_live(self_10);
         storage_live(_40);
         _40 = &raw const (*buf) with_metadata(copy buf.metadata);
-        self_10 = cast<*const [u8], *const u8>(copy _40);
+        self_10 = cast<*const u8>(copy _40);
         storage_dead(_40);
         storage_live(count_11);
         storage_live(_12);
         _12 = copy i;
         count_11 = copy start wrap.+ move _12;
         storage_dead(_12);
-        src_9 = copy self_10 offset copy count_11;
+        storage_live(_53);
+        _53 = copy count_11 ub.* const size_of::<u8>();
+        src_9 = &raw const (*self_10).offset!(copy _53);
         storage_dead(count_11);
         storage_dead(self_10);
         storage_live(dst_13);
         storage_live(_14);
         _14 = &raw mut data_8;
-        dst_13 = cast<*mut u32, *mut u8>(copy _14);
-        storage_live(_53);
-        _53 = ub_checks;
-        if move _53 -> bb2 else -> bb5;
+        dst_13 = cast<*mut u8>(copy _14);
+        storage_live(_54);
+        _54 = ub_checks;
+        if move _54 -> bb2 else -> bb5;
     }
 
     bb2: {
         storage_live(_42);
-        _42 = cast<*const u8, *const ()>(copy src_9);
+        _42 = cast<*const ()>(copy src_9);
         storage_live(_43);
-        _43 = cast<*mut u32, *mut ()>(copy _14);
+        _43 = cast<*mut ()>(copy _14);
         _41 = core::ptr::copy_nonoverlapping::precondition_check(move _42, move _43, const 1usize, const 1usize, const 4usize) -> bb3 (unwind: bb4);
     }
 
@@ -1830,7 +1834,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
     }
 
     bb5: {
-        _54 = copy_nonoverlapping::<u8>(copy src_9, copy dst_13, const 4usize) -> bb6 (unwind: bb7);
+        _55 = copy_nonoverlapping::<u8>(copy src_9, copy dst_13, const 4usize) -> bb6 (unwind: bb7);
     }
 
     bb6: {
@@ -1839,7 +1843,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         storage_dead(_14);
         self_15 = copy data_8;
         storage_dead(data_8);
-        out = cast<u32, u64>(copy self_15);
+        out = cast<u64>(copy self_15);
         i = copy i wrap.+ const 4usize;
         goto bb9;
     }
@@ -1875,30 +1879,32 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         storage_live(self_23);
         storage_live(_44);
         _44 = &raw const (*buf) with_metadata(copy buf.metadata);
-        self_23 = cast<*const [u8], *const u8>(copy _44);
+        self_23 = cast<*const u8>(copy _44);
         storage_dead(_44);
         storage_live(count_24);
         storage_live(_25);
         _25 = copy i;
         count_24 = copy start wrap.+ move _25;
         storage_dead(_25);
-        src_22 = copy self_23 offset copy count_24;
+        storage_live(_56);
+        _56 = copy count_24 ub.* const size_of::<u8>();
+        src_22 = &raw const (*self_23).offset!(copy _56);
         storage_dead(count_24);
         storage_dead(self_23);
         storage_live(dst_26);
         storage_live(_27);
         _27 = &raw mut data_21;
-        dst_26 = cast<*mut u16, *mut u8>(copy _27);
-        storage_live(_55);
-        _55 = ub_checks;
-        if move _55 -> bb11 else -> bb14;
+        dst_26 = cast<*mut u8>(copy _27);
+        storage_live(_57);
+        _57 = ub_checks;
+        if move _57 -> bb11 else -> bb14;
     }
 
     bb11: {
         storage_live(_46);
-        _46 = cast<*const u8, *const ()>(copy src_22);
+        _46 = cast<*const ()>(copy src_22);
         storage_live(_47);
-        _47 = cast<*mut u16, *mut ()>(copy _27);
+        _47 = cast<*mut ()>(copy _27);
         _45 = core::ptr::copy_nonoverlapping::precondition_check(move _46, move _47, const 1usize, const 1usize, const 2usize) -> bb12 (unwind: bb13);
     }
 
@@ -1913,7 +1919,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
     }
 
     bb14: {
-        _56 = copy_nonoverlapping::<u8>(copy src_22, copy dst_26, const 2usize) -> bb15 (unwind: bb16);
+        _58 = copy_nonoverlapping::<u8>(copy src_22, copy dst_26, const 2usize) -> bb15 (unwind: bb16);
     }
 
     bb15: {
@@ -1922,7 +1928,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         storage_dead(_27);
         self_28 = copy data_21;
         storage_dead(data_21);
-        _20 = cast<u16, u64>(copy self_28);
+        _20 = cast<u64>(copy self_28);
         storage_live(_29);
         storage_live(_30);
         _30 = copy i;
@@ -1965,14 +1971,14 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         _37 = copy i;
         index = copy start wrap.+ move _37;
         storage_dead(_37);
-        storage_live(_57);
-        _57 = ub_checks;
-        if move _57 -> bb20 else -> bb23;
+        storage_live(_59);
+        _59 = ub_checks;
+        if move _59 -> bb20 else -> bb23;
     }
 
     bb20: {
         storage_live(_50);
-        _50 = copy buf.metadata;
+        _50 = noretag copy buf.metadata;
         _49 = impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(copy index, move _50) -> bb21 (unwind: bb22);
     }
 
@@ -1988,10 +1994,10 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
     bb23: {
         storage_live(_51);
         storage_live(_52);
-        _52 = copy buf.metadata;
+        _52 = noretag copy buf.metadata;
         _51 = copy index < move _52;
         storage_dead(_52);
-        _58 = assume(move _51) -> bb24 (unwind: bb25);
+        _60 = assume(move _51) -> bb24 (unwind: bb25);
     }
 
     bb24: {
@@ -1999,7 +2005,7 @@ fn u8to64_le(buf: &'_ [u8], start: usize, len: usize) -> u64
         _48 = &raw const (*buf)[copy index];
         storage_dead(index);
         _35 = copy (*_48);
-        _34 = cast<u8, u64>(move _35);
+        _34 = cast<u64>(move _35);
         storage_dead(_35);
         storage_live(_38);
         storage_live(_39);
@@ -2073,8 +2079,9 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
     let _36: (); // anonymous local
     let _37: *const (); // anonymous local
     let _38: *mut (); // anonymous local
-    let _39: bool; // anonymous local
-    let _40: (); // anonymous local
+    let _39: usize; // anonymous local
+    let _40: bool; // anonymous local
+    let _41: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2083,10 +2090,10 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
         storage_live(mi);
         storage_live(_32);
         storage_live(_36);
-        storage_live(_40);
+        storage_live(_41);
         _0 = ();
         storage_live(length);
-        length = copy msg.metadata;
+        length = noretag copy msg.metadata;
         (*self_1).length = copy (*self_1).length wrap.+ copy length;
         needed = const 0usize;
         storage_live(_5);
@@ -2197,27 +2204,29 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
         storage_live(self_27);
         storage_live(_35);
         _35 = &raw const (*msg) with_metadata(copy msg.metadata);
-        self_27 = cast<*const [u8], *const u8>(copy _35);
+        self_27 = cast<*const u8>(copy _35);
         storage_dead(_35);
         storage_live(count);
         count = copy needed;
-        src = copy self_27 offset copy count;
+        storage_live(_39);
+        _39 = copy count ub.* const size_of::<u8>();
+        src = &raw const (*self_27).offset!(copy _39);
         storage_dead(count);
         storage_dead(self_27);
         storage_live(dst);
         storage_live(_30);
         _30 = &raw mut data;
-        dst = cast<*mut u64, *mut u8>(copy _30);
-        storage_live(_39);
-        _39 = ub_checks;
-        if move _39 -> bb11 else -> bb14;
+        dst = cast<*mut u8>(copy _30);
+        storage_live(_40);
+        _40 = ub_checks;
+        if move _40 -> bb11 else -> bb14;
     }
 
     bb11: {
         storage_live(_37);
-        _37 = cast<*const u8, *const ()>(copy src);
+        _37 = cast<*const ()>(copy src);
         storage_live(_38);
-        _38 = cast<*mut u64, *mut ()>(copy _30);
+        _38 = cast<*mut ()>(copy _30);
         _36 = core::ptr::copy_nonoverlapping::precondition_check(move _37, move _38, const 1usize, const 1usize, const 8usize) -> bb12 (unwind: bb13);
     }
 
@@ -2232,7 +2241,7 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::write::<Sip13
     }
 
     bb14: {
-        _40 = copy_nonoverlapping::<u8>(copy src, copy dst, const 8usize) -> bb15 (unwind: bb18);
+        _41 = copy_nonoverlapping::<u8>(copy src, copy dst, const 8usize) -> bb15 (unwind: bb18);
     }
 
     bb15: {
@@ -2344,9 +2353,9 @@ pub fn write_u32::<DefaultHasher>(self: &'_ mut DefaultHasher, i: u32)
         storage_live(_3);
         storage_live(_4);
         storage_live(_5);
-        _5 = transmute<u32, [u8; 4usize]>(copy i);
+        _5 = transmute<[u8; 4usize]>(copy i);
         _4 = &_5;
-        _3 = unsize_cast<&'_ [u8; 4usize], &'_ [u8], 4usize>(copy _4);
+        _3 = unsize_cast<&'_ [u8], 4usize>(copy _4);
         _0 = impl_Hasher_for_DefaultHasher::write(move self, move _3) -> bb1 (unwind: bb2);
     }
 
@@ -2914,7 +2923,7 @@ pub fn {impl core::hash::Hasher for core::hash::sip::Hasher::<_>}::finish::<Sip1
         storage_live(_6);
         storage_live(_7);
         _7 = copy (*self).length;
-        _6 = cast<usize, u64>(move _7);
+        _6 = cast<u64>(move _7);
         storage_dead(_7);
         _5 = move _6 & const 255u64;
         storage_dead(_6);
@@ -3134,7 +3143,7 @@ pub fn {impl Hash for &'_ T}::hash::<'_, u32, DefaultHasher>(self: &'_ &'_ u32, 
         storage_live(_3);
         storage_live(_4);
         _0 = ();
-        _4 = copy (*self);
+        _4 = noretag copy (*self);
         _3 = impl_Hash_for_u32::hash::<DefaultHasher>(move _4, move state) -> bb1 (unwind: bb2);
     }
 
@@ -3575,9 +3584,9 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _0 = ();
         storage_live(_7);
         storage_live(_8);
-        _8 = cast<usize, u64>(copy lhs);
+        _8 = cast<u64>(copy lhs);
         storage_live(_9);
-        _9 = cast<usize, u64>(copy rhs);
+        _9 = cast<u64>(copy rhs);
         _7 = move _8 checked.+ move _9;
         storage_dead(_9);
         storage_dead(_8);
@@ -3593,23 +3602,23 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         storage_live(_11);
         storage_live(_16);
         _16 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _11 = cast<*const str, *const u8>(copy _16);
+        _11 = cast<*const u8>(copy _16);
         storage_dead(_16);
-        _10 = transmute<*const u8, NonNull::<u8>>(copy _11);
+        _10 = transmute<NonNull::<u8>>(copy _11);
         storage_dead(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _15 = copy _17.metadata;
+        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
         storage_dead(_15);
         _13 = move _14 | const 1usize;
         storage_dead(_14);
-        _12 = transmute<usize, NonNull::<Argument::<'_>>>(move _13);
+        _12 = transmute<NonNull::<Argument::<'_>>>(move _13);
         storage_dead(_13);
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
@@ -3769,8 +3778,8 @@ fn hashbrown::map::make_hasher::{closure}::<u32, u32, RandomState, i8, extern "r
         storage_live(_0);
         storage_live(val_3);
         storage_live(hash_builder);
-        val_3 = move spread_args._0;
-        hash_builder = copy (*_1).upvar_0;
+        val_3 = noretag move spread_args._0;
+        hash_builder = noretag copy (*_1).upvar_0;
         storage_live(val_4);
         val_4 = &(*val_3)._0;
         _0 = hash_one::<RandomState, &'_ u32>(move hash_builder, move val_4) -> bb1 (unwind: bb2);
@@ -3817,6 +3826,8 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), G
     let _15: isize; // anonymous local
     let _16: *mut (u32, u32); // anonymous local
     let self_17: *mut (u32, u32); // local
+    let _18: isize; // anonymous local
+    let _19: isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3824,15 +3835,15 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), G
         storage_live(index);
         storage_live(_7);
         storage_live(self_13);
-        table = move spread_args._0;
-        index = move spread_args._1;
-        _7 = copy (*_1).upvar_0;
+        table = noretag move spread_args._0;
+        index = noretag move spread_args._1;
+        _7 = noretag copy (*_1).upvar_0;
         storage_live(_5);
         storage_live(_6);
         storage_live(_9);
         storage_live(base);
         _9 = copy (*table).ctrl;
-        base = transmute<NonNull::<u8>, NonNull::<(u32, u32)>>(copy _9);
+        base = transmute<NonNull::<(u32, u32)>>(copy _9);
         storage_live(ptr);
         if copy IS_ZERO_SIZED::<(u32, u32)> -> bb1 else -> bb2;
     }
@@ -3840,14 +3851,14 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), G
     bb1: {
         storage_live(addr);
         addr = copy index wrap.+ const 1usize;
-        ptr = transmute<usize, *mut (u32, u32)>(copy addr);
+        ptr = transmute<*mut (u32, u32)>(copy addr);
         storage_dead(addr);
         goto bb6;
     }
 
     bb2: {
         storage_live(self_12);
-        self_12 = transmute<NonNull::<u8>, *mut (u32, u32)>(copy _9);
+        self_12 = transmute<*mut (u32, u32)>(copy _9);
         if copy IS_ZST::<(u32, u32)> -> bb3 else -> bb4;
     }
 
@@ -3859,10 +3870,12 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), G
     bb4: {
         storage_live(_14);
         storage_live(_15);
-        _15 = cast<usize, isize>(copy index);
+        _15 = cast<isize>(copy index);
         _14 = const 0isize ub.- move _15;
         storage_dead(_15);
-        ptr = copy self_12 offset move _14;
+        storage_live(_18);
+        _18 = move _14 ub.* const size_of::<(u32, u32)>();
+        ptr = &raw mut (*self_12).offset!(copy _18);
         storage_dead(_14);
         goto bb5;
     }
@@ -3873,7 +3886,7 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), G
     }
 
     bb6: {
-        self_13 = transmute<*mut (u32, u32), NonNull::<(u32, u32)>>(copy ptr);
+        self_13 = transmute<NonNull::<(u32, u32)>>(copy ptr);
         storage_dead(ptr);
         storage_dead(base);
         storage_dead(_9);
@@ -3882,13 +3895,13 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), G
     }
 
     bb7: {
-        _16 = transmute<usize, *mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
+        _16 = transmute<*mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
         goto bb12;
     }
 
     bb8: {
         storage_live(self_17);
-        self_17 = transmute<NonNull::<(u32, u32)>, *mut (u32, u32)>(copy self_13);
+        self_17 = transmute<*mut (u32, u32)>(copy self_13);
         if copy IS_ZST::<(u32, u32)> -> bb9 else -> bb10;
     }
 
@@ -3898,7 +3911,9 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::<(u32, u32), G
     }
 
     bb10: {
-        _16 = copy self_17 offset const -1isize;
+        storage_live(_19);
+        _19 = const -1isize ub.* const size_of::<(u32, u32)>();
+        _16 = &raw mut (*self_17).offset!(copy _19);
         goto bb11;
     }
 
@@ -4049,8 +4064,8 @@ fn hashbrown::map::equivalent_key::{closure}::<u32, u32, u32, i8, extern "rust-c
         storage_live(_0);
         storage_live(x);
         storage_live(_5);
-        x = move spread_args._0;
-        _5 = copy (*_1).upvar_0;
+        x = noretag move spread_args._0;
+        _5 = noretag copy (*_1).upvar_0;
         storage_live(_4);
         _4 = &(*x)._0;
         _0 = equivalent::<u32, u32>(move _5, move _4) -> bb1 (unwind: bb2);
@@ -4090,6 +4105,8 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, has
     let _15: isize; // anonymous local
     let _16: *mut (u32, u32); // anonymous local
     let self_17: *mut (u32, u32); // local
+    let _18: isize; // anonymous local
+    let _19: isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4097,15 +4114,15 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, has
         storage_live(_6);
         storage_live(self_7);
         storage_live(self_13);
-        index = move spread_args._0;
-        _6 = copy (*_1).upvar_0;
+        index = noretag move spread_args._0;
+        _6 = noretag copy (*_1).upvar_0;
         storage_live(_4);
         storage_live(_5);
-        self_7 = copy (*_1).upvar_1;
+        self_7 = noretag copy (*_1).upvar_1;
         storage_live(_9);
         storage_live(base);
         _9 = copy (*self_7).table.ctrl;
-        base = transmute<NonNull::<u8>, NonNull::<(u32, u32)>>(copy _9);
+        base = transmute<NonNull::<(u32, u32)>>(copy _9);
         storage_live(ptr);
         if copy IS_ZERO_SIZED::<(u32, u32)> -> bb1 else -> bb2;
     }
@@ -4113,14 +4130,14 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, has
     bb1: {
         storage_live(addr);
         addr = copy index wrap.+ const 1usize;
-        ptr = transmute<usize, *mut (u32, u32)>(copy addr);
+        ptr = transmute<*mut (u32, u32)>(copy addr);
         storage_dead(addr);
         goto bb6;
     }
 
     bb2: {
         storage_live(self_12);
-        self_12 = transmute<NonNull::<u8>, *mut (u32, u32)>(copy _9);
+        self_12 = transmute<*mut (u32, u32)>(copy _9);
         if copy IS_ZST::<(u32, u32)> -> bb3 else -> bb4;
     }
 
@@ -4132,10 +4149,12 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, has
     bb4: {
         storage_live(_14);
         storage_live(_15);
-        _15 = cast<usize, isize>(copy index);
+        _15 = cast<isize>(copy index);
         _14 = const 0isize ub.- move _15;
         storage_dead(_15);
-        ptr = copy self_12 offset move _14;
+        storage_live(_18);
+        _18 = move _14 ub.* const size_of::<(u32, u32)>();
+        ptr = &raw mut (*self_12).offset!(copy _18);
         storage_dead(_14);
         goto bb5;
     }
@@ -4146,7 +4165,7 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, has
     }
 
     bb6: {
-        self_13 = transmute<*mut (u32, u32), NonNull::<(u32, u32)>>(copy ptr);
+        self_13 = transmute<NonNull::<(u32, u32)>>(copy ptr);
         storage_dead(ptr);
         storage_dead(base);
         storage_dead(_9);
@@ -4155,13 +4174,13 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, has
     }
 
     bb7: {
-        _16 = transmute<usize, *mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
+        _16 = transmute<*mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
         goto bb12;
     }
 
     bb8: {
         storage_live(self_17);
-        self_17 = transmute<NonNull::<(u32, u32)>, *mut (u32, u32)>(copy self_13);
+        self_17 = transmute<*mut (u32, u32)>(copy self_13);
         if copy IS_ZST::<(u32, u32)> -> bb9 else -> bb10;
     }
 
@@ -4171,7 +4190,9 @@ fn hashbrown::raw::{RawTable::<_, _>}::find::{closure}::<(u32, u32), Global, has
     }
 
     bb10: {
-        _16 = copy self_17 offset const -1isize;
+        storage_live(_19);
+        _19 = const -1isize ub.* const size_of::<(u32, u32)>();
+        _16 = &raw mut (*self_17).offset!(copy _19);
         goto bb11;
     }
 
@@ -4286,6 +4307,8 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u
     let _15: isize; // anonymous local
     let _16: *mut (u32, u32); // anonymous local
     let self_17: *mut (u32, u32); // local
+    let _18: isize; // anonymous local
+    let _19: isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4293,15 +4316,15 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u
         storage_live(_6);
         storage_live(self_7);
         storage_live(self_13);
-        index = move spread_args._0;
-        _6 = copy (*_1).upvar_0;
+        index = noretag move spread_args._0;
+        _6 = noretag copy (*_1).upvar_0;
         storage_live(_4);
         storage_live(_5);
-        self_7 = copy (*_1).upvar_1;
+        self_7 = noretag copy (*_1).upvar_1;
         storage_live(_9);
         storage_live(base);
         _9 = copy (*self_7).table.ctrl;
-        base = transmute<NonNull::<u8>, NonNull::<(u32, u32)>>(copy _9);
+        base = transmute<NonNull::<(u32, u32)>>(copy _9);
         storage_live(ptr);
         if copy IS_ZERO_SIZED::<(u32, u32)> -> bb1 else -> bb2;
     }
@@ -4309,14 +4332,14 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u
     bb1: {
         storage_live(addr);
         addr = copy index wrap.+ const 1usize;
-        ptr = transmute<usize, *mut (u32, u32)>(copy addr);
+        ptr = transmute<*mut (u32, u32)>(copy addr);
         storage_dead(addr);
         goto bb6;
     }
 
     bb2: {
         storage_live(self_12);
-        self_12 = transmute<NonNull::<u8>, *mut (u32, u32)>(copy _9);
+        self_12 = transmute<*mut (u32, u32)>(copy _9);
         if copy IS_ZST::<(u32, u32)> -> bb3 else -> bb4;
     }
 
@@ -4328,10 +4351,12 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u
     bb4: {
         storage_live(_14);
         storage_live(_15);
-        _15 = cast<usize, isize>(copy index);
+        _15 = cast<isize>(copy index);
         _14 = const 0isize ub.- move _15;
         storage_dead(_15);
-        ptr = copy self_12 offset move _14;
+        storage_live(_18);
+        _18 = move _14 ub.* const size_of::<(u32, u32)>();
+        ptr = &raw mut (*self_12).offset!(copy _18);
         storage_dead(_14);
         goto bb5;
     }
@@ -4342,7 +4367,7 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u
     }
 
     bb6: {
-        self_13 = transmute<*mut (u32, u32), NonNull::<(u32, u32)>>(copy ptr);
+        self_13 = transmute<NonNull::<(u32, u32)>>(copy ptr);
         storage_dead(ptr);
         storage_dead(base);
         storage_dead(_9);
@@ -4351,13 +4376,13 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u
     }
 
     bb7: {
-        _16 = transmute<usize, *mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
+        _16 = transmute<*mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
         goto bb12;
     }
 
     bb8: {
         storage_live(self_17);
-        self_17 = transmute<NonNull::<(u32, u32)>, *mut (u32, u32)>(copy self_13);
+        self_17 = transmute<*mut (u32, u32)>(copy self_13);
         if copy IS_ZST::<(u32, u32)> -> bb9 else -> bb10;
     }
 
@@ -4367,7 +4392,9 @@ fn hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u
     }
 
     bb10: {
-        _16 = copy self_17 offset const -1isize;
+        storage_live(_19);
+        _19 = const -1isize ub.* const size_of::<(u32, u32)>();
+        _16 = &raw mut (*self_17).offset!(copy _19);
         goto bb11;
     }
 
@@ -4490,9 +4517,9 @@ fn hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure#1}::<(u32, u32),
         storage_live(_0);
         storage_live(ptr);
         _0 = ();
-        ptr = move spread_args._0;
+        ptr = noretag move spread_args._0;
         storage_live(to_drop);
-        to_drop = cast<*mut u8, *mut (u32, u32)>(copy ptr);
+        to_drop = cast<*mut (u32, u32)>(copy ptr);
         storage_live(_5);
         _5 = &mut (*to_drop);
         _0 = drop_glue::<(u32, u32)>(move _5) -> bb1 (unwind: bb2);
@@ -4651,11 +4678,11 @@ pub fn panic_display::<&'_ str>(x: &'_ &'_ str) -> !
         storage_live(_7);
         storage_live(_8);
         _11 = &raw const (*x);
-        _8 = transmute<*const &'_ str, NonNull::<()>>(copy _11);
+        _8 = transmute<NonNull::<()>>(copy _11);
         storage_live(_9);
         storage_live(_10);
-        _10 = cast<{impl Display for &'_ T}::fmt::<'_, str>, fn(&'_ &'_ str, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(const {impl Display for &'_ T}::fmt::<'_, str>);
-        _9 = transmute<fn(&'_ &'_ str, &'_ mut Formatter::<'_>) -> Result::<(), Error>, unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(copy _10);
+        _10 = fn_def_to_fn_ptr(const {impl Display for &'_ T}::fmt::<'_, str>);
+        _9 = transmute<unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(copy _10);
         storage_dead(_10);
         storage_live(_14);
         _14 = PhantomData::<&'_ ()> {  };
@@ -4672,9 +4699,9 @@ pub fn panic_display::<&'_ str>(x: &'_ &'_ str) -> !
         storage_live(_12);
         storage_live(_15);
         _15 = &anon_const_3;
-        _12 = transmute<&'_ [u8; 2usize], NonNull::<u8>>(move _15);
+        _12 = transmute<NonNull::<u8>>(move _15);
         storage_live(_13);
-        _13 = transmute<&'_ [Argument::<'_>; 1usize], NonNull::<Argument::<'_>>>(copy args_6);
+        _13 = transmute<NonNull::<Argument::<'_>>>(copy args_6);
         _3 = Arguments::<'_> { template: move _12, args: move _13 };
         storage_dead(_13);
         storage_dead(_12);
@@ -4792,8 +4819,12 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
     let _54: NonNull::<u8>; // anonymous local
     let _55: isize; // anonymous local
     let _56: isize; // anonymous local
-    let _57: Tag; // anonymous local
-    let _58: Tag; // anonymous local
+    let _57: usize; // anonymous local
+    let _58: usize; // anonymous local
+    let _59: usize; // anonymous local
+    let _60: isize; // anonymous local
+    let _61: Tag; // anonymous local
+    let _62: Tag; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4813,9 +4844,9 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
         storage_live(_24);
         storage_live(_25);
         _0 = ();
-        self_ = move spread_args._0;
+        self_ = noretag move spread_args._0;
         storage_live(_5);
-        self_17 = copy (*self_);
+        self_17 = noretag copy (*self_);
         storage_live(_26);
         _26 = copy (*self_17).bucket_mask;
         _5 = move _26 wrap.+ const 1usize;
@@ -4851,16 +4882,18 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
         storage_live(i);
         i = copy (_6 as variant Option::<usize>::Some)._0;
         storage_live(_8);
-        self_18 = copy (*self_);
+        self_18 = noretag copy (*self_);
         storage_live(_32);
         storage_live(_33);
         storage_live(_34);
         _34 = copy (*self_18).ctrl;
-        _33 = transmute<NonNull::<u8>, *mut u8>(copy _34);
+        _33 = transmute<*mut u8>(copy _34);
         storage_dead(_34);
-        _32 = copy _33 offset copy i;
+        storage_live(_57);
+        _57 = copy i ub.* const size_of::<u8>();
+        _32 = &raw mut (*_33).offset!(copy _57);
         storage_dead(_33);
-        self_9 = cast<*mut u8, *mut Tag>(copy _32);
+        self_9 = cast<*mut Tag>(copy _32);
         storage_dead(_32);
         storage_live(_38);
         _38 = copy (*self_9)._0;
@@ -4870,7 +4903,7 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
     }
 
     bb3: {
-        self_20 = copy (*self_);
+        self_20 = noretag copy (*self_);
         storage_live(_39);
         storage_live(_40);
         storage_live(_41);
@@ -4887,30 +4920,34 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
         storage_live(_46);
         storage_live(_47);
         _47 = copy (*self_20).ctrl;
-        _46 = transmute<NonNull::<u8>, *mut u8>(copy _47);
+        _46 = transmute<*mut u8>(copy _47);
         storage_dead(_47);
-        _45 = copy _46 offset copy i;
+        storage_live(_58);
+        _58 = copy i ub.* const size_of::<u8>();
+        _45 = &raw mut (*_46).offset!(copy _58);
         storage_dead(_46);
-        _43 = cast<*mut u8, *mut Tag>(copy _45);
+        _43 = cast<*mut Tag>(copy _45);
         storage_dead(_45);
-        storage_live(_57);
-        _57 = Tag { _0: const 255u8 };
-        (*_43) = move _57;
+        storage_live(_61);
+        _61 = Tag { _0: const 255u8 };
+        (*_43) = move _61;
         storage_dead(_43);
         storage_live(_44);
         storage_live(_48);
         storage_live(_49);
         storage_live(_50);
         _50 = copy (*self_20).ctrl;
-        _49 = transmute<NonNull::<u8>, *mut u8>(copy _50);
+        _49 = transmute<*mut u8>(copy _50);
         storage_dead(_50);
-        _48 = copy _49 offset copy _39;
+        storage_live(_59);
+        _59 = copy _39 ub.* const size_of::<u8>();
+        _48 = &raw mut (*_49).offset!(copy _59);
         storage_dead(_49);
-        _44 = cast<*mut u8, *mut Tag>(copy _48);
+        _44 = cast<*mut Tag>(copy _48);
         storage_dead(_48);
-        storage_live(_58);
-        _58 = Tag { _0: const 255u8 };
-        (*_44) = move _58;
+        storage_live(_62);
+        _62 = Tag { _0: const 255u8 };
+        (*_44) = move _62;
         storage_dead(_44);
         storage_dead(_39);
         _10 = @discriminant((*_1).upvar_0);
@@ -4921,13 +4958,13 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
         storage_live(drop);
         drop = copy ((*_1).upvar_0 as variant Option::<unsafe fn(*mut u8)>::Some)._0;
         storage_live(_13);
-        self_21 = copy (*self_);
+        self_21 = noretag copy (*self_);
         storage_live(size_of);
         size_of = copy (*_1).upvar_1;
         storage_live(_54);
         storage_live(_51);
         _54 = copy (*self_21).ctrl;
-        _51 = transmute<NonNull::<u8>, *mut u8>(copy _54);
+        _51 = transmute<*mut u8>(copy _54);
         storage_live(_52);
         storage_live(_53);
         _53 = copy i wrap.+ const 1usize;
@@ -4935,10 +4972,12 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
         storage_dead(_53);
         storage_live(_55);
         storage_live(_56);
-        _56 = cast<usize, isize>(copy _52);
+        _56 = cast<isize>(copy _52);
         _55 = const 0isize ub.- move _56;
         storage_dead(_56);
-        _13 = copy _51 offset move _55;
+        storage_live(_60);
+        _60 = move _55 ub.* const size_of::<u8>();
+        _13 = &raw mut (*_51).offset!(copy _60);
         storage_dead(_55);
         storage_dead(_52);
         storage_dead(_51);
@@ -4958,8 +4997,8 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
     }
 
     bb7: {
-        _22 = copy (*self_);
-        _23 = copy (*self_);
+        _22 = noretag copy (*self_);
+        _23 = noretag copy (*self_);
         (*_22).items = copy (*_23).items wrap.- const 1usize;
         goto bb9;
     }
@@ -4978,7 +5017,7 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
     bb10: {
         storage_dead(_27);
         storage_dead(_6);
-        _19 = copy (*self_);
+        _19 = noretag copy (*self_);
         bucket_mask = copy (*_19).bucket_mask;
         storage_live(_35);
         _35 = copy bucket_mask < const 8usize;
@@ -4999,9 +5038,9 @@ fn hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::<i16, extern "ru
     bb12: {
         storage_dead(_35);
         storage_live(_16);
-        _24 = copy (*self_);
+        _24 = noretag copy (*self_);
         _16 = copy (*_24).items;
-        _25 = copy (*self_);
+        _25 = noretag copy (*self_);
         (*_25).growth_left = move bucket_mask wrap.- move _16;
         storage_dead(_16);
         return;
@@ -5163,9 +5202,9 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_live(a);
         storage_live(_27);
         storage_live(_28);
-        _28 = cast<usize, u64>(copy size);
+        _28 = cast<u64>(copy size);
         storage_live(_29);
-        _29 = cast<usize, u64>(copy buckets);
+        _29 = cast<u64>(copy buckets);
         _27 = move _28 checked.* move _29;
         storage_dead(_29);
         storage_dead(_28);
@@ -5173,7 +5212,7 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         _25 = copy _27._0;
         b_26 = copy _27._1;
         storage_dead(_27);
-        a = cast<u64, usize>(copy _25);
+        a = cast<usize>(copy _25);
         storage_dead(_25);
         if copy b_26 -> bb1 else -> bb6;
     }
@@ -5376,7 +5415,7 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_live(_23);
         storage_live(_24);
         storage_live(_49);
-        _49 = transmute<usize, Alignment>(copy ctrl_align);
+        _49 = transmute<Alignment>(copy ctrl_align);
         _24 = Layout { size: copy len, align: move _49 };
         storage_dead(_49);
         _23 = (move _24, copy ctrl_offset);
@@ -5466,6 +5505,7 @@ fn hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::<Global, i16, ext
     let ctrl_offset: usize; // local
     let _21: bool; // anonymous local
     let _22: (); // anonymous local
+    let _23: isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5474,7 +5514,7 @@ fn hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::<Global, i16, ext
         storage_live(_8);
         storage_live(_22);
         _0 = ();
-        self_ = move spread_args._0;
+        self_ = noretag move spread_args._0;
         storage_live(_4);
         storage_live(_7);
         _7 = copy (*self_).bucket_mask;
@@ -5484,7 +5524,7 @@ fn hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::<Global, i16, ext
     }
 
     bb1: {
-        alloc = copy (*_1).upvar_0;
+        alloc = noretag copy (*_1).upvar_0;
         storage_live(table_layout);
         table_layout = copy (*_1).upvar_1;
         storage_live(ptr_11);
@@ -5517,17 +5557,19 @@ fn hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::<Global, i16, ext
         storage_live(self_13);
         storage_live(self_14);
         self_14 = copy (*self_).ctrl;
-        self_13 = transmute<NonNull::<u8>, *mut u8>(copy self_14);
+        self_13 = transmute<*mut u8>(copy self_14);
         storage_dead(self_14);
         storage_live(_17);
         storage_live(_18);
-        _18 = cast<usize, isize>(copy ctrl_offset);
+        _18 = cast<isize>(copy ctrl_offset);
         _17 = const 0isize ub.- move _18;
         storage_dead(_18);
-        ptr_12 = copy self_13 offset move _17;
+        storage_live(_23);
+        _23 = move _17 ub.* const size_of::<u8>();
+        ptr_12 = &raw mut (*self_13).offset!(copy _23);
         storage_dead(_17);
         storage_dead(self_13);
-        ptr_11 = transmute<*mut u8, NonNull::<u8>>(copy ptr_12);
+        ptr_11 = transmute<NonNull::<u8>>(copy ptr_12);
         storage_dead(ptr_12);
         storage_dead(_21);
         storage_dead(ctrl_offset);
@@ -5756,6 +5798,12 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
     let _33: *mut MaybeUninit::<[u8; 1usize]>; // anonymous local
     let self_34: *mut u8; // local
     let count_35: usize; // local
+    let _36: usize; // anonymous local
+    let _37: usize; // anonymous local
+    let _38: usize; // anonymous local
+    let _39: usize; // anonymous local
+    let _40: usize; // anonymous local
+    let _41: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5764,7 +5812,7 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(_27);
         _0 = ();
         storage_live(bytes_4);
-        bytes_4 = transmute<NonZero::<usize>, usize>(copy bytes_3);
+        bytes_4 = transmute<usize>(copy bytes_3);
         storage_live(i);
         i = const 0usize;
         storage_live(_6);
@@ -5784,9 +5832,11 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(self_10);
         storage_live(count_11);
         count_11 = copy i;
-        self_10 = copy x offset copy count_11;
+        storage_live(_36);
+        _36 = copy count_11 ub.* const size_of::<u8>();
+        self_10 = &raw mut (*x).offset!(copy _36);
         storage_dead(count_11);
-        _9 = cast<*mut u8, *mut MaybeUninit::<[u8; 4usize]>>(copy self_10);
+        _9 = cast<*mut MaybeUninit::<[u8; 4usize]>>(copy self_10);
         storage_dead(self_10);
         _8 = &mut (*_9);
         storage_live(_12);
@@ -5794,9 +5844,11 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(self_14);
         storage_live(count_15);
         count_15 = copy i;
-        self_14 = copy y offset copy count_15;
+        storage_live(_37);
+        _37 = copy count_15 ub.* const size_of::<u8>();
+        self_14 = &raw mut (*y).offset!(copy _37);
         storage_dead(count_15);
-        _13 = cast<*mut u8, *mut MaybeUninit::<[u8; 4usize]>>(copy self_14);
+        _13 = cast<*mut MaybeUninit::<[u8; 4usize]>>(copy self_14);
         storage_dead(self_14);
         _12 = &mut (*_13);
         _7 = swap_chunk::<4usize>(move _8, move _12) -> bb3 (unwind: bb15);
@@ -5829,9 +5881,11 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(self_20);
         storage_live(count_21);
         count_21 = copy i;
-        self_20 = copy x offset copy count_21;
+        storage_live(_38);
+        _38 = copy count_21 ub.* const size_of::<u8>();
+        self_20 = &raw mut (*x).offset!(copy _38);
         storage_dead(count_21);
-        _19 = cast<*mut u8, *mut MaybeUninit::<[u8; 2usize]>>(copy self_20);
+        _19 = cast<*mut MaybeUninit::<[u8; 2usize]>>(copy self_20);
         storage_dead(self_20);
         _18 = &mut (*_19);
         storage_live(_22);
@@ -5839,9 +5893,11 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(self_24);
         storage_live(count_25);
         count_25 = copy i;
-        self_24 = copy y offset copy count_25;
+        storage_live(_39);
+        _39 = copy count_25 ub.* const size_of::<u8>();
+        self_24 = &raw mut (*y).offset!(copy _39);
         storage_dead(count_25);
-        _23 = cast<*mut u8, *mut MaybeUninit::<[u8; 2usize]>>(copy self_24);
+        _23 = cast<*mut MaybeUninit::<[u8; 2usize]>>(copy self_24);
         storage_dead(self_24);
         _22 = &mut (*_23);
         _17 = swap_chunk::<2usize>(move _18, move _22) -> bb7 (unwind: bb14);
@@ -5874,9 +5930,11 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(self_30);
         storage_live(count_31);
         count_31 = copy i;
-        self_30 = copy x offset copy count_31;
+        storage_live(_40);
+        _40 = copy count_31 ub.* const size_of::<u8>();
+        self_30 = &raw mut (*x).offset!(copy _40);
         storage_dead(count_31);
-        _29 = cast<*mut u8, *mut MaybeUninit::<[u8; 1usize]>>(copy self_30);
+        _29 = cast<*mut MaybeUninit::<[u8; 1usize]>>(copy self_30);
         storage_dead(self_30);
         _28 = &mut (*_29);
         storage_live(_32);
@@ -5884,9 +5942,11 @@ fn swap_nonoverlapping_short(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(self_34);
         storage_live(count_35);
         count_35 = copy i;
-        self_34 = copy y offset copy count_35;
+        storage_live(_41);
+        _41 = copy count_35 ub.* const size_of::<u8>();
+        self_34 = &raw mut (*y).offset!(copy _41);
         storage_dead(count_35);
-        _33 = cast<*mut u8, *mut MaybeUninit::<[u8; 1usize]>>(copy self_34);
+        _33 = cast<*mut MaybeUninit::<[u8; 1usize]>>(copy self_34);
         storage_dead(self_34);
         _32 = &mut (*_33);
         _27 = swap_chunk::<1usize>(move _28, move _32) -> bb11 (unwind: bb13);
@@ -5943,6 +6003,8 @@ fn swap_nonoverlapping_chunks::<8usize>(x: *mut MaybeUninit::<[u8; 8usize]>, y: 
     let _17: usize; // anonymous local
     let _18: (); // anonymous local
     let _19: bool; // anonymous local
+    let _20: usize; // anonymous local
+    let _21: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5951,7 +6013,7 @@ fn swap_nonoverlapping_chunks::<8usize>(x: *mut MaybeUninit::<[u8; 8usize]>, y: 
         storage_live(_18);
         _0 = ();
         storage_live(chunks_4);
-        chunks_4 = transmute<NonZero::<usize>, usize>(copy chunks_3);
+        chunks_4 = transmute<usize>(copy chunks_3);
         iter = Range::<usize> { start: const 0usize, end: copy chunks_4 };
         goto bb1;
     }
@@ -5997,11 +6059,15 @@ fn swap_nonoverlapping_chunks::<8usize>(x: *mut MaybeUninit::<[u8; 8usize]>, y: 
         i = copy (_6 as variant Option::<usize>::Some)._0;
         storage_live(_9);
         storage_live(_10);
-        _10 = copy x offset copy i;
+        storage_live(_20);
+        _20 = copy i ub.* const size_of::<MaybeUninit::<[u8; 8usize]>>();
+        _10 = &raw mut (*x).offset!(copy _20);
         _9 = &mut (*_10);
         storage_live(_11);
         storage_live(_12);
-        _12 = copy y offset copy i;
+        storage_live(_21);
+        _21 = copy i ub.* const size_of::<MaybeUninit::<[u8; 8usize]>>();
+        _12 = &raw mut (*y).offset!(copy _21);
         _11 = &mut (*_12);
         _8 = swap_chunk::<8usize>(move _9, move _11) -> bb6 (unwind: bb7);
     }
@@ -6051,6 +6117,8 @@ fn swap_nonoverlapping_bytes(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
     let _17: (); // anonymous local
     let _18: *mut u8; // anonymous local
     let _19: *mut u8; // anonymous local
+    let _20: usize; // anonymous local
+    let _21: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -6060,13 +6128,13 @@ fn swap_nonoverlapping_bytes(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(_17);
         _0 = ();
         storage_live(bytes_4);
-        bytes_4 = transmute<NonZero::<usize>, usize>(copy bytes_3);
+        bytes_4 = transmute<usize>(copy bytes_3);
         storage_live(chunks_5);
         chunks_5 = copy bytes_4 ub./ const 8usize;
         storage_live(tail_6);
         tail_6 = copy bytes_4 wrap.% const 8usize;
         storage_live(_7);
-        _7 = transmute<usize, Option::<NonZero::<usize>>>(copy chunks_5);
+        _7 = transmute<Option::<NonZero::<usize>>>(copy chunks_5);
         _8 = @discriminant(_7);
         switch move _8 -> 1isize: bb1, 0isize: bb4, otherwise: bb11;
     }
@@ -6075,9 +6143,9 @@ fn swap_nonoverlapping_bytes(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(chunks_9);
         chunks_9 = copy (_7 as variant Option::<NonZero::<usize>>::Some)._0;
         storage_live(_11);
-        _11 = cast<*mut u8, *mut MaybeUninit::<[u8; 8usize]>>(copy x);
+        _11 = cast<*mut MaybeUninit::<[u8; 8usize]>>(copy x);
         storage_live(_12);
-        _12 = cast<*mut u8, *mut MaybeUninit::<[u8; 8usize]>>(copy y);
+        _12 = cast<*mut MaybeUninit::<[u8; 8usize]>>(copy y);
         _10 = swap_nonoverlapping_chunks::<8usize>(move _11, move _12, move chunks_9) -> bb2 (unwind: bb3);
     }
 
@@ -6100,7 +6168,7 @@ fn swap_nonoverlapping_bytes(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
 
     bb5: {
         storage_live(_13);
-        _13 = transmute<usize, Option::<NonZero::<usize>>>(copy tail_6);
+        _13 = transmute<Option::<NonZero::<usize>>>(copy tail_6);
         _14 = @discriminant(_13);
         switch move _14 -> 1isize: bb6, 0isize: bb9, otherwise: bb11;
     }
@@ -6111,9 +6179,13 @@ fn swap_nonoverlapping_bytes(x: *mut u8, y: *mut u8, bytes_3: NonZero::<usize>)
         storage_live(delta);
         delta = copy chunks_5 wrap.* const 8usize;
         storage_live(_18);
-        _18 = copy x offset copy delta;
+        storage_live(_20);
+        _20 = copy delta ub.* const size_of::<u8>();
+        _18 = &raw mut (*x).offset!(copy _20);
         storage_live(_19);
-        _19 = copy y offset copy delta;
+        storage_live(_21);
+        _21 = copy delta ub.* const size_of::<u8>();
+        _19 = &raw mut (*y).offset!(copy _21);
         _17 = swap_nonoverlapping_short(move _18, move _19, move tail_15) -> bb7 (unwind: bb8);
     }
 
@@ -6183,9 +6255,9 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_live(_6);
         storage_live(_15);
         storage_live(_16);
-        _16 = cast<usize, *mut ()>(const 0usize);
+        _16 = cast<*mut ()>(const 0usize);
         _15 = copy ptr != move _16;
-        _6 = cast<bool, usize>(move _15);
+        _6 = cast<usize>(move _15);
         storage_dead(_15);
         _2 = move _6 == const 0usize;
         storage_dead(_6);
@@ -6199,23 +6271,23 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _5 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -6464,11 +6536,13 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
     let _54: u64; // anonymous local
     let _55: (); // anonymous local
     let _56: usize; // anonymous local
-    let _57: (); // anonymous local
-    let _58: *const *const (); // anonymous local
-    let _59: Option::<usize>; // anonymous local
-    let _60: Option::<usize>; // anonymous local
-    let _61: Tag; // anonymous local
+    let _57: usize; // anonymous local
+    let _58: (); // anonymous local
+    let _59: usize; // anonymous local
+    let _60: *const *const (); // anonymous local
+    let _61: Option::<usize>; // anonymous local
+    let _62: Option::<usize>; // anonymous local
+    let _63: Tag; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -6478,15 +6552,15 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         storage_live(bit_46);
         storage_live(_53);
         storage_live(_55);
-        storage_live(_57);
         storage_live(_58);
+        storage_live(_60);
         storage_live(tag_hash);
         storage_live(_22);
         _22 = copy hash wrap.>> const 57usize;
         storage_live(_23);
         storage_live(_24);
         _24 = copy _22 & const 127u64;
-        _23 = cast<u64, u8>(move _24);
+        _23 = cast<u8>(move _24);
         storage_dead(_24);
         tag_hash = Tag { _0: move _23 };
         storage_dead(_23);
@@ -6494,7 +6568,7 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         storage_live(probe_seq);
         storage_live(_25);
         storage_live(_26);
-        _26 = cast<u64, usize>(copy hash);
+        _26 = cast<usize>(copy hash);
         storage_live(_27);
         _27 = copy (*self_1).bucket_mask;
         _25 = move _26 & move _27;
@@ -6513,15 +6587,17 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         storage_live(_29);
         storage_live(_30);
         _30 = copy (*self_1).ctrl;
-        _29 = transmute<NonNull::<u8>, *mut u8>(copy _30);
+        _29 = transmute<*mut u8>(copy _30);
         storage_dead(_30);
-        _28 = copy _29 offset copy index_8;
+        storage_live(_57);
+        _57 = copy index_8 ub.* const size_of::<u8>();
+        _28 = &raw mut (*_29).offset!(copy _57);
         storage_dead(_29);
-        ptr = cast<*mut u8, *const Tag>(copy _28);
+        ptr = cast<*const Tag>(copy _28);
         storage_dead(index_8);
         storage_live(_31);
         storage_live(_32);
-        _32 = cast<*mut u8, *const u8>(copy _28);
+        _32 = cast<*const u8>(copy _28);
         _31 = vld1_u8(move _32) -> bb2 (unwind: bb26);
     }
 
@@ -6556,7 +6632,7 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         self_51 = copy iter._0._0;
         storage_live(_40);
         storage_live(_39);
-        _39 = transmute<u64, Option::<NonZero::<u64>>>(copy self_51);
+        _39 = transmute<Option::<NonZero::<u64>>>(copy self_51);
         _40 = @discriminant(_39);
         switch move _40 -> 1isize: bb5, 0isize: bb14, otherwise: bb24;
     }
@@ -6568,13 +6644,13 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         storage_live(_43);
         storage_live(_44);
         storage_live(_45);
-        _45 = transmute<NonZero::<u64>, u64>(copy nonzero);
+        _45 = transmute<u64>(copy nonzero);
         _44 = cttz_nonzero::<u64>(move _45) -> bb6 (unwind: bb13);
     }
 
     bb6: {
         storage_dead(_45);
-        _43 = cast<u32, usize>(move _44);
+        _43 = cast<usize>(move _44);
         storage_dead(_44);
         _42 = move _43 ub./ const 8usize;
         storage_dead(_43);
@@ -6616,8 +6692,10 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         storage_live(b_17);
         storage_live(_18);
         _18 = (copy index_13,);
-        _58 = copy eq.metadata offset const 4usize;
-        b_17 = (copy (*_58))(copy eq, move _18) -> bb7 (unwind: bb12);
+        storage_live(_59);
+        _59 = const 4usize ub.* const size_of::<*const ()>();
+        _60 = &raw const (*eq.metadata).offset!(copy _59);
+        b_17 = (copy (*_60))(copy eq, move _18) -> bb7 (unwind: bb12);
     }
 
     bb7: {
@@ -6660,9 +6738,9 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
 
     bb14: {
         storage_dead(_39);
-        storage_live(_59);
-        _59 = Option::<usize>::None {  };
-        self_36 = move _59;
+        storage_live(_61);
+        _61 = Option::<usize>::None {  };
+        self_36 = move _61;
         storage_dead(_40);
         storage_dead(self_51);
         storage_dead(self_36);
@@ -6670,7 +6748,7 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         storage_live(_50);
         _49 = @discriminant(_37);
         _50 = copy _49 == const 0isize;
-        _57 = assume(move _50) -> bb15 (unwind: bb23);
+        _58 = assume(move _50) -> bb15 (unwind: bb23);
     }
 
     bb15: {
@@ -6679,9 +6757,9 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
         storage_dead(_11);
         storage_live(b_19);
         storage_live(self_20);
-        storage_live(_61);
-        _61 = Tag { _0: const 255u8 };
-        self_20 = match_tag(move group, move _61) -> bb16 (unwind: bb22);
+        storage_live(_63);
+        _63 = Tag { _0: const 255u8 };
+        self_20 = match_tag(move group, move _63) -> bb16 (unwind: bb22);
     }
 
     bb16: {
@@ -6695,9 +6773,9 @@ fn find_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_ mut (dyn FakeTrait))
 
     bb17: {
         storage_dead(b_19);
-        storage_live(_60);
-        _60 = Option::<usize>::None {  };
-        _0 = move _60;
+        storage_live(_62);
+        _62 = Option::<usize>::None {  };
+        _0 = move _62;
         goto bb18;
     }
 
@@ -6776,7 +6854,8 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closur
     let _18: NonNull::<(u32, u32)>; // anonymous local
     let _19: isize; // anonymous local
     let _20: isize; // anonymous local
-    let _21: Option::<Bucket::<(u32, u32)>>; // anonymous local
+    let _21: isize; // anonymous local
+    let _22: Option::<Bucket::<(u32, u32)>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -6792,7 +6871,7 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closur
         _8 = hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure} { upvar_0: copy _9, upvar_1: copy self_1 };
         storage_dead(_9);
         _7 = &mut _8;
-        _6 = unsize_cast<&'_ mut hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, &'_ mut (dyn FakeTrait), cast<*const ()>(&raw const FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>)>(copy _7);
+        _6 = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (usize,)>)>(copy _7);
         result = find_inner(move _5, move hash, move _6) -> bb1 (unwind: bb12);
     }
 
@@ -6806,9 +6885,9 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closur
     }
 
     bb2: {
-        storage_live(_21);
-        _21 = Option::<Bucket::<(u32, u32)>>::None {  };
-        _0 = move _21;
+        storage_live(_22);
+        _22 = Option::<Bucket::<(u32, u32)>>::None {  };
+        _0 = move _22;
         goto bb10;
     }
 
@@ -6819,7 +6898,7 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closur
         storage_live(_14);
         storage_live(base);
         _14 = copy (*self_1).table.ctrl;
-        base = transmute<NonNull::<u8>, NonNull::<(u32, u32)>>(copy _14);
+        base = transmute<NonNull::<(u32, u32)>>(copy _14);
         storage_live(ptr);
         if copy IS_ZERO_SIZED::<(u32, u32)> -> bb4 else -> bb5;
     }
@@ -6827,14 +6906,14 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closur
     bb4: {
         storage_live(addr);
         addr = copy index wrap.+ const 1usize;
-        ptr = transmute<usize, *mut (u32, u32)>(copy addr);
+        ptr = transmute<*mut (u32, u32)>(copy addr);
         storage_dead(addr);
         goto bb9;
     }
 
     bb5: {
         storage_live(self_17);
-        self_17 = transmute<NonNull::<u8>, *mut (u32, u32)>(copy _14);
+        self_17 = transmute<*mut (u32, u32)>(copy _14);
         if copy IS_ZST::<(u32, u32)> -> bb6 else -> bb7;
     }
 
@@ -6846,10 +6925,12 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closur
     bb7: {
         storage_live(_19);
         storage_live(_20);
-        _20 = cast<usize, isize>(copy index);
+        _20 = cast<isize>(copy index);
         _19 = const 0isize ub.- move _20;
         storage_dead(_20);
-        ptr = copy self_17 offset move _19;
+        storage_live(_21);
+        _21 = move _19 ub.* const size_of::<(u32, u32)>();
+        ptr = &raw mut (*self_17).offset!(copy _21);
         storage_dead(_19);
         goto bb8;
     }
@@ -6861,7 +6942,7 @@ fn find::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closur
 
     bb9: {
         storage_live(_18);
-        _18 = transmute<*mut (u32, u32), NonNull::<(u32, u32)>>(copy ptr);
+        _18 = transmute<NonNull::<(u32, u32)>>(copy ptr);
         _12 = Bucket::<(u32, u32)> { ptr: move _18 };
         storage_dead(_18);
         storage_dead(ptr);
@@ -6907,8 +6988,9 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
     let _15: *mut (u32, u32); // anonymous local
     let self_16: *mut (u32, u32); // local
     let bucket: NonNull::<(u32, u32)>; // local
-    let _18: Option::<&'_ u32>; // anonymous local
+    let _18: isize; // anonymous local
     let _19: Option::<&'_ u32>; // anonymous local
+    let _20: Option::<&'_ u32>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -6922,9 +7004,9 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
     }
 
     bb1: {
-        storage_live(_18);
-        _18 = Option::<&'_ u32>::None {  };
-        _0 = move _18;
+        storage_live(_19);
+        _19 = Option::<&'_ u32>::None {  };
+        _0 = move _19;
         goto bb14;
     }
 
@@ -6959,9 +7041,9 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
         storage_dead(_13);
         storage_dead(eq);
         storage_dead(self_7);
-        storage_live(_19);
-        _19 = Option::<&'_ u32>::None {  };
-        _0 = move _19;
+        storage_live(_20);
+        _20 = Option::<&'_ u32>::None {  };
+        _0 = move _20;
         goto bb13;
     }
 
@@ -6973,13 +7055,13 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
     }
 
     bb7: {
-        _15 = transmute<usize, *mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
+        _15 = transmute<*mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
         goto bb12;
     }
 
     bb8: {
         storage_live(self_16);
-        self_16 = transmute<NonNull::<(u32, u32)>, *mut (u32, u32)>(copy bucket);
+        self_16 = transmute<*mut (u32, u32)>(copy bucket);
         if copy IS_ZST::<(u32, u32)> -> bb9 else -> bb10;
     }
 
@@ -6989,7 +7071,9 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
     }
 
     bb10: {
-        _15 = copy self_16 offset const -1isize;
+        storage_live(_18);
+        _18 = const -1isize ub.* const size_of::<(u32, u32)>();
+        _15 = &raw mut (*self_16).offset!(copy _18);
         goto bb11;
     }
 
@@ -7009,7 +7093,7 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::get::<u32, u32, 
         storage_dead(eq);
         storage_dead(self_7);
         storage_live(v);
-        _10 = copy (_6 as variant Option::<&'_ (u32, u32)>::Some)._0;
+        _10 = noretag copy (_6 as variant Option::<&'_ (u32, u32)>::Some)._0;
         v = &(*_10)._1;
         _0 = Option::<&'_ u32>::Some { _0: copy v };
         storage_dead(v);
@@ -7102,6 +7186,11 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
     let self_32: *mut (u32, u32); // local
     let self_33: *mut (u32, u32); // local
     let old_ctrl: u8; // local
+    let _35: usize; // anonymous local
+    let _36: usize; // anonymous local
+    let _37: usize; // anonymous local
+    let _38: isize; // anonymous local
+    let _39: isize; // anonymous local
 
     bb0: {
         storage_live(bucket);
@@ -7112,11 +7201,13 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
         storage_live(_7);
         storage_live(_8);
         _8 = copy (*self_1).table.ctrl;
-        _7 = transmute<NonNull::<u8>, *mut u8>(copy _8);
+        _7 = transmute<*mut u8>(copy _8);
         storage_dead(_8);
-        _6 = copy _7 offset copy index;
+        storage_live(_35);
+        _35 = copy index ub.* const size_of::<u8>();
+        _6 = &raw mut (*_7).offset!(copy _35);
         storage_dead(_7);
-        _5 = cast<*mut u8, *mut Tag>(copy _6);
+        _5 = cast<*mut Tag>(copy _6);
         storage_dead(_6);
         old_ctrl = copy (*_5)._0;
         storage_dead(_5);
@@ -7126,7 +7217,7 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
         _11 = copy old_ctrl & const 1u8;
         _10 = move _11 != const 0u8;
         storage_dead(_11);
-        _9 = cast<bool, usize>(copy _10);
+        _9 = cast<usize>(copy _10);
         storage_dead(_10);
         (*self_1).table.growth_left = copy (*self_1).table.growth_left wrap.- move _9;
         storage_dead(_9);
@@ -7146,11 +7237,13 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
         storage_live(_19);
         storage_live(_20);
         _20 = copy (*self_1).table.ctrl;
-        _19 = transmute<NonNull::<u8>, *mut u8>(copy _20);
+        _19 = transmute<*mut u8>(copy _20);
         storage_dead(_20);
-        _18 = copy _19 offset copy index;
+        storage_live(_36);
+        _36 = copy index ub.* const size_of::<u8>();
+        _18 = &raw mut (*_19).offset!(copy _36);
         storage_dead(_19);
-        _16 = cast<*mut u8, *mut Tag>(copy _18);
+        _16 = cast<*mut Tag>(copy _18);
         storage_dead(_18);
         (*_16) = copy tag;
         storage_dead(_16);
@@ -7159,11 +7252,13 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
         storage_live(_22);
         storage_live(_23);
         _23 = copy (*self_1).table.ctrl;
-        _22 = transmute<NonNull::<u8>, *mut u8>(copy _23);
+        _22 = transmute<*mut u8>(copy _23);
         storage_dead(_23);
-        _21 = copy _22 offset copy _12;
+        storage_live(_37);
+        _37 = copy _12 ub.* const size_of::<u8>();
+        _21 = &raw mut (*_22).offset!(copy _37);
         storage_dead(_22);
-        _17 = cast<*mut u8, *mut Tag>(copy _21);
+        _17 = cast<*mut Tag>(copy _21);
         storage_dead(_21);
         (*_17) = copy tag;
         storage_dead(_17);
@@ -7172,7 +7267,7 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
         storage_live(_25);
         storage_live(base);
         _25 = copy (*self_1).table.ctrl;
-        base = transmute<NonNull::<u8>, NonNull::<(u32, u32)>>(copy _25);
+        base = transmute<NonNull::<(u32, u32)>>(copy _25);
         storage_live(ptr);
         if copy IS_ZERO_SIZED::<(u32, u32)> -> bb1 else -> bb2;
     }
@@ -7180,14 +7275,14 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
     bb1: {
         storage_live(addr);
         addr = copy index wrap.+ const 1usize;
-        ptr = transmute<usize, *mut (u32, u32)>(copy addr);
+        ptr = transmute<*mut (u32, u32)>(copy addr);
         storage_dead(addr);
         goto bb6;
     }
 
     bb2: {
         storage_live(self_28);
-        self_28 = transmute<NonNull::<u8>, *mut (u32, u32)>(copy _25);
+        self_28 = transmute<*mut (u32, u32)>(copy _25);
         if copy IS_ZST::<(u32, u32)> -> bb3 else -> bb4;
     }
 
@@ -7199,10 +7294,12 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
     bb4: {
         storage_live(_30);
         storage_live(_31);
-        _31 = cast<usize, isize>(copy index);
+        _31 = cast<isize>(copy index);
         _30 = const 0isize ub.- move _31;
         storage_dead(_31);
-        ptr = copy self_28 offset move _30;
+        storage_live(_38);
+        _38 = move _30 ub.* const size_of::<(u32, u32)>();
+        ptr = &raw mut (*self_28).offset!(copy _38);
         storage_dead(_30);
         goto bb5;
     }
@@ -7213,7 +7310,7 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
     }
 
     bb6: {
-        self_29 = transmute<*mut (u32, u32), NonNull::<(u32, u32)>>(copy ptr);
+        self_29 = transmute<NonNull::<(u32, u32)>>(copy ptr);
         bucket = Bucket::<(u32, u32)> { ptr: copy self_29 };
         storage_dead(ptr);
         storage_dead(base);
@@ -7223,13 +7320,13 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
     }
 
     bb7: {
-        self_32 = transmute<usize, *mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
+        self_32 = transmute<*mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
         goto bb12;
     }
 
     bb8: {
         storage_live(self_33);
-        self_33 = transmute<NonNull::<(u32, u32)>, *mut (u32, u32)>(copy self_29);
+        self_33 = transmute<*mut (u32, u32)>(copy self_29);
         if copy IS_ZST::<(u32, u32)> -> bb9 else -> bb10;
     }
 
@@ -7239,7 +7336,9 @@ fn insert_tagged_at_index::<(u32, u32), Global>(self_1: &'_ mut RawTable::<(u32,
     }
 
     bb10: {
-        self_32 = copy self_33 offset const -1isize;
+        storage_live(_39);
+        _39 = const -1isize ub.* const size_of::<(u32, u32)>();
+        self_32 = &raw mut (*self_33).offset!(copy _39);
         goto bb11;
     }
 
@@ -7362,7 +7461,7 @@ fn find_insert_index_in_group(self_1: &'_ RawTableInner, group: &'_ Group, probe
         storage_live(_13);
         storage_live(n);
         n = copy self_5._0;
-        _13 = transmute<u64, Option::<NonZero::<u64>>>(copy n);
+        _13 = transmute<Option::<NonZero::<u64>>>(copy n);
         storage_dead(n);
         _15 = @discriminant(_13);
         switch move _15 -> 1isize: bb2, 0isize: bb5, otherwise: bb9;
@@ -7375,13 +7474,13 @@ fn find_insert_index_in_group(self_1: &'_ RawTableInner, group: &'_ Group, probe
         storage_live(_18);
         storage_live(_19);
         storage_live(_20);
-        _20 = transmute<NonZero::<u64>, u64>(copy nonzero);
+        _20 = transmute<u64>(copy nonzero);
         _19 = cttz_nonzero::<u64>(move _20) -> bb3 (unwind: bb4);
     }
 
     bb3: {
         storage_dead(_20);
-        _18 = cast<u32, usize>(move _19);
+        _18 = cast<usize>(move _19);
         storage_dead(_19);
         _17 = move _18 ub./ const 8usize;
         storage_dead(_18);
@@ -7492,15 +7591,16 @@ fn fix_insert_index(self_1: &'_ RawTableInner, index_2: usize) -> usize
     let _26: u64; // anonymous local
     let _27: isize; // anonymous local
     let _28: bool; // anonymous local
-    let _29: (); // anonymous local
-    let _30: Option::<usize>; // anonymous local
+    let _29: usize; // anonymous local
+    let _30: (); // anonymous local
+    let _31: Option::<usize>; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_15);
         storage_live(_16);
         storage_live(_28);
-        storage_live(_29);
+        storage_live(_30);
         storage_live(b);
         storage_live(index_4);
         index_4 = copy index_2;
@@ -7510,11 +7610,13 @@ fn fix_insert_index(self_1: &'_ RawTableInner, index_2: usize) -> usize
         storage_live(_11);
         storage_live(_12);
         _12 = copy (*self_1).ctrl;
-        _11 = transmute<NonNull::<u8>, *mut u8>(copy _12);
+        _11 = transmute<*mut u8>(copy _12);
         storage_dead(_12);
-        _10 = copy _11 offset copy index_4;
+        storage_live(_29);
+        _29 = copy index_4 ub.* const size_of::<u8>();
+        _10 = &raw mut (*_11).offset!(copy _29);
         storage_dead(_11);
-        _9 = cast<*mut u8, *mut Tag>(copy _10);
+        _9 = cast<*mut Tag>(copy _10);
         storage_dead(_10);
         _14 = copy (*_9)._0;
         storage_live(_13);
@@ -7538,10 +7640,10 @@ fn fix_insert_index(self_1: &'_ RawTableInner, index_2: usize) -> usize
         storage_live(_7);
         storage_live(ptr);
         _16 = copy (*self_1).ctrl;
-        ptr = transmute<NonNull::<u8>, *const Tag>(copy _16);
+        ptr = transmute<*const Tag>(copy _16);
         storage_live(_17);
         storage_live(_18);
-        _18 = transmute<NonNull::<u8>, *const u8>(copy _16);
+        _18 = transmute<*const u8>(copy _16);
         _17 = vld1_u8(move _18) -> bb3 (unwind: bb14);
     }
 
@@ -7559,7 +7661,7 @@ fn fix_insert_index(self_1: &'_ RawTableInner, index_2: usize) -> usize
         storage_live(_19);
         storage_live(n);
         n = copy self_6._0;
-        _19 = transmute<u64, Option::<NonZero::<u64>>>(copy n);
+        _19 = transmute<Option::<NonZero::<u64>>>(copy n);
         storage_dead(n);
         _21 = @discriminant(_19);
         switch move _21 -> 1isize: bb5, 0isize: bb8, otherwise: bb12;
@@ -7572,13 +7674,13 @@ fn fix_insert_index(self_1: &'_ RawTableInner, index_2: usize) -> usize
         storage_live(_24);
         storage_live(_25);
         storage_live(_26);
-        _26 = transmute<NonZero::<u64>, u64>(copy nonzero);
+        _26 = transmute<u64>(copy nonzero);
         _25 = cttz_nonzero::<u64>(move _26) -> bb6 (unwind: bb7);
     }
 
     bb6: {
         storage_dead(_26);
-        _24 = cast<u32, usize>(move _25);
+        _24 = cast<usize>(move _25);
         storage_dead(_25);
         _23 = move _24 ub./ const 8usize;
         storage_dead(_24);
@@ -7595,9 +7697,9 @@ fn fix_insert_index(self_1: &'_ RawTableInner, index_2: usize) -> usize
 
     bb8: {
         storage_dead(_19);
-        storage_live(_30);
-        _30 = Option::<usize>::None {  };
-        self_5 = move _30;
+        storage_live(_31);
+        _31 = Option::<usize>::None {  };
+        self_5 = move _31;
         goto bb9;
     }
 
@@ -7607,7 +7709,7 @@ fn fix_insert_index(self_1: &'_ RawTableInner, index_2: usize) -> usize
         storage_live(_27);
         _27 = @discriminant(self_5);
         _28 = copy _27 == const 1isize;
-        _29 = assume(move _28) -> bb10 (unwind: bb11);
+        _30 = assume(move _28) -> bb10 (unwind: bb11);
     }
 
     bb10: {
@@ -7718,11 +7820,13 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
     let _64: u64; // anonymous local
     let _65: (); // anonymous local
     let _66: usize; // anonymous local
-    let _67: (); // anonymous local
-    let _68: *const *const (); // anonymous local
-    let _69: Option::<usize>; // anonymous local
-    let _70: Option::<usize>; // anonymous local
-    let _71: Tag; // anonymous local
+    let _67: usize; // anonymous local
+    let _68: (); // anonymous local
+    let _69: usize; // anonymous local
+    let _70: *const *const (); // anonymous local
+    let _71: Option::<usize>; // anonymous local
+    let _72: Option::<usize>; // anonymous local
+    let _73: Tag; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -7735,18 +7839,18 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         storage_live(_62);
         storage_live(_63);
         storage_live(_65);
-        storage_live(_67);
         storage_live(_68);
-        storage_live(_69);
-        _69 = Option::<usize>::None {  };
-        insert_index_20 = move _69;
+        storage_live(_70);
+        storage_live(_71);
+        _71 = Option::<usize>::None {  };
+        insert_index_20 = move _71;
         storage_live(tag_hash);
         storage_live(_29);
         _29 = copy hash wrap.>> const 57usize;
         storage_live(_30);
         storage_live(_31);
         _31 = copy _29 & const 127u64;
-        _30 = cast<u64, u8>(move _31);
+        _30 = cast<u8>(move _31);
         storage_dead(_31);
         tag_hash = Tag { _0: move _30 };
         storage_dead(_30);
@@ -7754,7 +7858,7 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         storage_live(probe_seq);
         storage_live(_32);
         storage_live(_33);
-        _33 = cast<u64, usize>(copy hash);
+        _33 = cast<usize>(copy hash);
         storage_live(_34);
         _34 = copy (*self_1).bucket_mask;
         _32 = move _33 & move _34;
@@ -7773,15 +7877,17 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         storage_live(_36);
         storage_live(_37);
         _37 = copy (*self_1).ctrl;
-        _36 = transmute<NonNull::<u8>, *mut u8>(copy _37);
+        _36 = transmute<*mut u8>(copy _37);
         storage_dead(_37);
-        _35 = copy _36 offset copy index_8;
+        storage_live(_67);
+        _67 = copy index_8 ub.* const size_of::<u8>();
+        _35 = &raw mut (*_36).offset!(copy _67);
         storage_dead(_36);
-        ptr = cast<*mut u8, *const Tag>(copy _35);
+        ptr = cast<*const Tag>(copy _35);
         storage_dead(index_8);
         storage_live(_38);
         storage_live(_39);
-        _39 = cast<*mut u8, *const u8>(copy _35);
+        _39 = cast<*const u8>(copy _35);
         _38 = vld1_u8(move _39) -> bb2 (unwind: bb37);
     }
 
@@ -7816,7 +7922,7 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         self_58 = copy iter._0._0;
         storage_live(_47);
         storage_live(_46);
-        _46 = transmute<u64, Option::<NonZero::<u64>>>(copy self_58);
+        _46 = transmute<Option::<NonZero::<u64>>>(copy self_58);
         _47 = @discriminant(_46);
         switch move _47 -> 1isize: bb5, 0isize: bb14, otherwise: bb35;
     }
@@ -7828,13 +7934,13 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         storage_live(_50);
         storage_live(_51);
         storage_live(_52);
-        _52 = transmute<NonZero::<u64>, u64>(copy nonzero);
+        _52 = transmute<u64>(copy nonzero);
         _51 = cttz_nonzero::<u64>(move _52) -> bb6 (unwind: bb13);
     }
 
     bb6: {
         storage_dead(_52);
-        _50 = cast<u32, usize>(move _51);
+        _50 = cast<usize>(move _51);
         storage_dead(_51);
         _49 = move _50 ub./ const 8usize;
         storage_dead(_50);
@@ -7876,8 +7982,10 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         storage_live(b_17);
         storage_live(_18);
         _18 = (copy index_13,);
-        _68 = copy eq.metadata offset const 4usize;
-        b_17 = (copy (*_68))(copy eq, move _18) -> bb7 (unwind: bb12);
+        storage_live(_69);
+        _69 = const 4usize ub.* const size_of::<*const ()>();
+        _70 = &raw const (*eq.metadata).offset!(copy _69);
+        b_17 = (copy (*_70))(copy eq, move _18) -> bb7 (unwind: bb12);
     }
 
     bb7: {
@@ -7920,9 +8028,9 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
 
     bb14: {
         storage_dead(_46);
-        storage_live(_70);
-        _70 = Option::<usize>::None {  };
-        self_43 = move _70;
+        storage_live(_72);
+        _72 = Option::<usize>::None {  };
+        self_43 = move _72;
         storage_dead(_47);
         storage_dead(self_58);
         storage_dead(self_43);
@@ -7930,7 +8038,7 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         storage_live(_57);
         _56 = @discriminant(_44);
         _57 = copy _56 == const 0isize;
-        _67 = assume(move _57) -> bb15 (unwind: bb34);
+        _68 = assume(move _57) -> bb15 (unwind: bb34);
     }
 
     bb15: {
@@ -7986,9 +8094,9 @@ fn find_or_find_insert_index_inner(self_1: &'_ RawTableInner, hash: u64, eq: &'_
         insert_index_24 = copy (insert_index_20 as variant Option::<usize>::Some)._0;
         storage_live(b_25);
         storage_live(self_26);
-        storage_live(_71);
-        _71 = Tag { _0: const 255u8 };
-        self_26 = match_tag(copy group, move _71) -> bb23 (unwind: bb31);
+        storage_live(_73);
+        _73 = Tag { _0: const 255u8 };
+        self_26 = match_tag(copy group, move _73) -> bb23 (unwind: bb31);
     }
 
     bb23: {
@@ -8200,6 +8308,10 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
     let self_56: uint8x8_t; // local
     let _57: bool; // anonymous local
     let _58: (); // anonymous local
+    let _59: usize; // anonymous local
+    let _60: usize; // anonymous local
+    let _61: usize; // anonymous local
+    let _62: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -8243,7 +8355,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_dead(_30);
         storage_live(_32);
         storage_live(_31);
-        _31 = transmute<usize, Option::<NonZero::<usize>>>(copy n_29);
+        _31 = transmute<Option::<NonZero::<usize>>>(copy n_29);
         _32 = @discriminant(_31);
         _57 = copy _32 == const 1isize;
         _58 = assume(move _57) -> bb3 (unwind: bb21);
@@ -8254,7 +8366,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_dead(_31);
         storage_dead(_32);
         storage_dead(n_29);
-        step = transmute<NonZero::<usize>, usize>(copy n_24);
+        step = transmute<usize>(copy n_24);
         storage_dead(n_24);
         self_22 = Result::<usize, !>::Ok { _0: copy step };
         storage_dead(self_22);
@@ -8285,14 +8397,16 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_live(_34);
         storage_live(_35);
         _35 = copy (*self_1).ctrl;
-        _34 = transmute<NonNull::<u8>, *mut u8>(copy _35);
+        _34 = transmute<*mut u8>(copy _35);
         storage_dead(_35);
-        _33 = copy _34 offset copy i;
+        storage_live(_59);
+        _59 = copy i ub.* const size_of::<u8>();
+        _33 = &raw mut (*_34).offset!(copy _59);
         storage_dead(_34);
-        ptr_8 = cast<*mut u8, *const Tag>(copy _33);
+        ptr_8 = cast<*const Tag>(copy _33);
         storage_live(_37);
         storage_live(_38);
-        _38 = cast<*mut u8, *const u8>(copy _33);
+        _38 = cast<*const u8>(copy _33);
         _37 = vld1_u8(move _38) -> bb5 (unwind: bb10);
     }
 
@@ -8312,11 +8426,13 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_live(_40);
         storage_live(_41);
         _41 = copy (*self_1).ctrl;
-        _40 = transmute<NonNull::<u8>, *mut u8>(copy _41);
+        _40 = transmute<*mut u8>(copy _41);
         storage_dead(_41);
-        _39 = copy _40 offset copy i;
+        storage_live(_61);
+        _61 = copy i ub.* const size_of::<u8>();
+        _39 = &raw mut (*_40).offset!(copy _61);
         storage_dead(_40);
-        ptr_10 = cast<*mut u8, *mut Tag>(copy _39);
+        ptr_10 = cast<*mut Tag>(copy _39);
         _42 = vst1_u8(move _39, move self_56) -> bb7 (unwind: bb8);
     }
 
@@ -8366,17 +8482,19 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_dead(b);
         storage_live(self_14);
         _44 = copy (*self_1).ctrl;
-        self_14 = transmute<NonNull::<u8>, *mut Tag>(copy _44);
+        self_14 = transmute<*mut Tag>(copy _44);
         storage_live(dest_15);
         storage_live(_45);
         storage_live(_46);
         storage_live(_47);
         _47 = copy (*self_1).ctrl;
-        _46 = transmute<NonNull::<u8>, *mut u8>(copy _47);
+        _46 = transmute<*mut u8>(copy _47);
         storage_dead(_47);
-        _45 = copy _46 offset const 8usize;
+        storage_live(_62);
+        _62 = const 8usize ub.* const size_of::<u8>();
+        _45 = &raw mut (*_46).offset!(copy _62);
         storage_dead(_46);
-        dest_15 = cast<*mut u8, *mut Tag>(copy _45);
+        dest_15 = cast<*mut Tag>(copy _45);
         storage_dead(_45);
         storage_live(count);
         storage_live(_48);
@@ -8384,7 +8502,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         count = move _48 wrap.+ const 1usize;
         storage_dead(_48);
         storage_live(src_49);
-        src_49 = transmute<NonNull::<u8>, *const Tag>(copy _44);
+        src_49 = transmute<*const Tag>(copy _44);
         _13 = copy::<Tag>(move src_49, move dest_15, move count) -> bb14 (unwind: bb15);
     }
 
@@ -8408,7 +8526,7 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_dead(b);
         storage_live(self_18);
         _50 = copy (*self_1).ctrl;
-        self_18 = transmute<NonNull::<u8>, *mut Tag>(copy _50);
+        self_18 = transmute<*mut Tag>(copy _50);
         storage_live(dest_19);
         storage_live(index);
         storage_live(_51);
@@ -8419,15 +8537,17 @@ fn prepare_rehash_in_place(self_1: &'_ mut RawTableInner)
         storage_live(_53);
         storage_live(_54);
         _54 = copy (*self_1).ctrl;
-        _53 = transmute<NonNull::<u8>, *mut u8>(copy _54);
+        _53 = transmute<*mut u8>(copy _54);
         storage_dead(_54);
-        _52 = copy _53 offset copy index;
+        storage_live(_60);
+        _60 = copy index ub.* const size_of::<u8>();
+        _52 = &raw mut (*_53).offset!(copy _60);
         storage_dead(_53);
-        dest_19 = cast<*mut u8, *mut Tag>(copy _52);
+        dest_19 = cast<*mut Tag>(copy _52);
         storage_dead(_52);
         storage_dead(index);
         storage_live(src_55);
-        src_55 = transmute<NonNull::<u8>, *const Tag>(copy _50);
+        src_55 = transmute<*const Tag>(copy _50);
         _17 = copy::<Tag>(move src_55, move dest_19, const 8usize) -> bb18 (unwind: bb20);
     }
 
@@ -8483,7 +8603,8 @@ fn find_insert_index(self: &'_ RawTableInner, hash: u64) -> usize
     let _22: (); // anonymous local
     let _23: usize; // anonymous local
     let _24: bool; // anonymous local
-    let _25: (); // anonymous local
+    let _25: usize; // anonymous local
+    let _26: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -8491,11 +8612,11 @@ fn find_insert_index(self: &'_ RawTableInner, hash: u64) -> usize
         storage_live(_21);
         storage_live(_22);
         storage_live(_24);
-        storage_live(_25);
+        storage_live(_26);
         storage_live(probe_seq);
         storage_live(_13);
         storage_live(_14);
-        _14 = cast<u64, usize>(copy hash);
+        _14 = cast<usize>(copy hash);
         storage_live(_15);
         _15 = copy (*self).bucket_mask;
         _13 = move _14 & move _15;
@@ -8514,15 +8635,17 @@ fn find_insert_index(self: &'_ RawTableInner, hash: u64) -> usize
         storage_live(_17);
         storage_live(_18);
         _18 = copy (*self).ctrl;
-        _17 = transmute<NonNull::<u8>, *mut u8>(copy _18);
+        _17 = transmute<*mut u8>(copy _18);
         storage_dead(_18);
-        _16 = copy _17 offset copy index_6;
+        storage_live(_25);
+        _25 = copy index_6 ub.* const size_of::<u8>();
+        _16 = &raw mut (*_17).offset!(copy _25);
         storage_dead(_17);
-        ptr = cast<*mut u8, *const Tag>(copy _16);
+        ptr = cast<*const Tag>(copy _16);
         storage_dead(index_6);
         storage_live(_19);
         storage_live(_20);
-        _20 = cast<*mut u8, *const u8>(copy _16);
+        _20 = cast<*const u8>(copy _16);
         _19 = vld1_u8(move _20) -> bb2 (unwind: bb13);
     }
 
@@ -8552,7 +8675,7 @@ fn find_insert_index(self: &'_ RawTableInner, hash: u64) -> usize
         storage_dead(b);
         storage_live(val);
         _24 = copy _21 == const 1isize;
-        _25 = assume(move _24) -> bb5 (unwind: bb8);
+        _26 = assume(move _24) -> bb5 (unwind: bb8);
     }
 
     bb5: {
@@ -8748,12 +8871,23 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     let t_133: &'_ mut RawTableInner; // local
     let t_134: Option::<unsafe fn(*mut u8)>; // local
     let t_135: usize; // local
-    let _136: *const *const (); // anonymous local
-    let _137: *mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>; // anonymous local
-    let _138: (); // anonymous local
-    let _139: (); // anonymous local
-    let _140: Tag; // anonymous local
-    let _141: Tag; // anonymous local
+    let _136: usize; // anonymous local
+    let _137: isize; // anonymous local
+    let _138: usize; // anonymous local
+    let _139: *const *const (); // anonymous local
+    let _140: *mut ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>; // anonymous local
+    let _141: (); // anonymous local
+    let _142: usize; // anonymous local
+    let _143: usize; // anonymous local
+    let _144: isize; // anonymous local
+    let _145: usize; // anonymous local
+    let _146: usize; // anonymous local
+    let _147: usize; // anonymous local
+    let _148: usize; // anonymous local
+    let _149: usize; // anonymous local
+    let _150: (); // anonymous local
+    let _151: Tag; // anonymous local
+    let _152: Tag; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -8776,10 +8910,10 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(_38);
         storage_live(_67);
         storage_live(_129);
-        storage_live(_136);
-        storage_live(_137);
-        storage_live(_138);
         storage_live(_139);
+        storage_live(_140);
+        storage_live(_141);
+        storage_live(_150);
         _0 = ();
         _5 = prepare_rehash_in_place(copy self_1) -> bb1 (unwind: bb32);
     }
@@ -8791,7 +8925,7 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         guard = ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}> { dropfn: copy dropfn, value: copy self_1 };
         storage_dead(dropfn);
         storage_live(_9);
-        self_26 = copy guard.value;
+        self_26 = noretag copy guard.value;
         storage_live(_39);
         _39 = copy (*self_26).bucket_mask;
         _9 = move _39 wrap.+ const 1usize;
@@ -8827,16 +8961,18 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(i);
         i = copy (_10 as variant Option::<usize>::Some)._0;
         storage_live(_12);
-        self_27 = copy guard.value;
+        self_27 = noretag copy guard.value;
         storage_live(_45);
         storage_live(_46);
         storage_live(_47);
         _47 = copy (*self_27).ctrl;
-        _46 = transmute<NonNull::<u8>, *mut u8>(copy _47);
+        _46 = transmute<*mut u8>(copy _47);
         storage_dead(_47);
-        _45 = copy _46 offset copy i;
+        storage_live(_136);
+        _136 = copy i ub.* const size_of::<u8>();
+        _45 = &raw mut (*_46).offset!(copy _136);
         storage_dead(_46);
-        self_13 = cast<*mut u8, *mut Tag>(copy _45);
+        self_13 = cast<*mut Tag>(copy _45);
         storage_dead(_45);
         storage_live(_48);
         storage_live(_49);
@@ -8856,11 +8992,11 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     bb5: {
         storage_dead(_12);
         storage_live(i_p);
-        self_28 = copy guard.value;
+        self_28 = noretag copy guard.value;
         storage_live(_53);
         storage_live(_50);
         _53 = copy (*self_28).ctrl;
-        _50 = transmute<NonNull::<u8>, *mut u8>(copy _53);
+        _50 = transmute<*mut u8>(copy _53);
         storage_live(_51);
         storage_live(_52);
         _52 = copy i wrap.+ const 1usize;
@@ -8868,10 +9004,12 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_dead(_52);
         storage_live(_54);
         storage_live(_55);
-        _55 = cast<usize, isize>(copy _51);
+        _55 = cast<isize>(copy _51);
         _54 = const 0isize ub.- move _55;
         storage_dead(_55);
-        i_p = copy _50 offset move _54;
+        storage_live(_137);
+        _137 = move _54 ub.* const size_of::<u8>();
+        i_p = &raw mut (*_50).offset!(copy _137);
         storage_dead(_54);
         storage_dead(_51);
         storage_dead(_50);
@@ -8882,17 +9020,19 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     bb6: {
         storage_live(hash);
         storage_live(_16);
-        _29 = copy guard.value;
+        _29 = noretag copy guard.value;
         _16 = (copy _29, copy i);
-        _136 = copy hasher.metadata offset const 5usize;
-        hash = (copy (*_136))(copy hasher, move _16) -> bb7 (unwind: bb26);
+        storage_live(_138);
+        _138 = const 5usize ub.* const size_of::<*const ()>();
+        _139 = &raw const (*hasher.metadata).offset!(copy _138);
+        hash = (copy (*_139))(copy hasher, move _16) -> bb7 (unwind: bb26);
     }
 
     bb7: {
         storage_dead(_16);
         storage_live(new_i);
         storage_live(_18);
-        _30 = copy guard.value;
+        _30 = noretag copy guard.value;
         _18 = &(*_30);
         new_i = find_insert_index(move _18, copy hash) -> bb8 (unwind: bb26);
     }
@@ -8900,10 +9040,10 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     bb8: {
         storage_dead(_18);
         storage_live(b);
-        self_31 = copy guard.value;
+        self_31 = noretag copy guard.value;
         storage_live(_58);
         storage_live(_59);
-        _59 = cast<u64, usize>(copy hash);
+        _59 = cast<usize>(copy hash);
         storage_live(_60);
         _60 = copy (*self_31).bucket_mask;
         _58 = move _59 & move _60;
@@ -8940,14 +9080,14 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
 
     bb9: {
         storage_dead(b);
-        self_32 = copy guard.value;
+        self_32 = noretag copy guard.value;
         storage_live(_68);
         storage_live(_69);
         _69 = copy hash wrap.>> const 57usize;
         storage_live(_70);
         storage_live(_71);
         _71 = copy _69 & const 127u64;
-        _70 = cast<u64, u8>(move _71);
+        _70 = cast<u8>(move _71);
         storage_dead(_71);
         _68 = Tag { _0: move _70 };
         storage_dead(_70);
@@ -8968,11 +9108,13 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(_79);
         storage_live(_80);
         _80 = copy (*self_32).ctrl;
-        _79 = transmute<NonNull::<u8>, *mut u8>(copy _80);
+        _79 = transmute<*mut u8>(copy _80);
         storage_dead(_80);
-        _78 = copy _79 offset copy i;
+        storage_live(_142);
+        _142 = copy i ub.* const size_of::<u8>();
+        _78 = &raw mut (*_79).offset!(copy _142);
         storage_dead(_79);
-        _76 = cast<*mut u8, *mut Tag>(copy _78);
+        _76 = cast<*mut Tag>(copy _78);
         storage_dead(_78);
         (*_76) = copy _68;
         storage_dead(_76);
@@ -8981,11 +9123,13 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(_82);
         storage_live(_83);
         _83 = copy (*self_32).ctrl;
-        _82 = transmute<NonNull::<u8>, *mut u8>(copy _83);
+        _82 = transmute<*mut u8>(copy _83);
         storage_dead(_83);
-        _81 = copy _82 offset copy _72;
+        storage_live(_143);
+        _143 = copy _72 ub.* const size_of::<u8>();
+        _81 = &raw mut (*_82).offset!(copy _143);
         storage_dead(_82);
-        _77 = cast<*mut u8, *mut Tag>(copy _81);
+        _77 = cast<*mut Tag>(copy _81);
         storage_dead(_81);
         (*_77) = copy _68;
         storage_dead(_77);
@@ -9001,11 +9145,11 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     bb11: {
         storage_dead(b);
         storage_live(new_i_p);
-        self_33 = copy guard.value;
+        self_33 = noretag copy guard.value;
         storage_live(_87);
         storage_live(_84);
         _87 = copy (*self_33).ctrl;
-        _84 = transmute<NonNull::<u8>, *mut u8>(copy _87);
+        _84 = transmute<*mut u8>(copy _87);
         storage_live(_85);
         storage_live(_86);
         _86 = copy new_i wrap.+ const 1usize;
@@ -9013,26 +9157,30 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_dead(_86);
         storage_live(_88);
         storage_live(_89);
-        _89 = cast<usize, isize>(copy _85);
+        _89 = cast<isize>(copy _85);
         _88 = const 0isize ub.- move _89;
         storage_dead(_89);
-        new_i_p = copy _84 offset move _88;
+        storage_live(_144);
+        _144 = move _88 ub.* const size_of::<u8>();
+        new_i_p = &raw mut (*_84).offset!(copy _144);
         storage_dead(_88);
         storage_dead(_85);
         storage_dead(_84);
         storage_dead(_87);
         storage_live(prev_ctrl);
-        self_34 = copy guard.value;
+        self_34 = noretag copy guard.value;
         storage_live(_90);
         storage_live(_91);
         storage_live(_92);
         storage_live(_93);
         _93 = copy (*self_34).ctrl;
-        _92 = transmute<NonNull::<u8>, *mut u8>(copy _93);
+        _92 = transmute<*mut u8>(copy _93);
         storage_dead(_93);
-        _91 = copy _92 offset copy new_i;
+        storage_live(_145);
+        _145 = copy new_i ub.* const size_of::<u8>();
+        _91 = &raw mut (*_92).offset!(copy _145);
         storage_dead(_92);
-        _90 = cast<*mut u8, *mut Tag>(copy _91);
+        _90 = cast<*mut Tag>(copy _91);
         storage_dead(_91);
         prev_ctrl = copy (*_90);
         storage_dead(_90);
@@ -9042,7 +9190,7 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(_96);
         storage_live(_97);
         _97 = copy _95 & const 127u64;
-        _96 = cast<u64, u8>(move _97);
+        _96 = cast<u8>(move _97);
         storage_dead(_97);
         _94 = Tag { _0: move _96 };
         storage_dead(_96);
@@ -9063,11 +9211,13 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(_105);
         storage_live(_106);
         _106 = copy (*self_34).ctrl;
-        _105 = transmute<NonNull::<u8>, *mut u8>(copy _106);
+        _105 = transmute<*mut u8>(copy _106);
         storage_dead(_106);
-        _104 = copy _105 offset copy new_i;
+        storage_live(_146);
+        _146 = copy new_i ub.* const size_of::<u8>();
+        _104 = &raw mut (*_105).offset!(copy _146);
         storage_dead(_105);
-        _102 = cast<*mut u8, *mut Tag>(copy _104);
+        _102 = cast<*mut Tag>(copy _104);
         storage_dead(_104);
         (*_102) = copy _94;
         storage_dead(_102);
@@ -9076,11 +9226,13 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(_108);
         storage_live(_109);
         _109 = copy (*self_34).ctrl;
-        _108 = transmute<NonNull::<u8>, *mut u8>(copy _109);
+        _108 = transmute<*mut u8>(copy _109);
         storage_dead(_109);
-        _107 = copy _108 offset copy _98;
+        storage_live(_147);
+        _147 = copy _98 ub.* const size_of::<u8>();
+        _107 = &raw mut (*_108).offset!(copy _147);
         storage_dead(_108);
-        _103 = cast<*mut u8, *mut Tag>(copy _107);
+        _103 = cast<*mut Tag>(copy _107);
         storage_dead(_107);
         (*_103) = copy _94;
         storage_dead(_103);
@@ -9095,7 +9247,7 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     }
 
     bb12: {
-        self_35 = copy guard.value;
+        self_35 = noretag copy guard.value;
         storage_live(_111);
         storage_live(_112);
         storage_live(_113);
@@ -9112,35 +9264,39 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         storage_live(_118);
         storage_live(_119);
         _119 = copy (*self_35).ctrl;
-        _118 = transmute<NonNull::<u8>, *mut u8>(copy _119);
+        _118 = transmute<*mut u8>(copy _119);
         storage_dead(_119);
-        _117 = copy _118 offset copy i;
+        storage_live(_148);
+        _148 = copy i ub.* const size_of::<u8>();
+        _117 = &raw mut (*_118).offset!(copy _148);
         storage_dead(_118);
-        _115 = cast<*mut u8, *mut Tag>(copy _117);
+        _115 = cast<*mut Tag>(copy _117);
         storage_dead(_117);
-        storage_live(_140);
-        _140 = Tag { _0: const 255u8 };
-        (*_115) = move _140;
+        storage_live(_151);
+        _151 = Tag { _0: const 255u8 };
+        (*_115) = move _151;
         storage_dead(_115);
         storage_live(_116);
         storage_live(_120);
         storage_live(_121);
         storage_live(_122);
         _122 = copy (*self_35).ctrl;
-        _121 = transmute<NonNull::<u8>, *mut u8>(copy _122);
+        _121 = transmute<*mut u8>(copy _122);
         storage_dead(_122);
-        _120 = copy _121 offset copy _111;
+        storage_live(_149);
+        _149 = copy _111 ub.* const size_of::<u8>();
+        _120 = &raw mut (*_121).offset!(copy _149);
         storage_dead(_121);
-        _116 = cast<*mut u8, *mut Tag>(copy _120);
+        _116 = cast<*mut Tag>(copy _120);
         storage_dead(_120);
-        storage_live(_141);
-        _141 = Tag { _0: const 255u8 };
-        (*_116) = move _141;
+        storage_live(_152);
+        _152 = Tag { _0: const 255u8 };
+        (*_116) = move _152;
         storage_dead(_116);
         storage_dead(_111);
         storage_live(src);
-        src = cast<*mut u8, *const u8>(copy i_p);
-        _139 = copy_nonoverlapping::<u8>(copy src, copy new_i_p, copy size_of) -> bb13 (unwind: bb16);
+        src = cast<*const u8>(copy i_p);
+        _150 = copy_nonoverlapping::<u8>(copy src, copy new_i_p, copy size_of) -> bb13 (unwind: bb16);
     }
 
     bb13: {
@@ -9175,14 +9331,14 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
         slice = *mut  (copy i_p, copy size_of);
         storage_live(bytes_124);
         storage_live(val);
-        val = cast<*mut [u8], *const [u8]>(copy slice);
+        val = cast<*const [u8]>(copy slice);
         bytes_124 = size_of_val::<[u8]>(move val) -> bb18 (unwind: bb24);
     }
 
     bb18: {
         storage_dead(val);
         storage_live(_126);
-        _126 = transmute<usize, Option::<NonZero::<usize>>>(copy bytes_124);
+        _126 = transmute<Option::<NonZero::<usize>>>(copy bytes_124);
         _127 = @discriminant(_126);
         switch move _127 -> 1isize: bb19, 0isize: bb21, otherwise: bb23;
     }
@@ -9228,8 +9384,8 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     }
 
     bb26: {
-        _137 = &raw mut guard;
-        _138 = drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>>(move _137) -> bb27 (unwind: bb28);
+        _140 = &raw mut guard;
+        _141 = drop_glue::<ScopeGuard::<&'_ mut RawTableInner, hashbrown::raw::{RawTableInner}::rehash_in_place::{closure}::{closure}>>(move _140) -> bb27 (unwind: bb28);
     }
 
     bb27: {
@@ -9243,7 +9399,7 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     bb29: {
         storage_dead(_40);
         storage_dead(_10);
-        _36 = copy guard.value;
+        _36 = noretag copy guard.value;
         bucket_mask = copy (*_36).bucket_mask;
         storage_live(_130);
         _130 = copy bucket_mask < const 8usize;
@@ -9264,9 +9420,9 @@ fn rehash_in_place(self_1: &'_ mut RawTableInner, hasher: &'_ (dyn FakeTrait), s
     bb31: {
         storage_dead(_130);
         storage_live(_25);
-        _37 = copy guard.value;
+        _37 = noretag copy guard.value;
         _25 = copy (*_37).items;
-        _38 = copy guard.value;
+        _38 = noretag copy guard.value;
         (*_38).growth_left = move bucket_mask wrap.- move _25;
         storage_dead(_25);
         storage_live(t_134);
@@ -9398,7 +9554,8 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
     let _36: u64; // anonymous local
     let _37: u64; // anonymous local
     let _38: (); // anonymous local
-    let _39: Option::<usize>; // anonymous local
+    let _39: usize; // anonymous local
+    let _40: Option::<usize>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -9416,7 +9573,7 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
         self_31 = copy (*self_1).current_group._0._0;
         storage_live(_20);
         storage_live(_19);
-        _19 = transmute<u64, Option::<NonZero::<u64>>>(copy self_31);
+        _19 = transmute<Option::<NonZero::<u64>>>(copy self_31);
         _20 = @discriminant(_19);
         switch move _20 -> 1isize: bb2, 0isize: bb5, otherwise: bb12;
     }
@@ -9428,13 +9585,13 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
         storage_live(_23);
         storage_live(_24);
         storage_live(_25);
-        _25 = transmute<NonZero::<u64>, u64>(copy nonzero);
+        _25 = transmute<u64>(copy nonzero);
         _24 = cttz_nonzero::<u64>(move _25) -> bb3 (unwind: bb4);
     }
 
     bb3: {
         storage_dead(_25);
-        _23 = cast<u32, usize>(move _24);
+        _23 = cast<usize>(move _24);
         storage_dead(_24);
         _22 = move _23 ub./ const 8usize;
         storage_dead(_23);
@@ -9480,9 +9637,9 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
 
     bb5: {
         storage_dead(_19);
-        storage_live(_39);
-        _39 = Option::<usize>::None {  };
-        self_16 = move _39;
+        storage_live(_40);
+        _40 = Option::<usize>::None {  };
+        self_16 = move _40;
         storage_dead(_20);
         storage_dead(self_31);
         storage_dead(self_16);
@@ -9502,11 +9659,13 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
         storage_live(self_8);
         storage_live(self_9);
         self_9 = copy (*self_1).ctrl;
-        self_8 = transmute<NonNull::<u8>, *mut u8>(copy self_9);
+        self_8 = transmute<*mut u8>(copy self_9);
         storage_dead(self_9);
-        ptr_7 = copy self_8 offset const 8usize;
+        storage_live(_39);
+        _39 = const 8usize ub.* const size_of::<u8>();
+        ptr_7 = &raw mut (*self_8).offset!(copy _39);
         storage_dead(self_8);
-        _6 = transmute<*mut u8, NonNull::<u8>>(copy ptr_7);
+        _6 = transmute<NonNull::<u8>>(copy ptr_7);
         storage_dead(ptr_7);
         (*self_1).ctrl = move _6;
         storage_dead(_6);
@@ -9516,12 +9675,12 @@ fn next_impl(self_1: &'_ mut FullBucketsIndices) -> Option::<usize>
         storage_live(ptr_13);
         storage_live(self_14);
         self_15 = copy (*self_1).ctrl;
-        self_14 = transmute<NonNull::<u8>, *mut u8>(copy self_15);
-        ptr_13 = transmute<NonNull::<u8>, *const Tag>(copy self_15);
+        self_14 = transmute<*mut u8>(copy self_15);
+        ptr_13 = transmute<*const Tag>(copy self_15);
         storage_dead(self_14);
         storage_live(_33);
         storage_live(_34);
-        _34 = transmute<NonNull::<u8>, *const u8>(copy self_15);
+        _34 = transmute<*const u8>(copy self_15);
         _33 = vld1_u8(move _34) -> bb7 (unwind: bb10);
     }
 
@@ -9666,10 +9825,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_4);
         storage_live(self_5);
         _13 = copy layout.align;
-        self_5 = transmute<Alignment, NonNull::<u8>>(copy _13);
+        self_5 = transmute<NonNull::<u8>>(copy _13);
         storage_live(ptr_14);
         storage_live(self_15);
-        self_15 = transmute<Alignment, *mut u8>(copy _13);
+        self_15 = transmute<*mut u8>(copy _13);
         ptr_14 = *mut  (copy self_15, const 0usize);
         storage_dead(self_15);
         storage_live(_35);
@@ -9679,7 +9838,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 
     bb2: {
         storage_live(_17);
-        _17 = transmute<Alignment, *mut ()>(copy _13);
+        _17 = transmute<*mut ()>(copy _13);
         _16 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _17) -> bb3 (unwind: bb4);
     }
 
@@ -9693,7 +9852,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb5: {
-        _4 = transmute<*mut [u8], NonNull::<[u8]>>(copy ptr_14);
+        _4 = transmute<NonNull::<[u8]>>(copy ptr_14);
         storage_dead(ptr_14);
         storage_dead(self_5);
         _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { _0: move _4 };
@@ -9751,9 +9910,9 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_24);
         storage_live(_39);
         storage_live(_40);
-        _40 = cast<usize, *mut u8>(const 0usize);
+        _40 = cast<*mut u8>(const 0usize);
         _39 = copy raw_ptr != move _40;
-        _24 = cast<bool, usize>(move _39);
+        _24 = cast<usize>(move _39);
         storage_dead(_39);
         _22 = move _24 == const 0usize;
         storage_dead(_24);
@@ -9805,7 +9964,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 
     bb20: {
         storage_live(_26);
-        _26 = cast<*mut u8, *mut ()>(copy raw_ptr);
+        _26 = cast<*mut ()>(copy raw_ptr);
         _25 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _26) -> bb21 (unwind: bb22);
     }
 
@@ -9819,7 +9978,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb23: {
-        _23 = transmute<*mut u8, NonNull::<u8>>(copy raw_ptr);
+        _23 = transmute<NonNull::<u8>>(copy raw_ptr);
         self_9 = Option::<NonNull::<u8>>::Some { _0: move _23 };
         storage_dead(_23);
         storage_dead(_22);
@@ -9838,7 +9997,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
         storage_live(_12);
         storage_live(ptr_29);
         storage_live(self_30);
-        self_30 = transmute<NonNull::<u8>, *mut u8>(copy ptr_11);
+        self_30 = transmute<*mut u8>(copy ptr_11);
         ptr_29 = *mut  (copy self_30, copy size);
         storage_dead(self_30);
         storage_live(_38);
@@ -9848,7 +10007,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 
     bb24: {
         storage_live(_32);
-        _32 = transmute<NonNull::<u8>, *mut ()>(copy ptr_11);
+        _32 = transmute<*mut ()>(copy ptr_11);
         _31 = core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(move _32) -> bb25 (unwind: bb26);
     }
 
@@ -9862,7 +10021,7 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb27: {
-        _12 = transmute<*mut [u8], NonNull::<[u8]>>(copy ptr_29);
+        _12 = transmute<NonNull::<[u8]>>(copy ptr_29);
         storage_dead(ptr_29);
         _0 = Result::<NonNull::<[u8]>, AllocError>::Ok { _0: move _12 };
         storage_dead(_12);
@@ -9958,7 +10117,8 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
     let oversized_layout: Layout; // local
     let ctrl_offset: usize; // local
     let _46: bool; // anonymous local
-    let _47: (); // anonymous local
+    let _47: usize; // anonymous local
+    let _48: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -9968,7 +10128,7 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_28);
         storage_live(ctrl_offset);
         storage_live(_46);
-        storage_live(_47);
+        storage_live(_48);
         storage_live(_7);
         storage_live(_8);
         _8 = copy buckets;
@@ -10008,8 +10168,8 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(block);
         block = copy (_11 as variant Result::<NonNull::<[u8]>, ()>::Ok)._0;
         storage_live(_13);
-        _28 = transmute<NonNull::<[u8]>, *mut [u8]>(copy block);
-        allocation_size = copy _28.metadata;
+        _28 = transmute<*mut [u8]>(copy block);
+        allocation_size = noretag copy _28.metadata;
         storage_live(_15);
         _15 = copy layout.size;
         _13 = copy allocation_size != move _15;
@@ -10040,13 +10200,13 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_34);
         storage_live(_35);
         storage_live(_36);
-        _36 = cast<usize, u64>(copy x);
+        _36 = cast<u64>(copy x);
         _35 = ctlz::<u64>(move _36) -> bb7 (unwind: bb12);
     }
 
     bb7: {
         storage_dead(_36);
-        _34 = cast<u32, usize>(move _35);
+        _34 = cast<usize>(move _35);
         storage_dead(_35);
         _33 = const 63usize wrap.- move _34;
         storage_dead(_34);
@@ -10065,7 +10225,7 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
         storage_live(_37);
         _37 = @discriminant(option);
         _46 = copy _37 == const 1isize;
-        _47 = assume(move _46) -> bb9 (unwind: bb10);
+        _48 = assume(move _46) -> bb9 (unwind: bb10);
     }
 
     bb9: {
@@ -10101,18 +10261,20 @@ fn new_uninitialized::<Global>(alloc: &'_ Global, table_layout_2: TableLayout, b
     bb15: {
         storage_dead(_13);
         storage_live(_38);
-        _38 = cast<*mut [u8], *mut u8>(copy _28);
-        ptr_10 = transmute<*mut u8, NonNull::<u8>>(copy _38);
+        _38 = cast<*mut u8>(copy _28);
+        ptr_10 = transmute<NonNull::<u8>>(copy _38);
         storage_dead(_38);
         storage_dead(block);
         storage_dead(_11);
         storage_live(ctrl);
         storage_live(ptr_19);
         storage_live(self);
-        self = transmute<NonNull::<u8>, *mut u8>(copy ptr_10);
-        ptr_19 = copy self offset copy ctrl_offset;
+        self = transmute<*mut u8>(copy ptr_10);
+        storage_live(_47);
+        _47 = copy ctrl_offset ub.* const size_of::<u8>();
+        ptr_19 = &raw mut (*self).offset!(copy _47);
         storage_dead(self);
-        ctrl = transmute<*mut u8, NonNull::<u8>>(copy ptr_19);
+        ctrl = transmute<NonNull::<u8>>(copy ptr_19);
         storage_dead(ptr_19);
         storage_live(_21);
         storage_live(_22);
@@ -10358,9 +10520,9 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(b_20);
         storage_live(_21);
         storage_live(_22);
-        _22 = cast<usize, u64>(copy table_layout_5);
+        _22 = cast<u64>(copy table_layout_5);
         storage_live(_23);
-        _23 = cast<usize, u64>(copy buckets_12);
+        _23 = cast<u64>(copy buckets_12);
         _21 = move _22 checked.* move _23;
         storage_dead(_23);
         storage_dead(_22);
@@ -10368,7 +10530,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         _19 = copy _21._0;
         b_20 = copy _21._1;
         storage_dead(_21);
-        prod_24 = cast<u64, usize>(copy _19);
+        prod_24 = cast<usize>(copy _19);
         storage_dead(_19);
         if copy b_20 -> bb14 else -> bb17;
     }
@@ -10415,14 +10577,14 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(a);
         storage_live(_28);
         storage_live(_29);
-        _29 = cast<usize, u64>(copy cap_1);
+        _29 = cast<u64>(copy cap_1);
         _28 = move _29 checked.* const 8u64;
         storage_dead(_29);
         storage_live(_26);
         _26 = copy _28._0;
         b_27 = copy _28._1;
         storage_dead(_28);
-        a = cast<u64, usize>(copy _26);
+        a = cast<usize>(copy _26);
         storage_dead(_26);
         if copy b_27 -> bb21 else -> bb26;
     }
@@ -10483,7 +10645,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
     bb27: {
         storage_live(_36);
         storage_live(_37);
-        _37 = cast<usize, isize>(copy m1);
+        _37 = cast<isize>(copy m1);
         _36 = move _37 >= const 0isize;
         if move _36 -> bb28 else -> bb31;
     }
@@ -10493,7 +10655,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(exp);
         storage_live(_40);
         storage_live(_41);
-        _41 = cast<usize, u64>(copy m1);
+        _41 = cast<u64>(copy m1);
         _40 = ctlz::<u64>(move _41) -> bb29 (unwind: bb30);
     }
 
@@ -10539,9 +10701,9 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(b_43);
         storage_live(_44);
         storage_live(_45);
-        _45 = cast<usize, u64>(copy table_layout_50);
+        _45 = cast<u64>(copy table_layout_50);
         storage_live(_46);
-        _46 = cast<usize, u64>(copy buckets_18);
+        _46 = cast<u64>(copy buckets_18);
         _44 = move _45 checked.* move _46;
         storage_dead(_46);
         storage_dead(_45);
@@ -10549,7 +10711,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         _42 = copy _44._0;
         b_43 = copy _44._1;
         storage_dead(_44);
-        prod_47 = cast<u64, usize>(copy _42);
+        prod_47 = cast<usize>(copy _42);
         storage_dead(_42);
         if copy b_43 -> bb35 else -> bb38;
     }
@@ -10756,7 +10918,7 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_live(_29);
         storage_live(_28);
         _29 = copy result.ctrl;
-        _28 = transmute<NonNull::<u8>, *mut MaybeUninit::<Tag>>(copy _29);
+        _28 = transmute<*mut MaybeUninit::<Tag>>(copy _29);
         storage_live(_31);
         storage_live(_32);
         _32 = copy result.bucket_mask;
@@ -10773,7 +10935,7 @@ fn fallible_with_capacity::<Global>(alloc: &'_ Global, table_layout: TableLayout
         storage_live(self_38);
         storage_live(_39);
         _39 = &raw mut (*self_14) with_metadata(copy self_14.metadata);
-        self_38 = cast<*mut [MaybeUninit::<Tag>], *mut MaybeUninit::<Tag>>(copy _39);
+        self_38 = cast<*mut MaybeUninit::<Tag>>(copy _39);
         storage_dead(_39);
         _37 = write_bytes::<MaybeUninit::<Tag>>(move self_38, const 255u8, move count) -> bb12 (unwind: bb13);
     }
@@ -10947,10 +11109,16 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     let _100: (); // anonymous local
     let _101: *mut ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>; // anonymous local
     let _102: (); // anonymous local
-    let _103: *const *const (); // anonymous local
-    let _104: (); // anonymous local
-    let _105: Option::<usize>; // anonymous local
-    let _106: Result::<(), TryReserveError>; // anonymous local
+    let _103: usize; // anonymous local
+    let _104: *const *const (); // anonymous local
+    let _105: usize; // anonymous local
+    let _106: usize; // anonymous local
+    let _107: usize; // anonymous local
+    let _108: isize; // anonymous local
+    let _109: isize; // anonymous local
+    let _110: (); // anonymous local
+    let _111: Option::<usize>; // anonymous local
+    let _112: Result::<(), TryReserveError>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -10965,8 +11133,8 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(_100);
         storage_live(_101);
         storage_live(_102);
-        storage_live(_103);
         storage_live(_104);
+        storage_live(_110);
         storage_live(new_table_7);
         storage_live(_8);
         storage_live(self_9);
@@ -11013,16 +11181,16 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(ptr_49);
         storage_live(ctrl);
         ctrl = copy (*self_1).ctrl;
-        ptr_49 = transmute<NonNull::<u8>, *mut u8>(copy ctrl);
-        self_43 = transmute<NonNull::<u8>, *mut Tag>(copy ctrl);
+        ptr_49 = transmute<*mut u8>(copy ctrl);
+        self_43 = transmute<*mut Tag>(copy ctrl);
         storage_live(_44);
         storage_live(self_45);
         storage_live(_46);
         storage_live(ptr_47);
-        ptr_47 = transmute<NonNull::<u8>, *const Tag>(copy ctrl);
+        ptr_47 = transmute<*const Tag>(copy ctrl);
         storage_live(_51);
         storage_live(_52);
-        _52 = transmute<NonNull::<u8>, *const u8>(copy ctrl);
+        _52 = transmute<*const u8>(copy ctrl);
         _51 = vld1_u8(move _52) -> bb3 (unwind: bb19);
     }
 
@@ -11071,9 +11239,9 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
 
     bb6: {
         storage_dead(_59);
-        storage_live(_105);
-        _105 = Option::<usize>::None {  };
-        nxt = move _105;
+        storage_live(_111);
+        _111 = Option::<usize>::None {  };
+        nxt = move _111;
         goto bb9;
     }
 
@@ -11110,9 +11278,9 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
     bb10: {
         storage_dead(_95);
         storage_dead(_94);
-        storage_live(_106);
-        _106 = Result::<(), TryReserveError>::Ok { _0: const () };
-        _0 = move _106;
+        storage_live(_112);
+        _112 = Result::<(), TryReserveError>::Ok { _0: const () };
+        _0 = move _112;
         _101 = &raw mut new_table_7;
         _102 = drop_glue::<ScopeGuard::<RawTableInner, hashbrown::raw::{RawTableInner}::prepare_resize::{closure}::{closure}>>(move _101) -> bb11 (unwind: bb12);
     }
@@ -11136,8 +11304,10 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(hash);
         storage_live(_19);
         _19 = (copy self_1, copy full_byte_index);
-        _103 = copy hasher.metadata offset const 5usize;
-        hash = (copy (*_103))(copy hasher, move _19) -> bb15 (unwind: bb19);
+        storage_live(_103);
+        _103 = const 5usize ub.* const size_of::<*const ()>();
+        _104 = &raw const (*hasher.metadata).offset!(copy _103);
+        hash = (copy (*_104))(copy hasher, move _19) -> bb15 (unwind: bb19);
     }
 
     bb15: {
@@ -11155,11 +11325,13 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(_64);
         storage_live(_65);
         _65 = copy new_table_7.value.ctrl;
-        _64 = transmute<NonNull::<u8>, *mut u8>(copy _65);
+        _64 = transmute<*mut u8>(copy _65);
         storage_dead(_65);
-        _63 = copy _64 offset copy new_index;
+        storage_live(_105);
+        _105 = copy new_index ub.* const size_of::<u8>();
+        _63 = &raw mut (*_64).offset!(copy _105);
         storage_dead(_64);
-        _62 = cast<*mut u8, *mut Tag>(copy _63);
+        _62 = cast<*mut Tag>(copy _63);
         storage_dead(_63);
         old_ctrl = copy (*_62)._0;
         storage_dead(_62);
@@ -11169,7 +11341,7 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(_68);
         storage_live(_69);
         _69 = copy _67 & const 127u64;
-        _68 = cast<u64, u8>(move _69);
+        _68 = cast<u8>(move _69);
         storage_dead(_69);
         _66 = Tag { _0: move _68 };
         storage_dead(_68);
@@ -11190,11 +11362,13 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(_77);
         storage_live(_78);
         _78 = copy new_table_7.value.ctrl;
-        _77 = transmute<NonNull::<u8>, *mut u8>(copy _78);
+        _77 = transmute<*mut u8>(copy _78);
         storage_dead(_78);
-        _76 = copy _77 offset copy new_index;
+        storage_live(_106);
+        _106 = copy new_index ub.* const size_of::<u8>();
+        _76 = &raw mut (*_77).offset!(copy _106);
         storage_dead(_77);
-        _74 = cast<*mut u8, *mut Tag>(copy _76);
+        _74 = cast<*mut Tag>(copy _76);
         storage_dead(_76);
         (*_74) = copy _66;
         storage_dead(_74);
@@ -11203,11 +11377,13 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(_80);
         storage_live(_81);
         _81 = copy new_table_7.value.ctrl;
-        _80 = transmute<NonNull::<u8>, *mut u8>(copy _81);
+        _80 = transmute<*mut u8>(copy _81);
         storage_dead(_81);
-        _79 = copy _80 offset copy _70;
+        storage_live(_107);
+        _107 = copy _70 ub.* const size_of::<u8>();
+        _79 = &raw mut (*_80).offset!(copy _107);
         storage_dead(_80);
-        _75 = cast<*mut u8, *mut Tag>(copy _79);
+        _75 = cast<*mut Tag>(copy _79);
         storage_dead(_79);
         (*_75) = copy _66;
         storage_dead(_75);
@@ -11220,7 +11396,7 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_live(_85);
         storage_live(_82);
         _85 = copy (*self_1).ctrl;
-        _82 = transmute<NonNull::<u8>, *mut u8>(copy _85);
+        _82 = transmute<*mut u8>(copy _85);
         storage_live(_83);
         storage_live(_84);
         _84 = copy full_byte_index wrap.+ const 1usize;
@@ -11228,21 +11404,23 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_dead(_84);
         storage_live(_86);
         storage_live(_87);
-        _87 = cast<usize, isize>(copy _83);
+        _87 = cast<isize>(copy _83);
         _86 = const 0isize ub.- move _87;
         storage_dead(_87);
-        _21 = copy _82 offset move _86;
+        storage_live(_108);
+        _108 = move _86 ub.* const size_of::<u8>();
+        _21 = &raw mut (*_82).offset!(copy _108);
         storage_dead(_86);
         storage_dead(_83);
         storage_dead(_82);
         storage_dead(_85);
-        src = cast<*mut u8, *const u8>(copy _21);
+        src = cast<*const u8>(copy _21);
         storage_dead(_21);
         storage_live(dst);
         storage_live(_91);
         storage_live(_88);
         _91 = copy new_table_7.value.ctrl;
-        _88 = transmute<NonNull::<u8>, *mut u8>(copy _91);
+        _88 = transmute<*mut u8>(copy _91);
         storage_live(_89);
         storage_live(_90);
         _90 = copy new_index wrap.+ const 1usize;
@@ -11250,15 +11428,17 @@ fn resize_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Global, capa
         storage_dead(_90);
         storage_live(_92);
         storage_live(_93);
-        _93 = cast<usize, isize>(copy _89);
+        _93 = cast<isize>(copy _89);
         _92 = const 0isize ub.- move _93;
         storage_dead(_93);
-        dst = copy _88 offset move _92;
+        storage_live(_109);
+        _109 = move _92 ub.* const size_of::<u8>();
+        dst = &raw mut (*_88).offset!(copy _109);
         storage_dead(_92);
         storage_dead(_89);
         storage_dead(_88);
         storage_dead(_91);
-        _104 = copy_nonoverlapping::<u8>(copy src, copy dst, copy size_of) -> bb17 (unwind: bb18);
+        _110 = copy_nonoverlapping::<u8>(copy src, copy dst, copy size_of) -> bb17 (unwind: bb18);
     }
 
     bb17: {
@@ -11587,7 +11767,8 @@ fn reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::
     let _10: &'_ hashbrown::map::make_hasher::{closure}::{closure}; // anonymous local
     let _11: Option::<unsafe fn(*mut u8)>; // anonymous local
     let _12: unsafe fn(*mut u8); // anonymous local
-    let _13: Option::<unsafe fn(*mut u8)>; // anonymous local
+    let _13: fn(*mut u8); // anonymous local
+    let _14: Option::<unsafe fn(*mut u8)>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -11603,23 +11784,25 @@ fn reserve_rehash::<(u32, u32), Global, hashbrown::map::make_hasher::{closure}::
         _9 = hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure} { upvar_0: copy _10 };
         storage_dead(_10);
         _8 = &_9;
-        _7 = unsize_cast<&'_ hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, &'_ (dyn FakeTrait), cast<*const ()>(&raw const Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>)>(copy _8);
+        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>)>(copy _8);
         storage_live(_11);
         if copy NEEDS_DROP::<(u32, u32)> -> bb1 else -> bb2;
     }
 
     bb1: {
         storage_live(_12);
-        _12 = cast<{as_fn}, unsafe fn(*mut u8)>(const {as_fn});
+        storage_live(_13);
+        _13 = fn_def_to_fn_ptr(const {as_fn});
+        _12 = fn_ptr_to_unsafe(move _13);
         _11 = Option::<unsafe fn(*mut u8)>::Some { _0: copy _12 };
         storage_dead(_12);
         goto bb3;
     }
 
     bb2: {
-        storage_live(_13);
-        _13 = Option::<unsafe fn(*mut u8)>::None {  };
-        _11 = move _13;
+        storage_live(_14);
+        _14 = Option::<unsafe fn(*mut u8)>::None {  };
+        _11 = move _14;
         goto bb3;
     }
 
@@ -11758,6 +11941,7 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
     let _22: NonNull::<(u32, u32)>; // anonymous local
     let _23: isize; // anonymous local
     let _24: isize; // anonymous local
+    let _25: isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -11781,7 +11965,7 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
         storage_dead(_12);
         storage_dead(_11);
         _9 = &mut _10;
-        _8 = unsize_cast<&'_ mut hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, &'_ mut (dyn FakeTrait), cast<*const ()>(&raw const FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>)>(copy _9);
+        _8 = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>)>(copy _9);
         _6 = find_or_find_insert_index_inner(move _7, move hash, move _8) -> bb2 (unwind: bb13);
     }
 
@@ -11799,7 +11983,7 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
         storage_live(_18);
         storage_live(base);
         _18 = copy (*self_1).table.ctrl;
-        base = transmute<NonNull::<u8>, NonNull::<(u32, u32)>>(copy _18);
+        base = transmute<NonNull::<(u32, u32)>>(copy _18);
         storage_live(ptr);
         if copy IS_ZERO_SIZED::<(u32, u32)> -> bb4 else -> bb5;
     }
@@ -11807,14 +11991,14 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
     bb4: {
         storage_live(addr);
         addr = copy index_14 wrap.+ const 1usize;
-        ptr = transmute<usize, *mut (u32, u32)>(copy addr);
+        ptr = transmute<*mut (u32, u32)>(copy addr);
         storage_dead(addr);
         goto bb9;
     }
 
     bb5: {
         storage_live(self_21);
-        self_21 = transmute<NonNull::<u8>, *mut (u32, u32)>(copy _18);
+        self_21 = transmute<*mut (u32, u32)>(copy _18);
         if copy IS_ZST::<(u32, u32)> -> bb6 else -> bb7;
     }
 
@@ -11826,10 +12010,12 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
     bb7: {
         storage_live(_23);
         storage_live(_24);
-        _24 = cast<usize, isize>(copy index_14);
+        _24 = cast<isize>(copy index_14);
         _23 = const 0isize ub.- move _24;
         storage_dead(_24);
-        ptr = copy self_21 offset move _23;
+        storage_live(_25);
+        _25 = move _23 ub.* const size_of::<(u32, u32)>();
+        ptr = &raw mut (*self_21).offset!(copy _25);
         storage_dead(_23);
         goto bb8;
     }
@@ -11841,7 +12027,7 @@ fn find_or_find_insert_index::<(u32, u32), Global, hashbrown::map::equivalent_ke
 
     bb9: {
         storage_live(_22);
-        _22 = transmute<*mut (u32, u32), NonNull::<(u32, u32)>>(copy ptr);
+        _22 = transmute<NonNull::<(u32, u32)>>(copy ptr);
         _15 = Bucket::<(u32, u32)> { ptr: move _22 };
         storage_dead(_22);
         storage_dead(ptr);
@@ -11912,6 +12098,7 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::insert::<u32, u3
     let _30: *mut (u32, u32); // anonymous local
     let self_31: *mut (u32, u32); // local
     let self_32: NonNull::<(u32, u32)>; // local
+    let _33: isize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -11963,7 +12150,7 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::insert::<u32, u3
     }
 
     bb4: {
-        _30 = transmute<usize, *mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
+        _30 = transmute<*mut (u32, u32)>(copy ALIGN::<(u32, u32)>);
         goto bb9;
     }
 
@@ -11971,7 +12158,7 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::insert::<u32, u3
         storage_live(self_31);
         storage_live(self_32);
         self_32 = copy bucket.ptr;
-        self_31 = transmute<NonNull::<(u32, u32)>, *mut (u32, u32)>(copy self_32);
+        self_31 = transmute<*mut (u32, u32)>(copy self_32);
         storage_dead(self_32);
         if copy IS_ZST::<(u32, u32)> -> bb6 else -> bb7;
     }
@@ -11982,7 +12169,9 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::insert::<u32, u3
     }
 
     bb7: {
-        _30 = copy self_31 offset const -1isize;
+        storage_live(_33);
+        _33 = const -1isize ub.* const size_of::<(u32, u32)>();
+        _30 = &raw mut (*self_31).offset!(copy _33);
         goto bb8;
     }
 
@@ -12031,7 +12220,7 @@ pub fn hashbrown::map::{hashbrown::map::HashMap::<_, _, _, _>}::insert::<u32, u3
         storage_live(_28);
         storage_live(_29);
         _29 = copy _27 & const 127u64;
-        _28 = cast<u64, u8>(move _29);
+        _28 = cast<u8>(move _29);
         storage_dead(_29);
         _26 = Tag { _0: move _28 };
         storage_dead(_28);

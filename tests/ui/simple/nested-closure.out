@@ -194,7 +194,7 @@ pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>(self: &'_ &'_ i32, f: &
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self);
+        _3 = noretag copy (*self);
         _0 = impl_Debug_for_i32::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
@@ -249,11 +249,11 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
         storage_live(_5);
         storage_live(_6);
         _6 = &left;
-        _5 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
         storage_live(_7);
         storage_live(_8);
         _8 = &right;
-        _7 = unsize_cast<&'_ &'_ i32, &'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
+        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
         _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
@@ -310,9 +310,9 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{clos
         storage_live(_0);
         storage_live(_z);
         storage_live(_5);
-        _z = move spread_args._0;
+        _z = noretag move spread_args._0;
         storage_live(_4);
-        _5 = copy (*_1).upvar_0;
+        _5 = noretag copy (*_1).upvar_0;
         _4 = &(*_5);
         _0 = clone(move _4) -> bb1 (unwind: bb2);
     }
@@ -344,9 +344,9 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::<'_, 
         storage_live(_0);
         storage_live(_y);
         storage_live(_5);
-        _y = move spread_args._0;
+        _y = noretag move spread_args._0;
         storage_live(_4);
-        _5 = copy (*_1).upvar_0;
+        _5 = noretag copy (*_1).upvar_0;
         _4 = &(*_5);
         _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure}::{closure} { upvar_0: move _4 };
         storage_dead(_4);
@@ -370,7 +370,7 @@ fn test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::<'_, i32, i8, ex
         storage_live(_0);
         storage_live(_4);
         storage_live(_3);
-        _4 = copy (*_1).upvar_0;
+        _4 = noretag copy (*_1).upvar_0;
         _3 = &(*_4);
         _0 = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure}::{closure} { upvar_0: move _3 };
         storage_dead(_3);
@@ -410,7 +410,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         storage_live(_18);
         storage_live(clo);
         storage_live(_3);
-        _18 = copy (*x);
+        _18 = noretag copy (*x);
         _3 = &(*_18);
         clo = test_crate::{Foo::<'_, _>}::test_nested_closures::{closure}::{closure} { upvar_0: move _3 };
         storage_dead(_3);

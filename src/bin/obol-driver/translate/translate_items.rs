@@ -762,6 +762,7 @@ impl ItemTransCtx<'_, '_> {
                             name: None,
                             variance: Variance::Unknown,
                             mutability: LifetimeMutability::Unknown,
+                            late_bound: false,
                         });
                     }
                     params.regions.push(RegionParam {
@@ -769,6 +770,7 @@ impl ItemTransCtx<'_, '_> {
                         name: Some(name),
                         variance: Variance::Unknown,
                         mutability: LifetimeMutability::Unknown,
+                        late_bound: false,
                     });
                 }
                 GenericParamDefKind::Type { .. } => {

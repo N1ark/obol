@@ -684,7 +684,8 @@ impl<'tcx> TranslateCtx<'tcx> {
 pub(crate) const FAKE_DYN_TRAIT: TraitDeclId = TraitDeclId::ZERO;
 
 /// Describe the target platform we're compiling for. Mirrors charon's `register_target_info`.
-fn target_info(tcx: TyCtxt<'_>) -> TargetInfo {
+fn target_info(ctx: &mut TranslateCtx<'_>) -> TargetInfo {
+    let tcx = ctx.tcx;
     let target_data = &tcx.data_layout;
 
     let mut primitive_alignments = SeqHashMap::new();
@@ -748,7 +749,21 @@ fn target_info(tcx: TyCtxt<'_>) -> TargetInfo {
         rustc_abi::Integer::I128 => IntTy::I128,
     };
 
+    let target = &tcx.sess.target;
     TargetInfo {
+        arch: ctx
+            .translate_rustc_arch(&target.arch)
+            .expect("all rustc Arch variants should be translated"),
+        vendor: target.vendor_symbol().to_string(),
+        os: ctx
+            .translate_rustc_os(&target.os)
+            .expect("all rustc Os variants should be translated"),
+        env: ctx
+            .translate_rustc_env(&target.env)
+            .expect("all rustc Env variants should be translated"),
+        cfg_abi: ctx
+            .translate_rustc_cfg_abi(&target.cfg_abi)
+            .expect("all rustc CfgAbi variants should be translated"),
         target_pointer_size: target_data.pointer_size().bytes(),
         is_little_endian: matches!(target_data.endian, rustc_abi::Endian::Little),
         c_enum_smallest_repr_ty,
@@ -807,9 +822,10 @@ pub fn translate<'tcx, 'ctx>(
     };
 
     let triple = ctx.get_target_triple();
+    let target_info = target_info(&mut ctx);
     ctx.translated
         .target_information
-        .insert(triple, target_info(tcx));
+        .insert(triple, target_info);
 
     // When building a test binary, detect #[test] functions via rustc_test_marker and store
     // the paths so translate_attr_info can inject a synthetic "test" attribute on them.

@@ -45,7 +45,7 @@ fn test_crate::test_array_map::{closure}::<i16, extern "rust-call" fn((i32,)) ->
     bb0: {
         storage_live(_0);
         storage_live(v);
-        v = move spread_args._0;
+        v = noretag move spread_args._0;
         _0 = copy v;
         return;
     }
@@ -69,7 +69,7 @@ fn core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::<i32, 
     bb0: {
         storage_live(_0);
         storage_live(a);
-        a = move spread_args._0;
+        a = noretag move spread_args._0;
         storage_live(_4);
         storage_live(_5);
         _5 = &mut (*_1).upvar_0;
@@ -415,9 +415,9 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
         _0 = ();
         storage_live(_7);
         storage_live(_8);
-        _8 = cast<usize, u64>(copy lhs);
+        _8 = cast<u64>(copy lhs);
         storage_live(_9);
-        _9 = cast<usize, u64>(copy rhs);
+        _9 = cast<u64>(copy rhs);
         _7 = move _8 checked.- move _9;
         storage_dead(_9);
         storage_dead(_8);
@@ -433,23 +433,23 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
         storage_live(_11);
         storage_live(_16);
         _16 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _11 = cast<*const str, *const u8>(copy _16);
+        _11 = cast<*const u8>(copy _16);
         storage_dead(_16);
-        _10 = transmute<*const u8, NonNull::<u8>>(copy _11);
+        _10 = transmute<NonNull::<u8>>(copy _11);
         storage_dead(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_sub cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _15 = copy _17.metadata;
+        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_sub cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
         storage_dead(_15);
         _13 = move _14 | const 1usize;
         storage_dead(_14);
-        _12 = transmute<usize, NonNull::<Argument::<'_>>>(move _13);
+        _12 = transmute<NonNull::<Argument::<'_>>>(move _13);
         storage_dead(_13);
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
@@ -509,7 +509,7 @@ pub fn {impl Display for &'_ T}::fmt::<'_, str>(self: &'_ &'_ str, f: &'_ mut Fo
     bb0: {
         storage_live(_0);
         storage_live(_3);
-        _3 = copy (*self);
+        _3 = noretag copy (*self);
         _0 = impl_Display_for_str::fmt(move _3, move f) -> bb1 (unwind: bb2);
     }
 
@@ -558,7 +558,7 @@ pub fn conjure_zst::<i32>() -> i32
     }
 
     bb2: {
-        _0 = transmute<MaybeUninit::<i32>, i32>(copy self);
+        _0 = transmute<i32>(copy self);
         storage_dead(self);
         return;
     }
@@ -577,11 +577,11 @@ pub fn conjure_zst::<i32>() -> i32
         storage_live(_8);
         storage_live(_9);
         _12 = &raw const _1;
-        _9 = transmute<*const &'_ str, NonNull::<()>>(copy _12);
+        _9 = transmute<NonNull::<()>>(copy _12);
         storage_live(_10);
         storage_live(_11);
-        _11 = cast<{impl Display for &'_ T}::fmt::<'_, str>, fn(&'_ &'_ str, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(const {impl Display for &'_ T}::fmt::<'_, str>);
-        _10 = transmute<fn(&'_ &'_ str, &'_ mut Formatter::<'_>) -> Result::<(), Error>, unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(copy _11);
+        _11 = fn_def_to_fn_ptr(const {impl Display for &'_ T}::fmt::<'_, str>);
+        _10 = transmute<unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>>(copy _11);
         storage_dead(_11);
         storage_live(_16);
         _16 = PhantomData::<&'_ ()> {  };
@@ -598,9 +598,9 @@ pub fn conjure_zst::<i32>() -> i32
         storage_live(_13);
         storage_live(_17);
         _17 = &anon_const_7;
-        _13 = transmute<&'_ [u8; 62usize], NonNull::<u8>>(move _17);
+        _13 = transmute<NonNull::<u8>>(move _17);
         storage_live(_14);
-        _14 = transmute<&'_ [Argument::<'_>; 1usize], NonNull::<Argument::<'_>>>(copy args_7);
+        _14 = transmute<NonNull::<Argument::<'_>>>(copy args_7);
         _4 = Arguments::<'_> { template: move _13, args: move _14 };
         storage_dead(_14);
         storage_dead(_13);
@@ -648,6 +648,7 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
     let _25: *mut i32; // anonymous local
     let _26: *const i32; // anonymous local
     let _27: bool; // anonymous local
+    let _28: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -667,9 +668,9 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
     bb1: {
         storage_live(len);
         storage_live(_4);
-        _14 = copy (*self_1);
+        _14 = noretag copy (*self_1);
         _4 = copy (*_14).end_or_len;
-        len = transmute<*mut i32, usize>(copy _4);
+        len = transmute<usize>(copy _4);
         storage_dead(_4);
         storage_live(_5);
         storage_live(addr);
@@ -688,13 +689,13 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
 
     bb4: {
         addr = copy len ub.- const 1usize;
-        _5 = transmute<usize, *mut i32>(copy addr);
+        _5 = transmute<*mut i32>(copy addr);
         storage_dead(addr);
-        _15 = copy (*self_1);
+        _15 = noretag copy (*self_1);
         (*_15).end_or_len = copy _5;
         storage_dead(_5);
-        _16 = copy (*self_1);
-        _17 = copy (*_16).f;
+        _16 = noretag copy (*self_1);
+        _17 = noretag copy (*_16).f;
         storage_live(_7);
         storage_live(_8);
         _8 = conjure_zst::<i32>() -> bb5 (unwind: bb8);
@@ -722,29 +723,31 @@ pub fn call_mut::<'_, '_, '_, i32, NeverShortCircuit::<i32>, core::ops::try_trai
 
     bb9: {
         storage_live(p);
-        _18 = copy (*self_1);
+        _18 = noretag copy (*self_1);
         p = copy (*_18).ptr;
         storage_live(_10);
         storage_live(self_11);
-        _19 = copy (*self_1);
+        _19 = noretag copy (*self_1);
         self_11 = copy (*_19).ptr;
         storage_live(_24);
         storage_live(_25);
-        _25 = transmute<NonNull::<i32>, *mut i32>(copy self_11);
-        _24 = copy _25 offset const 1usize;
+        _25 = transmute<*mut i32>(copy self_11);
+        storage_live(_28);
+        _28 = const 1usize ub.* const size_of::<i32>();
+        _24 = &raw mut (*_25).offset!(copy _28);
         storage_dead(_25);
-        _10 = transmute<*mut i32, NonNull::<i32>>(copy _24);
+        _10 = transmute<NonNull::<i32>>(copy _24);
         storage_dead(_24);
         storage_dead(self_11);
-        _20 = copy (*self_1);
+        _20 = noretag copy (*self_1);
         (*_20).ptr = move _10;
         storage_dead(_10);
-        _21 = copy (*self_1);
-        _22 = copy (*_21).f;
+        _21 = noretag copy (*self_1);
+        _22 = noretag copy (*_21).f;
         storage_live(_12);
         storage_live(_13);
         storage_live(_26);
-        _26 = transmute<NonNull::<i32>, *const i32>(copy p);
+        _26 = transmute<*const i32>(copy p);
         _13 = copy (*_26);
         storage_dead(_26);
         _12 = (move _13,);
@@ -822,23 +825,23 @@ fn core::ptr::const_ptr::{*const T}::offset_from_unsigned::precondition_check(th
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: ptr::offset_from_unsigned requires `self >= origin`\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: ptr::offset_from_unsigned requires `self >= origin`\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _6 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -875,23 +878,23 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         storage_live(_3);
         storage_live(_8);
         _8 = &raw const (*s) with_metadata(copy s.metadata);
-        _3 = cast<*const str, *const u8>(copy _8);
+        _3 = cast<*const u8>(copy _8);
         storage_dead(_8);
-        _2 = transmute<*const u8, NonNull::<u8>>(copy _3);
+        _2 = transmute<NonNull::<u8>>(copy _3);
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);
         storage_live(_7);
         storage_live(_9);
-        _9 = transmute<&'_ str, &'_ [u8]>(copy s);
-        _7 = copy _9.metadata;
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
         storage_dead(_9);
         _6 = move _7 wrap.<< const 1i32;
         storage_dead(_7);
         _5 = move _6 | const 1usize;
         storage_dead(_6);
-        _4 = transmute<usize, NonNull::<Argument::<'_>>>(move _5);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
         storage_dead(_5);
         _0 = Arguments::<'_> { template: move _2, args: move _4 };
         storage_dead(_4);
@@ -987,12 +990,12 @@ pub fn {impl Drop for Drain::<'_, '_, _, _>}::drop::<'_, '_, i32, core::ops::try
         storage_live(data_pointer_3);
         storage_live(self_4);
         self_4 = copy (*self_1).ptr;
-        data_pointer_3 = transmute<NonNull::<i32>, *mut i32>(copy self_4);
+        data_pointer_3 = transmute<*mut i32>(copy self_4);
         storage_dead(self_4);
         storage_live(metadata_5);
         storage_live(_6);
         _6 = copy (*self_1).end_or_len;
-        metadata_5 = transmute<*mut i32, usize>(copy _6);
+        metadata_5 = transmute<usize>(copy _6);
         storage_dead(_6);
         slice = *mut  (copy data_pointer_3, copy metadata_5);
         storage_dead(metadata_5);
@@ -1004,16 +1007,16 @@ pub fn {impl Drop for Drain::<'_, '_, _, _>}::drop::<'_, '_, i32, core::ops::try
         storage_live(data_pointer_7);
         storage_live(self_8);
         self_8 = copy (*self_1).ptr;
-        data_pointer_7 = transmute<NonNull::<i32>, *mut i32>(copy self_8);
+        data_pointer_7 = transmute<*mut i32>(copy self_8);
         storage_dead(self_8);
         storage_live(metadata_9);
         storage_live(self_10);
         self_10 = copy (*self_1).end_or_len;
         storage_live(origin);
         self_12 = copy (*self_1).ptr;
-        origin = transmute<NonNull::<i32>, *const i32>(copy self_12);
+        origin = transmute<*const i32>(copy self_12);
         storage_live(self_13);
-        self_13 = cast<*mut i32, *const i32>(copy self_10);
+        self_13 = cast<*const i32>(copy self_10);
         storage_live(_21);
         _21 = ub_checks;
         if move _21 -> bb3 else -> bb6;
@@ -1021,9 +1024,9 @@ pub fn {impl Drop for Drain::<'_, '_, _, _>}::drop::<'_, '_, i32, core::ops::try
 
     bb3: {
         storage_live(_15);
-        _15 = cast<*mut i32, *const ()>(copy self_10);
+        _15 = cast<*const ()>(copy self_10);
         storage_live(_16);
-        _16 = transmute<NonNull::<i32>, *const ()>(copy self_12);
+        _16 = transmute<*const ()>(copy self_12);
         _14 = core::ptr::const_ptr::{*const T}::offset_from_unsigned::precondition_check(move _15, move _16) -> bb4 (unwind: bb5);
     }
 
@@ -1185,23 +1188,23 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this: 
         storage_live(_8);
         storage_live(_13);
         _13 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _8 = cast<*const str, *const u8>(copy _13);
+        _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
-        _7 = transmute<*const u8, NonNull::<u8>>(copy _8);
+        _7 = transmute<NonNull::<u8>>(copy _8);
         storage_dead(_8);
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _12 = copy _14.metadata;
+        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
         storage_dead(_12);
         _10 = move _11 | const 1usize;
         storage_dead(_11);
-        _9 = transmute<usize, NonNull::<Argument::<'_>>>(move _10);
+        _9 = transmute<NonNull::<Argument::<'_>>>(move _10);
         storage_dead(_10);
         _6 = Arguments::<'_> { template: move _7, args: move _9 };
         storage_dead(_9);
@@ -1269,23 +1272,23 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
         storage_live(_10);
         storage_live(_15);
         _15 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _10 = cast<*const str, *const u8>(copy _15);
+        _10 = cast<*const u8>(copy _15);
         storage_dead(_15);
-        _9 = transmute<*const u8, NonNull::<u8>>(copy _10);
+        _9 = transmute<NonNull::<u8>>(copy _10);
         storage_dead(_10);
         storage_live(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_16);
-        _16 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the range is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _14 = copy _16.metadata;
+        _16 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked_mut requires that the range is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _14 = noretag copy _16.metadata;
         storage_dead(_16);
         _13 = move _14 wrap.<< const 1i32;
         storage_dead(_14);
         _12 = move _13 | const 1usize;
         storage_dead(_13);
-        _11 = transmute<usize, NonNull::<Argument::<'_>>>(move _12);
+        _11 = transmute<NonNull::<Argument::<'_>>>(move _12);
         storage_dead(_12);
         _8 = Arguments::<'_> { template: move _9, args: move _11 };
         storage_dead(_11);
@@ -1335,7 +1338,7 @@ pub fn {impl Drop for Guard::<'_, _>}::drop::<'_, i32>(self_1: &'_ mut Guard::<'
         storage_live(_8);
         _0 = ();
         storage_live(self_3);
-        self_5 = copy (*self_1).array_mut;
+        self_5 = noretag copy (*self_1).array_mut;
         index = copy (*self_1).initialized;
         storage_live(_6);
         storage_live(slice);
@@ -1347,7 +1350,7 @@ pub fn {impl Drop for Guard::<'_, _>}::drop::<'_, i32>(self_1: &'_ mut Guard::<'
 
     bb1: {
         storage_live(_9);
-        _9 = copy self_5.metadata;
+        _9 = noretag copy self_5.metadata;
         _8 = {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_check(const 0usize, copy index, move _9) -> bb2 (unwind: bb3);
     }
 
@@ -1362,7 +1365,7 @@ pub fn {impl Drop for Guard::<'_, _>}::drop::<'_, i32>(self_1: &'_ mut Guard::<'
 
     bb4: {
         storage_live(_10);
-        _10 = cast<*mut [MaybeUninit::<i32>], *mut MaybeUninit::<i32>>(copy slice);
+        _10 = cast<*mut MaybeUninit::<i32>>(copy slice);
         _6 = *mut  (copy _10, copy index);
         storage_dead(_10);
         storage_dead(slice);
@@ -1375,7 +1378,7 @@ pub fn {impl Drop for Guard::<'_, _>}::drop::<'_, i32>(self_1: &'_ mut Guard::<'
     bb5: {
         storage_live(_12);
         _12 = &raw mut (*self_3) with_metadata(copy self_3.metadata);
-        to_drop = cast<*mut [MaybeUninit::<i32>], *mut [i32]>(copy _12);
+        to_drop = cast<*mut [i32]>(copy _12);
         storage_live(_13);
         _13 = &mut (*to_drop) with_metadata(copy to_drop.metadata);
         _2 = drop_glue::<[i32]>(move _13) -> bb6 (unwind: bb8);
@@ -1493,9 +1496,9 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _0 = ();
         storage_live(_7);
         storage_live(_8);
-        _8 = cast<usize, u64>(copy lhs);
+        _8 = cast<u64>(copy lhs);
         storage_live(_9);
-        _9 = cast<usize, u64>(copy rhs);
+        _9 = cast<u64>(copy rhs);
         _7 = move _8 checked.+ move _9;
         storage_dead(_9);
         storage_dead(_8);
@@ -1511,23 +1514,23 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         storage_live(_11);
         storage_live(_16);
         _16 = &raw const (*msg) with_metadata(copy msg.metadata);
-        _11 = cast<*const str, *const u8>(copy _16);
+        _11 = cast<*const u8>(copy _16);
         storage_dead(_16);
-        _10 = transmute<*const u8, NonNull::<u8>>(copy _11);
+        _10 = transmute<NonNull::<u8>>(copy _11);
         storage_dead(_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ str, &'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
-        _15 = copy _17.metadata;
+        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
         storage_dead(_15);
         _13 = move _14 | const 1usize;
         storage_dead(_14);
-        _12 = transmute<usize, NonNull::<Argument::<'_>>>(move _13);
+        _12 = transmute<NonNull::<Argument::<'_>>>(move _13);
         storage_dead(_13);
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
@@ -1623,8 +1626,8 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         storage_live(_5);
         _5 = copy guard.initialized;
         storage_live(_6);
-        _15 = copy guard.array_mut;
-        _6 = copy _15.metadata;
+        _15 = noretag copy guard.array_mut;
+        _6 = noretag copy _15.metadata;
         _4 = move _5 < move _6;
         if move _4 -> bb2 else -> bb23;
     }
@@ -1668,7 +1671,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
         item = move (_7 as variant ControlFlow::<ControlFlow::<NeverShortCircuitResidual, !>, i32>::Continue)._0;
         storage_dead(_7);
         storage_live(self_24);
-        self_23 = copy guard.array_mut;
+        self_23 = noretag copy guard.array_mut;
         storage_live(index);
         index = copy guard.initialized;
         storage_live(_38);
@@ -1678,7 +1681,7 @@ fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, c
 
     bb6: {
         storage_live(_26);
-        _26 = copy self_23.metadata;
+        _26 = noretag copy self_23.metadata;
         _25 = impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(copy index, move _26) -> bb7 (unwind: bb8);
     }
 
@@ -1839,7 +1842,7 @@ pub fn try_from_fn::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core
         storage_live(_4);
         storage_live(_5);
         _5 = &mut array_2;
-        _4 = unsize_cast<&'_ mut [MaybeUninit::<i32>; 256usize], &'_ mut [MaybeUninit::<i32>], 256usize>(copy _5);
+        _4 = unsize_cast<&'_ mut [MaybeUninit::<i32>], 256usize>(copy _5);
         _3 = try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _4, move cb) -> bb1 (unwind: bb12);
     }
 
@@ -1857,7 +1860,7 @@ pub fn try_from_fn::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core
     }
 
     bb3: {
-        _8 = transmute<[MaybeUninit::<i32>; 256usize], [i32; 256usize]>(copy array_9);
+        _8 = transmute<[i32; 256usize]>(copy array_9);
         storage_dead(array_9);
         _0 = from_output::<[i32; 256usize]>(move _8) -> bb4 (unwind: bb5);
     }
@@ -1960,18 +1963,19 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
     let end_or_len: *mut i32; // local
     let self_10: *mut i32; // local
     let _11: *mut ManuallyDrop::<[i32; 256usize]>; // anonymous local
-    let _12: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
-    let _13: (); // anonymous local
-    let _14: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
-    let _15: (); // anonymous local
-    let _16: PhantomData::<&'_ mut [i32]>; // anonymous local
+    let _12: usize; // anonymous local
+    let _13: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
+    let _14: (); // anonymous local
+    let _15: *mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>; // anonymous local
+    let _16: (); // anonymous local
+    let _17: PhantomData::<&'_ mut [i32]>; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_12);
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
+        storage_live(_16);
         storage_live(me);
         me = ManuallyDrop::<[i32; 256usize]> { value: copy self_1 };
         storage_live(f_4);
@@ -1982,29 +1986,31 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
         storage_live(ptr);
         storage_live(self_8);
         _11 = &raw mut me;
-        self_8 = transmute<*mut ManuallyDrop::<[i32; 256usize]>, NonNull::<ManuallyDrop::<[i32; 256usize]>>>(copy _11);
-        ptr = transmute<*mut ManuallyDrop::<[i32; 256usize]>, NonNull::<i32>>(copy _11);
+        self_8 = transmute<NonNull::<ManuallyDrop::<[i32; 256usize]>>>(copy _11);
+        ptr = transmute<NonNull::<i32>>(copy _11);
         storage_dead(self_8);
         if copy IS_ZST::<i32> -> bb1 else -> bb2;
     }
 
     bb1: {
-        end_or_len = transmute<usize, *mut i32>(const 256usize);
+        end_or_len = transmute<*mut i32>(const 256usize);
         goto bb3;
     }
 
     bb2: {
         storage_live(self_10);
-        self_10 = transmute<NonNull::<i32>, *mut i32>(copy ptr);
-        end_or_len = copy self_10 offset const 256usize;
+        self_10 = transmute<*mut i32>(copy ptr);
+        storage_live(_12);
+        _12 = const 256usize ub.* const size_of::<i32>();
+        end_or_len = &raw mut (*self_10).offset!(copy _12);
         storage_dead(self_10);
         goto bb3;
     }
 
     bb3: {
-        storage_live(_16);
-        _16 = PhantomData::<&'_ mut [i32]> {  };
-        f_4 = Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}> { ptr: copy ptr, end_or_len: copy end_or_len, f: copy f_5, l: move _16 };
+        storage_live(_17);
+        _17 = PhantomData::<&'_ mut [i32]> {  };
+        f_4 = Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}> { ptr: copy ptr, end_or_len: copy end_or_len, f: copy f_5, l: move _17 };
         storage_dead(ptr);
         storage_dead(_11);
         storage_dead(end_or_len);
@@ -2016,8 +2022,8 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
 
     bb4: {
         storage_dead(_6);
-        _12 = &raw mut f_4;
-        _13 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _12) -> bb5 (unwind: bb7);
+        _13 = &raw mut f_4;
+        _14 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _13) -> bb5 (unwind: bb7);
     }
 
     bb5: {
@@ -2027,8 +2033,8 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
     }
 
     bb6: {
-        _14 = &raw mut f_4;
-        _15 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _14) -> bb7 (unwind: bb8);
+        _15 = &raw mut f_4;
+        _16 = drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(move _15) -> bb7 (unwind: bb8);
     }
 
     bb7: {
@@ -2253,7 +2259,7 @@ fn test_crate::test_closure_u32::{closure}::<i8, extern "rust-call" fn((u32,)) -
     bb0: {
         storage_live(_0);
         storage_live(x);
-        x = move spread_args._0;
+        x = noretag move spread_args._0;
         _0 = copy x;
         return;
     }
@@ -2306,8 +2312,8 @@ fn test_crate::test_closure_u32s::{closure}::<i8, extern "rust-call" fn((u32, u3
         storage_live(x);
         storage_live(y);
         storage_live(_7);
-        x = move spread_args._0;
-        y = move spread_args._1;
+        x = noretag move spread_args._0;
+        y = noretag move spread_args._1;
         storage_live(_5);
         _5 = copy x;
         storage_live(_6);
@@ -2368,7 +2374,7 @@ fn test_crate::test_closure_ref_u32::{closure}::<i8, extern "rust-call" fn((&'_ 
     bb0: {
         storage_live(_0);
         storage_live(y);
-        y = move spread_args._0;
+        y = noretag move spread_args._0;
         _0 = copy y;
         return;
     }
@@ -2413,7 +2419,7 @@ fn test_crate::test_map_option2::{closure}::<i8, extern "rust-call" fn((u32,)) -
         storage_live(_0);
         storage_live(x);
         storage_live(_5);
-        x = move spread_args._0;
+        x = noretag move spread_args._0;
         storage_live(_4);
         _4 = copy x;
         _5 = copy _4 checked.+ const 1u32;
@@ -2473,8 +2479,8 @@ fn test_crate::test_regions_casted::{closure}::<i8, extern "rust-call" fn((&'_ &
         storage_live(_0);
         storage_live(x);
         storage_live(_4);
-        x = move spread_args._0;
-        _4 = copy (*x);
+        x = noretag move spread_args._0;
+        _4 = noretag copy (*x);
         _0 = copy (*_4);
         return;
     }
@@ -2552,7 +2558,7 @@ fn test_crate::test_map_option3::{closure}::<i8, extern "rust-call" fn((u32,)) -
         storage_live(_0);
         storage_live(x);
         storage_live(_5);
-        x = move spread_args._0;
+        x = noretag move spread_args._0;
         storage_live(_4);
         _4 = copy x;
         _5 = copy _4 checked.+ const 1u32;
@@ -2964,7 +2970,7 @@ pub fn test_closure_u32(x: u32) -> u32
         storage_live(f);
         storage_live(_3);
         _3 = test_crate::test_closure_u32::{closure}::{closure} {  };
-        f = cast<test_crate::test_closure_u32::{closure}::{as_fn}, fn(u32) -> u32>(const test_crate::test_closure_u32::{closure}::{as_fn});
+        f = fn_def_to_fn_ptr(const test_crate::test_closure_u32::{closure}::{as_fn});
         storage_dead(_3);
         storage_live(_4);
         _4 = copy f;
@@ -3027,7 +3033,7 @@ pub fn test_closure_u32s(x: u32) -> u32
         storage_live(f);
         storage_live(_3);
         _3 = test_crate::test_closure_u32s::{closure}::{closure} {  };
-        f = cast<test_crate::test_closure_u32s::{closure}::{as_fn}, fn(u32, u32) -> u32>(const test_crate::test_closure_u32s::{closure}::{as_fn});
+        f = fn_def_to_fn_ptr(const test_crate::test_closure_u32s::{closure}::{as_fn});
         storage_dead(_3);
         storage_live(_4);
         _4 = copy f;
@@ -3093,7 +3099,7 @@ pub fn test_closure_ref_u32(x: &'_ u32) -> &'_ u32
         storage_live(f);
         storage_live(_3);
         _3 = test_crate::test_closure_ref_u32::{closure}::{closure} {  };
-        f = cast<test_crate::test_closure_ref_u32::{closure}::{as_fn}, fn(&'_ u32) -> &'_ u32>(const test_crate::test_closure_ref_u32::{closure}::{as_fn});
+        f = fn_def_to_fn_ptr(const test_crate::test_closure_ref_u32::{closure}::{as_fn});
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
@@ -3157,7 +3163,7 @@ pub fn test_map_option2(x: Option::<u32>) -> Option::<u32>
         storage_live(f);
         storage_live(_3);
         _3 = test_crate::test_map_option2::{closure}::{closure} {  };
-        f = cast<test_crate::test_map_option2::{closure}::{as_fn}, fn(u32) -> u32>(const test_crate::test_map_option2::{closure}::{as_fn});
+        f = fn_def_to_fn_ptr(const test_crate::test_map_option2::{closure}::{as_fn});
         storage_dead(_3);
         storage_live(_4);
         _4 = copy x;
@@ -3246,7 +3252,7 @@ pub fn test_id_clone(x: u32) -> u32
     bb0: {
         storage_live(_0);
         storage_live(f);
-        f = cast<id_clone::<u32>, fn(u32) -> u32>(const id_clone::<u32>);
+        f = fn_def_to_fn_ptr(const id_clone::<u32>);
         storage_live(_3);
         _3 = copy f;
         storage_live(_4);
@@ -3332,8 +3338,8 @@ fn test_crate::test_regions::{closure}::<i8, extern "rust-call" fn((&'_ &'_ u32,
         storage_live(_0);
         storage_live(x);
         storage_live(_4);
-        x = move spread_args._0;
-        _4 = copy (*x);
+        x = noretag move spread_args._0;
+        _4 = noretag copy (*x);
         _0 = copy (*_4);
         return;
     }
@@ -3420,7 +3426,7 @@ pub fn test_regions_casted(x: &'_ u32) -> u32
         storage_live(f);
         storage_live(_3);
         _3 = test_crate::test_regions_casted::{closure}::{closure} {  };
-        f = cast<test_crate::test_regions_casted::{closure}::{as_fn}, fn(&'_ &'_ u32) -> u32>(const test_crate::test_regions_casted::{closure}::{as_fn});
+        f = fn_def_to_fn_ptr(const test_crate::test_regions_casted::{closure}::{as_fn});
         storage_dead(_3);
         storage_live(_4);
         _4 = copy f;
@@ -3471,13 +3477,13 @@ fn test_crate::test_closure_capture::{closure}::<i8, extern "rust-call" fn((u32,
         storage_live(_9);
         storage_live(_10);
         storage_live(_11);
-        z = move spread_args._0;
+        z = noretag move spread_args._0;
         storage_live(_4);
         storage_live(_5);
-        _10 = copy (*_1).upvar_0;
+        _10 = noretag copy (*_1).upvar_0;
         _5 = copy (*_10);
         storage_live(_6);
-        _11 = copy (*_1).upvar_1;
+        _11 = noretag copy (*_1).upvar_1;
         _6 = copy (*_11);
         _7 = copy _5 checked.+ copy _6;
         assert assert(move _7._1 == false) (overflow) -> bb1 (unwind: bb4);
@@ -3606,17 +3612,17 @@ fn test_crate::test_fnmut_with_ref::{closure}::<i16, extern "rust-call" fn((&'_ 
         storage_live(_7);
         storage_live(_8);
         _0 = ();
-        x = move spread_args._0;
+        x = noretag move spread_args._0;
         storage_live(_4);
         _4 = copy (*x);
-        _6 = copy (*_1).upvar_0;
+        _6 = noretag copy (*_1).upvar_0;
         _5 = copy (*_6) checked.+ copy _4;
-        _7 = copy (*_1).upvar_0;
+        _7 = noretag copy (*_1).upvar_0;
         assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        _8 = copy (*_1).upvar_0;
+        _8 = noretag copy (*_1).upvar_0;
         (*_8) = move _5._0;
         _0 = ();
         storage_dead(_4);
