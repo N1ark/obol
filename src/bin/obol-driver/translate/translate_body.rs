@@ -212,6 +212,113 @@ impl ItemTransCtx<'_, '_> {
     fn translate_field_id(&self, id: mir::FieldIdx) -> FieldId {
         FieldId::new(id)
     }
+
+    fn deref_middle_tys(&self, l: ty::Ty, r: ty::Ty) -> Option<(ty::Ty, ty::Ty)> {
+        // See:
+        // https://github.com/rust-lang/rust/blob/b3f8586fb1e4859678d6b231e780ff81801d2282/compiler/rustc_codegen_ssa/src/base.rs#L220
+        let lk = l.kind();
+        let Some(lr) = lk.rigid() else {
+            return None;
+        };
+        let rk = r.kind();
+        let Some(rr) = rk.rigid() else {
+            return None;
+        };
+
+        match (lr, rr) {
+            (ty::RigidTy::Ref(_, a, _), ty::RigidTy::Ref(_, b, _) | ty::RigidTy::RawPtr(b, _))
+            | (ty::RigidTy::RawPtr(a, _), ty::RigidTy::RawPtr(b, _)) => Some((*a, *b)),
+            (ty::RigidTy::Adt(def_a, args1), ty::RigidTy::Adt(def_b, args2)) => {
+                // The coerced field is the one whose type differs between the source and
+                // the target, skipping 1-ZSTs
+                let fields_a = def_a.variants()[0].fields();
+                let fields_b = def_b.variants()[0].fields();
+                let (ty_l, ty_r) = fields_a.iter().enumerate().find_map(|(i, field)| {
+                    let ty_l = field.ty_with_args(&args1);
+                    if ty_l.layout().is_ok_and(|layout| layout.shape().is_1zst()) {
+                        return None;
+                    }
+                    let ty_r = fields_b.get(i)?.ty_with_args(&args2);
+                    (ty_l != ty_r).then_some((ty_l, ty_r))
+                })?;
+                self.deref_middle_tys(ty_l, ty_r)
+            }
+            // A pattern type (e.g. `*const T is !null` from NonNull) — unwrap to the
+            // underlying type and recurse.
+            (ty::RigidTy::Pat(inner_l, _), ty::RigidTy::Pat(inner_r, _)) => {
+                self.deref_middle_tys(*inner_l, *inner_r)
+            }
+            (ty::RigidTy::Pat(inner, _), _) => self.deref_middle_tys(*inner, r),
+            (_, ty::RigidTy::Pat(inner, _)) => self.deref_middle_tys(l, *inner),
+            _ => None,
+        }
+    }
+
+    pub(crate) fn translate_unsizing_metadata(
+        &mut self,
+        span: Span,
+        src_ty: ty::Ty,
+        tgt_ty: ty::Ty,
+    ) -> Result<UnsizingMetadata, Error> {
+        let tcx = self.t_ctx.tcx;
+
+        // A coercion between identical types leaves the metadata untouched
+        if src_ty == tgt_ty {
+            return Ok(UnsizingMetadata::VTableUpcast(vec![]));
+        }
+
+        let Some((src_ty, tgt_ty)) = self.deref_middle_tys(src_ty, tgt_ty) else {
+            trace!("Couldn't deref middle for {src_ty:?} => {tgt_ty:?}");
+            return Ok(UnsizingMetadata::Unknown);
+        };
+
+        use rustc_middle::ty;
+        let src_ty = rustc_internal::internal(tcx, src_ty);
+        let tgt_ty = rustc_internal::internal(tcx, tgt_ty);
+        let typing_env = ty::TypingEnv::fully_monomorphized();
+        let (src_ty, tgt_ty) = tcx.struct_lockstep_tails_for_codegen(src_ty, tgt_ty, typing_env);
+        match (src_ty.kind(), tgt_ty.kind()) {
+            (ty::Array(_, len), ty::Slice(_) | ty::Str) => {
+                let len = rustc_internal::stable(len);
+                let len = self.translate_tyconst_to_const_expr(span, &len)?;
+                Ok(UnsizingMetadata::Length(len))
+            }
+            (ty::Dynamic(from_preds, ..), ty::Dynamic(to_preds, ..)) => {
+                // see
+                // https://github.com/rust-lang/rust/blob/9725c4baacef19345e13f91b27e66e10ef5592ae/compiler/rustc_codegen_ssa/src/base.rs#L171-L208
+                let target_principal = to_preds.principal();
+                if from_preds.principal() != target_principal
+                    && target_principal.is_some()
+                    && let Some(vptr_entry_idx) =
+                        self.t_ctx.tcx.supertrait_vtable_slot((src_ty, tgt_ty))
+                {
+                    Ok(UnsizingMetadata::VTableUpcast(vec![FieldId::new(
+                        vptr_entry_idx,
+                    )]))
+                } else {
+                    // Fallback to original vtable
+                    Ok(UnsizingMetadata::VTableUpcast(vec![]))
+                }
+            }
+            (_, ty::Dynamic(preds, ..)) => {
+                let self_ty = rustc_public::rustc_internal::stable(src_ty);
+                let trait_ref = preds.principal().map(|bound_tref| {
+                    let ex_trait_ref = self
+                        .t_ctx
+                        .tcx
+                        .instantiate_bound_regions_with_erased(bound_tref);
+                    let stable = rustc_public::rustc_internal::stable(ex_trait_ref);
+                    stable.with_self_ty(self_ty)
+                });
+                let meta = self.translate_vtable_ptr_const(span, self_ty, trait_ref);
+                Ok(UnsizingMetadata::VTable(self.dummy_trait_ref(), meta))
+            }
+            _ => {
+                trace!("Unknown unsize for ({src_ty:?}) => ({tgt_ty:?})");
+                Ok(UnsizingMetadata::Unknown)
+            }
+        }
+    }
 }
 
 impl BodyTransCtx<'_, '_, '_> {
@@ -516,113 +623,6 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             mir::BinOp::Mul => BinOp::MulChecked,
             _ => raise_error!(self, span, "Invalid checked binop: {:?}", binop),
         })
-    }
-
-    fn deref_middle_tys(&self, l: ty::Ty, r: ty::Ty) -> Option<(ty::Ty, ty::Ty)> {
-        // See:
-        // https://github.com/rust-lang/rust/blob/b3f8586fb1e4859678d6b231e780ff81801d2282/compiler/rustc_codegen_ssa/src/base.rs#L220
-        let lk = l.kind();
-        let Some(lr) = lk.rigid() else {
-            return None;
-        };
-        let rk = r.kind();
-        let Some(rr) = rk.rigid() else {
-            return None;
-        };
-
-        match (lr, rr) {
-            (ty::RigidTy::Ref(_, a, _), ty::RigidTy::Ref(_, b, _) | ty::RigidTy::RawPtr(b, _))
-            | (ty::RigidTy::RawPtr(a, _), ty::RigidTy::RawPtr(b, _)) => Some((*a, *b)),
-            (ty::RigidTy::Adt(def_a, args1), ty::RigidTy::Adt(def_b, args2)) => {
-                // The coerced field is the one whose type differs between the source and
-                // the target, skipping 1-ZSTs
-                let fields_a = def_a.variants()[0].fields();
-                let fields_b = def_b.variants()[0].fields();
-                let (ty_l, ty_r) = fields_a.iter().enumerate().find_map(|(i, field)| {
-                    let ty_l = field.ty_with_args(&args1);
-                    if ty_l.layout().is_ok_and(|layout| layout.shape().is_1zst()) {
-                        return None;
-                    }
-                    let ty_r = fields_b.get(i)?.ty_with_args(&args2);
-                    (ty_l != ty_r).then_some((ty_l, ty_r))
-                })?;
-                self.deref_middle_tys(ty_l, ty_r)
-            }
-            // A pattern type (e.g. `*const T is !null` from NonNull) — unwrap to the
-            // underlying type and recurse.
-            (ty::RigidTy::Pat(inner_l, _), ty::RigidTy::Pat(inner_r, _)) => {
-                self.deref_middle_tys(*inner_l, *inner_r)
-            }
-            (ty::RigidTy::Pat(inner, _), _) => self.deref_middle_tys(*inner, r),
-            (_, ty::RigidTy::Pat(inner, _)) => self.deref_middle_tys(l, *inner),
-            _ => None,
-        }
-    }
-
-    fn translate_unsizing_metadata(
-        &mut self,
-        span: Span,
-        src_ty: ty::Ty,
-        tgt_ty: ty::Ty,
-    ) -> Result<UnsizingMetadata, Error> {
-        let tcx = self.t_ctx.tcx;
-
-        // A coercion between identical types leaves the metadata untouched
-        if src_ty == tgt_ty {
-            return Ok(UnsizingMetadata::VTableUpcast(vec![]));
-        }
-
-        let Some((src_ty, tgt_ty)) = self.deref_middle_tys(src_ty, tgt_ty) else {
-            trace!("Couldn't deref middle for {src_ty:?} => {tgt_ty:?}");
-            return Ok(UnsizingMetadata::Unknown);
-        };
-
-        use rustc_middle::ty;
-        let src_ty = rustc_internal::internal(tcx, src_ty);
-        let tgt_ty = rustc_internal::internal(tcx, tgt_ty);
-        let typing_env = ty::TypingEnv::fully_monomorphized();
-        let (src_ty, tgt_ty) = tcx.struct_lockstep_tails_for_codegen(src_ty, tgt_ty, typing_env);
-        match (src_ty.kind(), tgt_ty.kind()) {
-            (ty::Array(_, len), ty::Slice(_) | ty::Str) => {
-                let len = rustc_internal::stable(len);
-                let len = self.translate_tyconst_to_const_expr(span, &len)?;
-                Ok(UnsizingMetadata::Length(len))
-            }
-            (ty::Dynamic(from_preds, ..), ty::Dynamic(to_preds, ..)) => {
-                // see
-                // https://github.com/rust-lang/rust/blob/9725c4baacef19345e13f91b27e66e10ef5592ae/compiler/rustc_codegen_ssa/src/base.rs#L171-L208
-                let target_principal = to_preds.principal();
-                if from_preds.principal() != target_principal
-                    && target_principal.is_some()
-                    && let Some(vptr_entry_idx) =
-                        self.t_ctx.tcx.supertrait_vtable_slot((src_ty, tgt_ty))
-                {
-                    Ok(UnsizingMetadata::VTableUpcast(vec![FieldId::new(
-                        vptr_entry_idx,
-                    )]))
-                } else {
-                    // Fallback to original vtable
-                    Ok(UnsizingMetadata::VTableUpcast(vec![]))
-                }
-            }
-            (_, ty::Dynamic(preds, ..)) => {
-                let self_ty = rustc_public::rustc_internal::stable(src_ty);
-                let trait_ref = preds.principal().map(|bound_tref| {
-                    let ex_trait_ref = self
-                        .t_ctx
-                        .tcx
-                        .instantiate_bound_regions_with_erased(bound_tref);
-                    let stable = rustc_public::rustc_internal::stable(ex_trait_ref);
-                    stable.with_self_ty(self_ty)
-                });
-                let meta = self.translate_vtable_ptr_const(span, self_ty, trait_ref);
-                Ok(UnsizingMetadata::VTable(self.dummy_trait_ref(), meta))
-            }
-            _ => {
-                trace!("Unknown unsize for ({src_ty:?}) => ({tgt_ty:?})");
-                Ok(UnsizingMetadata::Unknown)
-            }
-        }
     }
 
     fn translate_projection(
