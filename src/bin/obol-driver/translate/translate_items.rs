@@ -497,6 +497,28 @@ impl ItemTransCtx<'_, '_> {
         )
     }
 
+    /// A foreign static with `#[linkage]` holds the address of the symbol it names (or null if that
+    /// symbol isn't linked), rather than its contents. Like rustc, we treat that symbol as untyped:
+    /// its value is the symbol's address, a `*const ()`, transmuted to the type of the static.
+    fn linkage_static_value(
+        &mut self,
+        instance: mir::mono::Instance,
+        ty: &Ty,
+    ) -> Option<ConstantExpr> {
+        let tcx = self.t_ctx.tcx;
+        let def_id = rustc_public::rustc_internal::internal(tcx, instance.def.def_id());
+        tcx.codegen_fn_attrs(def_id).import_linkage?;
+        let symbol = self.as_extern_name(instance)?;
+        let addr = ConstantExpr::new(
+            ConstantExprKind::ExternSymbol(symbol),
+            TyKind::RawPtr(Ty::mk_unit(), RefKind::Shared).into_ty(),
+        );
+        Some(ConstantExpr::new(
+            ConstantExprKind::Cast(addr, CastKind::Transmute(ty.clone())),
+            ty.clone(),
+        ))
+    }
+
     /// Evaluate the value of a global identified by its allocation id.
     fn translate_global_alloc_value(
         &mut self,
@@ -561,12 +583,14 @@ impl ItemTransCtx<'_, '_> {
                 // Some statics don't have a body, such as non-generics in the sysroot. For those
                 // we evaluate the value directly; otherwise we call the initializer function.
                 // Foreign/extern statics have no in-crate initializer to evaluate either, so we likewise
-                // call a body-less extern initializer function.
-                let value = if instance.has_body() || instance.is_foreign_item() {
-                    let init = self.register_fun_decl_id(span, instance);
-                    self.call_initializer(init, translated_ty.clone())
-                } else {
-                    self.translate_global_alloc_value(def, ty)?
+                // call a body-less extern initializer function, unless they have `#[linkage]`.
+                let value = match self.linkage_static_value(instance, &translated_ty) {
+                    Some(value) => value,
+                    None if instance.has_body() || instance.is_foreign_item() => {
+                        let init = self.register_fun_decl_id(span, instance);
+                        self.call_initializer(init, translated_ty.clone())
+                    }
+                    None => self.translate_global_alloc_value(def, ty)?,
                 };
                 (self.translate_static_kind(static_def), value)
             }
@@ -655,12 +679,18 @@ impl ItemTransCtx<'_, '_> {
         let span = self.translate_span_from_smir(&def.span());
         let internal_def_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, def.def_id());
         let (value, ty) = if self.t_ctx.tcx.is_foreign_item(internal_def_id) {
-            // Foreign/extern statics have no in-crate initializer to evaluate.
-            // Emit a call to a body-less extern initializer function.
+            // Foreign/extern statics have no in-crate initializer to evaluate. Unless they have
+            // `#[linkage]`, emit a call to a body-less extern initializer function.
             let ty = self.translate_ty(span, def.ty())?;
             let instance: mir::mono::Instance = def.into();
-            let init = self.register_fun_decl_id(span, instance);
-            (self.call_initializer(init, ty.clone()), ty)
+            let value = match self.linkage_static_value(instance, &ty) {
+                Some(value) => value,
+                None => {
+                    let init = self.register_fun_decl_id(span, instance);
+                    self.call_initializer(init, ty.clone())
+                }
+            };
+            (value, ty)
         } else {
             // Evaluate the static's initializer directly into the global's value.
             let alloc = def.eval_initializer()?;
