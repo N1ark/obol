@@ -1,5 +1,4 @@
 extern crate rustc_apfloat;
-extern crate rustc_attr_ir;
 extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_span;
@@ -61,6 +60,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             typing_env: mty::TypingEnv::fully_monomorphized(),
             config: uneval::Config {
                 anon_allocs_as_globals: true,
+                unsized_strings: false,
             },
         }
     }
@@ -120,6 +120,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         };
                         ConstantExprKind::Float(FloatValue {
                             value,
+                            bits,
                             ty: fty.clone(),
                         })
                     }
@@ -205,16 +206,24 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     charon_bytes.push(match *byte {
                         uneval::Byte::Uninit => Byte::Uninit,
                         uneval::Byte::Value(v) => Byte::Value(v),
-                        uneval::Byte::Ptr(target, i) => {
+                        uneval::Byte::Ptr(target, offset, i) => {
                             if last_prov.as_ref().is_none_or(|(last, _)| *last != target) {
                                 let prov = self.translate_alloc_target(span, target)?;
                                 last_prov = Some((target, prov));
                             }
-                            Byte::Provenance(last_prov.as_ref().unwrap().1.clone(), i)
+                            let prov = last_prov.as_ref().unwrap().1.clone();
+                            Byte::Provenance(
+                                prov,
+                                IntegerValue::mk_usize(offset.bytes() as u128),
+                                i,
+                            )
                         }
                     });
                 }
                 ConstantExprKind::RawMemory(charon_bytes)
+            }
+            uneval::ConstKind::TypeId(ty) => {
+                ConstantExprKind::TypeId(self.translate_ty(span, stable(*ty))?)
             }
             uneval::ConstKind::Unsupported(msg) => {
                 register_error!(self, span, "Unsupported constant: {msg}");
@@ -324,49 +333,18 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 });
                 self.register_vtable(span, self_ty, principal)
             }
-            // The other globals (nested statics) aren't translated, and we don't translate the
-            // pointers of a `TypeId` (see `translate_type_id_const`).
-            AllocTarget::Global(_) | AllocTarget::TypeId(_) => {
-                return Ok(GlobalProvenance::Unknown);
+            AllocTarget::TypeId(ty) => {
+                return Ok(GlobalProvenance::TypeId(
+                    self.translate_ty(span, stable(ty))?,
+                ));
             }
+            // The other globals (nested statics) aren't translated.
+            AllocTarget::Global(_) => return Ok(GlobalProvenance::Unknown),
         };
         Ok(GlobalProvenance::Global(GlobalDeclRef {
             id,
             generics: Box::new(GenericArgs::empty()),
         }))
-    }
-
-    /// A `TypeId` is made of pointers into a zero-sized allocation that stands for its type, which
-    /// can't be read back. We instead recognize such constants as the `TypeId` of that type.
-    fn translate_type_id_const(
-        &mut self,
-        span: Span,
-        const_: &ty::MirConst,
-    ) -> Result<Option<ConstantExpr>, Error> {
-        let tcx = self.t_ctx.tcx;
-        let is_type_id = internal(tcx, const_.ty())
-            .ty_adt_def()
-            .is_some_and(|adt_def| {
-                tcx.is_lang_item(adt_def.did(), rustc_attr_ir::lang_items::LangItem::TypeId)
-            });
-        if !is_type_id {
-            return Ok(None);
-        }
-        let ty::ConstantKind::Allocated(alloc) = const_.kind() else {
-            return Ok(None);
-        };
-        let Some((_, prov)) = alloc.provenance.ptrs.first() else {
-            return Ok(None);
-        };
-        let mir::alloc::GlobalAlloc::TypeId { ty } = prov.0.into() else {
-            return Ok(None);
-        };
-        let ty = self.translate_ty(span, ty)?;
-        let type_id_ty = self.translate_ty(span, const_.ty())?;
-        Ok(Some(ConstantExpr::new(
-            ConstantExprKind::TypeId(ty),
-            type_id_ty,
-        )))
     }
 
     /// The value of the given (non-foreign) static.
@@ -385,9 +363,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         span: Span,
         const_: &ty::MirConst,
     ) -> Result<ConstantExpr, Error> {
-        if let Some(type_id) = self.translate_type_id_const(span, const_)? {
-            return Ok(type_id);
-        }
         let tcx = self.t_ctx.tcx;
         let const_ = internal(tcx, const_);
         let typing_env = mty::TypingEnv::fully_monomorphized();
