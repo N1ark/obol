@@ -145,7 +145,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             let loc = smap.lookup_char_pos(pos);
             Loc {
                 line: loc.line as u32,
-                col: loc.col_display as u32 + 1,
+                col: loc.col_display as u32,
             }
         };
         let beg = convert_loc(span.lo());
