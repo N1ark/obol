@@ -818,6 +818,7 @@ pub fn translate<'tcx, 'ctx>(
         cached_item_metas: Default::default(),
         cached_names: Default::default(),
         type_trans_cache: Default::default(),
+        alloc_types: Default::default(),
         test_fn_paths: Default::default(),
     };
 

@@ -3,39 +3,13 @@
 
 struct () {}
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 8usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 8usize]>,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 8usize]> {
-  value: [u8; 8usize],
-}
-
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
+const anon_const_0: i32 = 42i32
 
 vtable {vtable}::test_crate::Trait::<i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Trait_for_i32::comsume))]
 
 // Full name: anon_const_1
-const anon_const_1: MaybeUninit::<[u8; 8usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+const anon_const_1: usize = 42usize
 
 vtable {vtable}::test_crate::Trait::<usize>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<usize>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr(impl_Trait_for_usize::comsume))]
 
@@ -102,12 +76,8 @@ fn main()
     let _14: *const *const (); // anonymous local
     let _15: usize; // anonymous local
     let _16: *const *const (); // anonymous local
-    let _17: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _18: *const i32; // anonymous local
-    let _19: &'_ i32; // anonymous local
-    let _20: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
-    let _21: *const usize; // anonymous local
-    let _22: &'_ usize; // anonymous local
+    let _17: &'_ i32; // anonymous local
+    let _18: &'_ usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -120,12 +90,8 @@ fn main()
         storage_live(_2);
         storage_live(_3);
         storage_live(_17);
-        _17 = &raw const anon_const_0;
-        storage_live(_18);
-        _18 = cast<*const i32>(move _17);
-        storage_live(_19);
-        _19 = &(*_18);
-        _12 = move _19;
+        _17 = &anon_const_0;
+        _12 = move _17;
         _3 = &(*_12);
         _2 = &(*_3);
         a = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<i32>)>(move _2);
@@ -146,13 +112,9 @@ fn main()
         storage_live(b);
         storage_live(_7);
         storage_live(_8);
-        storage_live(_20);
-        _20 = &raw const anon_const_1;
-        storage_live(_21);
-        _21 = cast<*const usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21);
-        _11 = move _22;
+        storage_live(_18);
+        _18 = &anon_const_1;
+        _11 = move _18;
         _8 = &(*_11);
         _7 = &(*_8);
         b = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<usize>)>(move _7);

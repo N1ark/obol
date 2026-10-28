@@ -125,6 +125,9 @@ pub struct FormattingOptions {
 // Full name: core::fmt::Error
 pub struct Error {}
 
+// Full name: anon_const_0
+const anon_const_0: [u8; 14usize] = [101u8, 120u8, 112u8, 108u8, 105u8, 99u8, 105u8, 116u8, 32u8, 112u8, 97u8, 110u8, 105u8, 99u8]
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -133,10 +136,19 @@ fn my_panic(_x: u32) -> !
 {
     let _0: !; // return
     let _x: u32; // arg #1
+    let _2: *const [u8; 14usize]; // anonymous local
+    let _3: *const str; // anonymous local
+    let _4: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
-        _0 = panic(const "explicit panic") -> bb1 (unwind: bb2);
+        storage_live(_2);
+        _2 = &raw const anon_const_0;
+        storage_live(_3);
+        _3 = unsize_cast<*const str, 14usize>(move _2);
+        storage_live(_4);
+        _4 = &(*_3) with_metadata(copy _3.metadata);
+        _0 = panic(move _4) -> bb1 (unwind: bb2);
     }
 
     bb1: {

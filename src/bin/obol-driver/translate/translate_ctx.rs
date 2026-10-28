@@ -47,6 +47,8 @@ pub struct TranslateCtx<'tcx> {
 
     /// Cache of StableMir type IDs to our translated types.
     pub type_trans_cache: HashMap<rustc_public::ty::Ty, Ty>,
+    /// The types at which we view anonymous allocations, shared by all constant reads.
+    pub alloc_types: rustc_const_uneval::AllocTypes<'tcx>,
 
     /// Context for tracking and reporting errors.
     pub errors: RefCell<ErrorCtx>,

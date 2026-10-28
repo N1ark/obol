@@ -45,13 +45,6 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
 struct str {
   _0: [u8],
 }
@@ -61,12 +54,6 @@ struct str {
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -128,10 +115,13 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x09, 0x00, 0x00, 0x00)
+const anon_const_0: u32 = 9u32
 
 // Full name: test_crate::CONSTANT
 const CONSTANT: u32 = 42u32
+
+// Full name: anon_const_1
+const anon_const_1: [u8; 17usize] = [10u8, 32u8, 32u8, 32u8, 32u8, 47u8, 47u8, 32u8, 70u8, 111u8, 111u8, 108u8, 101u8, 100u8, 32u8, 121u8, 97u8]
 
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ u32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ u32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, u32>))]
@@ -525,9 +515,7 @@ fn foo()
     let _32: &'_ u32; // anonymous local
     let _33: Option::<Arguments::<'_>>; // anonymous local
     let _34: &'_ u32; // anonymous local
-    let _35: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _36: *const u32; // anonymous local
-    let _37: &'_ u32; // anonymous local
+    let _35: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -598,12 +586,8 @@ fn foo()
         _17 = &a[copy _18];
         storage_live(_20);
         storage_live(_35);
-        _35 = &raw const anon_const_0;
-        storage_live(_36);
-        _36 = cast<*const u32>(move _35);
-        storage_live(_37);
-        _37 = &(*_36);
-        _34 = move _37;
+        _35 = &anon_const_0;
+        _34 = move _35;
         _20 = &(*_34);
         _16 = (move _17, move _20);
         storage_dead(_20);
@@ -768,12 +752,21 @@ fn fool()
 {
     let _0: (); // return
     let _1: &'_ str; // anonymous local
+    let _2: *const [u8; 17usize]; // anonymous local
+    let _3: *const str; // anonymous local
+    let _4: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
         _0 = ();
         storage_live(_1);
-        _1 = const "\n    // Fooled ya";
+        storage_live(_2);
+        _2 = &raw const anon_const_1;
+        storage_live(_3);
+        _3 = unsize_cast<*const str, 17usize>(move _2);
+        storage_live(_4);
+        _4 = &(*_3) with_metadata(copy _3.metadata);
+        _1 = move _4;
         storage_dead(_1);
         _0 = ();
         return;

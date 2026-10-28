@@ -154,6 +154,9 @@ pub struct ManuallyDrop::<[u8; 8usize]> {
 // Full name: test_crate::SOME_INT
 const SOME_INT: &'_ &'_ i32 = cast<&'_ &'_ i32>(&raw const anon_const_0)
 
+// Full name: anon_const_1
+const anon_const_1: [u8; 33usize] = [97u8, 115u8, 115u8, 101u8, 114u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8, 58u8, 32u8, 42u8, 42u8, 83u8, 79u8, 77u8, 69u8, 95u8, 73u8, 78u8, 84u8, 32u8, 61u8, 61u8, 32u8, 48u8]
+
 // Full name: anon_const_0
 const anon_const_0: MaybeUninit::<[u8; 8usize]> = RawMemory(&anon_const_2[0], &anon_const_2[1], &anon_const_2[2], &anon_const_2[3], &anon_const_2[4], &anon_const_2[5], &anon_const_2[6], &anon_const_2[7])
 
@@ -172,6 +175,9 @@ fn main()
     let _3: &'_ &'_ i32; // anonymous local
     let _4: !; // anonymous local
     let _5: &'_ i32; // anonymous local
+    let _6: *const [u8; 33usize]; // anonymous local
+    let _7: *const str; // anonymous local
+    let _8: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -199,7 +205,13 @@ fn main()
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
-        _4 = panic(const "assertion failed: **SOME_INT == 0") -> bb3 (unwind: bb4);
+        storage_live(_6);
+        _6 = &raw const anon_const_1;
+        storage_live(_7);
+        _7 = unsize_cast<*const str, 33usize>(move _6);
+        storage_live(_8);
+        _8 = &(*_7) with_metadata(copy _7.metadata);
+        _4 = panic(move _8) -> bb3 (unwind: bb4);
     }
 
     bb3: {

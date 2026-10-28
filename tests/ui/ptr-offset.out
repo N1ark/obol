@@ -140,9 +140,15 @@ pub struct FormattingOptions {
 // Full name: core::fmt::Error
 pub struct Error {}
 
+// Full name: anon_const_0
+const anon_const_0: [u8; 38usize] = [97u8, 115u8, 115u8, 101u8, 114u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8, 58u8, 32u8, 42u8, 112u8, 116u8, 114u8, 46u8, 111u8, 102u8, 102u8, 115u8, 101u8, 116u8, 40u8, 49u8, 41u8, 32u8, 61u8, 61u8, 32u8, 52u8, 50u8]
+
 // Full name: core::mem::SizedTypeProperties::SIZE::<i32>
 #[lang_item(SizeOf)]
 pub const SIZE::<i32>: usize = 4usize
+
+// Full name: anon_const_1
+const anon_const_1: [u8; 210usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 111u8, 102u8, 102u8, 115u8, 101u8, 116u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 101u8, 32u8, 97u8, 100u8, 100u8, 114u8, 101u8, 115u8, 115u8, 32u8, 99u8, 97u8, 108u8, 99u8, 117u8, 108u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 116u8, 111u8, 32u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -160,6 +166,9 @@ fn main()
     let _7: *const i32; // anonymous local
     let _8: *const i32; // anonymous local
     let _9: !; // anonymous local
+    let _10: *const [u8; 38usize]; // anonymous local
+    let _11: *const str; // anonymous local
+    let _12: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -206,7 +215,13 @@ fn main()
         storage_dead(_6);
         storage_dead(_7);
         storage_live(_9);
-        _9 = panic(const "assertion failed: *ptr.offset(1) == 42") -> bb5 (unwind: bb6);
+        storage_live(_10);
+        _10 = &raw const anon_const_0;
+        storage_live(_11);
+        _11 = unsize_cast<*const str, 38usize>(move _10);
+        storage_live(_12);
+        _12 = &(*_11) with_metadata(copy _11.metadata);
+        _9 = panic(move _12) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -360,6 +375,12 @@ fn precondition_check(this: *const (), count: isize, size: usize)
     let _29: usize; // anonymous local
     let _30: *const str; // anonymous local
     let _31: &'_ [u8]; // anonymous local
+    let _32: *const [u8; 210usize]; // anonymous local
+    let _33: *const str; // anonymous local
+    let _34: &'_ str; // anonymous local
+    let _35: *const [u8; 210usize]; // anonymous local
+    let _36: *const str; // anonymous local
+    let _37: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -441,7 +462,13 @@ fn precondition_check(this: *const (), count: isize, size: usize)
     }
 
     bb6: {
-        msg = const "unsafe precondition(s) violated: ptr::offset requires the address calculation to not overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        storage_live(_32);
+        _32 = &raw const anon_const_1;
+        storage_live(_33);
+        _33 = unsize_cast<*const str, 210usize>(move _32);
+        storage_live(_34);
+        _34 = &(*_33) with_metadata(copy _33.metadata);
+        msg = move _34;
         storage_live(_7);
         storage_live(_24);
         storage_live(_25);
@@ -456,7 +483,13 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_live(_28);
         storage_live(_29);
         storage_live(_31);
-        _31 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: ptr::offset requires the address calculation to not overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        storage_live(_35);
+        _35 = &raw const anon_const_1;
+        storage_live(_36);
+        _36 = unsize_cast<*const str, 210usize>(move _35);
+        storage_live(_37);
+        _37 = &(*_36) with_metadata(copy _36.metadata);
+        _31 = transmute<&'_ [u8]>(move _37);
         _29 = noretag copy _31.metadata;
         storage_dead(_31);
         _28 = move _29 wrap.<< const 1i32;

@@ -125,6 +125,9 @@ pub struct FormattingOptions {
 // Full name: core::fmt::Error
 pub struct Error {}
 
+// Full name: anon_const_0
+const anon_const_0: [u8; 4usize] = [79u8, 32u8, 110u8, 111u8]
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -134,13 +137,22 @@ fn main()
     let _0: (); // return
     let _1: !; // anonymous local
     let _2: Arguments::<'_>; // anonymous local
+    let _3: *const [u8; 4usize]; // anonymous local
+    let _4: *const str; // anonymous local
+    let _5: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = from_str::<'_>(const "O no") -> bb1 (unwind: bb4);
+        storage_live(_3);
+        _3 = &raw const anon_const_0;
+        storage_live(_4);
+        _4 = unsize_cast<*const str, 4usize>(move _3);
+        storage_live(_5);
+        _5 = &(*_4) with_metadata(copy _4.metadata);
+        _2 = from_str::<'_>(move _5) -> bb1 (unwind: bb4);
     }
 
     bb1: {

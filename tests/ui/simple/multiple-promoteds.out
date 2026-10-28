@@ -8,24 +8,11 @@ struct (_, _)::<u32, bool> {
   _1: bool,
 }
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
-}
-
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x01, 0x00, 0x00, 0x00)
+const anon_const_0: u32 = 1u32
 
 // Full name: anon_const_1
-const anon_const_1: MaybeUninit::<[u8; 4usize]> = RawMemory(0x05, 0x00, 0x00, 0x00)
+const anon_const_1: u32 = 5u32
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -51,12 +38,8 @@ fn six() -> u32
     let _6: &'_ u32; // anonymous local
     let _7: &'_ u32; // anonymous local
     let _8: &'_ u32; // anonymous local
-    let _9: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _10: *const u32; // anonymous local
-    let _11: &'_ u32; // anonymous local
-    let _12: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _13: *const u32; // anonymous local
-    let _14: &'_ u32; // anonymous local
+    let _9: &'_ u32; // anonymous local
+    let _10: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -71,12 +54,8 @@ fn six() -> u32
 
     bb1: {
         storage_live(_9);
-        _9 = &raw const anon_const_0;
-        storage_live(_10);
-        _10 = cast<*const u32>(move _9);
-        storage_live(_11);
-        _11 = &(*_10);
-        _8 = move _11;
+        _9 = &anon_const_0;
+        _8 = move _9;
         x = &(*_8);
         storage_live(y);
         _4 = const 2u32 checked.+ const 3u32;
@@ -84,13 +63,9 @@ fn six() -> u32
     }
 
     bb2: {
-        storage_live(_12);
-        _12 = &raw const anon_const_1;
-        storage_live(_13);
-        _13 = cast<*const u32>(move _12);
-        storage_live(_14);
-        _14 = &(*_13);
-        _7 = move _14;
+        storage_live(_10);
+        _10 = &anon_const_1;
+        _7 = move _10;
         y = &(*_7);
         storage_live(_5);
         _5 = copy x;

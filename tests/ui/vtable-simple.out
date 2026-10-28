@@ -3,26 +3,13 @@
 
 struct () {}
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
-}
-
 struct (_, _)::<i32, bool> {
   _0: i32,
   _1: bool,
 }
 
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
+const anon_const_0: i32 = 42i32
 
 vtable {vtable}::test_crate::Modifiable::<i32, i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Modifiable_for_i32::modify::<i32>))]
 
@@ -54,9 +41,7 @@ fn main()
     let _2: &'_ i32; // anonymous local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
-    let _5: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _6: *const i32; // anonymous local
-    let _7: &'_ i32; // anonymous local
+    let _5: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -66,12 +51,8 @@ fn main()
         storage_live(_2);
         storage_live(_3);
         storage_live(_5);
-        _5 = &raw const anon_const_0;
-        storage_live(_6);
-        _6 = cast<*const i32>(move _5);
-        storage_live(_7);
-        _7 = &(*_6);
-        _4 = move _7;
+        _5 = &anon_const_0;
+        _4 = move _5;
         _3 = &(*_4);
         _2 = &(*_3);
         _1 = modify_trait_object::<i32>(move _2) -> bb1 (unwind: bb2);

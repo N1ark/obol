@@ -3,13 +3,6 @@
 
 struct () {}
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 16usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 16usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 16usize]>,
-}
-
 struct str {
   _0: [u8],
 }
@@ -81,12 +74,6 @@ pub struct PanicInfo::<'_> {
   force_no_backtrace: bool,
 }
 
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 16usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 16usize]> {
-  value: [u8; 16usize],
-}
-
 // Full name: core::fmt::rt::Argument::<'_>
 #[lang_item(FormatArgument)]
 pub struct Argument::<'_> {
@@ -144,10 +131,13 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 16usize]> = RawMemory(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+const anon_const_0: [i32; 4usize] = [0i32, 0i32, 0i32, 0i32]
 
 // Full name: anon_const_1
-const anon_const_1: MaybeUninit::<[u8; 16usize]> = RawMemory(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+const anon_const_1: [i32; 4usize] = [0i32, 0i32, 0i32, 0i32]
+
+// Full name: anon_const_2
+const anon_const_2: [u8; 14usize] = [101u8, 120u8, 112u8, 108u8, 105u8, 99u8, 105u8, 116u8, 32u8, 112u8, 97u8, 110u8, 105u8, 99u8]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -191,9 +181,7 @@ fn slice_pat2()
     let _b: &'_ [i32; 2usize]; // local
     let _c: &'_ i32; // local
     let _6: &'_ [i32; 4usize]; // anonymous local
-    let _7: *const MaybeUninit::<[u8; 16usize]>; // anonymous local
-    let _8: *const [i32; 4usize]; // anonymous local
-    let _9: &'_ [i32; 4usize]; // anonymous local
+    let _7: &'_ [i32; 4usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -202,12 +190,8 @@ fn slice_pat2()
         storage_live(array_ref);
         storage_live(_2);
         storage_live(_7);
-        _7 = &raw const anon_const_0;
-        storage_live(_8);
-        _8 = cast<*const [i32; 4usize]>(move _7);
-        storage_live(_9);
-        _9 = &(*_8);
-        _6 = move _9;
+        _7 = &anon_const_0;
+        _6 = move _7;
         _2 = &(*_6);
         array_ref = &(*_2);
         storage_dead(_2);
@@ -245,9 +229,10 @@ fn slice_pat3()
     let _13: usize; // anonymous local
     let _14: usize; // anonymous local
     let _15: usize; // anonymous local
-    let _16: *const MaybeUninit::<[u8; 16usize]>; // anonymous local
-    let _17: *const [i32; 4usize]; // anonymous local
-    let _18: &'_ [i32; 4usize]; // anonymous local
+    let _16: &'_ [i32; 4usize]; // anonymous local
+    let _17: *const [u8; 14usize]; // anonymous local
+    let _18: *const str; // anonymous local
+    let _19: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -262,12 +247,8 @@ fn slice_pat3()
         storage_live(_2);
         storage_live(_3);
         storage_live(_16);
-        _16 = &raw const anon_const_1;
-        storage_live(_17);
-        _17 = cast<*const [i32; 4usize]>(move _16);
-        storage_live(_18);
-        _18 = &(*_17);
-        _12 = move _18;
+        _16 = &anon_const_1;
+        _12 = move _16;
         _3 = &(*_12);
         _2 = &(*_3);
         slice = unsize_cast<&'_ [i32], 4usize>(move _2);
@@ -303,7 +284,13 @@ fn slice_pat3()
     }
 
     bb2: {
-        _4 = panic(const "explicit panic") -> bb3 (unwind: bb4);
+        storage_live(_17);
+        _17 = &raw const anon_const_2;
+        storage_live(_18);
+        _18 = unsize_cast<*const str, 14usize>(move _17);
+        storage_live(_19);
+        _19 = &(*_18) with_metadata(copy _18.metadata);
+        _4 = panic(move _19) -> bb3 (unwind: bb4);
     }
 
     bb3: {

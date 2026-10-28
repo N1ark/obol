@@ -28,24 +28,11 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 8usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 8usize]>,
-}
-
 // Full name: core::fmt::Arguments::<'_>
 #[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 8usize]> {
-  value: [u8; 8usize],
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -116,7 +103,7 @@ const FOO: usize = 42usize
 static SLICE: [(); 4usize] = SLICE()
 
 // Full name: anon_const_1
-const anon_const_1: MaybeUninit::<[u8; 8usize]> = RawMemory(0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+const anon_const_1: usize = 4usize
 
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ usize>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ usize>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, usize>))]
@@ -219,9 +206,7 @@ fn main()
     let _20: Option::<Arguments::<'_>>; // anonymous local
     let _21: &'_ usize; // anonymous local
     let _22: &'_ [(); 4usize]; // anonymous local
-    let _23: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
-    let _24: *const usize; // anonymous local
-    let _25: &'_ usize; // anonymous local
+    let _23: &'_ usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -247,12 +232,8 @@ fn main()
         _2 = &_3;
         storage_live(_7);
         storage_live(_23);
-        _23 = &raw const anon_const_1;
-        storage_live(_24);
-        _24 = cast<*const usize>(move _23);
-        storage_live(_25);
-        _25 = &(*_24);
-        _21 = move _25;
+        _23 = &anon_const_1;
+        _21 = move _23;
         _7 = &(*_21);
         _1 = (move _2, move _7);
         storage_dead(_7);

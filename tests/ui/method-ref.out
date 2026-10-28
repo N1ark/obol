@@ -141,6 +141,9 @@ pub struct FormattingOptions {
 // Full name: core::fmt::Error
 pub struct Error {}
 
+// Full name: anon_const_0
+const anon_const_0: [u8; 43usize] = [99u8, 97u8, 108u8, 108u8, 101u8, 100u8, 32u8, 96u8, 79u8, 112u8, 116u8, 105u8, 111u8, 110u8, 58u8, 58u8, 117u8, 110u8, 119u8, 114u8, 97u8, 112u8, 40u8, 41u8, 96u8, 32u8, 111u8, 110u8, 32u8, 97u8, 32u8, 96u8, 78u8, 111u8, 110u8, 101u8, 96u8, 32u8, 118u8, 97u8, 108u8, 117u8, 101u8]
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -314,10 +317,19 @@ fn min::<i32>()
 fn unwrap_failed() -> !
 {
     let _0: !; // return
+    let _1: *const [u8; 43usize]; // anonymous local
+    let _2: *const str; // anonymous local
+    let _3: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
-        _0 = panic(const "called `Option::unwrap()` on a `None` value") -> bb1 (unwind: bb2);
+        storage_live(_1);
+        _1 = &raw const anon_const_0;
+        storage_live(_2);
+        _2 = unsize_cast<*const str, 43usize>(move _1);
+        storage_live(_3);
+        _3 = &(*_2) with_metadata(copy _2.metadata);
+        _0 = panic(move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {

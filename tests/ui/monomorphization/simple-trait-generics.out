@@ -3,21 +3,8 @@
 
 struct () {}
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
-}
-
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
+const anon_const_0: i32 = 42i32
 
 vtable {vtable}::test_crate::Trait::<i32, bool>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Trait_bool_for_i32::comsume))]
 
@@ -56,9 +43,7 @@ fn main()
     let _6: &'_ i32; // anonymous local
     let _7: usize; // anonymous local
     let _8: *const *const (); // anonymous local
-    let _9: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _10: *const i32; // anonymous local
-    let _11: &'_ i32; // anonymous local
+    let _9: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -69,12 +54,8 @@ fn main()
         storage_live(_2);
         storage_live(_3);
         storage_live(_9);
-        _9 = &raw const anon_const_0;
-        storage_live(_10);
-        _10 = cast<*const i32>(move _9);
-        storage_live(_11);
-        _11 = &(*_10);
-        _6 = move _11;
+        _9 = &anon_const_0;
+        _6 = move _9;
         _3 = &(*_6);
         _2 = &(*_3);
         a = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<i32, bool>)>(move _2);

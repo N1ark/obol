@@ -3,13 +3,6 @@
 
 struct () {}
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 0usize]>
 #[lang_item(MaybeUninit)]
 pub union MaybeUninit::<[u8; 0usize]> {
@@ -23,14 +16,8 @@ pub struct ManuallyDrop::<[u8; 0usize]> {
   value: [u8; 0usize],
 }
 
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
-}
-
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x01, 0x00, 0x00, 0x00)
+const anon_const_0: u32 = 1u32
 
 // Full name: anon_const_1
 const anon_const_1: MaybeUninit::<[u8; 0usize]> = RawMemory()
@@ -111,15 +98,13 @@ fn main()
     let _9: &'_ (); // anonymous local
     let _10: &'_ (); // anonymous local
     let _11: &'_ u32; // anonymous local
-    let _12: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _13: *const u32; // anonymous local
-    let _14: &'_ u32; // anonymous local
-    let _15: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
-    let _16: *const (); // anonymous local
-    let _17: &'_ (); // anonymous local
-    let _18: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
-    let _19: *const (); // anonymous local
-    let _20: &'_ (); // anonymous local
+    let _12: &'_ u32; // anonymous local
+    let _13: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
+    let _14: *const (); // anonymous local
+    let _15: &'_ (); // anonymous local
+    let _16: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
+    let _17: *const (); // anonymous local
+    let _18: &'_ (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -133,12 +118,8 @@ fn main()
         storage_live(_3);
         storage_live(_4);
         storage_live(_12);
-        _12 = &raw const anon_const_0;
-        storage_live(_13);
-        _13 = cast<*const u32>(move _12);
-        storage_live(_14);
-        _14 = &(*_13);
-        _11 = move _14;
+        _12 = &anon_const_0;
+        _11 = move _12;
         _4 = &(*_11);
         _3 = &(*_4);
         _1 = method1(move _2, move _3) -> bb1 (unwind: bb4);
@@ -151,23 +132,23 @@ fn main()
         storage_dead(_1);
         storage_live(_5);
         storage_live(_6);
+        storage_live(_13);
+        _13 = &raw const anon_const_1;
+        storage_live(_14);
+        _14 = cast<*const ()>(move _13);
         storage_live(_15);
-        _15 = &raw const anon_const_1;
-        storage_live(_16);
-        _16 = cast<*const ()>(move _15);
-        storage_live(_17);
-        _17 = &(*_16);
-        _10 = move _17;
+        _15 = &(*_14);
+        _10 = move _15;
         _6 = &(*_10);
         storage_live(_7);
         storage_live(_8);
+        storage_live(_16);
+        _16 = &raw const anon_const_2;
+        storage_live(_17);
+        _17 = cast<*const ()>(move _16);
         storage_live(_18);
-        _18 = &raw const anon_const_2;
-        storage_live(_19);
-        _19 = cast<*const ()>(move _18);
-        storage_live(_20);
-        _20 = &(*_19);
-        _9 = move _20;
+        _18 = &(*_17);
+        _9 = move _18;
         _8 = &(*_9);
         _7 = &(*_8);
         _5 = compare::<'_>(move _6, move _7) -> bb2 (unwind: bb3);

@@ -3,27 +3,14 @@
 
 struct () {}
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 8usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 8usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 8usize]>,
-}
-
 // Full name: test_crate::non_copy_static::Foo
 struct Foo {}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 8usize]> {
-  value: [u8; 8usize],
-}
 
 // Full name: test_crate::constant::CONST
 const CONST: usize = 0usize
 
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 8usize]> = RawMemory(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00)
+const anon_const_0: usize = 0usize
 
 // Full name: test_crate::shared_static::SHARED_STATIC
 static SHARED_STATIC: usize = SHARED_STATIC()
@@ -46,9 +33,7 @@ fn constant()
     let _ref_mut: &'_ mut usize; // local
     let _4: usize; // anonymous local
     let _5: &'_ usize; // anonymous local
-    let _6: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
-    let _7: *const usize; // anonymous local
-    let _8: &'_ usize; // anonymous local
+    let _6: &'_ usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -58,12 +43,8 @@ fn constant()
         _val = copy CONST;
         storage_live(_ref);
         storage_live(_6);
-        _6 = &raw const anon_const_0;
-        storage_live(_7);
-        _7 = cast<*const usize>(move _6);
-        storage_live(_8);
-        _8 = &(*_7);
-        _5 = move _8;
+        _6 = &anon_const_0;
+        _5 = move _6;
         _ref = &(*_5);
         storage_live(_ref_mut);
         storage_live(_4);

@@ -62,6 +62,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 anon_allocs_as_globals: true,
                 unsized_strings: false,
             },
+            alloc_types: self.t_ctx.alloc_types.clone(),
         }
     }
 
@@ -193,7 +194,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             uneval::ConstKind::PtrCast { ptr, unsize } => {
                 let ptr = self.translate_read_const(span, ptr)?;
                 let kind = match self.translate_unsize(span, unsize)? {
-                    Some(metadata) => CastKind::Unsize(ty.clone(), metadata),
+                    Some(metadata) => CastKind::Unsize(ty.clone(), metadata, vec![]),
                     None => CastKind::RawPtr(ty.clone()),
                 };
                 ConstantExprKind::Cast(ptr, kind)
@@ -276,8 +277,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         };
         let tcx = self.t_ctx.tcx;
         let ref_to = |ty| stable(mty::Ty::new_imm_ref(tcx, tcx.lifetimes.re_static, ty));
-        let metadata =
+        let (path, metadata) =
             self.translate_unsizing_metadata(span, ref_to(unsize.from), ref_to(unsize.to))?;
+        assert!(path.is_empty(), "Non-empty unsize path in const ptr");
         Ok(Some(metadata))
     }
 
@@ -317,7 +319,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 let fn_ptr = self.translate_fn_target(span, target);
                 return Ok(GlobalProvenance::Function(fn_ptr, fn_ptr_ty));
             }
-            AllocTarget::Global(global) if self.const_reader().is_named_global(global) => {
+            AllocTarget::Global(global) => {
                 let alloc_id = match global {
                     GlobalRef::Static(def_id) => tcx.reserve_and_set_static_alloc(def_id),
                     GlobalRef::Alloc(alloc_id) => alloc_id,
@@ -338,8 +340,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     self.translate_ty(span, stable(ty))?,
                 ));
             }
-            // The other globals (nested statics) aren't translated.
-            AllocTarget::Global(_) => return Ok(GlobalProvenance::Unknown),
         };
         Ok(GlobalProvenance::Global(GlobalDeclRef {
             id,

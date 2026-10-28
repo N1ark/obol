@@ -24,13 +24,6 @@ pub enum Option::<u32> {
   Some { _0: u32 },
 }
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
 // Full name: std::hash::random::RandomState
 pub struct RandomState {
   k0: u64,
@@ -208,13 +201,6 @@ pub struct NonNull::<Argument::<'_>> {
 // Full name: core::marker::PhantomData::<&'_ ()>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ ()> {}
-
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 2usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 2usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 2usize]>,
-}
 
 // Full name: core::hash::sip::SipHasher13
 pub struct SipHasher13 {
@@ -535,6 +521,20 @@ struct (_,)::<&'_ mut &'_ mut RawTableInner> {
   _0: &'_ mut &'_ mut RawTableInner,
 }
 
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 4usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 4usize]>,
+}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 2usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 2usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 2usize]>,
+}
+
 // Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 1usize]>
 #[lang_item(MaybeUninit)]
 pub union MaybeUninit::<[u8; 1usize]> {
@@ -657,36 +657,6 @@ pub enum Result::<!, AllocError> {
 // Full name: core::alloc::AllocError
 pub struct AllocError {}
 
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 2usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 2usize]> {
-  value: [u8; 2usize],
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 1usize]> {
-  value: [u8; 1usize],
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<Tag>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<Tag> {
-  value: Tag,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 8usize]> {
-  value: [u8; 8usize],
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
-}
-
 // Full name: core::marker::PhantomData::<(u32, u32)>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<(u32, u32)> {}
@@ -701,14 +671,14 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
-// Full name: core::num::niche_types::NonZeroUsizeInner
-pub struct NonZeroUsizeInner {
-  _0: usize is 1usize..=18446744073709551615usize,
-}
-
 // Full name: core::num::niche_types::NonZeroU64Inner
 pub struct NonZeroU64Inner {
   _0: u64 is 1u64..=18446744073709551615u64,
+}
+
+// Full name: core::num::niche_types::NonZeroUsizeInner
+pub struct NonZeroUsizeInner {
+  _0: usize is 1usize..=18446744073709551615usize,
 }
 
 // Full name: core::ptr::non_null::NonNull::<str>
@@ -720,6 +690,36 @@ pub struct NonNull::<str> {
 // Full name: core::marker::PhantomData::<&'_ str>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 2usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 2usize]> {
+  value: [u8; 2usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<Tag>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<Tag> {
+  value: Tag,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 1usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 1usize]> {
+  value: [u8; 1usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 4usize]> {
+  value: [u8; 4usize],
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 8usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 8usize]> {
+  value: [u8; 8usize],
+}
 
 // Full name: core::mem::alignment::AlignmentEnum
 enum AlignmentEnum {
@@ -815,10 +815,13 @@ struct (_,)::<&'_ RandomState> {
 }
 
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x16, 0x00, 0x00, 0x00)
+const anon_const_0: u32 = 22u32
 
 // Full name: anon_const_1
-const anon_const_1: MaybeUninit::<[u8; 4usize]> = RawMemory(0x16, 0x00, 0x00, 0x00)
+const anon_const_1: u32 = 22u32
+
+// Full name: anon_const_2
+const anon_const_2: [u8; 22usize] = [110u8, 111u8, 32u8, 101u8, 110u8, 116u8, 114u8, 121u8, 32u8, 102u8, 111u8, 117u8, 110u8, 100u8, 32u8, 102u8, 111u8, 114u8, 32u8, 107u8, 101u8, 121u8]
 
 // Full name: hashbrown::raw::SizedTypeProperties::IS_ZERO_SIZED::<(u32, u32)>
 const IS_ZERO_SIZED::<(u32, u32)>: bool = false
@@ -839,7 +842,7 @@ vtable FnMut::<hashbrown::raw::{RawTable::<_, _>}::find::{closure}::{closure}, (
 vtable FnMut::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(call_once::<hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::{closure}, (usize,)>)), cast<*const ()>(fnptr(hashbrown::raw::{RawTable::<_, _>}::find_or_find_insert_index::{closure}::<(u32, u32), Global, hashbrown::map::equivalent_key::{closure}::{closure}, hashbrown::map::make_hasher::{closure}::{closure}, i16, extern "rust-call" fn((usize,)) -> bool, (&'_ mut hashbrown::map::equivalent_key::{closure}::{closure}, &'_ RawTable::<(u32, u32), Global>)>))]
 
 // Full name: anon_const_3
-const anon_const_3: MaybeUninit::<[u8; 2usize]> = RawMemory(0xc0, 0x00)
+const anon_const_3: [u8; 2usize] = [192u8, 0u8]
 
 // Full name: {vtable}::core::ops::function::Fn::<hashbrown::raw::{RawTable::<_, _>}::reserve_rehash::{closure}::{closure}, (&'_ mut RawTableInner, usize)>
 #[lang_item(Fn)]
@@ -853,6 +856,27 @@ const TABLE_LAYOUT::<(u32, u32), Global>: TableLayout = TableLayout { size: 8usi
 
 // Full name: hashbrown::raw::{RawTableInner}::NEW
 const NEW: RawTableInner = RawTableInner { bucket_mask: 0usize, ctrl: NonNull::<u8> { pointer: cast<*const u8 is !null>(&raw const anon_const_6) }, growth_left: 0usize, items: 0usize }
+
+// Full name: anon_const_7
+const anon_const_7: [u8; 283usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 99u8, 111u8, 112u8, 121u8, 95u8, 110u8, 111u8, 110u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 112u8, 105u8, 110u8, 103u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 98u8, 111u8, 116u8, 104u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 97u8, 114u8, 103u8, 117u8, 109u8, 101u8, 110u8, 116u8, 115u8, 32u8, 97u8, 114u8, 101u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 97u8, 110u8, 100u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 32u8, 97u8, 110u8, 100u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 112u8, 101u8, 99u8, 105u8, 102u8, 105u8, 101u8, 100u8, 32u8, 109u8, 101u8, 109u8, 111u8, 114u8, 121u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 115u8, 32u8, 100u8, 111u8, 32u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+
+// Full name: anon_const_8
+const anon_const_8: [u8; 27usize] = [97u8, 115u8, 115u8, 101u8, 114u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8, 58u8, 32u8, 115u8, 116u8, 101u8, 112u8, 32u8, 33u8, 61u8, 32u8, 48u8]
+
+// Full name: anon_const_9
+const anon_const_9: [u8; 214usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 58u8, 58u8, 103u8, 101u8, 116u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 105u8, 115u8, 32u8, 119u8, 105u8, 116u8, 104u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+
+// Full name: anon_const_10
+const anon_const_10: [u8; 42usize] = [105u8, 115u8, 95u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 95u8, 116u8, 111u8, 58u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 45u8, 111u8, 102u8, 45u8, 116u8, 119u8, 111u8]
+
+// Full name: anon_const_11
+const anon_const_11: [u8; 61usize] = [105u8, 115u8, 95u8, 110u8, 111u8, 110u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 112u8, 105u8, 110u8, 103u8, 58u8, 32u8, 96u8, 115u8, 105u8, 122u8, 101u8, 95u8, 111u8, 102u8, 58u8, 58u8, 60u8, 84u8, 62u8, 40u8, 41u8, 32u8, 42u8, 32u8, 99u8, 111u8, 117u8, 110u8, 116u8, 96u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 115u8, 32u8, 97u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8]
+
+// Full name: anon_const_13
+const anon_const_13: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 97u8, 100u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+
+// Full name: anon_const_14
+const anon_const_14: [u8; 210usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 78u8, 111u8, 110u8, 78u8, 117u8, 108u8, 108u8, 58u8, 58u8, 110u8, 101u8, 119u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_6
 const anon_const_6: MaybeUninit::<[u8; 8usize]> = RawMemory(0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff)
@@ -907,8 +931,8 @@ trait Borrow
 #[diagnostic_item("PartialEq")]
 trait PartialEq
 
-// Full name: std::collections::hash::map::{impl Index<&'_ Q> for std::collections::hash::map::HashMap::<_, _, missing(@Type4), missing(@Type5)>}
-impl<'_, _, K, Q, V, S, A> Index<&'_ Q> for std::collections::hash::map::HashMap::<_, _, missing(@Type4), missing(@Type5)> {
+// Full name: std::collections::hash::map::{impl Index<&'_ Q> for std::collections::hash::map::HashMap::<_, _, missing(@TypeFree(4)), missing(@TypeFree(5))>}
+impl<'_, _, K, Q, V, S, A> Index<&'_ Q> for std::collections::hash::map::HashMap::<_, _, missing(@TypeFree(4)), missing(@TypeFree(5))> {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
@@ -1007,12 +1031,8 @@ pub fn get_or_insert(map: &'_ mut std::collections::hash::map::HashMap::<u32, u3
     let _14: &'_ u32; // anonymous local
     let _15: &'_ u32; // anonymous local
     let _16: &'_ u32; // anonymous local
-    let _17: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _18: *const u32; // anonymous local
-    let _19: &'_ u32; // anonymous local
-    let _20: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _21: *const u32; // anonymous local
-    let _22: &'_ u32; // anonymous local
+    let _17: &'_ u32; // anonymous local
+    let _18: &'_ u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1025,12 +1045,8 @@ pub fn get_or_insert(map: &'_ mut std::collections::hash::map::HashMap::<u32, u3
         storage_live(_4);
         storage_live(_5);
         storage_live(_17);
-        _17 = &raw const anon_const_0;
-        storage_live(_18);
-        _18 = cast<*const u32>(move _17);
-        storage_live(_19);
-        _19 = &(*_18);
-        _16 = move _19;
+        _17 = &anon_const_0;
+        _16 = move _17;
         _5 = &(*_16);
         _4 = &(*_5);
         _2 = std::collections::hash::map::{std::collections::hash::map::HashMap::<_, _, _, _>}::get::<u32, u32, RandomState, Global, u32>(move _3, move _4) -> bb1 (unwind: bb10);
@@ -1059,13 +1075,9 @@ pub fn get_or_insert(map: &'_ mut std::collections::hash::map::HashMap::<u32, u3
         _12 = &(*map);
         storage_live(_13);
         storage_live(_14);
-        storage_live(_20);
-        _20 = &raw const anon_const_1;
-        storage_live(_21);
-        _21 = cast<*const u32>(move _20);
-        storage_live(_22);
-        _22 = &(*_21);
-        _15 = move _22;
+        storage_live(_18);
+        _18 = &anon_const_1;
+        _15 = move _18;
         _14 = &(*_15);
         _13 = &(*_14);
         _11 = index::<'_, u32, u32, u32, RandomState, Global>(move _12, move _13) -> bb4 (unwind: bb5);
@@ -1163,7 +1175,7 @@ pub fn std::collections::hash::map::{std::collections::hash::map::HashMap::<_, _
     }
 }
 
-// Full name: std::collections::hash::map::{impl Index<&'_ Q> for std::collections::hash::map::HashMap::<_, _, missing(@Type4), missing(@Type5)>}::index::<'_, u32, u32, u32, RandomState, Global>
+// Full name: std::collections::hash::map::{impl Index<&'_ Q> for std::collections::hash::map::HashMap::<_, _, missing(@TypeFree(4)), missing(@TypeFree(5))>}::index::<'_, u32, u32, u32, RandomState, Global>
 pub fn index::<'_, u32, u32, u32, RandomState, Global>(self_1: &'_ std::collections::hash::map::HashMap::<u32, u32, RandomState, Global>, key: &'_ u32) -> &'_ u32
 {
     let val: &'_ u32; // return
@@ -1173,6 +1185,9 @@ pub fn index::<'_, u32, u32, u32, RandomState, Global>(self_1: &'_ std::collecti
     let _4: &'_ hashbrown::map::HashMap::<u32, u32, RandomState, Global>; // anonymous local
     let _5: isize; // anonymous local
     let _6: !; // anonymous local
+    let _7: *const [u8; 22usize]; // anonymous local
+    let _8: *const str; // anonymous local
+    let _9: &'_ str; // anonymous local
 
     bb0: {
         storage_live(val);
@@ -1191,7 +1206,13 @@ pub fn index::<'_, u32, u32, u32, RandomState, Global>(self_1: &'_ std::collecti
     }
 
     bb2: {
-        _6 = expect_failed(const "no entry found for key") -> bb3 (unwind: bb4);
+        storage_live(_7);
+        _7 = &raw const anon_const_2;
+        storage_live(_8);
+        _8 = unsize_cast<*const str, 22usize>(move _7);
+        storage_live(_9);
+        _9 = &(*_8) with_metadata(copy _8.metadata);
+        _6 = expect_failed(move _9) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -2162,9 +2183,7 @@ pub fn panic_display::<&'_ str>(x: &'_ &'_ str) -> !
     let _12: NonNull::<u8>; // anonymous local
     let _13: NonNull::<Argument::<'_>>; // anonymous local
     let _14: PhantomData::<&'_ ()>; // anonymous local
-    let _15: *const MaybeUninit::<[u8; 2usize]>; // anonymous local
-    let _16: *const [u8; 2usize]; // anonymous local
-    let _17: &'_ [u8; 2usize]; // anonymous local
+    let _15: &'_ [u8; 2usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2196,12 +2215,8 @@ pub fn panic_display::<&'_ str>(x: &'_ &'_ str) -> !
         args_6 = &args_4;
         storage_live(_12);
         storage_live(_15);
-        _15 = &raw const anon_const_3;
-        storage_live(_16);
-        _16 = cast<*const [u8; 2usize]>(move _15);
-        storage_live(_17);
-        _17 = &(*_16);
-        _12 = transmute<NonNull::<u8>>(move _17);
+        _15 = &anon_const_3;
+        _12 = transmute<NonNull::<u8>>(move _15);
         storage_live(_13);
         _13 = transmute<NonNull::<Argument::<'_>>>(copy args_6);
         _3 = Arguments::<'_> { template: move _12, args: move _13 };
@@ -8410,7 +8425,13 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
     let _29: bool; // anonymous local
     let _30: bool; // anonymous local
     let _31: *const (); // anonymous local
-    let _32: *mut (); // anonymous local
+    let _32: *const [u8; 283usize]; // anonymous local
+    let _33: *const str; // anonymous local
+    let _34: &'_ str; // anonymous local
+    let _35: *const [u8; 283usize]; // anonymous local
+    let _36: *const str; // anonymous local
+    let _37: &'_ str; // anonymous local
+    let _38: *mut (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -8496,9 +8517,9 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
         storage_live(_19);
         storage_live(_20);
         storage_live(_30);
-        storage_live(_32);
-        _32 = cast<*mut ()>(const 0usize);
-        _30 = copy dst != move _32;
+        storage_live(_38);
+        _38 = cast<*mut ()>(const 0usize);
+        _30 = copy dst != move _38;
         _20 = cast<usize>(move _30);
         storage_dead(_30);
         _19 = move _20 == const 0usize;
@@ -8554,7 +8575,13 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
     }
 
     bb22: {
-        msg = const "unsafe precondition(s) violated: ptr::copy_nonoverlapping requires that both pointer arguments are aligned and non-null and the specified memory ranges do not overlap\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        storage_live(_32);
+        _32 = &raw const anon_const_7;
+        storage_live(_33);
+        _33 = unsize_cast<*const str, 283usize>(move _32);
+        storage_live(_34);
+        _34 = &(*_33) with_metadata(copy _33.metadata);
+        msg = move _34;
         storage_live(_14);
         storage_live(_21);
         storage_live(_22);
@@ -8569,7 +8596,13 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
         storage_live(_25);
         storage_live(_26);
         storage_live(_28);
-        _28 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: ptr::copy_nonoverlapping requires that both pointer arguments are aligned and non-null and the specified memory ranges do not overlap\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        storage_live(_35);
+        _35 = &raw const anon_const_7;
+        storage_live(_36);
+        _36 = unsize_cast<*const str, 283usize>(move _35);
+        storage_live(_37);
+        _37 = &(*_36) with_metadata(copy _36.metadata);
+        _28 = transmute<&'_ [u8]>(move _37);
         _26 = noretag copy _28.metadata;
         storage_dead(_28);
         _25 = move _26 wrap.<< const 1i32;
@@ -8607,6 +8640,9 @@ fn core::iter::adapters::step_by::{StepBy::<_>}::new::<Range::<usize>>(iter_1: R
     let _5: Range::<usize>; // anonymous local
     let _6: usize; // anonymous local
     let _7: bool; // anonymous local
+    let _8: *const [u8; 27usize]; // anonymous local
+    let _9: *const str; // anonymous local
+    let _10: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -8617,7 +8653,13 @@ fn core::iter::adapters::step_by::{StepBy::<_>}::new::<Range::<usize>>(iter_1: R
     }
 
     bb1: {
-        _3 = panic(const "assertion failed: step != 0") -> bb2 (unwind: bb5);
+        storage_live(_8);
+        _8 = &raw const anon_const_8;
+        storage_live(_9);
+        _9 = unsize_cast<*const str, 27usize>(move _8);
+        storage_live(_10);
+        _10 = &(*_9) with_metadata(copy _9.metadata);
+        _3 = panic(move _10) -> bb2 (unwind: bb5);
     }
 
     bb2: {
@@ -9899,6 +9941,12 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(this: usiz
     let _12: usize; // anonymous local
     let _13: *const str; // anonymous local
     let _14: &'_ [u8]; // anonymous local
+    let _15: *const [u8; 214usize]; // anonymous local
+    let _16: *const str; // anonymous local
+    let _17: &'_ str; // anonymous local
+    let _18: *const [u8; 214usize]; // anonymous local
+    let _19: *const str; // anonymous local
+    let _20: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -9916,7 +9964,13 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(this: usiz
     }
 
     bb2: {
-        msg = const "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        storage_live(_15);
+        _15 = &raw const anon_const_9;
+        storage_live(_16);
+        _16 = unsize_cast<*const str, 214usize>(move _15);
+        storage_live(_17);
+        _17 = &(*_16) with_metadata(copy _16.metadata);
+        msg = move _17;
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
@@ -9931,7 +9985,13 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked::precondition_check(this: usiz
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: slice::get_unchecked requires that the index is within the slice\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        storage_live(_18);
+        _18 = &raw const anon_const_9;
+        storage_live(_19);
+        _19 = unsize_cast<*const str, 214usize>(move _18);
+        storage_live(_20);
+        _20 = &(*_19) with_metadata(copy _19.metadata);
+        _14 = transmute<&'_ [u8]>(move _20);
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -9978,6 +10038,12 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
     let _17: usize; // anonymous local
     let _18: *const str; // anonymous local
     let _19: &'_ [u8]; // anonymous local
+    let _20: *const [u8; 42usize]; // anonymous local
+    let _21: *const str; // anonymous local
+    let _22: &'_ str; // anonymous local
+    let _23: *const [u8; 42usize]; // anonymous local
+    let _24: *const str; // anonymous local
+    let _25: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -10014,7 +10080,13 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
     bb3: {
         storage_live(_5);
         storage_live(s);
-        s = const "is_aligned_to: align is not a power-of-two";
+        storage_live(_20);
+        _20 = &raw const anon_const_10;
+        storage_live(_21);
+        _21 = unsize_cast<*const str, 42usize>(move _20);
+        storage_live(_22);
+        _22 = &(*_21) with_metadata(copy _21.metadata);
+        s = move _22;
         storage_live(_12);
         storage_live(_13);
         storage_live(_18);
@@ -10028,7 +10100,13 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_16);
         storage_live(_17);
         storage_live(_19);
-        _19 = transmute<&'_ [u8]>(const "is_aligned_to: align is not a power-of-two");
+        storage_live(_23);
+        _23 = &raw const anon_const_10;
+        storage_live(_24);
+        _24 = unsize_cast<*const str, 42usize>(move _23);
+        storage_live(_25);
+        _25 = &(*_24) with_metadata(copy _24.metadata);
+        _19 = transmute<&'_ [u8]>(move _25);
         _17 = noretag copy _19.metadata;
         storage_dead(_19);
         _16 = move _17 wrap.<< const 1i32;
@@ -10112,6 +10190,9 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
     let a: usize; // local
     let _17: (); // anonymous local
     let _18: bool; // anonymous local
+    let _19: *const [u8; 61usize]; // anonymous local
+    let _20: *const str; // anonymous local
+    let _21: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -10150,7 +10231,13 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(a);
         storage_dead(b);
         storage_dead(_9);
-        _7 = panic_nounwind(const "is_nonoverlapping: `size_of::<T>() * count` overflows a usize") -> bb3 (unwind: bb4);
+        storage_live(_19);
+        _19 = &raw const anon_const_11;
+        storage_live(_20);
+        _20 = unsize_cast<*const str, 61usize>(move _19);
+        storage_live(_21);
+        _21 = &(*_20) with_metadata(copy _20.metadata);
+        _7 = panic_nounwind(move _21) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -10717,6 +10804,12 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     let _15: usize; // anonymous local
     let _16: *const str; // anonymous local
     let _17: &'_ [u8]; // anonymous local
+    let _18: *const [u8; 186usize]; // anonymous local
+    let _19: *const str; // anonymous local
+    let _20: &'_ str; // anonymous local
+    let _21: *const [u8; 186usize]; // anonymous local
+    let _22: *const str; // anonymous local
+    let _23: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -10738,7 +10831,13 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb1: {
-        msg = const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        storage_live(_18);
+        _18 = &raw const anon_const_13;
+        storage_live(_19);
+        _19 = unsize_cast<*const str, 186usize>(move _18);
+        storage_live(_20);
+        _20 = &(*_19) with_metadata(copy _19.metadata);
+        msg = move _20;
         storage_live(_5);
         storage_live(_10);
         storage_live(_11);
@@ -10753,7 +10852,13 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: usize::unchecked_add cannot overflow\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        storage_live(_21);
+        _21 = &raw const anon_const_13;
+        storage_live(_22);
+        _22 = unsize_cast<*const str, 186usize>(move _21);
+        storage_live(_23);
+        _23 = &(*_22) with_metadata(copy _22.metadata);
+        _17 = transmute<&'_ [u8]>(move _23);
         _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
@@ -11822,6 +11927,12 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     let _14: &'_ [u8]; // anonymous local
     let _15: bool; // anonymous local
     let _16: *mut (); // anonymous local
+    let _17: *const [u8; 210usize]; // anonymous local
+    let _18: *const str; // anonymous local
+    let _19: &'_ str; // anonymous local
+    let _20: *const [u8; 210usize]; // anonymous local
+    let _21: *const str; // anonymous local
+    let _22: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -11842,7 +11953,13 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     }
 
     bb1: {
-        msg = const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.";
+        storage_live(_17);
+        _17 = &raw const anon_const_14;
+        storage_live(_18);
+        _18 = unsize_cast<*const str, 210usize>(move _17);
+        storage_live(_19);
+        _19 = &(*_18) with_metadata(copy _18.metadata);
+        msg = move _19;
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -11857,7 +11974,13 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ [u8]>(const "unsafe precondition(s) violated: NonNull::new_unchecked requires that the pointer is non-null\n\nThis indicates a bug in the program. This Undefined Behavior check is optional, and cannot be relied on for safety.");
+        storage_live(_20);
+        _20 = &raw const anon_const_14;
+        storage_live(_21);
+        _21 = unsize_cast<*const str, 210usize>(move _20);
+        storage_live(_22);
+        _22 = &(*_21) with_metadata(copy _21.metadata);
+        _14 = transmute<&'_ [u8]>(move _22);
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;

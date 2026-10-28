@@ -27,13 +27,6 @@ pub enum Option::<Arguments::<'_>> {
   Some { _0: Arguments::<'_> },
 }
 
-// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 4usize]>
-#[lang_item(MaybeUninit)]
-pub union MaybeUninit::<[u8; 4usize]> {
-  uninit: (),
-  value: ManuallyDrop::<[u8; 4usize]>,
-}
-
 struct test_crate::foo::{closure}::{closure} {
   upvar_0: i32,
 }
@@ -47,12 +40,6 @@ struct (_,)::<i32> {
 pub struct Arguments::<'_> {
   template: NonNull::<u8>,
   args: NonNull::<Argument::<'_>>,
-}
-
-// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 4usize]>
-#[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<[u8; 4usize]> {
-  value: [u8; 4usize],
 }
 
 // Full name: core::ptr::non_null::NonNull::<u8>
@@ -114,7 +101,7 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 // Full name: anon_const_0
-const anon_const_0: MaybeUninit::<[u8; 4usize]> = RawMemory(0x2a, 0x00, 0x00, 0x00)
+const anon_const_0: i32 = 42i32
 
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
@@ -197,9 +184,7 @@ fn main()
     let _21: &'_ i32; // anonymous local
     let _22: Option::<Arguments::<'_>>; // anonymous local
     let _23: &'_ i32; // anonymous local
-    let _24: *const MaybeUninit::<[u8; 4usize]>; // anonymous local
-    let _25: *const i32; // anonymous local
-    let _26: &'_ i32; // anonymous local
+    let _24: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -231,12 +216,8 @@ fn main()
         _5 = &_6;
         storage_live(_9);
         storage_live(_24);
-        _24 = &raw const anon_const_0;
-        storage_live(_25);
-        _25 = cast<*const i32>(move _24);
-        storage_live(_26);
-        _26 = &(*_25);
-        _23 = move _26;
+        _24 = &anon_const_0;
+        _23 = move _24;
         _9 = &(*_23);
         _4 = (move _5, move _9);
         storage_dead(_9);

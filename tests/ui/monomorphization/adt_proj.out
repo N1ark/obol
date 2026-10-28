@@ -132,6 +132,9 @@ pub struct FormattingOptions {
   precision: u16,
 }
 
+// Full name: anon_const_0
+const anon_const_0: [u8; 14usize] = [101u8, 120u8, 112u8, 108u8, 105u8, 99u8, 105u8, 116u8, 32u8, 112u8, 97u8, 110u8, 105u8, 99u8]
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -143,6 +146,9 @@ fn main()
     let _2: !; // anonymous local
     let n: u32; // local
     let _4: isize; // anonymous local
+    let _5: *const [u8; 14usize]; // anonymous local
+    let _6: *const str; // anonymous local
+    let _7: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -165,7 +171,13 @@ fn main()
     }
 
     bb2: {
-        _2 = panic(const "explicit panic") -> bb3 (unwind: bb4);
+        storage_live(_5);
+        _5 = &raw const anon_const_0;
+        storage_live(_6);
+        _6 = unsize_cast<*const str, 14usize>(move _5);
+        storage_live(_7);
+        _7 = &(*_6) with_metadata(copy _6.metadata);
+        _2 = panic(move _7) -> bb3 (unwind: bb4);
     }
 
     bb3: {
