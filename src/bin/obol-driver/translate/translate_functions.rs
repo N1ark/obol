@@ -97,6 +97,28 @@ impl ItemTransCtx<'_, '_> {
             });
         }
 
+        // `fn_abi` ICEs on LLVM intrinsics; read their signature from the fn type instead.
+        // They are foreign items, so the signature is monomorphic.
+        if def.kind == mir::mono::InstanceKind::LlvmIntrinsic {
+            let Some(sig) = def.ty().kind().fn_sig() else {
+                raise_error!(self, span, "LLVM intrinsic without a fn signature")
+            };
+            let sig = sig.skip_binder();
+            let inputs: Vec<_> = sig
+                .inputs()
+                .iter()
+                .map(|ty| self.translate_ty(span, *ty))
+                .try_collect()?;
+            let output = self.translate_ty(span, sig.output())?;
+            return Ok(FunSig {
+                inputs,
+                output,
+                is_variadic: sig.c_variadic,
+                is_unsafe: false,
+                abi: Abi::rust(),
+            });
+        }
+
         // CrateItem::try_from fails for Shim/Intrinsic/Virtual instances (which have no
         // CrateItem) and for InstanceKind::Item items that have no MIR body (e.g. extern
         // functions, constructors).  In all cases, skip the item-kind check and fall through
