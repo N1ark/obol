@@ -184,31 +184,32 @@ fn main()
     let foo: Foo::<'_, i32>; // local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
-    let _5: (&'_ i32, &'_ i32); // anonymous local
-    let _6: &'_ i32; // anonymous local
-    let _7: i32; // anonymous local
-    let _8: &'_ &'_ i32; // anonymous local
+    let _5: (); // anonymous local
+    let _6: (&'_ i32, &'_ i32); // anonymous local
+    let _7: &'_ i32; // anonymous local
+    let _8: i32; // anonymous local
     let _9: &'_ &'_ i32; // anonymous local
-    let _10: &'_ i32; // anonymous local
+    let _10: &'_ &'_ i32; // anonymous local
     let _11: &'_ i32; // anonymous local
+    let _12: &'_ i32; // anonymous local
     let left_val: &'_ i32; // local
     let right_val: &'_ i32; // local
-    let _14: bool; // anonymous local
-    let _15: i32; // anonymous local
+    let _15: bool; // anonymous local
     let _16: i32; // anonymous local
+    let _17: i32; // anonymous local
     let kind: AssertKind; // local
-    let _18: !; // anonymous local
-    let _19: AssertKind; // anonymous local
-    let _20: &'_ i32; // anonymous local
+    let _19: !; // anonymous local
+    let _20: AssertKind; // anonymous local
     let _21: &'_ i32; // anonymous local
     let _22: &'_ i32; // anonymous local
     let _23: &'_ i32; // anonymous local
-    let _24: Option::<Arguments::<'_>>; // anonymous local
-    let _25: &'_ i32; // anonymous local
+    let _24: &'_ i32; // anonymous local
+    let _25: Option::<Arguments::<'_>>; // anonymous local
+    let _26: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_25);
+        storage_live(_26);
         _0 = ();
         storage_live(x);
         x = const 42i32;
@@ -226,69 +227,72 @@ fn main()
         storage_live(_8);
         storage_live(_9);
         storage_live(_10);
-        _10 = &x;
-        _9 = &_10;
-        _8 = &(*_9);
-        _7 = test_nested_closures::<'_, i32>(move _8) -> bb1 (unwind: bb6);
+        storage_live(_11);
+        _11 = &x;
+        _10 = &_11;
+        _9 = &(*_10);
+        _8 = test_nested_closures::<'_, i32>(move _9) -> bb1 (unwind: bb6);
     }
 
     bb1: {
-        storage_dead(_8);
-        _6 = &_7;
-        storage_live(_11);
-        _25 = &anon_const_0;
-        _11 = &(*_25);
-        _5 = (move _6, move _11);
-        storage_dead(_11);
-        storage_dead(_6);
+        storage_dead(_9);
+        _7 = &_8;
+        storage_live(_12);
+        _26 = const &anon_const_0;
+        _12 = &(*_26);
+        _6 = (move _7, move _12);
+        storage_dead(_12);
+        storage_dead(_7);
         storage_live(left_val);
-        left_val = copy _5._0;
+        left_val = copy _6._0;
         storage_live(right_val);
-        right_val = copy _5._1;
-        storage_live(_14);
+        right_val = copy _6._1;
         storage_live(_15);
-        _15 = copy (*left_val);
         storage_live(_16);
-        _16 = copy (*right_val);
-        _14 = move _15 == move _16;
-        if move _14 -> bb2 else -> bb3;
+        _16 = copy (*left_val);
+        storage_live(_17);
+        _17 = copy (*right_val);
+        _15 = move _16 == move _17;
+        if move _15 -> bb2 else -> bb3;
     }
 
     bb2: {
+        storage_dead(_17);
         storage_dead(_16);
+        _5 = const ();
         storage_dead(_15);
-        storage_dead(_14);
         storage_dead(right_val);
         storage_dead(left_val);
+        storage_dead(_11);
         storage_dead(_10);
-        storage_dead(_9);
-        storage_dead(_7);
+        storage_dead(_8);
+        storage_dead(_6);
         storage_dead(_5);
-        _0 = ();
+        _0 = const ();
         storage_dead(foo);
         storage_dead(x);
         return;
     }
 
     bb3: {
+        storage_dead(_17);
         storage_dead(_16);
-        storage_dead(_15);
         storage_live(kind);
         kind = AssertKind::Eq {  };
-        storage_live(_18);
         storage_live(_19);
-        _19 = move kind;
         storage_live(_20);
+        _20 = move kind;
         storage_live(_21);
-        _21 = &(*left_val);
-        _20 = &(*_21);
         storage_live(_22);
+        _22 = &(*left_val);
+        _21 = &(*_22);
         storage_live(_23);
-        _23 = &(*right_val);
-        _22 = &(*_23);
         storage_live(_24);
-        _24 = Option::<Arguments::<'_>>::None {  };
-        _18 = assert_failed::<i32, i32>(move _19, move _20, move _22, move _24) -> bb4 (unwind: bb5);
+        _24 = &(*right_val);
+        _23 = &(*_24);
+        storage_live(_25);
+        _25 = Option::<Arguments::<'_>>::None {  };
+        _19 = assert_failed::<i32, i32>(move _20, move _21, move _23, move _25) -> bb4 (unwind: bb5);
     }
 
     bb4: {
@@ -356,7 +360,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         storage_live(_10);
         storage_live(_11);
         storage_live(_12);
-        _17 = &anon_const_1;
+        _17 = const &anon_const_1;
         _12 = &(*_17);
         _11 = &(*_12);
         _10 = (move _11,);
@@ -371,7 +375,7 @@ pub fn test_nested_closures::<'_, i32>(x: &'_ &'_ i32) -> i32
         storage_live(_13);
         storage_live(_14);
         storage_live(_15);
-        _16 = &anon_const_2;
+        _16 = const &anon_const_2;
         _15 = &(*_16);
         _14 = &(*_15);
         _13 = (move _14,);

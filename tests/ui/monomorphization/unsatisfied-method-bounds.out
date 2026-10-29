@@ -41,10 +41,6 @@ fn main()
     let _4: &'_ B; // anonymous local
     let _5: &'_ B; // anonymous local
     let _6: &'_ A; // anonymous local
-    let _7: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
-    let _8: *const A; // anonymous local
-    let _9: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
-    let _10: *const B; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -53,11 +49,7 @@ fn main()
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        storage_live(_7);
-        _7 = &raw const anon_const_0;
-        storage_live(_8);
-        _8 = cast<*const A>(move _7);
-        _6 = &(*_8);
+        _6 = const cast<&'_ A>(&raw const anon_const_0);
         _2 = &(*_6);
         _1 = method::<A>(move _2) -> bb1 (unwind: bb4);
     }
@@ -67,11 +59,7 @@ fn main()
         storage_dead(_1);
         storage_live(_3);
         storage_live(_4);
-        storage_live(_9);
-        _9 = &raw const anon_const_1;
-        storage_live(_10);
-        _10 = cast<*const B>(move _9);
-        _5 = &(*_10);
+        _5 = const cast<&'_ B>(&raw const anon_const_1);
         _4 = &(*_5);
         _3 = method::<B>(move _4) -> bb2 (unwind: bb3);
     }
@@ -79,7 +67,7 @@ fn main()
     bb2: {
         storage_dead(_4);
         storage_dead(_3);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -101,7 +89,7 @@ fn method::<A>(self: &'_ A)
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -115,7 +103,7 @@ fn method::<B>(self: &'_ B)
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }

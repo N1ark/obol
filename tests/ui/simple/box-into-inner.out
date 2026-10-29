@@ -366,7 +366,7 @@ fn into_inner(b: Box::<String, Global>)
         storage_live(_x);
         _9 = transmute<*const String>(copy b._0);
         _x = move (*_9);
-        _0 = ();
+        _0 = const ();
         _10 = &raw mut _x;
         _11 = drop_glue::<String>(move _10) -> bb1 (unwind: bb3);
     }
@@ -625,11 +625,6 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
     let _12: usize; // anonymous local
     let _13: *const str; // anonymous local
     let _14: &'_ [u8]; // anonymous local
-    let _15: *const [u8; 198usize]; // anonymous local
-    let _16: *const str; // anonymous local
-    let _17: *const [u8; 198usize]; // anonymous local
-    let _18: *const str; // anonymous local
-    let _19: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -653,11 +648,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
     }
 
     bb3: {
-        storage_live(_15);
-        _15 = &raw const anon_const_0;
-        storage_live(_16);
-        _16 = unsize_cast<*const str, 198usize>(move _15);
-        msg = &(*_16) with_metadata(copy _16.metadata);
+        msg = const unsize_cast<&'_ str, 198usize>(&raw const anon_const_0);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -672,13 +663,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        storage_live(_17);
-        _17 = &raw const anon_const_0;
-        storage_live(_18);
-        _18 = unsize_cast<*const str, 198usize>(move _17);
-        storage_live(_19);
-        _19 = &(*_18) with_metadata(copy _18.metadata);
-        _14 = transmute<&'_ [u8]>(move _19);
+        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 198usize>(&raw const anon_const_0));
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -726,11 +711,6 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
     let _14: usize; // anonymous local
     let _15: *const str; // anonymous local
     let _16: &'_ [u8]; // anonymous local
-    let _17: *const [u8; 259usize]; // anonymous local
-    let _18: *const str; // anonymous local
-    let _19: *const [u8; 259usize]; // anonymous local
-    let _20: *const str; // anonymous local
-    let _21: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -754,11 +734,7 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
     }
 
     bb2: {
-        storage_live(_17);
-        _17 = &raw const anon_const_1;
-        storage_live(_18);
-        _18 = unsize_cast<*const str, 259usize>(move _17);
-        msg = &(*_18) with_metadata(copy _18.metadata);
+        msg = const unsize_cast<&'_ str, 259usize>(&raw const anon_const_1);
         storage_live(_6);
         storage_live(_9);
         storage_live(_10);
@@ -773,13 +749,7 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
         storage_live(_13);
         storage_live(_14);
         storage_live(_16);
-        storage_live(_19);
-        _19 = &raw const anon_const_1;
-        storage_live(_20);
-        _20 = unsize_cast<*const str, 259usize>(move _19);
-        storage_live(_21);
-        _21 = &(*_20) with_metadata(copy _20.metadata);
-        _16 = transmute<&'_ [u8]>(move _21);
+        _16 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 259usize>(&raw const anon_const_1));
         _14 = noretag copy _16.metadata;
         storage_dead(_16);
         _13 = move _14 wrap.<< const 1i32;
@@ -978,7 +948,7 @@ pub fn {impl Drop for RawVec::<_, _>}::drop::<u8, Global>(self: &'_ mut RawVec::
         _0 = ();
         storage_live(_2);
         _2 = &two-phase-mut (*self).inner;
-        _0 = alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(move _2, copy LAYOUT::<u8>) -> bb1 (unwind: bb2);
+        _0 = alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(move _2, const LAYOUT::<u8>) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -1090,25 +1060,27 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: !; // anonymous local
+    let _2: (); // anonymous local
+    let _3: bool; // anonymous local
+    let _4: !; // anonymous local
     let pi: PanicInfo::<'_>; // local
-    let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
-    let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ PanicInfo::<'_>; // anonymous local
+    let _7: &'_ Arguments::<'_>; // anonymous local
+    let _8: &'_ Location::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = const false;
-        if move _2 -> bb1 else -> bb4;
+        storage_live(_3);
+        _3 = const false;
+        if move _3 -> bb1 else -> bb4;
     }
 
     bb1: {
-        storage_live(_3);
-        _3 = abort() -> bb2 (unwind: bb3);
+        storage_live(_4);
+        _4 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -1120,29 +1092,31 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
+        _2 = const ();
+        storage_dead(_3);
         storage_dead(_2);
         storage_live(pi);
-        storage_live(_5);
         storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
         storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb10);
+        _7 = &fmt;
+        _6 = &(*_7);
+        storage_live(_8);
+        _8 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
+        pi = new::<'_>(move _6, move _8, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        storage_dead(_7);
-        storage_dead(_5);
+        storage_dead(_8);
         storage_dead(_6);
-        storage_live(_8);
+        storage_dead(_7);
         storage_live(_9);
-        _9 = &pi;
-        _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+        storage_live(_10);
+        _10 = &pi;
+        _9 = &(*_10);
+        _0 = panic_impl(move _9) -> bb7 (unwind: bb8);
     }
 
     bb7: {
@@ -1344,11 +1318,6 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     let _15: usize; // anonymous local
     let _16: *const str; // anonymous local
     let _17: &'_ [u8]; // anonymous local
-    let _18: *const [u8; 186usize]; // anonymous local
-    let _19: *const str; // anonymous local
-    let _20: *const [u8; 186usize]; // anonymous local
-    let _21: *const str; // anonymous local
-    let _22: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1370,11 +1339,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb1: {
-        storage_live(_18);
-        _18 = &raw const anon_const_2;
-        storage_live(_19);
-        _19 = unsize_cast<*const str, 186usize>(move _18);
-        msg = &(*_19) with_metadata(copy _19.metadata);
+        msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_2);
         storage_live(_5);
         storage_live(_10);
         storage_live(_11);
@@ -1389,13 +1354,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        storage_live(_20);
-        _20 = &raw const anon_const_2;
-        storage_live(_21);
-        _21 = unsize_cast<*const str, 186usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21) with_metadata(copy _21.metadata);
-        _17 = transmute<&'_ [u8]>(move _22);
+        _17 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 186usize>(&raw const anon_const_2));
         _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
@@ -1448,11 +1407,6 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
     let _19: *const str; // anonymous local
     let _20: &'_ [u8]; // anonymous local
     let _21: bool; // anonymous local
-    let _22: *const [u8; 281usize]; // anonymous local
-    let _23: *const str; // anonymous local
-    let _24: *const [u8; 281usize]; // anonymous local
-    let _25: *const str; // anonymous local
-    let _26: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1511,11 +1465,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
     }
 
     bb8: {
-        storage_live(_22);
-        _22 = &raw const anon_const_3;
-        storage_live(_23);
-        _23 = unsize_cast<*const str, 281usize>(move _22);
-        msg = &(*_23) with_metadata(copy _23.metadata);
+        msg = const unsize_cast<&'_ str, 281usize>(&raw const anon_const_3);
         storage_live(_6);
         storage_live(_13);
         storage_live(_14);
@@ -1530,13 +1480,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
         storage_live(_17);
         storage_live(_18);
         storage_live(_20);
-        storage_live(_24);
-        _24 = &raw const anon_const_3;
-        storage_live(_25);
-        _25 = unsize_cast<*const str, 281usize>(move _24);
-        storage_live(_26);
-        _26 = &(*_25) with_metadata(copy _25.metadata);
-        _20 = transmute<&'_ [u8]>(move _26);
+        _20 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 281usize>(&raw const anon_const_3));
         _18 = noretag copy _20.metadata;
         storage_dead(_20);
         _17 = move _18 wrap.<< const 1i32;

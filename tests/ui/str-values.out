@@ -57,7 +57,7 @@ pub fn main()
 
     bb2: {
         storage_dead(_2);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -74,16 +74,10 @@ pub fn main()
 fn str_param::<&"hello" with_metadata(5usize)>() -> &'_ str
 {
     let _0: &'_ str; // return
-    let _1: *const [u8; 5usize]; // anonymous local
-    let _2: *const str; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_1);
-        _1 = &raw const anon_const_0;
-        storage_live(_2);
-        _2 = unsize_cast<*const str, 5usize>(move _1);
-        _0 = &(*_2) with_metadata(copy _2.metadata);
+        _0 = const unsize_cast<&'_ str, 5usize>(&raw const anon_const_0);
         return;
     }
 }
@@ -92,16 +86,10 @@ fn str_param::<&"hello" with_metadata(5usize)>() -> &'_ str
 fn str_tail::<unsize_cast<&'_ Wrap::<str>, 2usize>(&raw const anon_const_1)>() -> &'_ Wrap::<str>
 {
     let _0: &'_ Wrap::<str>; // return
-    let _1: *const MaybeUninit::<[u8; 3usize]>; // anonymous local
-    let _2: *const Wrap::<str>; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_1);
-        _1 = &raw const anon_const_1;
-        storage_live(_2);
-        _2 = unsize_cast<*const Wrap::<str>, 2usize>(move _1);
-        _0 = &(*_2);
+        _0 = const unsize_cast<&'_ Wrap::<str>, 2usize>(&raw const anon_const_1);
         return;
     }
 }

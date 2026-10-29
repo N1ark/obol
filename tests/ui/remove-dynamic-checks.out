@@ -107,7 +107,7 @@ pub fn incr(x: &'_ mut u32)
 
     bb1: {
         (*x) = move _2._0;
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -1190,7 +1190,7 @@ fn index_slice_ignore_value(x: &'_ [u32])
     bb1: {
         _ = (*x)[copy _2];
         storage_dead(_2);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -1220,13 +1220,13 @@ fn div_signed_with_constant() -> i32
 
     bb1: {
         _2 = const 2i32 == const -1i32;
-        _3 = copy FOO == const -2147483648i32;
+        _3 = const FOO == const -2147483648i32;
         _4 = move _2 & move _3;
         assert assert(move _4 == false) (overflow) -> bb2 (unwind: bb3);
     }
 
     bb2: {
-        _0 = copy FOO ub./ const 2i32;
+        _0 = const FOO ub./ const 2i32;
         return;
     }
 
@@ -1278,7 +1278,7 @@ fn div_unsigned_to_slice(result: &'_ mut [u32], x: u32)
         (*result)[copy _5] = move _3 ub./ const 3329u32;
         storage_dead(_3);
         storage_dead(_5);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -1343,7 +1343,7 @@ fn div_signed_to_slice(result: &'_ mut [i32], x: i32)
         (*result)[copy _8] = move _3 ub./ const 3329i32;
         storage_dead(_3);
         storage_dead(_8);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -1399,7 +1399,7 @@ fn add_to_slice(result: &'_ mut [u32], x: u32)
         (*result)[copy _5] = move _4._0;
         storage_dead(_3);
         storage_dead(_5);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -1463,7 +1463,7 @@ fn add_to_slice2(result: &'_ mut [u8], i: usize, x: u8)
         (*result)[copy _6] = move _5._0;
         storage_dead(_4);
         storage_dead(_6);
-        _0 = ();
+        _0 = const ();
         return;
     }
 

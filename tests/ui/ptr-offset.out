@@ -161,14 +161,12 @@ fn main()
     let ptr: *const i32; // local
     let _3: &'_ [i32]; // anonymous local
     let _4: &'_ [i32; 2usize]; // anonymous local
-    let _5: bool; // anonymous local
-    let _6: i32; // anonymous local
-    let _7: *const i32; // anonymous local
+    let _5: (); // anonymous local
+    let _6: bool; // anonymous local
+    let _7: i32; // anonymous local
     let _8: *const i32; // anonymous local
-    let _9: !; // anonymous local
-    let _10: *const [u8; 38usize]; // anonymous local
-    let _11: *const str; // anonymous local
-    let _12: &'_ str; // anonymous local
+    let _9: *const i32; // anonymous local
+    let _10: !; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -190,38 +188,35 @@ fn main()
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
-        _8 = copy ptr;
-        _7 = offset::<i32>(move _8, const 1isize) -> bb2 (unwind: bb7);
+        storage_live(_9);
+        _9 = copy ptr;
+        _8 = offset::<i32>(move _9, const 1isize) -> bb2 (unwind: bb7);
     }
 
     bb2: {
-        storage_dead(_8);
-        _6 = copy (*_7);
-        _5 = move _6 == const 42i32;
-        if move _5 -> bb3 else -> bb4;
+        storage_dead(_9);
+        _7 = copy (*_8);
+        _6 = move _7 == const 42i32;
+        if move _6 -> bb3 else -> bb4;
     }
 
     bb3: {
-        storage_dead(_6);
         storage_dead(_7);
+        storage_dead(_8);
+        _5 = const ();
+        storage_dead(_6);
         storage_dead(_5);
-        _0 = ();
+        _0 = const ();
         storage_dead(ptr);
         storage_dead(s);
         return;
     }
 
     bb4: {
-        storage_dead(_6);
         storage_dead(_7);
-        storage_live(_9);
+        storage_dead(_8);
         storage_live(_10);
-        _10 = &raw const anon_const_0;
-        storage_live(_11);
-        _11 = unsize_cast<*const str, 38usize>(move _10);
-        storage_live(_12);
-        _12 = &(*_11) with_metadata(copy _11.metadata);
-        _9 = panic(move _12) -> bb5 (unwind: bb6);
+        _10 = panic(const unsize_cast<&'_ str, 38usize>(&raw const anon_const_0)) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -281,7 +276,7 @@ pub fn offset::<i32>(self: *const i32, count: isize) -> *const i32
     bb1: {
         storage_live(_4);
         _4 = cast<*const ()>(copy self);
-        _3 = precondition_check(move _4, copy count, copy SIZE::<i32>) -> bb2 (unwind: bb3);
+        _3 = precondition_check(move _4, copy count, const SIZE::<i32>) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -375,11 +370,6 @@ fn precondition_check(this: *const (), count: isize, size: usize)
     let _29: usize; // anonymous local
     let _30: *const str; // anonymous local
     let _31: &'_ [u8]; // anonymous local
-    let _32: *const [u8; 210usize]; // anonymous local
-    let _33: *const str; // anonymous local
-    let _34: *const [u8; 210usize]; // anonymous local
-    let _35: *const str; // anonymous local
-    let _36: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -461,11 +451,7 @@ fn precondition_check(this: *const (), count: isize, size: usize)
     }
 
     bb6: {
-        storage_live(_32);
-        _32 = &raw const anon_const_1;
-        storage_live(_33);
-        _33 = unsize_cast<*const str, 210usize>(move _32);
-        msg = &(*_33) with_metadata(copy _33.metadata);
+        msg = const unsize_cast<&'_ str, 210usize>(&raw const anon_const_1);
         storage_live(_7);
         storage_live(_24);
         storage_live(_25);
@@ -480,13 +466,7 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_live(_28);
         storage_live(_29);
         storage_live(_31);
-        storage_live(_34);
-        _34 = &raw const anon_const_1;
-        storage_live(_35);
-        _35 = unsize_cast<*const str, 210usize>(move _34);
-        storage_live(_36);
-        _36 = &(*_35) with_metadata(copy _35.metadata);
-        _31 = transmute<&'_ [u8]>(move _36);
+        _31 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 210usize>(&raw const anon_const_1));
         _29 = noretag copy _31.metadata;
         storage_dead(_31);
         _28 = move _29 wrap.<< const 1i32;
@@ -562,25 +542,27 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: !; // anonymous local
+    let _2: (); // anonymous local
+    let _3: bool; // anonymous local
+    let _4: !; // anonymous local
     let pi: PanicInfo::<'_>; // local
-    let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
-    let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ PanicInfo::<'_>; // anonymous local
+    let _7: &'_ Arguments::<'_>; // anonymous local
+    let _8: &'_ Location::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = const false;
-        if move _2 -> bb1 else -> bb4;
+        storage_live(_3);
+        _3 = const false;
+        if move _3 -> bb1 else -> bb4;
     }
 
     bb1: {
-        storage_live(_3);
-        _3 = abort() -> bb2 (unwind: bb3);
+        storage_live(_4);
+        _4 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -592,29 +574,31 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
+        _2 = const ();
+        storage_dead(_3);
         storage_dead(_2);
         storage_live(pi);
-        storage_live(_5);
         storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
         storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb10);
+        _7 = &fmt;
+        _6 = &(*_7);
+        storage_live(_8);
+        _8 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
+        pi = new::<'_>(move _6, move _8, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        storage_dead(_7);
-        storage_dead(_5);
+        storage_dead(_8);
         storage_dead(_6);
-        storage_live(_8);
+        storage_dead(_7);
         storage_live(_9);
-        _9 = &pi;
-        _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+        storage_live(_10);
+        _10 = &pi;
+        _9 = &(*_10);
+        _0 = panic_impl(move _9) -> bb7 (unwind: bb8);
     }
 
     bb7: {

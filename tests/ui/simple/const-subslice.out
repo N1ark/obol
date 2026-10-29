@@ -31,21 +31,12 @@ fn main()
     let _3: *const [u8]; // anonymous local
     let _4: usize; // anonymous local
     let _5: *const u8; // anonymous local
-    let _6: *const MaybeUninit::<[u8; 5usize]>; // anonymous local
-    let _7: *const [u8; 3usize]; // anonymous local
-    let _8: *const [u8]; // anonymous local
 
     bb0: {
         storage_live(_0);
         _0 = ();
         storage_live(y);
-        storage_live(_6);
-        _6 = &raw const anon_const_0;
-        storage_live(_7);
-        _7 = cast<*const [u8; 3usize]>(move _6);
-        storage_live(_8);
-        _8 = unsize_cast<*const [u8], 3usize>(move _7);
-        y = &(*_8) with_metadata(copy _8.metadata);
+        y = const unsize_cast<&'_ [u8], 3usize>(cast<*const [u8; 3usize]>(&raw const anon_const_0));
         storage_live(z);
         storage_live(_3);
         _3 = &raw const (*y) with_metadata(copy y.metadata);
@@ -57,7 +48,7 @@ fn main()
         _4 = cast_expose(move _5);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = ();
+        _0 = const ();
         storage_dead(z);
         storage_dead(y);
         return;

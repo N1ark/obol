@@ -108,10 +108,8 @@ pub fn drop(self: &'_ mut Foo)
     let _0: (); // return
     let self: &'_ mut Foo; // arg #1
     let _2: (); // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: *const [u8; 13usize]; // anonymous local
-    let _5: *const str; // anonymous local
-    let _6: &'_ str; // anonymous local
+    let _3: (); // anonymous local
+    let _4: Arguments::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -119,22 +117,19 @@ pub fn drop(self: &'_ mut Foo)
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
-        _4 = &raw const anon_const_0;
-        storage_live(_5);
-        _5 = unsize_cast<*const str, 13usize>(move _4);
-        storage_live(_6);
-        _6 = &(*_5) with_metadata(copy _5.metadata);
-        _3 = from_str::<'_>(move _6) -> bb1 (unwind: bb4);
+        _4 = from_str::<'_>(const unsize_cast<&'_ str, 13usize>(&raw const anon_const_0)) -> bb1 (unwind: bb4);
     }
 
     bb1: {
-        _2 = _print(move _3) -> bb2 (unwind: bb3);
+        _3 = _print(move _4) -> bb2 (unwind: bb3);
     }
 
     bb2: {
+        storage_dead(_4);
         storage_dead(_3);
+        _2 = const ();
         storage_dead(_2);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
@@ -181,7 +176,7 @@ fn main()
         storage_dead(_2);
         storage_live(f_ref);
         f_ref = &f;
-        _0 = ();
+        _0 = const ();
         storage_dead(f_ref);
         _5 = &raw mut f;
         _6 = drop_glue::<Foo>(move _5) -> bb2 (unwind: bb4);

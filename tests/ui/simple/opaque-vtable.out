@@ -44,7 +44,7 @@ fn use_debug(_d: &'_ (dyn FakeTrait))
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -58,8 +58,6 @@ fn main()
     let _3: &'_ (); // anonymous local
     let _4: &'_ (); // anonymous local
     let _5: &'_ (); // anonymous local
-    let _6: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
-    let _7: *const (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -69,11 +67,7 @@ fn main()
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
-        storage_live(_6);
-        _6 = &raw const anon_const_0;
-        storage_live(_7);
-        _7 = cast<*const ()>(move _6);
-        _5 = &(*_7);
+        _5 = const cast<&'_ ()>(&raw const anon_const_0);
         _4 = &(*_5);
         _3 = &(*_4);
         _2 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::x::Trait::<()>)>(move _3);
@@ -85,7 +79,7 @@ fn main()
         storage_dead(_2);
         storage_dead(_4);
         storage_dead(_1);
-        _0 = ();
+        _0 = const ();
         return;
     }
 

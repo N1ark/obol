@@ -199,32 +199,31 @@ fn main()
     let f: test_crate::foo::{closure}::{closure}::{closure}; // local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
-    let _5: (&'_ &'_ i32, &'_ &'_ i32); // anonymous local
-    let _6: &'_ &'_ i32; // anonymous local
-    let _7: &'_ i32; // anonymous local
-    let _8: &'_ test_crate::foo::{closure}::{closure}::{closure}; // anonymous local
-    let _9: (); // anonymous local
-    let _10: &'_ &'_ i32; // anonymous local
+    let _5: (); // anonymous local
+    let _6: (&'_ &'_ i32, &'_ &'_ i32); // anonymous local
+    let _7: &'_ &'_ i32; // anonymous local
+    let _8: &'_ i32; // anonymous local
+    let _9: &'_ test_crate::foo::{closure}::{closure}::{closure}; // anonymous local
+    let _10: (); // anonymous local
+    let _11: &'_ &'_ i32; // anonymous local
     let left_val: &'_ &'_ i32; // local
     let right_val: &'_ &'_ i32; // local
-    let _13: bool; // anonymous local
-    let _14: &'_ &'_ i32; // anonymous local
+    let _14: bool; // anonymous local
     let _15: &'_ &'_ i32; // anonymous local
+    let _16: &'_ &'_ i32; // anonymous local
     let kind: AssertKind; // local
-    let _17: !; // anonymous local
-    let _18: AssertKind; // anonymous local
-    let _19: &'_ &'_ i32; // anonymous local
+    let _18: !; // anonymous local
+    let _19: AssertKind; // anonymous local
     let _20: &'_ &'_ i32; // anonymous local
     let _21: &'_ &'_ i32; // anonymous local
     let _22: &'_ &'_ i32; // anonymous local
-    let _23: Option::<Arguments::<'_>>; // anonymous local
-    let _24: &'_ &'_ i32; // anonymous local
-    let _25: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
-    let _26: *const &'_ i32; // anonymous local
+    let _23: &'_ &'_ i32; // anonymous local
+    let _24: Option::<Arguments::<'_>>; // anonymous local
+    let _25: &'_ &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_24);
+        storage_live(_25);
         _0 = ();
         storage_live(x);
         x = const 42i32;
@@ -243,75 +242,74 @@ fn main()
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
-        _8 = &f;
         storage_live(_9);
-        _9 = ();
-        _7 = test_crate::foo::{closure}::{closure}::<i32, i8, extern "rust-call" fn(()) -> &'_ i32, (&'_ i32,)>(move _8, move _9) -> bb2 (unwind: bb7);
+        _9 = &f;
+        storage_live(_10);
+        _10 = ();
+        _8 = test_crate::foo::{closure}::{closure}::<i32, i8, extern "rust-call" fn(()) -> &'_ i32, (&'_ i32,)>(move _9, move _10) -> bb2 (unwind: bb7);
     }
 
     bb2: {
-        storage_dead(_9);
-        storage_dead(_8);
-        _6 = &_7;
-        storage_live(_10);
-        storage_live(_25);
-        _25 = &raw const anon_const_0;
-        storage_live(_26);
-        _26 = cast<*const &'_ i32>(move _25);
-        _24 = &(*_26);
-        _10 = &(*_24);
-        _5 = (move _6, move _10);
         storage_dead(_10);
-        storage_dead(_6);
+        storage_dead(_9);
+        _7 = &_8;
+        storage_live(_11);
+        _25 = const cast<&'_ &'_ i32>(&raw const anon_const_0);
+        _11 = &(*_25);
+        _6 = (move _7, move _11);
+        storage_dead(_11);
+        storage_dead(_7);
         storage_live(left_val);
-        left_val = copy _5._0;
+        left_val = copy _6._0;
         storage_live(right_val);
-        right_val = copy _5._1;
-        storage_live(_13);
+        right_val = copy _6._1;
         storage_live(_14);
-        _14 = &(*left_val);
         storage_live(_15);
-        _15 = &(*right_val);
-        _13 = {impl PartialEq<&'_ B> for &'_ A}::eq::<'_, '_, i32, i32>(move _14, move _15) -> bb3 (unwind: bb7);
+        _15 = &(*left_val);
+        storage_live(_16);
+        _16 = &(*right_val);
+        _14 = {impl PartialEq<&'_ B> for &'_ A}::eq::<'_, '_, i32, i32>(move _15, move _16) -> bb3 (unwind: bb7);
     }
 
     bb3: {
-        if move _13 -> bb4 else -> bb5;
+        if move _14 -> bb4 else -> bb5;
     }
 
     bb4: {
+        storage_dead(_16);
         storage_dead(_15);
+        _5 = const ();
         storage_dead(_14);
-        storage_dead(_13);
         storage_dead(right_val);
         storage_dead(left_val);
-        storage_dead(_7);
+        storage_dead(_8);
+        storage_dead(_6);
         storage_dead(_5);
-        _0 = ();
+        _0 = const ();
         storage_dead(f);
         storage_dead(x);
         return;
     }
 
     bb5: {
+        storage_dead(_16);
         storage_dead(_15);
-        storage_dead(_14);
         storage_live(kind);
         kind = AssertKind::Eq {  };
-        storage_live(_17);
         storage_live(_18);
-        _18 = move kind;
         storage_live(_19);
+        _19 = move kind;
         storage_live(_20);
-        _20 = &(*left_val);
-        _19 = &(*_20);
         storage_live(_21);
+        _21 = &(*left_val);
+        _20 = &(*_21);
         storage_live(_22);
-        _22 = &(*right_val);
-        _21 = &(*_22);
         storage_live(_23);
-        _23 = Option::<Arguments::<'_>>::None {  };
-        _17 = assert_failed::<&'_ i32, &'_ i32>(move _18, move _19, move _21, move _23) -> bb6 (unwind: bb7);
+        _23 = &(*right_val);
+        _22 = &(*_23);
+        storage_live(_24);
+        _24 = Option::<Arguments::<'_>>::None {  };
+        _18 = assert_failed::<&'_ i32, &'_ i32>(move _19, move _20, move _22, move _24) -> bb6 (unwind: bb7);
     }
 
     bb6: {

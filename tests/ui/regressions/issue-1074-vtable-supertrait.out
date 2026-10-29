@@ -43,7 +43,7 @@ pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -60,8 +60,6 @@ fn main()
     let _6: &'_ MyStruct; // anonymous local
     let _7: usize; // anonymous local
     let _8: *const *const (); // anonymous local
-    let _9: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
-    let _10: *const MyStruct; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -71,11 +69,7 @@ fn main()
         storage_live(x);
         storage_live(_2);
         storage_live(_3);
-        storage_live(_9);
-        _9 = &raw const anon_const_0;
-        storage_live(_10);
-        _10 = cast<*const MyStruct>(move _9);
-        _6 = &(*_10);
+        _6 = const cast<&'_ MyStruct>(&raw const anon_const_0);
         _3 = &(*_6);
         _2 = &(*_3);
         x = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<MyStruct>)>(move _2);
@@ -93,7 +87,7 @@ fn main()
     bb1: {
         storage_dead(_5);
         storage_dead(_4);
-        _0 = ();
+        _0 = const ();
         storage_dead(x);
         return;
     }

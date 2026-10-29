@@ -145,7 +145,7 @@ fn trait_error(s: &'_ [u8])
 
     bb2: {
         storage_dead(_3);
-        _0 = ();
+        _0 = const ();
         storage_dead(_array);
         return;
     }
@@ -190,9 +190,6 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
     let _4: !; // anonymous local
     let _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: &'_ TryFromSliceError; // anonymous local
-    let _7: *const [u8; 43usize]; // anonymous local
-    let _8: *const str; // anonymous local
-    let _9: &'_ str; // anonymous local
 
     bb0: {
         storage_live(t);
@@ -214,13 +211,7 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
         storage_live(_6);
         _6 = &e;
         _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<TryFromSliceError>)>(copy _6);
-        storage_live(_7);
-        _7 = &raw const anon_const_0;
-        storage_live(_8);
-        _8 = unsize_cast<*const str, 43usize>(move _7);
-        storage_live(_9);
-        _9 = &(*_8) with_metadata(copy _8.metadata);
-        _4 = unwrap_failed(move _9, move _5) -> bb3 (unwind: bb4);
+        _4 = unwrap_failed(const unsize_cast<&'_ str, 43usize>(&raw const anon_const_0), move _5) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -252,8 +243,6 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
     let v_10: &'_ [u8; 4usize]; // local
     let v_11: [u8; 4usize]; // local
     let _12: &'_ [u8; 4usize]; // anonymous local
-    let _13: TryFromSliceError; // anonymous local
-    let _14: TryFromSliceError; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -298,17 +287,13 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
 
     bb2: {
         storage_dead(_5);
-        self_3 = Option::<&'_ [u8; 4usize]>::None {  };
+        self_3 = const Option::<&'_ [u8; 4usize]>::None {  };
         storage_dead(_4);
         storage_dead(_9);
-        storage_live(_13);
-        _13 = TryFromSliceError { _0: const () };
-        self_2 = Result::<&'_ [u8; 4usize], TryFromSliceError>::Err { _0: move _13 };
+        self_2 = const Result::<&'_ [u8; 4usize], TryFromSliceError>::Err { _0: TryFromSliceError { _0: () } };
         storage_dead(self_3);
         storage_live(_12);
-        storage_live(_14);
-        _14 = TryFromSliceError { _0: const () };
-        _0 = Result::<[u8; 4usize], TryFromSliceError>::Err { _0: move _14 };
+        _0 = Result::<[u8; 4usize], TryFromSliceError>::Err { _0: const TryFromSliceError { _0: () } };
         goto bb3;
     }
 
@@ -347,9 +332,6 @@ pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_
     let _3: &'_ (dyn FakeTrait); // anonymous local
     let _4: &'_ &'_ (); // anonymous local
     let _5: &'_ (); // anonymous local
-    let _6: *const [u8; 17usize]; // anonymous local
-    let _7: *const str; // anonymous local
-    let _8: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -359,13 +341,7 @@ pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_
         _5 = &(*self)._0;
         _4 = &_5;
         _3 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ ()>)>(copy _4);
-        storage_live(_6);
-        _6 = &raw const anon_const_1;
-        storage_live(_7);
-        _7 = unsize_cast<*const str, 17usize>(move _6);
-        storage_live(_8);
-        _8 = &(*_7) with_metadata(copy _7.metadata);
-        _0 = debug_tuple_field1_finish::<'_>(move f, move _8, move _3) -> bb1 (unwind: bb2);
+        _0 = debug_tuple_field1_finish::<'_>(move f, const unsize_cast<&'_ str, 17usize>(&raw const anon_const_1), move _3) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -428,19 +404,10 @@ pub fn impl_Debug_for_unit::fmt(self: &'_ (), f: &'_ mut Formatter::<'_>) -> Res
     let _0: Result::<(), Error>; // return
     let self: &'_ (); // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: *const [u8; 2usize]; // anonymous local
-    let _4: *const str; // anonymous local
-    let _5: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_3);
-        _3 = &raw const anon_const_2;
-        storage_live(_4);
-        _4 = unsize_cast<*const str, 2usize>(move _3);
-        storage_live(_5);
-        _5 = &(*_4) with_metadata(copy _4.metadata);
-        _0 = pad::<'_>(move f, move _5) -> bb1 (unwind: bb2);
+        _0 = pad::<'_>(move f, const unsize_cast<&'_ str, 2usize>(&raw const anon_const_2)) -> bb1 (unwind: bb2);
     }
 
     bb1: {

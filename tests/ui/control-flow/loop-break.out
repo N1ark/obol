@@ -38,7 +38,7 @@ fn do_something()
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -51,7 +51,7 @@ fn do_something_at_the_end()
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -60,55 +60,61 @@ fn do_something_at_the_end()
 fn main()
 {
     let _0: (); // return
-    let _1: bool; // anonymous local
-    let _2: (); // anonymous local
-    let _3: bool; // anonymous local
-    let _4: bool; // anonymous local
+    let _1: (); // anonymous local
+    let _2: bool; // anonymous local
+    let _3: (); // anonymous local
+    let _4: (); // anonymous local
+    let _5: bool; // anonymous local
+    let _6: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
+        storage_live(_3);
         _0 = ();
         storage_live(_1);
-        _1 = foo() -> bb1 (unwind: bb15);
+        storage_live(_2);
+        _2 = foo() -> bb1 (unwind: bb16);
     }
 
     bb1: {
-        if move _1 -> bb2 else -> bb12;
+        if move _2 -> bb2 else -> bb12;
     }
 
     bb2: {
-        storage_live(_2);
-        _2 = do_something() -> bb3 (unwind: bb11);
+        storage_live(_4);
+        _4 = do_something() -> bb3 (unwind: bb11);
     }
 
     bb3: {
-        storage_dead(_2);
-        storage_live(_3);
-        _3 = foo() -> bb4 (unwind: bb10);
+        storage_dead(_4);
+        storage_live(_5);
+        _5 = foo() -> bb4 (unwind: bb10);
     }
 
     bb4: {
-        if move _3 -> bb7 else -> bb5;
+        if move _5 -> bb7 else -> bb5;
     }
 
     bb5: {
-        storage_live(_4);
-        _4 = bar() -> bb6 (unwind: bb9);
+        storage_live(_6);
+        _6 = bar() -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        if move _4 -> bb7 else -> bb8;
+        if move _6 -> bb7 else -> bb8;
     }
 
     bb7: {
-        storage_dead(_4);
-        storage_dead(_3);
-        goto bb12;
+        _1 = const ();
+        storage_dead(_6);
+        storage_dead(_5);
+        goto bb13;
     }
 
     bb8: {
-        storage_dead(_4);
-        storage_dead(_3);
+        _3 = const ();
+        storage_dead(_6);
+        storage_dead(_5);
         goto bb2;
     }
 
@@ -125,19 +131,25 @@ fn main()
     }
 
     bb12: {
-        storage_dead(_1);
-        _0 = do_something_at_the_end() -> bb13 (unwind: bb14);
+        _1 = const ();
+        goto bb13;
     }
 
     bb13: {
-        return;
+        storage_dead(_2);
+        storage_dead(_1);
+        _0 = do_something_at_the_end() -> bb14 (unwind: bb15);
     }
 
     bb14: {
-        unwind_continue;
+        return;
     }
 
     bb15: {
+        unwind_continue;
+    }
+
+    bb16: {
         unwind_continue;
     }
 }

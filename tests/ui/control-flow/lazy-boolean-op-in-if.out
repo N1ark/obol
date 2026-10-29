@@ -38,7 +38,7 @@ fn do_something()
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -51,7 +51,7 @@ fn do_something_else()
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -64,7 +64,7 @@ fn do_something_at_the_end()
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -147,10 +147,12 @@ fn main2()
     let b: bool; // local
     let c: bool; // local
     let d: bool; // local
-    let _6: bool; // anonymous local
+    let _6: (); // anonymous local
     let _7: bool; // anonymous local
     let _8: bool; // anonymous local
-    let _9: bool; // anonymous local
+    let _9: (); // anonymous local
+    let _10: bool; // anonymous local
+    let _11: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -166,45 +168,61 @@ fn main2()
         storage_live(d);
         d = const true;
         storage_live(_6);
-        _6 = copy a;
-        if move _6 -> bb2 else -> bb1;
+        storage_live(_7);
+        _7 = copy a;
+        if move _7 -> bb2 else -> bb1;
     }
 
     bb1: {
-        storage_live(_7);
-        _7 = copy b;
-        if move _7 -> bb2 else -> bb6;
+        storage_live(_8);
+        _8 = copy b;
+        if move _8 -> bb2 else -> bb7;
     }
 
     bb2: {
-        storage_live(_8);
-        _8 = copy c;
-        if move _8 -> bb4 else -> bb3;
+        storage_live(_9);
+        storage_live(_10);
+        _10 = copy c;
+        if move _10 -> bb4 else -> bb3;
     }
 
     bb3: {
-        storage_live(_9);
-        _9 = copy d;
-        if move _9 -> bb4 else -> bb5;
+        storage_live(_11);
+        _11 = copy d;
+        if move _11 -> bb4 else -> bb5;
     }
 
     bb4: {
         x = const 1i32;
-        goto bb5;
+        _9 = const ();
+        goto bb6;
     }
 
     bb5: {
-        storage_dead(_9);
-        storage_dead(_8);
-        x = const 2i32;
+        _9 = const ();
         goto bb6;
     }
 
     bb6: {
+        storage_dead(_11);
+        storage_dead(_10);
+        storage_dead(_9);
+        x = const 2i32;
+        _6 = const ();
+        goto bb8;
+    }
+
+    bb7: {
+        _6 = const ();
+        goto bb8;
+    }
+
+    bb8: {
+        storage_dead(_8);
         storage_dead(_7);
         storage_dead(_6);
         x = const 3i32;
-        _0 = ();
+        _0 = const ();
         storage_dead(d);
         storage_dead(c);
         storage_dead(b);
