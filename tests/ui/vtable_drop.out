@@ -357,7 +357,6 @@ fn main()
     let _2: &'_ i32; // anonymous local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ i32; // anonymous local
-    let _5: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -366,9 +365,7 @@ fn main()
         storage_live(_1);
         storage_live(_2);
         storage_live(_3);
-        storage_live(_5);
-        _5 = &anon_const_0;
-        _4 = move _5;
+        _4 = &anon_const_0;
         _3 = &(*_4);
         _2 = &(*_3);
         _1 = modify_trait_object::<i32>(move _2) -> bb1 (unwind: bb2);
@@ -755,11 +752,8 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _38: bool; // anonymous local
     let _39: bool; // anonymous local
     let _40: *mut u8; // anonymous local
-    let _41: Option::<NonNull::<u8>>; // anonymous local
+    let _41: AllocError; // anonymous local
     let _42: AllocError; // anonymous local
-    let _43: Result::<NonNull::<u8>, AllocError>; // anonymous local
-    let _44: AllocError; // anonymous local
-    let _45: Result::<NonNull::<[u8]>, AllocError>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -877,15 +871,11 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb16: {
-        storage_live(_41);
-        _41 = Option::<NonNull::<u8>>::None {  };
-        self_9 = move _41;
+        self_9 = Option::<NonNull::<u8>>::None {  };
         storage_dead(_22);
-        storage_live(_42);
-        _42 = AllocError {  };
-        storage_live(_43);
-        _43 = Result::<NonNull::<u8>, AllocError>::Err { _0: move _42 };
-        self_8 = move _43;
+        storage_live(_41);
+        _41 = AllocError {  };
+        self_8 = Result::<NonNull::<u8>, AllocError>::Err { _0: move _41 };
         storage_dead(self_9);
         storage_dead(self_8);
         storage_live(_33);
@@ -896,11 +886,9 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb17: {
-        storage_live(_44);
-        _44 = AllocError {  };
-        storage_live(_45);
-        _45 = Result::<NonNull::<[u8]>, AllocError>::Err { _0: move _44 };
-        _0 = move _45;
+        storage_live(_42);
+        _42 = AllocError {  };
+        _0 = Result::<NonNull::<[u8]>, AllocError>::Err { _0: move _42 };
         storage_dead(_34);
         storage_dead(_33);
         storage_dead(_7);
@@ -1060,10 +1048,9 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
     let _14: &'_ [u8]; // anonymous local
     let _15: *const [u8; 198usize]; // anonymous local
     let _16: *const str; // anonymous local
-    let _17: &'_ str; // anonymous local
-    let _18: *const [u8; 198usize]; // anonymous local
-    let _19: *const str; // anonymous local
-    let _20: &'_ str; // anonymous local
+    let _17: *const [u8; 198usize]; // anonymous local
+    let _18: *const str; // anonymous local
+    let _19: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1091,9 +1078,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         _15 = &raw const anon_const_2;
         storage_live(_16);
         _16 = unsize_cast<*const str, 198usize>(move _15);
-        storage_live(_17);
-        _17 = &(*_16) with_metadata(copy _16.metadata);
-        msg = move _17;
+        msg = &(*_16) with_metadata(copy _16.metadata);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -1108,13 +1093,13 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
+        storage_live(_17);
+        _17 = &raw const anon_const_2;
         storage_live(_18);
-        _18 = &raw const anon_const_2;
+        _18 = unsize_cast<*const str, 198usize>(move _17);
         storage_live(_19);
-        _19 = unsize_cast<*const str, 198usize>(move _18);
-        storage_live(_20);
-        _20 = &(*_19) with_metadata(copy _19.metadata);
-        _14 = transmute<&'_ [u8]>(move _20);
+        _19 = &(*_18) with_metadata(copy _18.metadata);
+        _14 = transmute<&'_ [u8]>(move _19);
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -1164,10 +1149,9 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
     let _16: &'_ [u8]; // anonymous local
     let _17: *const [u8; 259usize]; // anonymous local
     let _18: *const str; // anonymous local
-    let _19: &'_ str; // anonymous local
-    let _20: *const [u8; 259usize]; // anonymous local
-    let _21: *const str; // anonymous local
-    let _22: &'_ str; // anonymous local
+    let _19: *const [u8; 259usize]; // anonymous local
+    let _20: *const str; // anonymous local
+    let _21: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1195,9 +1179,7 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
         _17 = &raw const anon_const_3;
         storage_live(_18);
         _18 = unsize_cast<*const str, 259usize>(move _17);
-        storage_live(_19);
-        _19 = &(*_18) with_metadata(copy _18.metadata);
-        msg = move _19;
+        msg = &(*_18) with_metadata(copy _18.metadata);
         storage_live(_6);
         storage_live(_9);
         storage_live(_10);
@@ -1212,13 +1194,13 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
         storage_live(_13);
         storage_live(_14);
         storage_live(_16);
+        storage_live(_19);
+        _19 = &raw const anon_const_3;
         storage_live(_20);
-        _20 = &raw const anon_const_3;
+        _20 = unsize_cast<*const str, 259usize>(move _19);
         storage_live(_21);
-        _21 = unsize_cast<*const str, 259usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21) with_metadata(copy _21.metadata);
-        _16 = transmute<&'_ [u8]>(move _22);
+        _21 = &(*_20) with_metadata(copy _20.metadata);
+        _16 = transmute<&'_ [u8]>(move _21);
         _14 = noretag copy _16.metadata;
         storage_dead(_16);
         _13 = move _14 wrap.<< const 1i32;
@@ -1303,10 +1285,9 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     let _16: *mut (); // anonymous local
     let _17: *const [u8; 210usize]; // anonymous local
     let _18: *const str; // anonymous local
-    let _19: &'_ str; // anonymous local
-    let _20: *const [u8; 210usize]; // anonymous local
-    let _21: *const str; // anonymous local
-    let _22: &'_ str; // anonymous local
+    let _19: *const [u8; 210usize]; // anonymous local
+    let _20: *const str; // anonymous local
+    let _21: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1331,9 +1312,7 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         _17 = &raw const anon_const_4;
         storage_live(_18);
         _18 = unsize_cast<*const str, 210usize>(move _17);
-        storage_live(_19);
-        _19 = &(*_18) with_metadata(copy _18.metadata);
-        msg = move _19;
+        msg = &(*_18) with_metadata(copy _18.metadata);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -1348,13 +1327,13 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
+        storage_live(_19);
+        _19 = &raw const anon_const_4;
         storage_live(_20);
-        _20 = &raw const anon_const_4;
+        _20 = unsize_cast<*const str, 210usize>(move _19);
         storage_live(_21);
-        _21 = unsize_cast<*const str, 210usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21) with_metadata(copy _21.metadata);
-        _14 = transmute<&'_ [u8]>(move _22);
+        _21 = &(*_20) with_metadata(copy _20.metadata);
+        _14 = transmute<&'_ [u8]>(move _21);
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;

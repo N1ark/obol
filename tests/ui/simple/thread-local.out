@@ -611,7 +611,6 @@ fn main()
     let _4: &'_ LocalKey::<u32>; // anonymous local
     let _5: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
     let _6: *const LocalKey::<u32>; // anonymous local
-    let _7: &'_ LocalKey::<u32>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -623,9 +622,7 @@ fn main()
         _5 = &raw const anon_const_0;
         storage_live(_6);
         _6 = cast<*const LocalKey::<u32>>(move _5);
-        storage_live(_7);
-        _7 = &(*_6);
-        _4 = move _7;
+        _4 = &(*_6);
         _2 = &(*_4);
         storage_live(_3);
         _3 = test_crate::main::{closure}::{closure} {  };
@@ -751,11 +748,9 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
     let _21: (); // anonymous local
     let _22: bool; // anonymous local
     let _23: *const u32; // anonymous local
-    let _24: Option::<&'_ u32>; // anonymous local
+    let _24: AccessError; // anonymous local
     let _25: AccessError; // anonymous local
-    let _26: Result::<&'_ u32, AccessError>; // anonymous local
-    let _27: AccessError; // anonymous local
-    let _28: Option::<&'_ mut Option::<u32>>; // anonymous local
+    let _26: Option::<&'_ mut Option::<u32>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -770,9 +765,9 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
         storage_live(self_6);
         storage_live(_7);
         _7 = copy (*self_1).inner;
-        storage_live(_28);
-        _28 = Option::<&'_ mut Option::<u32>>::None {  };
-        self_6 = (copy _7)(move _28) -> bb1 (unwind: bb8);
+        storage_live(_26);
+        _26 = Option::<&'_ mut Option::<u32>>::None {  };
+        self_6 = (copy _7)(move _26) -> bb1 (unwind: bb8);
     }
 
     bb1: {
@@ -791,16 +786,12 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
     }
 
     bb2: {
-        storage_live(_24);
-        _24 = Option::<&'_ u32>::None {  };
-        self_5 = move _24;
+        self_5 = Option::<&'_ u32>::None {  };
         storage_dead(_14);
         storage_dead(self_6);
-        storage_live(_25);
-        _25 = AccessError {  };
-        storage_live(_26);
-        _26 = Result::<&'_ u32, AccessError>::Err { _0: move _25 };
-        self_4 = move _26;
+        storage_live(_24);
+        _24 = AccessError {  };
+        self_4 = Result::<&'_ u32, AccessError>::Err { _0: move _24 };
         storage_dead(self_5);
         storage_dead(self_4);
         storage_live(_19);
@@ -811,9 +802,9 @@ pub fn try_with::<u32, test_crate::main::{closure}::{closure}, u32>(self_1: &'_ 
     }
 
     bb3: {
-        storage_live(_27);
-        _27 = AccessError {  };
-        _0 = Result::<u32, AccessError>::Err { _0: move _27 };
+        storage_live(_25);
+        _25 = AccessError {  };
+        _0 = Result::<u32, AccessError>::Err { _0: move _25 };
         storage_dead(_20);
         storage_dead(_19);
         storage_dead(_3);
@@ -1083,13 +1074,11 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     let _50: bool; // anonymous local
     let _51: *mut Result::<(), core::io::error::Error>; // anonymous local
     let _52: (); // anonymous local
-    let _53: *const u32; // anonymous local
-    let _54: *const [u8; 43usize]; // anonymous local
-    let _55: *const str; // anonymous local
-    let _56: &'_ str; // anonymous local
-    let _57: *const [u8; 43usize]; // anonymous local
-    let _58: *const str; // anonymous local
-    let _59: &'_ str; // anonymous local
+    let _53: *const [u8; 43usize]; // anonymous local
+    let _54: *const str; // anonymous local
+    let _55: *const [u8; 43usize]; // anonymous local
+    let _56: *const str; // anonymous local
+    let _57: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1284,13 +1273,11 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         _19 = &mut _17;
         storage_live(_20);
         storage_live(s);
+        storage_live(_53);
+        _53 = &raw const anon_const_2;
         storage_live(_54);
-        _54 = &raw const anon_const_2;
-        storage_live(_55);
-        _55 = unsize_cast<*const str, 43usize>(move _54);
-        storage_live(_56);
-        _56 = &(*_55) with_metadata(copy _55.metadata);
-        s = move _56;
+        _54 = unsize_cast<*const str, 43usize>(move _53);
+        s = &(*_54) with_metadata(copy _54.metadata);
         storage_live(_41);
         storage_live(_42);
         storage_live(_47);
@@ -1304,13 +1291,13 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
         storage_live(_45);
         storage_live(_46);
         storage_live(_48);
+        storage_live(_55);
+        _55 = &raw const anon_const_2;
+        storage_live(_56);
+        _56 = unsize_cast<*const str, 43usize>(move _55);
         storage_live(_57);
-        _57 = &raw const anon_const_2;
-        storage_live(_58);
-        _58 = unsize_cast<*const str, 43usize>(move _57);
-        storage_live(_59);
-        _59 = &(*_58) with_metadata(copy _58.metadata);
-        _48 = transmute<&'_ [u8]>(move _59);
+        _57 = &(*_56) with_metadata(copy _56.metadata);
+        _48 = transmute<&'_ [u8]>(move _57);
         _46 = noretag copy _48.metadata;
         storage_dead(_48);
         _45 = move _46 wrap.<< const 1i32;
@@ -1364,9 +1351,7 @@ fn get_or_init_slow::<u32, !, __rust_std_internal_init_fn>(self_1: &'_ Storage::
     }
 
     bb30: {
-        storage_live(_53);
-        _53 = cast<*const u32>(const 0usize);
-        _0 = move _53;
+        _0 = cast<*const u32>(const 0usize);
         goto bb31;
     }
 
@@ -1431,10 +1416,9 @@ fn core::ptr::replace::precondition_check(addr: *const (), align: usize, is_zst:
     let _20: *const (); // anonymous local
     let _21: *const [u8; 221usize]; // anonymous local
     let _22: *const str; // anonymous local
-    let _23: &'_ str; // anonymous local
-    let _24: *const [u8; 221usize]; // anonymous local
-    let _25: *const str; // anonymous local
-    let _26: &'_ str; // anonymous local
+    let _23: *const [u8; 221usize]; // anonymous local
+    let _24: *const str; // anonymous local
+    let _25: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1491,9 +1475,7 @@ fn core::ptr::replace::precondition_check(addr: *const (), align: usize, is_zst:
         _21 = &raw const anon_const_3;
         storage_live(_22);
         _22 = unsize_cast<*const str, 221usize>(move _21);
-        storage_live(_23);
-        _23 = &(*_22) with_metadata(copy _22.metadata);
-        msg = move _23;
+        msg = &(*_22) with_metadata(copy _22.metadata);
         storage_live(_7);
         storage_live(_11);
         storage_live(_12);
@@ -1508,13 +1490,13 @@ fn core::ptr::replace::precondition_check(addr: *const (), align: usize, is_zst:
         storage_live(_15);
         storage_live(_16);
         storage_live(_18);
+        storage_live(_23);
+        _23 = &raw const anon_const_3;
         storage_live(_24);
-        _24 = &raw const anon_const_3;
+        _24 = unsize_cast<*const str, 221usize>(move _23);
         storage_live(_25);
-        _25 = unsize_cast<*const str, 221usize>(move _24);
-        storage_live(_26);
-        _26 = &(*_25) with_metadata(copy _25.metadata);
-        _18 = transmute<&'_ [u8]>(move _26);
+        _25 = &(*_24) with_metadata(copy _24.metadata);
+        _18 = transmute<&'_ [u8]>(move _25);
         _16 = noretag copy _18.metadata;
         storage_dead(_18);
         _15 = move _16 wrap.<< const 1i32;
@@ -1699,10 +1681,9 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
     let _19: &'_ [u8]; // anonymous local
     let _20: *const [u8; 42usize]; // anonymous local
     let _21: *const str; // anonymous local
-    let _22: &'_ str; // anonymous local
-    let _23: *const [u8; 42usize]; // anonymous local
-    let _24: *const str; // anonymous local
-    let _25: &'_ str; // anonymous local
+    let _22: *const [u8; 42usize]; // anonymous local
+    let _23: *const str; // anonymous local
+    let _24: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1743,9 +1724,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         _20 = &raw const anon_const_4;
         storage_live(_21);
         _21 = unsize_cast<*const str, 42usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21) with_metadata(copy _21.metadata);
-        s = move _22;
+        s = &(*_21) with_metadata(copy _21.metadata);
         storage_live(_12);
         storage_live(_13);
         storage_live(_18);
@@ -1759,13 +1738,13 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_16);
         storage_live(_17);
         storage_live(_19);
+        storage_live(_22);
+        _22 = &raw const anon_const_4;
         storage_live(_23);
-        _23 = &raw const anon_const_4;
+        _23 = unsize_cast<*const str, 42usize>(move _22);
         storage_live(_24);
-        _24 = unsize_cast<*const str, 42usize>(move _23);
-        storage_live(_25);
-        _25 = &(*_24) with_metadata(copy _24.metadata);
-        _19 = transmute<&'_ [u8]>(move _25);
+        _24 = &(*_23) with_metadata(copy _23.metadata);
+        _19 = transmute<&'_ [u8]>(move _24);
         _17 = noretag copy _19.metadata;
         storage_dead(_19);
         _16 = move _17 wrap.<< const 1i32;
@@ -1847,8 +1826,6 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
     let v: *const [u8]; // local
     let _15: isize; // anonymous local
     let _16: bool; // anonymous local
-    let _17: Option::<&'_ str>; // anonymous local
-    let _18: Option::<&'_ str>; // anonymous local
 
     bb0: {
         storage_live(s);
@@ -1908,9 +1885,7 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
 
     bb6: {
         storage_dead(_6);
-        storage_live(_17);
-        _17 = Option::<&'_ str>::None {  };
-        s = move _17;
+        s = Option::<&'_ str>::None {  };
         goto bb7;
     }
 
@@ -1938,9 +1913,7 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
 
     bb10: {
         storage_dead(_3);
-        storage_live(_18);
-        _18 = Option::<&'_ str>::None {  };
-        s = move _18;
+        s = Option::<&'_ str>::None {  };
         goto bb11;
     }
 
@@ -1985,7 +1958,6 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
     let _25: (); // anonymous local
     let _26: *mut core::io::error::Error; // anonymous local
     let _27: (); // anonymous local
-    let _28: Result::<(), core::io::error::Error>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2014,9 +1986,7 @@ pub fn write_all::<Stderr>(self_1: &'_ mut Stderr, buf: &'_ [u8]) -> Result::<()
     bb2: {
         storage_dead(self_4);
         storage_dead(_3);
-        storage_live(_28);
-        _28 = Result::<(), core::io::error::Error>::Ok { _0: const () };
-        _0 = move _28;
+        _0 = Result::<(), core::io::error::Error>::Ok { _0: const () };
         goto bb20;
     }
 
@@ -2200,13 +2170,11 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
     let _24: *mut Result::<(), core::io::error::Error>; // anonymous local
     let _25: (); // anonymous local
     let _26: Result::<(), core::io::error::Error>; // anonymous local
-    let _27: Result::<(), core::io::error::Error>; // anonymous local
-    let _28: *const [u8; 86usize]; // anonymous local
-    let _29: *const str; // anonymous local
-    let _30: &'_ str; // anonymous local
-    let _31: *const [u8; 86usize]; // anonymous local
-    let _32: *const str; // anonymous local
-    let _33: &'_ str; // anonymous local
+    let _27: *const [u8; 86usize]; // anonymous local
+    let _28: *const str; // anonymous local
+    let _29: *const [u8; 86usize]; // anonymous local
+    let _30: *const str; // anonymous local
+    let _31: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2235,9 +2203,7 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
     }
 
     bb2: {
-        storage_live(_27);
-        _27 = Result::<(), core::io::error::Error>::Ok { _0: const () };
-        _0 = move _27;
+        _0 = Result::<(), core::io::error::Error>::Ok { _0: const () };
         storage_dead(_6);
         storage_dead(_4);
         _24 = &raw mut output.error;
@@ -2276,13 +2242,11 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
     bb7: {
         storage_live(_10);
         storage_live(s);
+        storage_live(_27);
+        _27 = &raw const anon_const_6;
         storage_live(_28);
-        _28 = &raw const anon_const_6;
-        storage_live(_29);
-        _29 = unsize_cast<*const str, 86usize>(move _28);
-        storage_live(_30);
-        _30 = &(*_29) with_metadata(copy _29.metadata);
-        s = move _30;
+        _28 = unsize_cast<*const str, 86usize>(move _27);
+        s = &(*_28) with_metadata(copy _28.metadata);
         storage_live(_14);
         storage_live(_15);
         storage_live(_20);
@@ -2296,13 +2260,13 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
         storage_live(_18);
         storage_live(_19);
         storage_live(_21);
+        storage_live(_29);
+        _29 = &raw const anon_const_6;
+        storage_live(_30);
+        _30 = unsize_cast<*const str, 86usize>(move _29);
         storage_live(_31);
-        _31 = &raw const anon_const_6;
-        storage_live(_32);
-        _32 = unsize_cast<*const str, 86usize>(move _31);
-        storage_live(_33);
-        _33 = &(*_32) with_metadata(copy _32.metadata);
-        _21 = transmute<&'_ [u8]>(move _33);
+        _31 = &(*_30) with_metadata(copy _30.metadata);
+        _21 = transmute<&'_ [u8]>(move _31);
         _19 = noretag copy _21.metadata;
         storage_dead(_21);
         _18 = move _19 wrap.<< const 1i32;
@@ -2503,10 +2467,9 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
     let _24: *mut (); // anonymous local
     let _25: *const [u8; 279usize]; // anonymous local
     let _26: *const str; // anonymous local
-    let _27: &'_ str; // anonymous local
-    let _28: *const [u8; 279usize]; // anonymous local
-    let _29: *const str; // anonymous local
-    let _30: &'_ str; // anonymous local
+    let _27: *const [u8; 279usize]; // anonymous local
+    let _28: *const str; // anonymous local
+    let _29: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2585,9 +2548,7 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         _25 = &raw const anon_const_7;
         storage_live(_26);
         _26 = unsize_cast<*const str, 279usize>(move _25);
-        storage_live(_27);
-        _27 = &(*_26) with_metadata(copy _26.metadata);
-        msg = move _27;
+        msg = &(*_26) with_metadata(copy _26.metadata);
         storage_live(_10);
         storage_live(_15);
         storage_live(_16);
@@ -2602,13 +2563,13 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         storage_live(_19);
         storage_live(_20);
         storage_live(_22);
+        storage_live(_27);
+        _27 = &raw const anon_const_7;
         storage_live(_28);
-        _28 = &raw const anon_const_7;
+        _28 = unsize_cast<*const str, 279usize>(move _27);
         storage_live(_29);
-        _29 = unsize_cast<*const str, 279usize>(move _28);
-        storage_live(_30);
-        _30 = &(*_29) with_metadata(copy _29.metadata);
-        _22 = transmute<&'_ [u8]>(move _30);
+        _29 = &(*_28) with_metadata(copy _28.metadata);
+        _22 = transmute<&'_ [u8]>(move _29);
         _20 = noretag copy _22.metadata;
         storage_dead(_22);
         _19 = move _20 wrap.<< const 1i32;
@@ -3353,94 +3314,49 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     let _0: Option::<ErrorKind>; // return
     let ek: u32; // arg #1
     let _2: ErrorKind; // anonymous local
-    let _3: Option::<ErrorKind>; // anonymous local
+    let _3: ErrorKind; // anonymous local
     let _4: ErrorKind; // anonymous local
-    let _5: Option::<ErrorKind>; // anonymous local
+    let _5: ErrorKind; // anonymous local
     let _6: ErrorKind; // anonymous local
-    let _7: Option::<ErrorKind>; // anonymous local
+    let _7: ErrorKind; // anonymous local
     let _8: ErrorKind; // anonymous local
-    let _9: Option::<ErrorKind>; // anonymous local
+    let _9: ErrorKind; // anonymous local
     let _10: ErrorKind; // anonymous local
-    let _11: Option::<ErrorKind>; // anonymous local
+    let _11: ErrorKind; // anonymous local
     let _12: ErrorKind; // anonymous local
-    let _13: Option::<ErrorKind>; // anonymous local
+    let _13: ErrorKind; // anonymous local
     let _14: ErrorKind; // anonymous local
-    let _15: Option::<ErrorKind>; // anonymous local
+    let _15: ErrorKind; // anonymous local
     let _16: ErrorKind; // anonymous local
-    let _17: Option::<ErrorKind>; // anonymous local
+    let _17: ErrorKind; // anonymous local
     let _18: ErrorKind; // anonymous local
-    let _19: Option::<ErrorKind>; // anonymous local
+    let _19: ErrorKind; // anonymous local
     let _20: ErrorKind; // anonymous local
-    let _21: Option::<ErrorKind>; // anonymous local
+    let _21: ErrorKind; // anonymous local
     let _22: ErrorKind; // anonymous local
-    let _23: Option::<ErrorKind>; // anonymous local
+    let _23: ErrorKind; // anonymous local
     let _24: ErrorKind; // anonymous local
-    let _25: Option::<ErrorKind>; // anonymous local
+    let _25: ErrorKind; // anonymous local
     let _26: ErrorKind; // anonymous local
-    let _27: Option::<ErrorKind>; // anonymous local
+    let _27: ErrorKind; // anonymous local
     let _28: ErrorKind; // anonymous local
-    let _29: Option::<ErrorKind>; // anonymous local
+    let _29: ErrorKind; // anonymous local
     let _30: ErrorKind; // anonymous local
-    let _31: Option::<ErrorKind>; // anonymous local
+    let _31: ErrorKind; // anonymous local
     let _32: ErrorKind; // anonymous local
-    let _33: Option::<ErrorKind>; // anonymous local
+    let _33: ErrorKind; // anonymous local
     let _34: ErrorKind; // anonymous local
-    let _35: Option::<ErrorKind>; // anonymous local
+    let _35: ErrorKind; // anonymous local
     let _36: ErrorKind; // anonymous local
-    let _37: Option::<ErrorKind>; // anonymous local
+    let _37: ErrorKind; // anonymous local
     let _38: ErrorKind; // anonymous local
-    let _39: Option::<ErrorKind>; // anonymous local
+    let _39: ErrorKind; // anonymous local
     let _40: ErrorKind; // anonymous local
-    let _41: Option::<ErrorKind>; // anonymous local
+    let _41: ErrorKind; // anonymous local
     let _42: ErrorKind; // anonymous local
-    let _43: Option::<ErrorKind>; // anonymous local
+    let _43: ErrorKind; // anonymous local
     let _44: ErrorKind; // anonymous local
-    let _45: Option::<ErrorKind>; // anonymous local
-    let _46: ErrorKind; // anonymous local
-    let _47: Option::<ErrorKind>; // anonymous local
-    let _48: ErrorKind; // anonymous local
-    let _49: Option::<ErrorKind>; // anonymous local
-    let _50: ErrorKind; // anonymous local
-    let _51: Option::<ErrorKind>; // anonymous local
-    let _52: ErrorKind; // anonymous local
-    let _53: Option::<ErrorKind>; // anonymous local
-    let _54: ErrorKind; // anonymous local
-    let _55: Option::<ErrorKind>; // anonymous local
-    let _56: ErrorKind; // anonymous local
-    let _57: Option::<ErrorKind>; // anonymous local
-    let _58: ErrorKind; // anonymous local
-    let _59: Option::<ErrorKind>; // anonymous local
-    let _60: ErrorKind; // anonymous local
-    let _61: Option::<ErrorKind>; // anonymous local
-    let _62: ErrorKind; // anonymous local
-    let _63: Option::<ErrorKind>; // anonymous local
-    let _64: ErrorKind; // anonymous local
-    let _65: Option::<ErrorKind>; // anonymous local
-    let _66: ErrorKind; // anonymous local
-    let _67: Option::<ErrorKind>; // anonymous local
-    let _68: ErrorKind; // anonymous local
-    let _69: Option::<ErrorKind>; // anonymous local
-    let _70: ErrorKind; // anonymous local
-    let _71: Option::<ErrorKind>; // anonymous local
-    let _72: ErrorKind; // anonymous local
-    let _73: Option::<ErrorKind>; // anonymous local
-    let _74: ErrorKind; // anonymous local
-    let _75: Option::<ErrorKind>; // anonymous local
-    let _76: ErrorKind; // anonymous local
-    let _77: Option::<ErrorKind>; // anonymous local
-    let _78: ErrorKind; // anonymous local
-    let _79: Option::<ErrorKind>; // anonymous local
-    let _80: ErrorKind; // anonymous local
-    let _81: Option::<ErrorKind>; // anonymous local
-    let _82: ErrorKind; // anonymous local
-    let _83: Option::<ErrorKind>; // anonymous local
-    let _84: ErrorKind; // anonymous local
-    let _85: Option::<ErrorKind>; // anonymous local
-    let _86: ErrorKind; // anonymous local
-    let _87: Option::<ErrorKind>; // anonymous local
-    let _88: ErrorKind; // anonymous local
-    let _89: Option::<ErrorKind>; // anonymous local
-    let _90: Option::<ErrorKind>; // anonymous local
+    let _45: ErrorKind; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3450,9 +3366,7 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     bb1: {
         storage_live(_2);
         _2 = ErrorKind::NotFound {  };
-        storage_live(_3);
-        _3 = Option::<ErrorKind>::Some { _0: move _2 };
-        _0 = move _3;
+        _0 = Option::<ErrorKind>::Some { _0: move _2 };
         goto bb89;
     }
 
@@ -3461,11 +3375,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb3: {
-        storage_live(_4);
-        _4 = ErrorKind::PermissionDenied {  };
-        storage_live(_5);
-        _5 = Option::<ErrorKind>::Some { _0: move _4 };
-        _0 = move _5;
+        storage_live(_3);
+        _3 = ErrorKind::PermissionDenied {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _3 };
         goto bb89;
     }
 
@@ -3474,11 +3386,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb5: {
-        storage_live(_6);
-        _6 = ErrorKind::ConnectionRefused {  };
-        storage_live(_7);
-        _7 = Option::<ErrorKind>::Some { _0: move _6 };
-        _0 = move _7;
+        storage_live(_4);
+        _4 = ErrorKind::ConnectionRefused {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _4 };
         goto bb89;
     }
 
@@ -3487,11 +3397,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb7: {
-        storage_live(_8);
-        _8 = ErrorKind::ConnectionReset {  };
-        storage_live(_9);
-        _9 = Option::<ErrorKind>::Some { _0: move _8 };
-        _0 = move _9;
+        storage_live(_5);
+        _5 = ErrorKind::ConnectionReset {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _5 };
         goto bb89;
     }
 
@@ -3500,11 +3408,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb9: {
-        storage_live(_10);
-        _10 = ErrorKind::HostUnreachable {  };
-        storage_live(_11);
-        _11 = Option::<ErrorKind>::Some { _0: move _10 };
-        _0 = move _11;
+        storage_live(_6);
+        _6 = ErrorKind::HostUnreachable {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _6 };
         goto bb89;
     }
 
@@ -3513,11 +3419,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb11: {
-        storage_live(_12);
-        _12 = ErrorKind::NetworkUnreachable {  };
-        storage_live(_13);
-        _13 = Option::<ErrorKind>::Some { _0: move _12 };
-        _0 = move _13;
+        storage_live(_7);
+        _7 = ErrorKind::NetworkUnreachable {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _7 };
         goto bb89;
     }
 
@@ -3526,11 +3430,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb13: {
-        storage_live(_14);
-        _14 = ErrorKind::ConnectionAborted {  };
-        storage_live(_15);
-        _15 = Option::<ErrorKind>::Some { _0: move _14 };
-        _0 = move _15;
+        storage_live(_8);
+        _8 = ErrorKind::ConnectionAborted {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _8 };
         goto bb89;
     }
 
@@ -3539,11 +3441,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb15: {
-        storage_live(_16);
-        _16 = ErrorKind::NotConnected {  };
-        storage_live(_17);
-        _17 = Option::<ErrorKind>::Some { _0: move _16 };
-        _0 = move _17;
+        storage_live(_9);
+        _9 = ErrorKind::NotConnected {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _9 };
         goto bb89;
     }
 
@@ -3552,11 +3452,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb17: {
-        storage_live(_18);
-        _18 = ErrorKind::AddrInUse {  };
-        storage_live(_19);
-        _19 = Option::<ErrorKind>::Some { _0: move _18 };
-        _0 = move _19;
+        storage_live(_10);
+        _10 = ErrorKind::AddrInUse {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _10 };
         goto bb89;
     }
 
@@ -3565,11 +3463,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb19: {
-        storage_live(_20);
-        _20 = ErrorKind::AddrNotAvailable {  };
-        storage_live(_21);
-        _21 = Option::<ErrorKind>::Some { _0: move _20 };
-        _0 = move _21;
+        storage_live(_11);
+        _11 = ErrorKind::AddrNotAvailable {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _11 };
         goto bb89;
     }
 
@@ -3578,11 +3474,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb21: {
-        storage_live(_22);
-        _22 = ErrorKind::NetworkDown {  };
-        storage_live(_23);
-        _23 = Option::<ErrorKind>::Some { _0: move _22 };
-        _0 = move _23;
+        storage_live(_12);
+        _12 = ErrorKind::NetworkDown {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _12 };
         goto bb89;
     }
 
@@ -3591,11 +3485,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb23: {
-        storage_live(_24);
-        _24 = ErrorKind::BrokenPipe {  };
-        storage_live(_25);
-        _25 = Option::<ErrorKind>::Some { _0: move _24 };
-        _0 = move _25;
+        storage_live(_13);
+        _13 = ErrorKind::BrokenPipe {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _13 };
         goto bb89;
     }
 
@@ -3604,11 +3496,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb25: {
-        storage_live(_26);
-        _26 = ErrorKind::AlreadyExists {  };
-        storage_live(_27);
-        _27 = Option::<ErrorKind>::Some { _0: move _26 };
-        _0 = move _27;
+        storage_live(_14);
+        _14 = ErrorKind::AlreadyExists {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _14 };
         goto bb89;
     }
 
@@ -3617,11 +3507,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb27: {
-        storage_live(_28);
-        _28 = ErrorKind::WouldBlock {  };
-        storage_live(_29);
-        _29 = Option::<ErrorKind>::Some { _0: move _28 };
-        _0 = move _29;
+        storage_live(_15);
+        _15 = ErrorKind::WouldBlock {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _15 };
         goto bb89;
     }
 
@@ -3630,11 +3518,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb29: {
-        storage_live(_30);
-        _30 = ErrorKind::NotADirectory {  };
-        storage_live(_31);
-        _31 = Option::<ErrorKind>::Some { _0: move _30 };
-        _0 = move _31;
+        storage_live(_16);
+        _16 = ErrorKind::NotADirectory {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _16 };
         goto bb89;
     }
 
@@ -3643,11 +3529,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb31: {
-        storage_live(_32);
-        _32 = ErrorKind::IsADirectory {  };
-        storage_live(_33);
-        _33 = Option::<ErrorKind>::Some { _0: move _32 };
-        _0 = move _33;
+        storage_live(_17);
+        _17 = ErrorKind::IsADirectory {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _17 };
         goto bb89;
     }
 
@@ -3656,11 +3540,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb33: {
-        storage_live(_34);
-        _34 = ErrorKind::DirectoryNotEmpty {  };
-        storage_live(_35);
-        _35 = Option::<ErrorKind>::Some { _0: move _34 };
-        _0 = move _35;
+        storage_live(_18);
+        _18 = ErrorKind::DirectoryNotEmpty {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _18 };
         goto bb89;
     }
 
@@ -3669,11 +3551,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb35: {
-        storage_live(_36);
-        _36 = ErrorKind::ReadOnlyFilesystem {  };
-        storage_live(_37);
-        _37 = Option::<ErrorKind>::Some { _0: move _36 };
-        _0 = move _37;
+        storage_live(_19);
+        _19 = ErrorKind::ReadOnlyFilesystem {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _19 };
         goto bb89;
     }
 
@@ -3682,11 +3562,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb37: {
-        storage_live(_38);
-        _38 = ErrorKind::FilesystemLoop {  };
-        storage_live(_39);
-        _39 = Option::<ErrorKind>::Some { _0: move _38 };
-        _0 = move _39;
+        storage_live(_20);
+        _20 = ErrorKind::FilesystemLoop {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _20 };
         goto bb89;
     }
 
@@ -3695,11 +3573,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb39: {
-        storage_live(_40);
-        _40 = ErrorKind::StaleNetworkFileHandle {  };
-        storage_live(_41);
-        _41 = Option::<ErrorKind>::Some { _0: move _40 };
-        _0 = move _41;
+        storage_live(_21);
+        _21 = ErrorKind::StaleNetworkFileHandle {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _21 };
         goto bb89;
     }
 
@@ -3708,11 +3584,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb41: {
-        storage_live(_42);
-        _42 = ErrorKind::InvalidInput {  };
-        storage_live(_43);
-        _43 = Option::<ErrorKind>::Some { _0: move _42 };
-        _0 = move _43;
+        storage_live(_22);
+        _22 = ErrorKind::InvalidInput {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _22 };
         goto bb89;
     }
 
@@ -3721,11 +3595,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb43: {
-        storage_live(_44);
-        _44 = ErrorKind::InvalidData {  };
-        storage_live(_45);
-        _45 = Option::<ErrorKind>::Some { _0: move _44 };
-        _0 = move _45;
+        storage_live(_23);
+        _23 = ErrorKind::InvalidData {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _23 };
         goto bb89;
     }
 
@@ -3734,11 +3606,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb45: {
-        storage_live(_46);
-        _46 = ErrorKind::TimedOut {  };
-        storage_live(_47);
-        _47 = Option::<ErrorKind>::Some { _0: move _46 };
-        _0 = move _47;
+        storage_live(_24);
+        _24 = ErrorKind::TimedOut {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _24 };
         goto bb89;
     }
 
@@ -3747,11 +3617,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb47: {
-        storage_live(_48);
-        _48 = ErrorKind::WriteZero {  };
-        storage_live(_49);
-        _49 = Option::<ErrorKind>::Some { _0: move _48 };
-        _0 = move _49;
+        storage_live(_25);
+        _25 = ErrorKind::WriteZero {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _25 };
         goto bb89;
     }
 
@@ -3760,11 +3628,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb49: {
-        storage_live(_50);
-        _50 = ErrorKind::StorageFull {  };
-        storage_live(_51);
-        _51 = Option::<ErrorKind>::Some { _0: move _50 };
-        _0 = move _51;
+        storage_live(_26);
+        _26 = ErrorKind::StorageFull {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _26 };
         goto bb89;
     }
 
@@ -3773,11 +3639,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb51: {
-        storage_live(_52);
-        _52 = ErrorKind::NotSeekable {  };
-        storage_live(_53);
-        _53 = Option::<ErrorKind>::Some { _0: move _52 };
-        _0 = move _53;
+        storage_live(_27);
+        _27 = ErrorKind::NotSeekable {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _27 };
         goto bb89;
     }
 
@@ -3786,11 +3650,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb53: {
-        storage_live(_54);
-        _54 = ErrorKind::QuotaExceeded {  };
-        storage_live(_55);
-        _55 = Option::<ErrorKind>::Some { _0: move _54 };
-        _0 = move _55;
+        storage_live(_28);
+        _28 = ErrorKind::QuotaExceeded {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _28 };
         goto bb89;
     }
 
@@ -3799,11 +3661,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb55: {
-        storage_live(_56);
-        _56 = ErrorKind::FileTooLarge {  };
-        storage_live(_57);
-        _57 = Option::<ErrorKind>::Some { _0: move _56 };
-        _0 = move _57;
+        storage_live(_29);
+        _29 = ErrorKind::FileTooLarge {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _29 };
         goto bb89;
     }
 
@@ -3812,11 +3672,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb57: {
-        storage_live(_58);
-        _58 = ErrorKind::ResourceBusy {  };
-        storage_live(_59);
-        _59 = Option::<ErrorKind>::Some { _0: move _58 };
-        _0 = move _59;
+        storage_live(_30);
+        _30 = ErrorKind::ResourceBusy {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _30 };
         goto bb89;
     }
 
@@ -3825,11 +3683,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb59: {
-        storage_live(_60);
-        _60 = ErrorKind::ExecutableFileBusy {  };
-        storage_live(_61);
-        _61 = Option::<ErrorKind>::Some { _0: move _60 };
-        _0 = move _61;
+        storage_live(_31);
+        _31 = ErrorKind::ExecutableFileBusy {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _31 };
         goto bb89;
     }
 
@@ -3838,11 +3694,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb61: {
-        storage_live(_62);
-        _62 = ErrorKind::Deadlock {  };
-        storage_live(_63);
-        _63 = Option::<ErrorKind>::Some { _0: move _62 };
-        _0 = move _63;
+        storage_live(_32);
+        _32 = ErrorKind::Deadlock {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _32 };
         goto bb89;
     }
 
@@ -3851,11 +3705,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb63: {
-        storage_live(_64);
-        _64 = ErrorKind::CrossesDevices {  };
-        storage_live(_65);
-        _65 = Option::<ErrorKind>::Some { _0: move _64 };
-        _0 = move _65;
+        storage_live(_33);
+        _33 = ErrorKind::CrossesDevices {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _33 };
         goto bb89;
     }
 
@@ -3864,11 +3716,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb65: {
-        storage_live(_66);
-        _66 = ErrorKind::TooManyLinks {  };
-        storage_live(_67);
-        _67 = Option::<ErrorKind>::Some { _0: move _66 };
-        _0 = move _67;
+        storage_live(_34);
+        _34 = ErrorKind::TooManyLinks {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _34 };
         goto bb89;
     }
 
@@ -3877,11 +3727,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb67: {
-        storage_live(_68);
-        _68 = ErrorKind::InvalidFilename {  };
-        storage_live(_69);
-        _69 = Option::<ErrorKind>::Some { _0: move _68 };
-        _0 = move _69;
+        storage_live(_35);
+        _35 = ErrorKind::InvalidFilename {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _35 };
         goto bb89;
     }
 
@@ -3890,11 +3738,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb69: {
-        storage_live(_70);
-        _70 = ErrorKind::ArgumentListTooLong {  };
-        storage_live(_71);
-        _71 = Option::<ErrorKind>::Some { _0: move _70 };
-        _0 = move _71;
+        storage_live(_36);
+        _36 = ErrorKind::ArgumentListTooLong {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _36 };
         goto bb89;
     }
 
@@ -3903,11 +3749,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb71: {
-        storage_live(_72);
-        _72 = ErrorKind::Interrupted {  };
-        storage_live(_73);
-        _73 = Option::<ErrorKind>::Some { _0: move _72 };
-        _0 = move _73;
+        storage_live(_37);
+        _37 = ErrorKind::Interrupted {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _37 };
         goto bb89;
     }
 
@@ -3916,11 +3760,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb73: {
-        storage_live(_74);
-        _74 = ErrorKind::Other {  };
-        storage_live(_75);
-        _75 = Option::<ErrorKind>::Some { _0: move _74 };
-        _0 = move _75;
+        storage_live(_38);
+        _38 = ErrorKind::Other {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _38 };
         goto bb89;
     }
 
@@ -3929,11 +3771,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb75: {
-        storage_live(_76);
-        _76 = ErrorKind::UnexpectedEof {  };
-        storage_live(_77);
-        _77 = Option::<ErrorKind>::Some { _0: move _76 };
-        _0 = move _77;
+        storage_live(_39);
+        _39 = ErrorKind::UnexpectedEof {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _39 };
         goto bb89;
     }
 
@@ -3942,11 +3782,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb77: {
-        storage_live(_78);
-        _78 = ErrorKind::Unsupported {  };
-        storage_live(_79);
-        _79 = Option::<ErrorKind>::Some { _0: move _78 };
-        _0 = move _79;
+        storage_live(_40);
+        _40 = ErrorKind::Unsupported {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _40 };
         goto bb89;
     }
 
@@ -3955,11 +3793,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb79: {
-        storage_live(_80);
-        _80 = ErrorKind::OutOfMemory {  };
-        storage_live(_81);
-        _81 = Option::<ErrorKind>::Some { _0: move _80 };
-        _0 = move _81;
+        storage_live(_41);
+        _41 = ErrorKind::OutOfMemory {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _41 };
         goto bb89;
     }
 
@@ -3968,11 +3804,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb81: {
-        storage_live(_82);
-        _82 = ErrorKind::InProgress {  };
-        storage_live(_83);
-        _83 = Option::<ErrorKind>::Some { _0: move _82 };
-        _0 = move _83;
+        storage_live(_42);
+        _42 = ErrorKind::InProgress {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _42 };
         goto bb89;
     }
 
@@ -3981,11 +3815,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb83: {
-        storage_live(_84);
-        _84 = ErrorKind::TooManyOpenFiles {  };
-        storage_live(_85);
-        _85 = Option::<ErrorKind>::Some { _0: move _84 };
-        _0 = move _85;
+        storage_live(_43);
+        _43 = ErrorKind::TooManyOpenFiles {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _43 };
         goto bb89;
     }
 
@@ -3994,11 +3826,9 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb85: {
-        storage_live(_86);
-        _86 = ErrorKind::InputOutputError {  };
-        storage_live(_87);
-        _87 = Option::<ErrorKind>::Some { _0: move _86 };
-        _0 = move _87;
+        storage_live(_44);
+        _44 = ErrorKind::InputOutputError {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _44 };
         goto bb89;
     }
 
@@ -4007,18 +3837,14 @@ fn from_prim(ek: u32) -> Option::<ErrorKind>
     }
 
     bb87: {
-        storage_live(_88);
-        _88 = ErrorKind::Uncategorized {  };
-        storage_live(_89);
-        _89 = Option::<ErrorKind>::Some { _0: move _88 };
-        _0 = move _89;
+        storage_live(_45);
+        _45 = ErrorKind::Uncategorized {  };
+        _0 = Option::<ErrorKind>::Some { _0: move _45 };
         goto bb89;
     }
 
     bb88: {
-        storage_live(_90);
-        _90 = Option::<ErrorKind>::None {  };
-        _0 = move _90;
+        _0 = Option::<ErrorKind>::None {  };
         goto bb89;
     }
 
@@ -4103,10 +3929,9 @@ fn core::hint::unreachable_unchecked::precondition_check()
     let _11: &'_ [u8]; // anonymous local
     let _12: *const [u8; 199usize]; // anonymous local
     let _13: *const str; // anonymous local
-    let _14: &'_ str; // anonymous local
-    let _15: *const [u8; 199usize]; // anonymous local
-    let _16: *const str; // anonymous local
-    let _17: &'_ str; // anonymous local
+    let _14: *const [u8; 199usize]; // anonymous local
+    let _15: *const str; // anonymous local
+    let _16: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4117,9 +3942,7 @@ fn core::hint::unreachable_unchecked::precondition_check()
         _12 = &raw const anon_const_12;
         storage_live(_13);
         _13 = unsize_cast<*const str, 199usize>(move _12);
-        storage_live(_14);
-        _14 = &(*_13) with_metadata(copy _13.metadata);
-        msg = move _14;
+        msg = &(*_13) with_metadata(copy _13.metadata);
         storage_live(_3);
         storage_live(_4);
         storage_live(_5);
@@ -4134,13 +3957,13 @@ fn core::hint::unreachable_unchecked::precondition_check()
         storage_live(_8);
         storage_live(_9);
         storage_live(_11);
+        storage_live(_14);
+        _14 = &raw const anon_const_12;
         storage_live(_15);
-        _15 = &raw const anon_const_12;
+        _15 = unsize_cast<*const str, 199usize>(move _14);
         storage_live(_16);
-        _16 = unsize_cast<*const str, 199usize>(move _15);
-        storage_live(_17);
-        _17 = &(*_16) with_metadata(copy _16.metadata);
-        _11 = transmute<&'_ [u8]>(move _17);
+        _16 = &(*_15) with_metadata(copy _15.metadata);
+        _11 = transmute<&'_ [u8]>(move _16);
         _9 = noretag copy _11.metadata;
         storage_dead(_11);
         _8 = move _9 wrap.<< const 1i32;
@@ -4969,10 +4792,9 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     let _16: *mut (); // anonymous local
     let _17: *const [u8; 210usize]; // anonymous local
     let _18: *const str; // anonymous local
-    let _19: &'_ str; // anonymous local
-    let _20: *const [u8; 210usize]; // anonymous local
-    let _21: *const str; // anonymous local
-    let _22: &'_ str; // anonymous local
+    let _19: *const [u8; 210usize]; // anonymous local
+    let _20: *const str; // anonymous local
+    let _21: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4997,9 +4819,7 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         _17 = &raw const anon_const_16;
         storage_live(_18);
         _18 = unsize_cast<*const str, 210usize>(move _17);
-        storage_live(_19);
-        _19 = &(*_18) with_metadata(copy _18.metadata);
-        msg = move _19;
+        msg = &(*_18) with_metadata(copy _18.metadata);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -5014,13 +4834,13 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
+        storage_live(_19);
+        _19 = &raw const anon_const_16;
         storage_live(_20);
-        _20 = &raw const anon_const_16;
+        _20 = unsize_cast<*const str, 210usize>(move _19);
         storage_live(_21);
-        _21 = unsize_cast<*const str, 210usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21) with_metadata(copy _21.metadata);
-        _14 = transmute<&'_ [u8]>(move _22);
+        _21 = &(*_20) with_metadata(copy _20.metadata);
+        _14 = transmute<&'_ [u8]>(move _21);
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -5066,9 +4886,7 @@ pub fn write_str::<'_, Stderr>(self: &'_ mut Adapter::<'_, Stderr>, s: &'_ str) 
     let _7: &'_ mut Stderr; // anonymous local
     let _8: *mut Result::<(), core::io::error::Error>; // anonymous local
     let _9: (); // anonymous local
-    let _10: Result::<(), core::fmt::Error>; // anonymous local
-    let _11: core::fmt::Error; // anonymous local
-    let _12: Result::<(), core::fmt::Error>; // anonymous local
+    let _10: core::fmt::Error; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5089,9 +4907,7 @@ pub fn write_str::<'_, Stderr>(self: &'_ mut Adapter::<'_, Stderr>, s: &'_ str) 
     }
 
     bb2: {
-        storage_live(_10);
-        _10 = Result::<(), core::fmt::Error>::Ok { _0: const () };
-        _0 = move _10;
+        _0 = Result::<(), core::fmt::Error>::Ok { _0: const () };
         goto bb5;
     }
 
@@ -5104,11 +4920,9 @@ pub fn write_str::<'_, Stderr>(self: &'_ mut Adapter::<'_, Stderr>, s: &'_ str) 
 
     bb4: {
         (*self).error = copy _3;
-        storage_live(_11);
-        _11 = core::fmt::Error {  };
-        storage_live(_12);
-        _12 = Result::<(), core::fmt::Error>::Err { _0: move _11 };
-        _0 = move _12;
+        storage_live(_10);
+        _10 = core::fmt::Error {  };
+        _0 = Result::<(), core::fmt::Error>::Err { _0: move _10 };
         storage_dead(e);
         goto bb5;
     }
@@ -5801,10 +5615,9 @@ fn core::slice::raw::from_raw_parts_mut::precondition_check(data: *mut (), size:
     let _24: *mut (); // anonymous local
     let _25: *const [u8; 283usize]; // anonymous local
     let _26: *const str; // anonymous local
-    let _27: &'_ str; // anonymous local
-    let _28: *const [u8; 283usize]; // anonymous local
-    let _29: *const str; // anonymous local
-    let _30: &'_ str; // anonymous local
+    let _27: *const [u8; 283usize]; // anonymous local
+    let _28: *const str; // anonymous local
+    let _29: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5883,9 +5696,7 @@ fn core::slice::raw::from_raw_parts_mut::precondition_check(data: *mut (), size:
         _25 = &raw const anon_const_18;
         storage_live(_26);
         _26 = unsize_cast<*const str, 283usize>(move _25);
-        storage_live(_27);
-        _27 = &(*_26) with_metadata(copy _26.metadata);
-        msg = move _27;
+        msg = &(*_26) with_metadata(copy _26.metadata);
         storage_live(_10);
         storage_live(_15);
         storage_live(_16);
@@ -5900,13 +5711,13 @@ fn core::slice::raw::from_raw_parts_mut::precondition_check(data: *mut (), size:
         storage_live(_19);
         storage_live(_20);
         storage_live(_22);
+        storage_live(_27);
+        _27 = &raw const anon_const_18;
         storage_live(_28);
-        _28 = &raw const anon_const_18;
+        _28 = unsize_cast<*const str, 283usize>(move _27);
         storage_live(_29);
-        _29 = unsize_cast<*const str, 283usize>(move _28);
-        storage_live(_30);
-        _30 = &(*_29) with_metadata(copy _29.metadata);
-        _22 = transmute<&'_ [u8]>(move _30);
+        _29 = &(*_28) with_metadata(copy _28.metadata);
+        _22 = transmute<&'_ [u8]>(move _29);
         _20 = noretag copy _22.metadata;
         storage_dead(_22);
         _19 = move _20 wrap.<< const 1i32;

@@ -258,8 +258,6 @@ fn main()
     let _22: Option::<Arguments::<'_>>; // anonymous local
     let _23: &'_ i32; // anonymous local
     let _24: &'_ i32; // anonymous local
-    let _25: &'_ i32; // anonymous local
-    let _26: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -275,9 +273,7 @@ fn main()
         _3 = &two-phase-mut (*_4);
         storage_live(_5);
         storage_live(_6);
-        storage_live(_25);
-        _25 = &anon_const_0;
-        _24 = move _25;
+        _24 = &anon_const_0;
         _6 = &(*_24);
         _5 = &(*_6);
         _2 = write::<i32>(move _3, move _5) -> bb1 (unwind: bb6);
@@ -293,9 +289,7 @@ fn main()
         storage_live(_8);
         _8 = &x;
         storage_live(_9);
-        storage_live(_26);
-        _26 = &anon_const_1;
-        _23 = move _26;
+        _23 = &anon_const_1;
         _9 = &(*_23);
         _7 = (move _8, move _9);
         storage_dead(_9);
@@ -526,11 +520,10 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
     let _31: *const (); // anonymous local
     let _32: *const [u8; 283usize]; // anonymous local
     let _33: *const str; // anonymous local
-    let _34: &'_ str; // anonymous local
-    let _35: *const [u8; 283usize]; // anonymous local
-    let _36: *const str; // anonymous local
-    let _37: &'_ str; // anonymous local
-    let _38: *mut (); // anonymous local
+    let _34: *const [u8; 283usize]; // anonymous local
+    let _35: *const str; // anonymous local
+    let _36: &'_ str; // anonymous local
+    let _37: *mut (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -616,9 +609,9 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
         storage_live(_19);
         storage_live(_20);
         storage_live(_30);
-        storage_live(_38);
-        _38 = cast<*mut ()>(const 0usize);
-        _30 = copy dst != move _38;
+        storage_live(_37);
+        _37 = cast<*mut ()>(const 0usize);
+        _30 = copy dst != move _37;
         _20 = cast<usize>(move _30);
         storage_dead(_30);
         _19 = move _20 == const 0usize;
@@ -678,9 +671,7 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
         _32 = &raw const anon_const_2;
         storage_live(_33);
         _33 = unsize_cast<*const str, 283usize>(move _32);
-        storage_live(_34);
-        _34 = &(*_33) with_metadata(copy _33.metadata);
-        msg = move _34;
+        msg = &(*_33) with_metadata(copy _33.metadata);
         storage_live(_14);
         storage_live(_21);
         storage_live(_22);
@@ -695,13 +686,13 @@ fn precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, c
         storage_live(_25);
         storage_live(_26);
         storage_live(_28);
+        storage_live(_34);
+        _34 = &raw const anon_const_2;
         storage_live(_35);
-        _35 = &raw const anon_const_2;
+        _35 = unsize_cast<*const str, 283usize>(move _34);
         storage_live(_36);
-        _36 = unsize_cast<*const str, 283usize>(move _35);
-        storage_live(_37);
-        _37 = &(*_36) with_metadata(copy _36.metadata);
-        _28 = transmute<&'_ [u8]>(move _37);
+        _36 = &(*_35) with_metadata(copy _35.metadata);
+        _28 = transmute<&'_ [u8]>(move _36);
         _26 = noretag copy _28.metadata;
         storage_dead(_28);
         _25 = move _26 wrap.<< const 1i32;
@@ -758,10 +749,9 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
     let _19: &'_ [u8]; // anonymous local
     let _20: *const [u8; 42usize]; // anonymous local
     let _21: *const str; // anonymous local
-    let _22: &'_ str; // anonymous local
-    let _23: *const [u8; 42usize]; // anonymous local
-    let _24: *const str; // anonymous local
-    let _25: &'_ str; // anonymous local
+    let _22: *const [u8; 42usize]; // anonymous local
+    let _23: *const str; // anonymous local
+    let _24: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -802,9 +792,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         _20 = &raw const anon_const_3;
         storage_live(_21);
         _21 = unsize_cast<*const str, 42usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21) with_metadata(copy _21.metadata);
-        s = move _22;
+        s = &(*_21) with_metadata(copy _21.metadata);
         storage_live(_12);
         storage_live(_13);
         storage_live(_18);
@@ -818,13 +806,13 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_16);
         storage_live(_17);
         storage_live(_19);
+        storage_live(_22);
+        _22 = &raw const anon_const_3;
         storage_live(_23);
-        _23 = &raw const anon_const_3;
+        _23 = unsize_cast<*const str, 42usize>(move _22);
         storage_live(_24);
-        _24 = unsize_cast<*const str, 42usize>(move _23);
-        storage_live(_25);
-        _25 = &(*_24) with_metadata(copy _24.metadata);
-        _19 = transmute<&'_ [u8]>(move _25);
+        _24 = &(*_23) with_metadata(copy _23.metadata);
+        _19 = transmute<&'_ [u8]>(move _24);
         _17 = noretag copy _19.metadata;
         storage_dead(_19);
         _16 = move _17 wrap.<< const 1i32;

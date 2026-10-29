@@ -1,0 +1,110 @@
+
+// Final ULLBC:
+
+struct () {}
+
+struct str {
+  _0: [u8],
+}
+
+// Full name: test_crate::Wrap::<str>
+struct Wrap::<str> {
+  _0: u8,
+  _1: str,
+}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit::<[u8; 3usize]>
+#[lang_item(MaybeUninit)]
+pub union MaybeUninit::<[u8; 3usize]> {
+  uninit: (),
+  value: ManuallyDrop::<[u8; 3usize]>,
+}
+
+// Full name: core::mem::manually_drop::ManuallyDrop::<[u8; 3usize]>
+#[lang_item(ManuallyDrop)]
+pub struct ManuallyDrop::<[u8; 3usize]> {
+  value: [u8; 3usize],
+}
+
+// Full name: anon_const_0
+const anon_const_0: [u8; 5usize] = [104u8, 101u8, 108u8, 108u8, 111u8]
+
+// Full name: anon_const_1
+const anon_const_1: MaybeUninit::<[u8; 3usize]> = RawMemory(0x05, 0x61, 0x62)
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::main
+pub fn main()
+{
+    let _0: (); // return
+    let _1: &'_ str; // anonymous local
+    let _2: &'_ Wrap::<str>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        storage_live(_1);
+        _1 = str_param::<&"hello" with_metadata(5usize)>() -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        storage_dead(_1);
+        storage_live(_2);
+        _2 = str_tail::<unsize_cast<&'_ Wrap::<str>, 2usize>(&raw const anon_const_1)>() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        storage_dead(_2);
+        _0 = ();
+        return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
+
+// Full name: test_crate::str_param::<&"hello" with_metadata(5usize)>
+fn str_param::<&"hello" with_metadata(5usize)>() -> &'_ str
+{
+    let _0: &'_ str; // return
+    let _1: *const [u8; 5usize]; // anonymous local
+    let _2: *const str; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        _1 = &raw const anon_const_0;
+        storage_live(_2);
+        _2 = unsize_cast<*const str, 5usize>(move _1);
+        _0 = &(*_2) with_metadata(copy _2.metadata);
+        return;
+    }
+}
+
+// Full name: test_crate::str_tail::<unsize_cast<&'_ Wrap::<str>, 2usize>(&raw const anon_const_1)>
+fn str_tail::<unsize_cast<&'_ Wrap::<str>, 2usize>(&raw const anon_const_1)>() -> &'_ Wrap::<str>
+{
+    let _0: &'_ Wrap::<str>; // return
+    let _1: *const MaybeUninit::<[u8; 3usize]>; // anonymous local
+    let _2: *const Wrap::<str>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        _1 = &raw const anon_const_1;
+        storage_live(_2);
+        _2 = unsize_cast<*const Wrap::<str>, 2usize>(move _1);
+        _0 = &(*_2);
+        return;
+    }
+}
+
+
+

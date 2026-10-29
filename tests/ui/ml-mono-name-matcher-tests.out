@@ -245,8 +245,6 @@ fn foo()
     let _11: &'_ Option::<i32>; // anonymous local
     let _12: *const MaybeUninit::<[u8; 8usize]>; // anonymous local
     let _13: *const Option::<i32>; // anonymous local
-    let _14: &'_ Option::<i32>; // anonymous local
-    let _15: &'_ [bool; 1usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -259,9 +257,7 @@ fn foo()
         _12 = &raw const anon_const_0;
         storage_live(_13);
         _13 = cast<*const Option::<i32>>(move _12);
-        storage_live(_14);
-        _14 = &(*_13);
-        _11 = move _14;
+        _11 = &(*_13);
         _2 = &(*_11);
         _1 = is_some::<i32>(move _2) -> bb1 (unwind: bb4);
     }
@@ -272,9 +268,7 @@ fn foo()
         storage_live(slice);
         storage_live(_4);
         storage_live(_5);
-        storage_live(_15);
-        _15 = &anon_const_1;
-        _10 = move _15;
+        _10 = &anon_const_1;
         _5 = &(*_10);
         _4 = &(*_5);
         slice = unsize_cast<&'_ [bool], 1usize>(move _4);

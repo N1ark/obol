@@ -60,7 +60,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             typing_env: mty::TypingEnv::fully_monomorphized(),
             config: uneval::Config {
                 anon_allocs_as_globals: true,
-                unsized_strings: false,
             },
             alloc_types: self.t_ctx.alloc_types.clone(),
         }
@@ -153,14 +152,6 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             }
             uneval::ConstKind::FnPtr(target) => {
                 ConstantExprKind::FnPtr(self.translate_fn_target(span, *target))
-            }
-            uneval::ConstKind::Ptr {
-                target: PtrTarget::Inline(val),
-                ..
-            } if ty.is_ref()
-                && let uneval::ConstKind::Str(str) = &val.kind =>
-            {
-                ConstantExprKind::Str(str.clone())
             }
             uneval::ConstKind::Ptr { target, unsize } => {
                 let place = match target {

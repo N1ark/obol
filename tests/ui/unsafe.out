@@ -93,16 +93,13 @@ fn access_mutable_static()
     let _0: (); // return
     let _1: *mut usize; // anonymous local
     let _2: (usize, bool); // anonymous local
-    let _3: *mut usize; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         _0 = ();
         storage_live(_1);
-        storage_live(_3);
-        _3 = &raw mut COUNTER;
-        _1 = move _3;
+        _1 = &raw mut COUNTER;
         _2 = copy (*_1) checked.+ const 1usize;
         assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
     }
@@ -166,13 +163,10 @@ fn test_crate::assume()
 pub fn null::<u32>() -> *const u32
 {
     let _0: *const u32; // return
-    let _1: *const u32; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_1);
-        _1 = cast<*const u32>(const 0usize);
-        _0 = move _1;
+        _0 = cast<*const u32>(const 0usize);
         return;
     }
 }

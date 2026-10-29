@@ -1283,13 +1283,10 @@ pub fn as_str::<Payload::<&'_ str>>(self: &'_ mut Payload::<&'_ str>) -> Option:
 {
     let _0: Option::<&'_ str>; // return
     let self: &'_ mut Payload::<&'_ str>; // arg #1
-    let _2: Option::<&'_ str>; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_2);
-        _2 = Option::<&'_ str>::None {  };
-        _0 = move _2;
+        _0 = Option::<&'_ str>::None {  };
         return;
     }
 }
@@ -1442,11 +1439,8 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     let _38: bool; // anonymous local
     let _39: bool; // anonymous local
     let _40: *mut u8; // anonymous local
-    let _41: Option::<NonNull::<u8>>; // anonymous local
+    let _41: AllocError; // anonymous local
     let _42: AllocError; // anonymous local
-    let _43: Result::<NonNull::<u8>, AllocError>; // anonymous local
-    let _44: AllocError; // anonymous local
-    let _45: Result::<NonNull::<[u8]>, AllocError>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1564,15 +1558,11 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb16: {
-        storage_live(_41);
-        _41 = Option::<NonNull::<u8>>::None {  };
-        self_9 = move _41;
+        self_9 = Option::<NonNull::<u8>>::None {  };
         storage_dead(_22);
-        storage_live(_42);
-        _42 = AllocError {  };
-        storage_live(_43);
-        _43 = Result::<NonNull::<u8>, AllocError>::Err { _0: move _42 };
-        self_8 = move _43;
+        storage_live(_41);
+        _41 = AllocError {  };
+        self_8 = Result::<NonNull::<u8>, AllocError>::Err { _0: move _41 };
         storage_dead(self_9);
         storage_dead(self_8);
         storage_live(_33);
@@ -1583,11 +1573,9 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
     }
 
     bb17: {
-        storage_live(_44);
-        _44 = AllocError {  };
-        storage_live(_45);
-        _45 = Result::<NonNull::<[u8]>, AllocError>::Err { _0: move _44 };
-        _0 = move _45;
+        storage_live(_42);
+        _42 = AllocError {  };
+        _0 = Result::<NonNull::<[u8]>, AllocError>::Err { _0: move _42 };
         storage_dead(_34);
         storage_dead(_33);
         storage_dead(_7);
@@ -1740,10 +1728,9 @@ fn precondition_check(ptr: *mut ())
     let _16: *mut (); // anonymous local
     let _17: *const [u8; 210usize]; // anonymous local
     let _18: *const str; // anonymous local
-    let _19: &'_ str; // anonymous local
-    let _20: *const [u8; 210usize]; // anonymous local
-    let _21: *const str; // anonymous local
-    let _22: &'_ str; // anonymous local
+    let _19: *const [u8; 210usize]; // anonymous local
+    let _20: *const str; // anonymous local
+    let _21: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1768,9 +1755,7 @@ fn precondition_check(ptr: *mut ())
         _17 = &raw const anon_const_8;
         storage_live(_18);
         _18 = unsize_cast<*const str, 210usize>(move _17);
-        storage_live(_19);
-        _19 = &(*_18) with_metadata(copy _18.metadata);
-        msg = move _19;
+        msg = &(*_18) with_metadata(copy _18.metadata);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -1785,13 +1770,13 @@ fn precondition_check(ptr: *mut ())
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
+        storage_live(_19);
+        _19 = &raw const anon_const_8;
         storage_live(_20);
-        _20 = &raw const anon_const_8;
+        _20 = unsize_cast<*const str, 210usize>(move _19);
         storage_live(_21);
-        _21 = unsize_cast<*const str, 210usize>(move _20);
-        storage_live(_22);
-        _22 = &(*_21) with_metadata(copy _21.metadata);
-        _14 = transmute<&'_ [u8]>(move _22);
+        _21 = &(*_20) with_metadata(copy _20.metadata);
+        _14 = transmute<&'_ [u8]>(move _21);
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
