@@ -774,7 +774,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     }
 
     pub fn translate_repr_options(&mut self, repr: rustc_public::abi::ReprOptions) -> ReprOptions {
-        let repr_algo = if repr.flags.is_c {
+        let repr_algo = if repr.flags.is_simd {
+            ReprAlgorithm::Simd
+        } else if repr.flags.is_c {
             ReprAlgorithm::C
         } else {
             ReprAlgorithm::Rust
