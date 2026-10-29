@@ -281,7 +281,7 @@ fn foo()
 
     bb3: {
         storage_dead(_2);
-        _0 = ();
+        _0 = const ();
         storage_dead(ref_b);
         return;
     }
@@ -304,18 +304,12 @@ pub fn core::cell::{RefCell::<_>}::new::<bool>(value: bool) -> RefCell::<bool>
     let _0: RefCell::<bool>; // return
     let value: bool; // arg #1
     let _2: UnsafeCell::<bool>; // anonymous local
-    let _3: UnsafeCell::<isize>; // anonymous local
-    let _4: Cell::<isize>; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         _2 = UnsafeCell::<bool> { value: copy value };
-        storage_live(_3);
-        _3 = UnsafeCell::<isize> { value: const 0isize };
-        storage_live(_4);
-        _4 = Cell::<isize> { value: move _3 };
-        _0 = RefCell::<bool> { borrow: move _4, value: move _2 };
+        _0 = RefCell::<bool> { borrow: const Cell::<isize> { value: UnsafeCell::<isize> { value: 0isize } }, value: move _2 };
         storage_dead(_2);
         return;
     }
@@ -344,7 +338,6 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
     let _17: (); // anonymous local
     let _18: *mut (); // anonymous local
     let _19: bool; // anonymous local
-    let _20: BorrowError; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -424,9 +417,7 @@ pub fn try_borrow::<bool>(self_1: &'_ RefCell::<bool>) -> Result::<Ref::<'_, boo
     bb6: {
         storage_dead(_10);
         storage_dead(b_8);
-        storage_live(_20);
-        _20 = BorrowError {  };
-        _0 = Result::<Ref::<'_, bool>, BorrowError>::Err { _0: move _20 };
+        _0 = Result::<Ref::<'_, bool>, BorrowError>::Err { _0: const BorrowError {  } };
         goto bb7;
     }
 
@@ -491,12 +482,6 @@ fn precondition_check(ptr: *mut ())
     let _13: *const str; // anonymous local
     let _14: &'_ [u8]; // anonymous local
     let _15: bool; // anonymous local
-    let _16: *mut (); // anonymous local
-    let _17: *const [u8; 210usize]; // anonymous local
-    let _18: *const str; // anonymous local
-    let _19: *const [u8; 210usize]; // anonymous local
-    let _20: *const str; // anonymous local
-    let _21: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -506,9 +491,7 @@ fn precondition_check(ptr: *mut ())
         storage_live(_2);
         storage_live(_6);
         storage_live(_15);
-        storage_live(_16);
-        _16 = cast<*mut ()>(const 0usize);
-        _15 = copy ptr != move _16;
+        _15 = copy ptr != const no-provenance 0;
         _6 = cast<usize>(move _15);
         storage_dead(_15);
         _2 = move _6 == const 0usize;
@@ -517,11 +500,7 @@ fn precondition_check(ptr: *mut ())
     }
 
     bb1: {
-        storage_live(_17);
-        _17 = &raw const anon_const_0;
-        storage_live(_18);
-        _18 = unsize_cast<*const str, 210usize>(move _17);
-        msg = &(*_18) with_metadata(copy _18.metadata);
+        msg = const unsize_cast<&'_ str, 210usize>(&raw const anon_const_0);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -536,13 +515,7 @@ fn precondition_check(ptr: *mut ())
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        storage_live(_19);
-        _19 = &raw const anon_const_0;
-        storage_live(_20);
-        _20 = unsize_cast<*const str, 210usize>(move _19);
-        storage_live(_21);
-        _21 = &(*_20) with_metadata(copy _20.metadata);
-        _14 = transmute<&'_ [u8]>(move _21);
+        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 210usize>(&raw const anon_const_0));
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -731,25 +704,27 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
     let _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: !; // anonymous local
+    let _2: (); // anonymous local
+    let _3: bool; // anonymous local
+    let _4: !; // anonymous local
     let pi: PanicInfo::<'_>; // local
-    let _5: &'_ Arguments::<'_>; // anonymous local
     let _6: &'_ Arguments::<'_>; // anonymous local
-    let _7: &'_ Location::<'_>; // anonymous local
-    let _8: &'_ PanicInfo::<'_>; // anonymous local
+    let _7: &'_ Arguments::<'_>; // anonymous local
+    let _8: &'_ Location::<'_>; // anonymous local
     let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = const false;
-        if move _2 -> bb1 else -> bb4;
+        storage_live(_3);
+        _3 = const false;
+        if move _3 -> bb1 else -> bb4;
     }
 
     bb1: {
-        storage_live(_3);
-        _3 = abort() -> bb2 (unwind: bb3);
+        storage_live(_4);
+        _4 = abort() -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -761,29 +736,31 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 
     bb4: {
+        _2 = const ();
+        storage_dead(_3);
         storage_dead(_2);
         storage_live(pi);
-        storage_live(_5);
         storage_live(_6);
-        _6 = &fmt;
-        _5 = &(*_6);
         storage_live(_7);
-        _7 = caller::<'_>() -> bb5 (unwind: bb10);
+        _7 = &fmt;
+        _6 = &(*_7);
+        storage_live(_8);
+        _8 = caller::<'_>() -> bb5 (unwind: bb10);
     }
 
     bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _5, move _7, const true, const false) -> bb6 (unwind: bb9);
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _6, move _8, const true, const false) -> bb6 (unwind: bb9);
     }
 
     bb6: {
-        storage_dead(_7);
-        storage_dead(_5);
+        storage_dead(_8);
         storage_dead(_6);
-        storage_live(_8);
+        storage_dead(_7);
         storage_live(_9);
-        _9 = &pi;
-        _8 = &(*_9);
-        _0 = panic_impl(move _8) -> bb7 (unwind: bb8);
+        storage_live(_10);
+        _10 = &pi;
+        _9 = &(*_10);
+        _0 = panic_impl(move _9) -> bb7 (unwind: bb8);
     }
 
     bb7: {

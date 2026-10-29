@@ -39,15 +39,15 @@ fn constant()
         storage_live(_5);
         _0 = ();
         storage_live(_val);
-        _val = copy CONST;
+        _val = const CONST;
         storage_live(_ref);
-        _5 = &anon_const_0;
+        _5 = const &anon_const_0;
         _ref = &(*_5);
         storage_live(_ref_mut);
         storage_live(_4);
-        _4 = copy CONST;
+        _4 = const CONST;
         _ref_mut = &mut _4;
-        _0 = ();
+        _0 = const ();
         storage_dead(_4);
         storage_dead(_ref_mut);
         storage_dead(_ref);
@@ -72,18 +72,18 @@ fn shared_static()
         _0 = ();
         storage_live(_val);
         storage_live(_2);
-        _2 = &SHARED_STATIC;
+        _2 = const &SHARED_STATIC;
         _val = copy (*_2);
         storage_dead(_2);
         storage_live(_ref);
         storage_live(_4);
-        _4 = &SHARED_STATIC;
+        _4 = const &SHARED_STATIC;
         _ref = &(*_4);
         storage_live(_ptr);
         storage_live(_6);
-        _6 = &SHARED_STATIC;
+        _6 = const &SHARED_STATIC;
         _ptr = &raw const (*_6);
-        _0 = ();
+        _0 = const ();
         storage_dead(_6);
         storage_dead(_ptr);
         storage_dead(_4);
@@ -113,26 +113,26 @@ fn mut_static()
         _0 = ();
         storage_live(_val);
         storage_live(_2);
-        _2 = &raw mut MUT_STATIC;
+        _2 = const &raw mut MUT_STATIC;
         _val = copy (*_2);
         storage_dead(_2);
         storage_live(_ref);
         storage_live(_4);
-        _4 = &raw mut MUT_STATIC;
+        _4 = const &raw mut MUT_STATIC;
         _ref = &(*_4);
         storage_live(_ref_mut);
         storage_live(_6);
-        _6 = &raw mut MUT_STATIC;
+        _6 = const &raw mut MUT_STATIC;
         _ref_mut = &mut (*_6);
         storage_live(_ptr);
         storage_live(_8);
-        _8 = &raw mut MUT_STATIC;
+        _8 = const &raw mut MUT_STATIC;
         _ptr = &raw const (*_8);
         storage_live(_ptr_mut);
         storage_live(_10);
-        _10 = &raw mut MUT_STATIC;
+        _10 = const &raw mut MUT_STATIC;
         _ptr_mut = &raw mut (*_10);
-        _0 = ();
+        _0 = const ();
         storage_dead(_10);
         storage_dead(_ptr_mut);
         storage_dead(_8);
@@ -158,7 +158,7 @@ fn non_copy_static()
         _0 = ();
         storage_live(_1);
         storage_live(_2);
-        _2 = &FOO;
+        _2 = const &FOO;
         _1 = &(*_2);
         _0 = method(move _1) -> bb1 (unwind: bb2);
     }
@@ -183,7 +183,7 @@ fn method(self: &'_ Foo)
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }

@@ -17,71 +17,74 @@ fn rej_sample(a: &'_ [u8]) -> usize
     let _0: usize; // return
     let a: &'_ [u8]; // arg #1
     let sampled: usize; // local
-    let _3: bool; // anonymous local
-    let _4: u8; // anonymous local
-    let _5: usize; // anonymous local
+    let _3: (); // anonymous local
+    let _4: bool; // anonymous local
+    let _5: u8; // anonymous local
     let _6: usize; // anonymous local
-    let _7: bool; // anonymous local
+    let _7: usize; // anonymous local
     let _8: bool; // anonymous local
-    let _9: u8; // anonymous local
-    let _10: usize; // anonymous local
+    let _9: bool; // anonymous local
+    let _10: u8; // anonymous local
     let _11: usize; // anonymous local
-    let _12: bool; // anonymous local
-    let _13: (usize, bool); // anonymous local
+    let _12: usize; // anonymous local
+    let _13: bool; // anonymous local
     let _14: (usize, bool); // anonymous local
+    let _15: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_6);
         storage_live(_7);
-        storage_live(_11);
+        storage_live(_8);
         storage_live(_12);
         storage_live(_13);
         storage_live(_14);
+        storage_live(_15);
         storage_live(sampled);
         sampled = const 0usize;
         storage_live(_3);
         storage_live(_4);
         storage_live(_5);
-        _5 = const 0usize;
-        _6 = noretag copy a.metadata;
-        _7 = copy _5 < copy _6;
-        assert assert(move _7 == true) (bounds_check) -> bb1 (unwind: bb14);
+        storage_live(_6);
+        _6 = const 0usize;
+        _7 = noretag copy a.metadata;
+        _8 = copy _6 < copy _7;
+        assert assert(move _8 == true) (bounds_check) -> bb1 (unwind: bb14);
     }
 
     bb1: {
-        _4 = copy (*a)[copy _5];
-        _3 = move _4 < const 42u8;
-        if move _3 -> bb2 else -> bb9;
+        _5 = copy (*a)[copy _6];
+        _4 = move _5 < const 42u8;
+        if move _4 -> bb2 else -> bb9;
     }
 
     bb2: {
+        storage_dead(_6);
         storage_dead(_5);
-        storage_dead(_4);
-        storage_live(_8);
         storage_live(_9);
         storage_live(_10);
-        _10 = const 1usize;
-        _11 = noretag copy a.metadata;
-        _12 = copy _10 < copy _11;
-        assert assert(move _12 == true) (bounds_check) -> bb3 (unwind: bb8);
+        storage_live(_11);
+        _11 = const 1usize;
+        _12 = noretag copy a.metadata;
+        _13 = copy _11 < copy _12;
+        assert assert(move _13 == true) (bounds_check) -> bb3 (unwind: bb8);
     }
 
     bb3: {
-        _9 = copy (*a)[copy _10];
-        _8 = move _9 < const 16u8;
-        if move _8 -> bb4 else -> bb7;
+        _10 = copy (*a)[copy _11];
+        _9 = move _10 < const 16u8;
+        if move _9 -> bb4 else -> bb7;
     }
 
     bb4: {
+        storage_dead(_11);
         storage_dead(_10);
-        storage_dead(_9);
-        _13 = copy sampled checked.+ const 100usize;
-        assert assert(move _13._1 == false) (overflow) -> bb5 (unwind: bb6);
+        _14 = copy sampled checked.+ const 100usize;
+        assert assert(move _14._1 == false) (overflow) -> bb5 (unwind: bb6);
     }
 
     bb5: {
-        sampled = move _13._0;
+        sampled = move _14._0;
+        _3 = const ();
         goto bb12;
     }
 
@@ -90,8 +93,8 @@ fn rej_sample(a: &'_ [u8]) -> usize
     }
 
     bb7: {
+        storage_dead(_11);
         storage_dead(_10);
-        storage_dead(_9);
         goto bb10;
     }
 
@@ -100,23 +103,25 @@ fn rej_sample(a: &'_ [u8]) -> usize
     }
 
     bb9: {
+        storage_dead(_6);
         storage_dead(_5);
-        storage_dead(_4);
         goto bb10;
     }
 
     bb10: {
-        _14 = copy sampled checked.+ const 101usize;
-        assert assert(move _14._1 == false) (overflow) -> bb11 (unwind: bb13);
+        _15 = copy sampled checked.+ const 101usize;
+        assert assert(move _15._1 == false) (overflow) -> bb11 (unwind: bb13);
     }
 
     bb11: {
-        sampled = move _14._0;
+        sampled = move _15._0;
+        _3 = const ();
         goto bb12;
     }
 
     bb12: {
-        storage_dead(_8);
+        storage_dead(_9);
+        storage_dead(_4);
         storage_dead(_3);
         _0 = copy sampled;
         storage_dead(sampled);

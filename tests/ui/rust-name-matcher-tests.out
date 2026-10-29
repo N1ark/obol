@@ -41,7 +41,7 @@ fn bar()
     bb0: {
         storage_live(_0);
         _0 = ();
-        _0 = ();
+        _0 = const ();
         return;
     }
 }
@@ -55,9 +55,6 @@ fn use_generic()
     let _str_generic: Generic::<&'_ str>; // local
     let _3: &'_ i32; // anonymous local
     let _4: &'_ Generic::<i32>; // anonymous local
-    let _5: *const [u8; 5usize]; // anonymous local
-    let _6: *const str; // anonymous local
-    let _7: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -68,13 +65,7 @@ fn use_generic()
 
     bb1: {
         storage_live(_str_generic);
-        storage_live(_5);
-        _5 = &raw const anon_const_0;
-        storage_live(_6);
-        _6 = unsize_cast<*const str, 5usize>(move _5);
-        storage_live(_7);
-        _7 = &(*_6) with_metadata(copy _6.metadata);
-        _str_generic = new::<&'_ str>(move _7) -> bb2 (unwind: bb5);
+        _str_generic = new::<&'_ str>(const unsize_cast<&'_ str, 5usize>(&raw const anon_const_0)) -> bb2 (unwind: bb5);
     }
 
     bb2: {
@@ -87,7 +78,7 @@ fn use_generic()
     bb3: {
         storage_dead(_4);
         storage_dead(_3);
-        _0 = ();
+        _0 = const ();
         storage_dead(_str_generic);
         storage_dead(_int_generic);
         return;

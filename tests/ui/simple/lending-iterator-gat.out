@@ -183,36 +183,37 @@ pub fn main()
     let _6: Option::<&'_ i32>; // anonymous local
     let _7: test_crate::main::{closure}::{closure}; // anonymous local
     let _8: &'_ mut i32; // anonymous local
-    let _9: (&'_ i32, &'_ i32); // anonymous local
-    let _10: &'_ i32; // anonymous local
+    let _9: (); // anonymous local
+    let _10: (&'_ i32, &'_ i32); // anonymous local
     let _11: &'_ i32; // anonymous local
+    let _12: &'_ i32; // anonymous local
     let left_val: &'_ i32; // local
     let right_val: &'_ i32; // local
-    let _14: bool; // anonymous local
-    let _15: i32; // anonymous local
+    let _15: bool; // anonymous local
     let _16: i32; // anonymous local
+    let _17: i32; // anonymous local
     let kind: AssertKind; // local
-    let _18: !; // anonymous local
-    let _19: AssertKind; // anonymous local
-    let _20: &'_ i32; // anonymous local
+    let _19: !; // anonymous local
+    let _20: AssertKind; // anonymous local
     let _21: &'_ i32; // anonymous local
     let _22: &'_ i32; // anonymous local
     let _23: &'_ i32; // anonymous local
-    let _24: Option::<Arguments::<'_>>; // anonymous local
-    let _25: &'_ i32; // anonymous local
+    let _24: &'_ i32; // anonymous local
+    let _25: Option::<Arguments::<'_>>; // anonymous local
     let _26: &'_ i32; // anonymous local
+    let _27: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_25);
         storage_live(_26);
+        storage_live(_27);
         _0 = ();
         storage_live(x);
         x = const 42i32;
         storage_live(iter);
         storage_live(_3);
-        _26 = &anon_const_0;
-        _3 = &(*_26);
+        _27 = const &anon_const_0;
+        _3 = &(*_27);
         iter = Option::<&'_ i32>::Some { _0: move _3 };
         storage_dead(_3);
         storage_live(sum);
@@ -234,34 +235,37 @@ pub fn main()
         storage_dead(_5);
         storage_live(_9);
         storage_live(_10);
-        _10 = &sum;
         storage_live(_11);
-        _25 = &anon_const_1;
-        _11 = &(*_25);
-        _9 = (move _10, move _11);
+        _11 = &sum;
+        storage_live(_12);
+        _26 = const &anon_const_1;
+        _12 = &(*_26);
+        _10 = (move _11, move _12);
+        storage_dead(_12);
         storage_dead(_11);
-        storage_dead(_10);
         storage_live(left_val);
-        left_val = copy _9._0;
+        left_val = copy _10._0;
         storage_live(right_val);
-        right_val = copy _9._1;
-        storage_live(_14);
+        right_val = copy _10._1;
         storage_live(_15);
-        _15 = copy (*left_val);
         storage_live(_16);
-        _16 = copy (*right_val);
-        _14 = move _15 == move _16;
-        if move _14 -> bb2 else -> bb3;
+        _16 = copy (*left_val);
+        storage_live(_17);
+        _17 = copy (*right_val);
+        _15 = move _16 == move _17;
+        if move _15 -> bb2 else -> bb3;
     }
 
     bb2: {
+        storage_dead(_17);
         storage_dead(_16);
+        _9 = const ();
         storage_dead(_15);
-        storage_dead(_14);
         storage_dead(right_val);
         storage_dead(left_val);
+        storage_dead(_10);
         storage_dead(_9);
-        _0 = ();
+        _0 = const ();
         storage_dead(sum);
         storage_dead(iter);
         storage_dead(x);
@@ -269,24 +273,24 @@ pub fn main()
     }
 
     bb3: {
+        storage_dead(_17);
         storage_dead(_16);
-        storage_dead(_15);
         storage_live(kind);
         kind = AssertKind::Eq {  };
-        storage_live(_18);
         storage_live(_19);
-        _19 = move kind;
         storage_live(_20);
+        _20 = move kind;
         storage_live(_21);
-        _21 = &(*left_val);
-        _20 = &(*_21);
         storage_live(_22);
+        _22 = &(*left_val);
+        _21 = &(*_22);
         storage_live(_23);
-        _23 = &(*right_val);
-        _22 = &(*_23);
         storage_live(_24);
-        _24 = Option::<Arguments::<'_>>::None {  };
-        _18 = assert_failed::<i32, i32>(move _19, move _20, move _22, move _24) -> bb4 (unwind: bb5);
+        _24 = &(*right_val);
+        _23 = &(*_24);
+        storage_live(_25);
+        _25 = Option::<Arguments::<'_>>::None {  };
+        _19 = assert_failed::<i32, i32>(move _20, move _21, move _23, move _25) -> bb4 (unwind: bb5);
     }
 
     bb4: {
@@ -360,7 +364,7 @@ pub fn for_each::<Option::<&'_ i32>, test_crate::main::{closure}::{closure}>(ite
     }
 
     bb5: {
-        _0 = ();
+        _0 = const ();
         storage_dead(_4);
         return;
     }
@@ -487,7 +491,7 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mu
     bb1: {
         _8 = noretag copy (*_1).upvar_0;
         (*_8) = move _5._0;
-        _0 = ();
+        _0 = const ();
         storage_dead(_4);
         return;
     }

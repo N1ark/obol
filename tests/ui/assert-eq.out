@@ -63,83 +63,87 @@ fn main()
 {
     let _0: (); // return
     let x: i32; // local
-    let _2: (&'_ i32, &'_ i32); // anonymous local
-    let _3: &'_ i32; // anonymous local
+    let _2: (); // anonymous local
+    let _3: (&'_ i32, &'_ i32); // anonymous local
     let _4: &'_ i32; // anonymous local
+    let _5: &'_ i32; // anonymous local
     let left_val: &'_ i32; // local
     let right_val: &'_ i32; // local
-    let _7: bool; // anonymous local
-    let _8: i32; // anonymous local
+    let _8: bool; // anonymous local
     let _9: i32; // anonymous local
+    let _10: i32; // anonymous local
     let kind: AssertKind; // local
-    let _11: !; // anonymous local
-    let _12: AssertKind; // anonymous local
-    let _13: &'_ i32; // anonymous local
+    let _12: !; // anonymous local
+    let _13: AssertKind; // anonymous local
     let _14: &'_ i32; // anonymous local
     let _15: &'_ i32; // anonymous local
     let _16: &'_ i32; // anonymous local
-    let _17: Option::<Arguments::<'_>>; // anonymous local
-    let _18: &'_ i32; // anonymous local
+    let _17: &'_ i32; // anonymous local
+    let _18: Option::<Arguments::<'_>>; // anonymous local
+    let _19: &'_ i32; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_18);
+        storage_live(_19);
         _0 = ();
         storage_live(x);
         x = const 42i32;
         storage_live(_2);
         storage_live(_3);
-        _3 = &x;
         storage_live(_4);
-        _18 = &anon_const_0;
-        _4 = &(*_18);
-        _2 = (move _3, move _4);
+        _4 = &x;
+        storage_live(_5);
+        _19 = const &anon_const_0;
+        _5 = &(*_19);
+        _3 = (move _4, move _5);
+        storage_dead(_5);
         storage_dead(_4);
-        storage_dead(_3);
         storage_live(left_val);
-        left_val = copy _2._0;
+        left_val = copy _3._0;
         storage_live(right_val);
-        right_val = copy _2._1;
-        storage_live(_7);
+        right_val = copy _3._1;
         storage_live(_8);
-        _8 = copy (*left_val);
         storage_live(_9);
-        _9 = copy (*right_val);
-        _7 = move _8 == move _9;
-        if move _7 -> bb1 else -> bb2;
+        _9 = copy (*left_val);
+        storage_live(_10);
+        _10 = copy (*right_val);
+        _8 = move _9 == move _10;
+        if move _8 -> bb1 else -> bb2;
     }
 
     bb1: {
+        storage_dead(_10);
         storage_dead(_9);
+        _2 = const ();
         storage_dead(_8);
-        storage_dead(_7);
         storage_dead(right_val);
         storage_dead(left_val);
+        storage_dead(_3);
         storage_dead(_2);
-        _0 = ();
+        _0 = const ();
         storage_dead(x);
         return;
     }
 
     bb2: {
+        storage_dead(_10);
         storage_dead(_9);
-        storage_dead(_8);
         storage_live(kind);
         kind = AssertKind::Eq {  };
-        storage_live(_11);
         storage_live(_12);
-        _12 = move kind;
         storage_live(_13);
+        _13 = move kind;
         storage_live(_14);
-        _14 = &(*left_val);
-        _13 = &(*_14);
         storage_live(_15);
+        _15 = &(*left_val);
+        _14 = &(*_15);
         storage_live(_16);
-        _16 = &(*right_val);
-        _15 = &(*_16);
         storage_live(_17);
-        _17 = Option::<Arguments::<'_>>::None {  };
-        _11 = assert_failed::<i32, i32>(move _12, move _13, move _15, move _17) -> bb3 (unwind: bb4);
+        _17 = &(*right_val);
+        _16 = &(*_17);
+        storage_live(_18);
+        _18 = Option::<Arguments::<'_>>::None {  };
+        _12 = assert_failed::<i32, i32>(move _13, move _14, move _16, move _18) -> bb3 (unwind: bb4);
     }
 
     bb3: {

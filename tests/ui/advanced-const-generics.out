@@ -123,10 +123,6 @@ pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
     let _5: isize; // anonymous local
     let _6: &'_ str; // anonymous local
     let _7: &'_ str; // anonymous local
-    let _8: *const u8; // anonymous local
-    let _9: *const str; // anonymous local
-    let _10: *const u8; // anonymous local
-    let _11: *const str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -140,11 +136,7 @@ pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 
     bb1: {
         storage_live(_6);
-        storage_live(_8);
-        _8 = &raw const anon_const_1[const 0usize];
-        storage_live(_9);
-        _9 = unsize_cast<*const str, 1usize>(move _8);
-        _6 = &(*_9) with_metadata(copy _9.metadata);
+        _6 = const unsize_cast<&'_ str, 1usize>(&raw const anon_const_1[0usize]);
         _4 = &(*_6) with_metadata(copy _6.metadata);
         storage_dead(_6);
         goto bb3;
@@ -152,11 +144,7 @@ pub fn fmt(self: &'_ Foo, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 
     bb2: {
         storage_live(_7);
-        storage_live(_10);
-        _10 = &raw const anon_const_0[const 0usize];
-        storage_live(_11);
-        _11 = unsize_cast<*const str, 1usize>(move _10);
-        _7 = &(*_11) with_metadata(copy _11.metadata);
+        _7 = const unsize_cast<&'_ str, 1usize>(&raw const anon_const_0[0usize]);
         _4 = &(*_7) with_metadata(copy _7.metadata);
         storage_dead(_7);
         goto bb3;

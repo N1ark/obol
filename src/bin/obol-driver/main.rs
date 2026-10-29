@@ -78,8 +78,6 @@ fn run_passes(ctx: &mut TransformCtx) {
         CowBox::Borrowed(&resugar::reconstruct_asserts::Transform),
         // Reconstruct pointer null-checks to avoid reasoning about pointer-to-integer transmutations.
         CowBox::Borrowed(&transform::reconstruct_ptr_null_checks::Transform),
-        // Desugar the constants to other values/operands as much as possible.
-        CowBox::Borrowed(&simplify_output::simplify_constants::Transform),
         // Remove locals of type `()` which show up a lot.
         CowBox::Borrowed(&simplify_output::remove_unit_locals::Transform),
         // Another round.

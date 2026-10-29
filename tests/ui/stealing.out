@@ -161,10 +161,10 @@ fn four() -> usize
         storage_live(_0);
         storage_live(_3);
         storage_live(_1);
-        _1 = copy BAR;
+        _1 = const BAR;
         storage_dead(_1);
         storage_live(_2);
-        _2 = copy FOO;
+        _2 = const FOO;
         storage_dead(_2);
         _3 = const 2usize checked.+ const 2usize;
         assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
@@ -184,31 +184,32 @@ fn four() -> usize
 fn main()
 {
     let _0: (); // return
-    let _1: (&'_ usize, &'_ usize); // anonymous local
-    let _2: &'_ usize; // anonymous local
-    let _3: usize; // anonymous local
-    let _4: &'_ [()]; // anonymous local
-    let _5: &'_ [(); 4usize]; // anonymous local
+    let _1: (); // anonymous local
+    let _2: (&'_ usize, &'_ usize); // anonymous local
+    let _3: &'_ usize; // anonymous local
+    let _4: usize; // anonymous local
+    let _5: &'_ [()]; // anonymous local
     let _6: &'_ [(); 4usize]; // anonymous local
-    let _7: &'_ usize; // anonymous local
+    let _7: &'_ [(); 4usize]; // anonymous local
+    let _8: &'_ usize; // anonymous local
     let left_val: &'_ usize; // local
     let right_val: &'_ usize; // local
-    let _10: bool; // anonymous local
-    let _11: usize; // anonymous local
+    let _11: bool; // anonymous local
     let _12: usize; // anonymous local
+    let _13: usize; // anonymous local
     let kind: AssertKind; // local
-    let _14: !; // anonymous local
-    let _15: AssertKind; // anonymous local
-    let _16: &'_ usize; // anonymous local
+    let _15: !; // anonymous local
+    let _16: AssertKind; // anonymous local
     let _17: &'_ usize; // anonymous local
     let _18: &'_ usize; // anonymous local
     let _19: &'_ usize; // anonymous local
-    let _20: Option::<Arguments::<'_>>; // anonymous local
-    let _21: &'_ usize; // anonymous local
+    let _20: &'_ usize; // anonymous local
+    let _21: Option::<Arguments::<'_>>; // anonymous local
+    let _22: &'_ usize; // anonymous local
 
     bb0: {
         storage_live(_0);
-        storage_live(_21);
+        storage_live(_22);
         _0 = ();
         storage_live(_1);
         storage_live(_2);
@@ -216,67 +217,70 @@ fn main()
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);
-        _6 = &SLICE;
-        _5 = &(*_6);
-        _4 = unsize_cast<&'_ [()], 4usize>(move _5);
-        storage_dead(_5);
-        _3 = len::<()>(move _4) -> bb1 (unwind: bb6);
+        storage_live(_7);
+        _7 = const &SLICE;
+        _6 = &(*_7);
+        _5 = unsize_cast<&'_ [()], 4usize>(move _6);
+        storage_dead(_6);
+        _4 = len::<()>(move _5) -> bb1 (unwind: bb6);
     }
 
     bb1: {
-        storage_dead(_4);
-        _2 = &_3;
-        storage_live(_7);
-        _21 = &anon_const_1;
-        _7 = &(*_21);
-        _1 = (move _2, move _7);
-        storage_dead(_7);
-        storage_dead(_2);
+        storage_dead(_5);
+        _3 = &_4;
+        storage_live(_8);
+        _22 = const &anon_const_1;
+        _8 = &(*_22);
+        _2 = (move _3, move _8);
+        storage_dead(_8);
+        storage_dead(_3);
         storage_live(left_val);
-        left_val = copy _1._0;
+        left_val = copy _2._0;
         storage_live(right_val);
-        right_val = copy _1._1;
-        storage_live(_10);
+        right_val = copy _2._1;
         storage_live(_11);
-        _11 = copy (*left_val);
         storage_live(_12);
-        _12 = copy (*right_val);
-        _10 = move _11 == move _12;
-        if move _10 -> bb2 else -> bb3;
+        _12 = copy (*left_val);
+        storage_live(_13);
+        _13 = copy (*right_val);
+        _11 = move _12 == move _13;
+        if move _11 -> bb2 else -> bb3;
     }
 
     bb2: {
+        storage_dead(_13);
         storage_dead(_12);
+        _1 = const ();
         storage_dead(_11);
-        storage_dead(_10);
         storage_dead(right_val);
         storage_dead(left_val);
-        storage_dead(_6);
-        storage_dead(_3);
+        storage_dead(_7);
+        storage_dead(_4);
+        storage_dead(_2);
         storage_dead(_1);
-        _0 = ();
+        _0 = const ();
         return;
     }
 
     bb3: {
+        storage_dead(_13);
         storage_dead(_12);
-        storage_dead(_11);
         storage_live(kind);
         kind = AssertKind::Eq {  };
-        storage_live(_14);
         storage_live(_15);
-        _15 = move kind;
         storage_live(_16);
+        _16 = move kind;
         storage_live(_17);
-        _17 = &(*left_val);
-        _16 = &(*_17);
         storage_live(_18);
+        _18 = &(*left_val);
+        _17 = &(*_18);
         storage_live(_19);
-        _19 = &(*right_val);
-        _18 = &(*_19);
         storage_live(_20);
-        _20 = Option::<Arguments::<'_>>::None {  };
-        _14 = assert_failed::<usize, usize>(move _15, move _16, move _18, move _20) -> bb4 (unwind: bb5);
+        _20 = &(*right_val);
+        _19 = &(*_20);
+        storage_live(_21);
+        _21 = Option::<Arguments::<'_>>::None {  };
+        _15 = assert_failed::<usize, usize>(move _16, move _17, move _19, move _21) -> bb4 (unwind: bb5);
     }
 
     bb4: {

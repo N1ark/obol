@@ -81,7 +81,7 @@ fn takes_fn(f: &'_ (dyn FakeTrait))
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = ();
+        _0 = const ();
         goto bb4;
     }
 
@@ -90,7 +90,7 @@ fn takes_fn(f: &'_ (dyn FakeTrait))
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(_4);
-        _0 = ();
+        _0 = const ();
         goto bb4;
     }
 
@@ -113,8 +113,6 @@ fn gives_fn()
     let _2: &'_ test_crate::gives_fn::{closure}::{closure}; // anonymous local
     let _3: &'_ test_crate::gives_fn::{closure}::{closure}; // anonymous local
     let _4: &'_ test_crate::gives_fn::{closure}::{closure}; // anonymous local
-    let _5: *const MaybeUninit::<[u8; 0usize]>; // anonymous local
-    let _6: *const test_crate::gives_fn::{closure}::{closure}; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -123,11 +121,7 @@ fn gives_fn()
         storage_live(_1);
         storage_live(_2);
         storage_live(_3);
-        storage_live(_5);
-        _5 = &raw const anon_const_0;
-        storage_live(_6);
-        _6 = cast<*const test_crate::gives_fn::{closure}::{closure}>(move _5);
-        _4 = &(*_6);
+        _4 = const cast<&'_ test_crate::gives_fn::{closure}::{closure}>(&raw const anon_const_0);
         _3 = &(*_4);
         _2 = &(*_3);
         _1 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)>(move _2);
