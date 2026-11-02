@@ -562,7 +562,6 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             }
             TransItemSource::ForeignType(def) => Some(def.span()),
             TransItemSource::Fun(instance) => Some(instance.def.span()),
-            TransItemSource::Static(stt) => Some(stt.span()),
             TransItemSource::NamedConst(def, _) => Some(def.span()),
             TransItemSource::Global(id, ..) => {
                 let glob_alloc: mir::alloc::GlobalAlloc = id.clone().into();

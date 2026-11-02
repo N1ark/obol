@@ -175,13 +175,6 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let decl = bt_ctx.translate_vtable(id, item_meta, *ty, tref)?;
                 self.translated.global_decls.set_slot(id, decl);
             }
-            TransItemSource::Static(stt) => {
-                let Some(ItemId::Global(id)) = trans_id else {
-                    unreachable!()
-                };
-                let decl = bt_ctx.translate_global_from_static(id, item_meta, *stt)?;
-                self.translated.global_decls.set_slot(id, decl);
-            }
             TransItemSource::NamedConst(def, args) => {
                 let Some(ItemId::Global(id)) = trans_id else {
                     unreachable!()
@@ -652,53 +645,6 @@ impl ItemTransCtx<'_, '_> {
         };
 
         Ok(type_def)
-    }
-
-    pub fn translate_global_from_static(
-        mut self,
-        def_id: GlobalDeclId,
-        item_meta: ItemMeta,
-        def: mir::mono::StaticDef,
-    ) -> Result<GlobalDecl, Error> {
-        trace!("About to translate global from static:\n{:?}", def);
-        let item_kind = GlobalSource::Normal;
-        trace!("Translating global type");
-
-        let span = self.translate_span_from_smir(&def.span());
-        let internal_def_id = rustc_public::rustc_internal::internal(self.t_ctx.tcx, def.def_id());
-        let (value, ty) = if self.t_ctx.tcx.is_foreign_item(internal_def_id) {
-            // Foreign/extern statics have no in-crate initializer to evaluate. Unless they have
-            // `#[linkage]`, emit a call to a body-less extern initializer function.
-            let ty = self.translate_ty(span, def.ty())?;
-            let instance: mir::mono::Instance = def.into();
-            let value = match self.linkage_static_value(instance, &ty) {
-                Some(value) => value,
-                None => {
-                    let init = self.register_fun_decl_id(span, instance);
-                    self.call_initializer(init, ty.clone())
-                }
-            };
-            (value, ty)
-        } else {
-            // Evaluate the static's initializer directly into the global's value.
-            let ty = self.translate_ty(span, def.ty())?;
-            (self.read_static_value(span, def)?, ty)
-        };
-
-        let global_kind = self.translate_static_kind(def);
-
-        Ok(GlobalDecl {
-            def_id,
-            item_meta,
-            generics: GenericParams::empty(),
-            size: Size::from_expr(SizeExpr::size_of(&ty)),
-            align: Size::from_expr(SizeExpr::align_of(&ty)),
-            ty,
-            ptr_metadata: ConstantExpr::mk_unit(),
-            src: item_kind,
-            global_kind,
-            value,
-        })
     }
 
     pub fn translate_named_const(

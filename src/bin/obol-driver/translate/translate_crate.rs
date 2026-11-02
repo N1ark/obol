@@ -93,7 +93,6 @@ impl Hash for TupleTy {
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum TransItemSource {
     Global(mir::alloc::AllocId, GlobalTy), // the static or const itself, with its type
-    Static(mir::mono::StaticDef),          // a synthetic global, created from an static def
     NamedConst(ty::ConstDef, MyGenericArgs), // a named (top-level or associated) const item
     Fun(mir::mono::Instance),
     Type(ty::AdtDef, MyGenericArgs),
@@ -122,7 +121,6 @@ impl TransItemSource {
                 }
             }
             TransItemSource::Fun(instance) => Some(instance.def.def_id()),
-            TransItemSource::Static(stt) => Some(stt.0),
             TransItemSource::NamedConst(def, _) => Some(def.0),
             TransItemSource::Type(id, _) => Some(id.0),
             TransItemSource::Closure(def, _) => Some(def.def_id()),
@@ -167,7 +165,6 @@ impl TransItemSource {
             }
             TransItemSource::ForeignType(def) => (5, def.def_id().to_index(), 0),
             TransItemSource::VTable(ty, t) => (6, ty.to_index(), key_trait(t)),
-            TransItemSource::Static(stt) => (9, stt.0.to_index(), 0),
             TransItemSource::NamedConst(def, gargs) => (11, def.0.to_index(), gargs.sort_key()),
             TransItemSource::TraitDecl(did) => (12, did.to_index(), 0),
             TransItemSource::TraitImpl(did) => (13, did.to_index(), 0),
@@ -208,7 +205,6 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     }
                     TransItemSource::Global(..)
                     | TransItemSource::VTable(..)
-                    | TransItemSource::Static(..)
                     | TransItemSource::NamedConst(..) => {
                         ItemId::Global(self.translated.global_decls.reserve_slot())
                     }
