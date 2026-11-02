@@ -23,21 +23,33 @@ fn main()
         storage_live(_2);
         _0 = ();
         storage_live(_1);
-        _2 = const 1i32 checked.+ const 2i32;
-        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _2 = add_with_overflow::<i32>(const 1i32, const 2i32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _2._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _1 = move _2._0;
         storage_dead(_1);
         _0 = const ();
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
     }
+
+    bb4: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
 
 
 

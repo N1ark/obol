@@ -111,7 +111,7 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
     /// Emit a call that is known not to unwind, and continue translating into a fresh block.
     /// Used for non-diverging intrinsics, which MIR represents as statements but ULLBC represents
     /// as calls: unwinding out of them is UB.
-    fn push_nounwind_call(&mut self, span: Span, call: Call) {
+    fn push_nounwind_call(&mut self, span: Span, dest: Place, call: Call) {
         let target = self.blocks.reserve_slot();
         let on_unwind = self.blocks.push(
             Terminator::new(span, TerminatorKind::UndefinedBehavior)
@@ -123,6 +123,7 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
                 span,
                 TerminatorKind::Call {
                     call,
+                    dest,
                     target,
                     on_unwind,
                 },
@@ -615,19 +616,6 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         })
     }
 
-    fn translate_checked_binaryop_kind(
-        &mut self,
-        span: Span,
-        binop: mir::BinOp,
-    ) -> Result<BinOp, Error> {
-        Ok(match binop {
-            mir::BinOp::Add => BinOp::AddChecked,
-            mir::BinOp::Sub => BinOp::SubChecked,
-            mir::BinOp::Mul => BinOp::MulChecked,
-            _ => raise_error!(self, span, "Invalid checked binop: {:?}", binop),
-        })
-    }
-
     fn translate_projection(
         &mut self,
         span: Span,
@@ -824,10 +812,18 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 Ok(Rvalue::Use(Operand::Copy(place), WithRetag::No))
             }
             mir::Rvalue::Repeat(operand, cnst) => {
-                let c = self.translate_tyconst_to_const_expr(span, cnst)?;
-                let (operand, t) = self.translate_operand_with_type(span, operand)?;
-                // Remark: we could desugar this into a function call later.
-                Ok(Rvalue::Repeat(operand, t, c, None))
+                let count = self.translate_tyconst_to_const_expr(span, cnst)?;
+                let operand = self.translate_operand(span, operand)?;
+                let TyKind::Array(_, _, elem_is_sized) = tgt_ty.kind() else {
+                    raise_error!(self, span, "array repeat has non-array type")
+                };
+                // We don't solve traits, so the `Copy` proof is a placeholder.
+                Ok(Rvalue::Repeat {
+                    operand,
+                    count,
+                    elem_is_copy: TraitRef::new(TraitRefKind::Dyn, self.dummy_trait_decl_ref()),
+                    elem_is_sized: elem_is_sized.clone(),
+                })
             }
             mir::Rvalue::Ref(_region, borrow_kind, place) => {
                 let place = self.translate_place(span, place)?;
@@ -851,15 +847,8 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     ptr_metadata: Operand::mk_const_unit(),
                 })
             }
-            mir::Rvalue::Len(place) => {
-                let place = self.translate_place(span, place)?;
-                let ty = place.ty().clone();
-                let cg = match ty.kind() {
-                    TyKind::Array(_, len, _) => Some(len.clone()),
-                    TyKind::Slice(..) => None,
-                    _ => unreachable!(),
-                };
-                Ok(Rvalue::Len(place, ty, cg))
+            mir::Rvalue::Len(_) => {
+                raise_error!(self, span, "`Rvalue::Len` is no longer emitted by rustc")
             }
             mir::Rvalue::Cast(cast_kind, mir_operand, mir_tgt_ty) => {
                 trace!("Rvalue::Cast: {:?}", rvalue);
@@ -898,7 +887,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         ));
                         CastKind::FnDefToFnPtr
                     }
-                    mir::CastKind::PointerExposeAddress => CastKind::PtrExposeProvenance,
+                    mir::CastKind::PointerExposeAddress => {
+                        let tgt_ty = *tgt_ty.kind().as_scalar().unwrap().as_integer().unwrap();
+                        CastKind::PtrExposeProvenance(tgt_ty)
+                    }
                     mir::CastKind::PointerWithExposedProvenance => {
                         CastKind::PtrWithExposedProvenance(tgt_ty.clone())
                     }
@@ -968,11 +960,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 self.translate_operand(span, left)?,
                 self.translate_operand(span, right)?,
             )),
-            mir::Rvalue::CheckedBinaryOp(binop, left, right) => Ok(Rvalue::BinaryOp(
-                self.translate_checked_binaryop_kind(span, *binop)?,
-                self.translate_operand(span, left)?,
-                self.translate_operand(span, right)?,
-            )),
+            mir::Rvalue::CheckedBinaryOp(..) => unreachable!("handled in `translate_statement`"),
             mir::Rvalue::UnaryOp(unop, operand) => {
                 let operand = self.translate_operand(span, operand)?;
                 let unop = match unop {
@@ -1142,6 +1130,28 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             .translate_span_from_smir(&statement.source_info.span);
 
         let t_statement: Option<StatementKind> = match &statement.kind {
+            // Translated to intrinsic calls, as charon does: their tuple return type is hard to
+            // compute from the binop alone.
+            mir::StatementKind::Assign(place, mir::Rvalue::CheckedBinaryOp(binop, left, right)) => {
+                let name = match binop {
+                    mir::BinOp::Add => sym::add_with_overflow,
+                    mir::BinOp::Sub => sym::sub_with_overflow,
+                    mir::BinOp::Mul => sym::mul_with_overflow,
+                    _ => raise_error!(self, span, "Invalid checked binop: {:?}", binop),
+                };
+                let ty = left.ty(self.local_decls)?;
+                let dest = self.translate_place(span, place)?;
+                let left = self.translate_operand(span, left)?;
+                let right = self.translate_operand(span, right)?;
+                self.push_intrinsic_call(
+                    span,
+                    dest,
+                    name,
+                    ty::GenericArgs(vec![ty::GenericArgKind::Type(ty)]),
+                    vec![left, right],
+                )?;
+                None
+            }
             mir::StatementKind::Assign(place, rvalue) => {
                 let t_place = self.translate_place(span, &place)?;
                 let t_rvalue = self.translate_rvalue(span, &rvalue, &t_place.ty)?;
@@ -1167,8 +1177,15 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             // statements: charon dropped the dedicated statements for them.
             mir::StatementKind::Intrinsic(mir::NonDivergingIntrinsic::Assume(op)) => {
                 let op = self.translate_operand(span, &op)?;
+                let dest = self.locals.new_var(None, Ty::mk_unit());
                 // `assume` is not generic.
-                self.push_intrinsic_call(span, sym::assume, ty::GenericArgs(vec![]), vec![op])?;
+                self.push_intrinsic_call(
+                    span,
+                    dest,
+                    sym::assume,
+                    ty::GenericArgs(vec![]),
+                    vec![op],
+                )?;
                 None
             }
             // `copy_nonoverlapping` is generic over the pointee type.
@@ -1187,8 +1204,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let src = self.translate_operand(span, &src)?;
                 let dst = self.translate_operand(span, &dst)?;
                 let count = self.translate_operand(span, &count)?;
+                let dest = self.locals.new_var(None, Ty::mk_unit());
                 self.push_intrinsic_call(
                     span,
+                    dest,
                     sym::copy_nonoverlapping,
                     ty::GenericArgs(vec![ty::GenericArgKind::Type(pointee_ty)]),
                     vec![src, dst, count],
@@ -1225,11 +1244,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
     }
 
     /// Translate a MIR non-diverging intrinsic (which MIR represents as a statement) into a call
-    /// to `core::intrinsics::$name`, monomorphized at `generics`. These intrinsics all return
-    /// unit, so the destination is a fresh unit local.
+    /// to `core::intrinsics::$name`, monomorphized at `generics`, writing its result to `dest`.
     fn push_intrinsic_call(
         &mut self,
         span: Span,
+        dest: Place,
         name: Symbol,
         generics: ty::GenericArgs,
         args: Vec<Operand>,
@@ -1245,13 +1264,12 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             kind: Box::new(FnPtrKind::Fun(fn_id)),
             generics: Box::new(GenericArgs::empty()),
         });
-        let dest = self.locals.new_var(None, Ty::mk_unit());
         self.push_nounwind_call(
             span,
+            dest,
             Call {
                 func,
                 args,
-                dest,
                 safety: CallSafety::Inherit,
             },
         );
@@ -1345,9 +1363,9 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     call: Call {
                         func,
                         args: vec![operand],
-                        dest: unit_place,
                         safety: CallSafety::Inherit,
                     },
+                    dest: unit_place,
                     target,
                     on_unwind,
                 }
@@ -1627,7 +1645,6 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         let call = Call {
             func: fn_operand,
             args: fn_args,
-            dest: lval,
             safety: CallSafety::Inherit,
         };
 
@@ -1646,6 +1663,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         );
         Ok(TerminatorKind::Call {
             call,
+            dest: lval,
             target,
             on_unwind,
         })

@@ -113,18 +113,25 @@ fn internal_method(self: &'_ i32) -> i32
         storage_live(_3);
         storage_live(_2);
         _2 = copy (*self);
-        _3 = copy _2 checked.+ const 1i32;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _3 = add_with_overflow::<i32>(copy _2, const 1i32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _3._0;
         storage_dead(_2);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -141,18 +148,25 @@ fn left_method(self: &'_ i32) -> i32
         storage_live(_3);
         storage_live(_2);
         _2 = copy (*self);
-        _3 = copy _2 checked.+ const 2i32;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _3 = add_with_overflow::<i32>(copy _2, const 2i32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _3._0;
         storage_dead(_2);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -181,58 +195,55 @@ fn right_method(self: &'_ i32) -> i32
         storage_live(_3);
         storage_live(_4);
         _4 = copy (*self);
-        _5 = copy _4 checked.+ const 3i32;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb10);
+        _5 = add_with_overflow::<i32>(copy _4, const 3i32) -> bb1 (unwind: bb16);
     }
 
     bb1: {
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb15);
+    }
+
+    bb2: {
         _3 = move _5._0;
         storage_dead(_4);
         storage_live(_6);
         storage_live(_7);
         _7 = &(*self);
-        _6 = internal_method(move _7) -> bb2 (unwind: bb9);
-    }
-
-    bb2: {
-        storage_dead(_7);
-        _8 = copy _3 checked.+ copy _6;
-        assert assert(move _8._1 == false) (overflow) -> bb3 (unwind: bb8);
+        _6 = internal_method(move _7) -> bb3 (unwind: bb14);
     }
 
     bb3: {
+        storage_dead(_7);
+        _8 = add_with_overflow::<i32>(copy _3, copy _6) -> bb4 (unwind: bb13);
+    }
+
+    bb4: {
+        assert assert(move _8._1 == false) (overflow) -> bb5 (unwind: bb12);
+    }
+
+    bb5: {
         _2 = move _8._0;
         storage_dead(_6);
         storage_dead(_3);
         storage_live(_9);
         storage_live(_10);
         _10 = &(*self);
-        _9 = super_method(move _10, const 10i32) -> bb4 (unwind: bb7);
+        _9 = super_method(move _10, const 10i32) -> bb6 (unwind: bb11);
     }
 
-    bb4: {
+    bb6: {
         storage_dead(_10);
-        _11 = copy _2 checked.+ copy _9;
-        assert assert(move _11._1 == false) (overflow) -> bb5 (unwind: bb6);
+        _11 = add_with_overflow::<i32>(copy _2, copy _9) -> bb7 (unwind: bb10);
     }
 
-    bb5: {
+    bb7: {
+        assert assert(move _11._1 == false) (overflow) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
         _0 = move _11._0;
         storage_dead(_9);
         storage_dead(_2);
         return;
-    }
-
-    bb6: {
-        unwind_continue;
-    }
-
-    bb7: {
-        unwind_continue;
-    }
-
-    bb8: {
-        unwind_continue;
     }
 
     bb9: {
@@ -240,7 +251,31 @@ fn right_method(self: &'_ i32) -> i32
     }
 
     bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
         unwind_continue;
+    }
+
+    bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
+        undefined_behavior;
+    }
+
+    bb14: {
+        unwind_continue;
+    }
+
+    bb15: {
+        unwind_continue;
+    }
+
+    bb16: {
+        undefined_behavior;
     }
 }
 
@@ -351,21 +386,33 @@ pub fn add::<'_>(self_1: &'_ i32, other: i32) -> i32
         storage_live(self_3);
         self_3 = copy (*self_1);
         storage_live(_4);
-        _4 = copy self_3 checked.+ copy other;
-        assert assert(move _4._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _4 = add_with_overflow::<i32>(copy self_3, copy other) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _4._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _4._0;
         storage_dead(_4);
         storage_dead(self_3);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
     }
+
+    bb4: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
 
 fn test_crate::Join::join_method::<(dyn FakeTrait), i32>(_1: &'_ (dyn FakeTrait)) -> (i32, i32)
 = <opaque>

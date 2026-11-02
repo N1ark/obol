@@ -206,9 +206,9 @@ impl ItemTransCtx<'_, '_> {
                 call: Call {
                     func: fn_op,
                     args: vec![Operand::Move(state), Operand::Move(args_tupled)],
-                    dest: output,
                     safety: CallSafety::Inherit,
                 },
+                dest: output,
                 on_unwind: unwind_block,
             };
             blocks.set_slot(start_block, mk_block(statements, call));

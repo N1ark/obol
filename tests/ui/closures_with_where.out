@@ -926,15 +926,18 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.+ move _9;
+        _7 = add_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_1);
         storage_live(_5);
         storage_live(_10);
@@ -962,11 +965,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -974,7 +973,15 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -1127,6 +1134,11 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         unwind_terminate;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: test_crate::{impl Ops<K> for [u8; 1usize]}::of_usize::<0usize>
 fn of_usize::<0usize>(x: usize) -> [u8; 1usize]

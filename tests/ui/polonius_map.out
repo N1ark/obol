@@ -4898,39 +4898,42 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
         self_11 = copy (*self_1).items;
         storage_live(b);
         storage_live(_21);
-        _21 = copy self_11 checked.+ copy additional;
-        b = copy _21._1;
-        if copy b -> bb1 else -> bb6;
+        _21 = add_with_overflow::<usize>(copy self_11, copy additional) -> bb1 (unwind: bb20);
     }
 
     bb1: {
-        _23 = cold_path() -> bb2 (unwind: bb5);
+        b = copy _21._1;
+        if copy b -> bb2 else -> bb7;
     }
 
     bb2: {
+        _23 = cold_path() -> bb3 (unwind: bb6);
+    }
+
+    bb3: {
         storage_dead(_21);
         storage_dead(b);
         storage_dead(self_11);
         storage_dead(_10);
         storage_live(_8);
-        _8 = capacity_overflow(move fallibility) -> bb3 (unwind: bb4);
-    }
-
-    bb3: {
-        _0 = Result::<(), TryReserveError>::Err { _0: move _8 };
-        storage_dead(_8);
-        goto bb16;
+        _8 = capacity_overflow(move fallibility) -> bb4 (unwind: bb5);
     }
 
     bb4: {
-        unwind_continue;
+        _0 = Result::<(), TryReserveError>::Err { _0: move _8 };
+        storage_dead(_8);
+        goto bb17;
     }
 
     bb5: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         storage_dead(_21);
         storage_dead(b);
         storage_live(_22);
@@ -4944,10 +4947,10 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
         full_capacity = copy (*self_1).bucket_mask;
         storage_live(_24);
         _24 = copy full_capacity < const 8usize;
-        if move _24 -> bb8 else -> bb7;
+        if move _24 -> bb9 else -> bb8;
     }
 
-    bb7: {
+    bb8: {
         storage_live(_25);
         storage_live(_26);
         _26 = copy full_capacity wrap.+ const 1usize;
@@ -4955,10 +4958,10 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
         storage_dead(_26);
         full_capacity = move _25 wrap.* const 7usize;
         storage_dead(_25);
-        goto bb8;
+        goto bb9;
     }
 
-    bb8: {
+    bb9: {
         storage_dead(_24);
         storage_live(_13);
         storage_live(_14);
@@ -4967,59 +4970,63 @@ fn reserve_rehash_inner::<Global>(self_1: &'_ mut RawTableInner, alloc: &'_ Glob
         _14 = move _15 ub./ const 2usize;
         storage_dead(_15);
         _13 = copy new_items <= move _14;
-        if move _13 -> bb9 else -> bb12;
-    }
-
-    bb9: {
-        storage_dead(_14);
-        storage_live(_17);
-        _17 = copy layout.size;
-        _16 = rehash_in_place(move self_1, move hasher, move _17, move drop) -> bb10 (unwind: bb11);
+        if move _13 -> bb10 else -> bb13;
     }
 
     bb10: {
-        storage_dead(_17);
-        _0 = const Result::<(), TryReserveError>::Ok { _0: () };
-        goto bb15;
+        storage_dead(_14);
+        storage_live(_17);
+        _17 = copy layout.size;
+        _16 = rehash_in_place(move self_1, move hasher, move _17, move drop) -> bb11 (unwind: bb12);
     }
 
     bb11: {
-        unwind_continue;
+        storage_dead(_17);
+        _0 = const Result::<(), TryReserveError>::Ok { _0: () };
+        goto bb16;
     }
 
     bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
         storage_dead(_14);
         storage_live(_18);
         storage_live(other);
         other = move full_capacity wrap.+ const 1usize;
-        _18 = integer_max::<usize>(move new_items, move other) -> bb13 (unwind: bb18);
-    }
-
-    bb13: {
-        storage_dead(other);
-        _0 = resize_inner::<Global>(move self_1, move alloc, move _18, move hasher, move fallibility, move layout) -> bb14 (unwind: bb17);
+        _18 = integer_max::<usize>(move new_items, move other) -> bb14 (unwind: bb19);
     }
 
     bb14: {
-        storage_dead(_18);
-        goto bb15;
+        storage_dead(other);
+        _0 = resize_inner::<Global>(move self_1, move alloc, move _18, move hasher, move fallibility, move layout) -> bb15 (unwind: bb18);
     }
 
     bb15: {
-        storage_dead(_13);
-        storage_dead(new_items);
+        storage_dead(_18);
         goto bb16;
     }
 
     bb16: {
-        return;
+        storage_dead(_13);
+        storage_dead(new_items);
+        goto bb17;
     }
 
     bb17: {
-        unwind_continue;
+        return;
     }
 
     bb18: {
+        unwind_continue;
+    }
+
+    bb19: {
+        undefined_behavior;
+    }
+
+    bb20: {
         undefined_behavior;
     }
 }
@@ -5151,6 +5158,11 @@ pub fn simd_eq::<uint8x8_t, uint8x8_t>(x_1: uint8x8_t, y_2: uint8x8_t) -> uint8x
 #[rustc_intrinsic]
 pub fn simd_extract::<uint64x1_t, u64>(x_1: uint64x1_t, idx_2: u32) -> u64
 = <intrinsic:simd_extract>
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: hashbrown::raw::{Fallibility}::capacity_overflow
 fn capacity_overflow(_1: Fallibility) -> TryReserveError
@@ -9122,7 +9134,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(_52);
         storage_live(_3);
         _3 = copy cap_1 < const 15usize;
-        if move _3 -> bb1 else -> bb20;
+        if move _3 -> bb1 else -> bb22;
     }
 
     bb1: {
@@ -9148,7 +9160,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
 
     bb5: {
         storage_live(cap_8);
-        cap_8 = integer_max::<usize>(move min_cap, move cap_1) -> bb6 (unwind: bb19);
+        cap_8 = integer_max::<usize>(move min_cap, move cap_1) -> bb6 (unwind: bb21);
     }
 
     bb6: {
@@ -9190,7 +9202,7 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(buckets_12);
         buckets_12 = copy buckets_9;
         storage_live(prod_24);
-        switch copy table_layout_5 -> 0usize: bb18, otherwise: bb13;
+        switch copy table_layout_5 -> 0usize: bb19, otherwise: bb13;
     }
 
     bb13: {
@@ -9200,7 +9212,10 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         _22 = cast<u64>(copy table_layout_5);
         storage_live(_23);
         _23 = cast<u64>(copy buckets_12);
-        _21 = move _22 checked.* move _23;
+        _21 = mul_with_overflow::<u64>(move _22, move _23) -> bb14 (unwind: bb20);
+    }
+
+    bb14: {
         storage_dead(_23);
         storage_dead(_22);
         storage_live(_19);
@@ -9209,43 +9224,47 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(_21);
         prod_24 = cast<usize>(copy _19);
         storage_dead(_19);
-        if copy b_20 -> bb14 else -> bb17;
-    }
-
-    bb14: {
-        _25 = cold_path() -> bb15 (unwind: bb16);
+        if copy b_20 -> bb15 else -> bb18;
     }
 
     bb15: {
-        storage_dead(b_20);
-        prod_24 = const 18446744073709551615usize;
-        goto bb18;
+        _25 = cold_path() -> bb16 (unwind: bb17);
     }
 
     bb16: {
-        undefined_behavior;
+        storage_dead(b_20);
+        prod_24 = const 18446744073709551615usize;
+        goto bb19;
     }
 
     bb17: {
-        storage_dead(b_20);
-        goto bb18;
+        undefined_behavior;
     }
 
     bb18: {
+        storage_dead(b_20);
+        goto bb19;
+    }
+
+    bb19: {
         storage_dead(prod_24);
         storage_dead(buckets_12);
         storage_dead(table_layout_49);
         _0 = Option::<usize>::Some { _0: move buckets_9 };
         storage_dead(cap_8);
         storage_dead(_3);
-        goto bb40;
-    }
-
-    bb19: {
-        undefined_behavior;
+        goto bb44;
     }
 
     bb20: {
+        undefined_behavior;
+    }
+
+    bb21: {
+        undefined_behavior;
+    }
+
+    bb22: {
         storage_dead(_3);
         storage_live(adjusted_cap);
         storage_live(_14);
@@ -9255,7 +9274,10 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(_28);
         storage_live(_29);
         _29 = cast<u64>(copy cap_1);
-        _28 = move _29 checked.* const 8u64;
+        _28 = mul_with_overflow::<u64>(move _29, const 8u64) -> bb23 (unwind: bb48);
+    }
+
+    bb23: {
         storage_dead(_29);
         storage_live(_26);
         _26 = copy _28._0;
@@ -9263,14 +9285,14 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(_28);
         a = cast<usize>(copy _26);
         storage_dead(_26);
-        if copy b_27 -> bb21 else -> bb26;
+        if copy b_27 -> bb24 else -> bb29;
     }
 
-    bb21: {
-        _31 = cold_path() -> bb22 (unwind: bb25);
+    bb24: {
+        _31 = cold_path() -> bb25 (unwind: bb28);
     }
 
-    bb22: {
+    bb25: {
         self = const Option::<usize>::None {  };
         storage_dead(a);
         storage_dead(b_27);
@@ -9279,27 +9301,27 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(_34);
         _33 = @discriminant(_16);
         _34 = copy _33 == const 0isize;
-        _52 = assume(move _34) -> bb23 (unwind: bb24);
+        _52 = assume(move _34) -> bb26 (unwind: bb27);
     }
 
-    bb23: {
+    bb26: {
         _0 = const Option::<usize>::None {  };
         storage_dead(_34);
         storage_dead(_33);
         storage_dead(_14);
         storage_dead(adjusted_cap);
-        goto bb40;
+        goto bb44;
     }
 
-    bb24: {
+    bb27: {
         undefined_behavior;
     }
 
-    bb25: {
+    bb28: {
         undefined_behavior;
     }
 
-    bb26: {
+    bb29: {
         self = Option::<usize>::Some { _0: copy a };
         storage_dead(a);
         storage_dead(b_27);
@@ -9312,27 +9334,27 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         adjusted_cap = copy val ub./ const 7usize;
         storage_dead(_14);
         storage_live(m1);
-        m1 = saturating_sub::<usize>(move adjusted_cap, const 1usize) -> bb27 (unwind: bb42);
+        m1 = saturating_sub::<usize>(move adjusted_cap, const 1usize) -> bb30 (unwind: bb47);
     }
 
-    bb27: {
+    bb30: {
         storage_live(_36);
         storage_live(_37);
         _37 = cast<isize>(copy m1);
         _36 = move _37 >= const 0isize;
-        if move _36 -> bb28 else -> bb31;
+        if move _36 -> bb31 else -> bb34;
     }
 
-    bb28: {
+    bb31: {
         storage_dead(_37);
         storage_live(exp);
         storage_live(_40);
         storage_live(_41);
         _41 = cast<u64>(copy m1);
-        _40 = ctlz::<u64>(move _41) -> bb29 (unwind: bb30);
+        _40 = ctlz::<u64>(move _41) -> bb32 (unwind: bb33);
     }
 
-    bb29: {
+    bb32: {
         storage_dead(_41);
         exp = const 64u32 wrap.- move _40;
         storage_dead(_40);
@@ -9340,26 +9362,26 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(exp);
         storage_dead(_36);
         storage_dead(m1);
-        goto bb33;
-    }
-
-    bb30: {
-        undefined_behavior;
-    }
-
-    bb31: {
-        storage_dead(_37);
-        storage_dead(_36);
-        storage_dead(m1);
-        assert assert(const true == false) (overflow) -> bb32 (unwind: bb41);
-    }
-
-    bb32: {
-        buckets_39 = const 0usize;
-        goto bb33;
+        goto bb36;
     }
 
     bb33: {
+        undefined_behavior;
+    }
+
+    bb34: {
+        storage_dead(_37);
+        storage_dead(_36);
+        storage_dead(m1);
+        assert assert(const true == false) (overflow) -> bb35 (unwind: bb46);
+    }
+
+    bb35: {
+        buckets_39 = const 0usize;
+        goto bb36;
+    }
+
+    bb36: {
         storage_live(table_layout_50);
         storage_live(table_layout_51);
         table_layout_50 = copy table_layout_2.size;
@@ -9367,17 +9389,20 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_live(buckets_18);
         buckets_18 = copy buckets_39;
         storage_live(prod_47);
-        switch copy table_layout_50 -> 0usize: bb39, otherwise: bb34;
+        switch copy table_layout_50 -> 0usize: bb43, otherwise: bb37;
     }
 
-    bb34: {
+    bb37: {
         storage_live(b_43);
         storage_live(_44);
         storage_live(_45);
         _45 = cast<u64>(copy table_layout_50);
         storage_live(_46);
         _46 = cast<u64>(copy buckets_18);
-        _44 = move _45 checked.* move _46;
+        _44 = mul_with_overflow::<u64>(move _45, move _46) -> bb38 (unwind: bb45);
+    }
+
+    bb38: {
         storage_dead(_46);
         storage_dead(_45);
         storage_live(_42);
@@ -9386,47 +9411,55 @@ fn capacity_to_buckets(cap_1: usize, table_layout_2: TableLayout) -> Option::<us
         storage_dead(_44);
         prod_47 = cast<usize>(copy _42);
         storage_dead(_42);
-        if copy b_43 -> bb35 else -> bb38;
-    }
-
-    bb35: {
-        _48 = cold_path() -> bb36 (unwind: bb37);
-    }
-
-    bb36: {
-        storage_dead(b_43);
-        prod_47 = const 18446744073709551615usize;
-        goto bb39;
-    }
-
-    bb37: {
-        undefined_behavior;
-    }
-
-    bb38: {
-        storage_dead(b_43);
-        goto bb39;
+        if copy b_43 -> bb39 else -> bb42;
     }
 
     bb39: {
+        _48 = cold_path() -> bb40 (unwind: bb41);
+    }
+
+    bb40: {
+        storage_dead(b_43);
+        prod_47 = const 18446744073709551615usize;
+        goto bb43;
+    }
+
+    bb41: {
+        undefined_behavior;
+    }
+
+    bb42: {
+        storage_dead(b_43);
+        goto bb43;
+    }
+
+    bb43: {
         storage_dead(prod_47);
         storage_dead(buckets_18);
         storage_dead(table_layout_50);
         storage_dead(table_layout_51);
         _0 = Option::<usize>::Some { _0: move buckets_39 };
         storage_dead(adjusted_cap);
-        goto bb40;
+        goto bb44;
     }
 
-    bb40: {
+    bb44: {
         return;
     }
 
-    bb41: {
+    bb45: {
+        undefined_behavior;
+    }
+
+    bb46: {
         unwind_continue;
     }
 
-    bb42: {
+    bb47: {
+        undefined_behavior;
+    }
+
+    bb48: {
         undefined_behavior;
     }
 }
@@ -10053,7 +10086,10 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         _14 = cast<u64>(copy size_3);
         storage_live(_15);
         _15 = cast<u64>(copy count);
-        _13 = move _14 checked.* move _15;
+        _13 = mul_with_overflow::<u64>(move _14, move _15) -> bb1 (unwind: bb11);
+    }
+
+    bb1: {
         storage_dead(_15);
         storage_dead(_14);
         storage_live(_11);
@@ -10062,22 +10098,18 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_13);
         a = cast<usize>(copy _11);
         storage_dead(_11);
-        if copy b -> bb1 else -> bb6;
-    }
-
-    bb1: {
-        _17 = cold_path() -> bb2 (unwind: bb5);
+        if copy b -> bb2 else -> bb7;
     }
 
     bb2: {
-        storage_dead(a);
-        storage_dead(b);
-        storage_dead(_9);
-        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_11)) -> bb3 (unwind: bb4);
+        _17 = cold_path() -> bb3 (unwind: bb6);
     }
 
     bb3: {
-        undefined_behavior;
+        storage_dead(a);
+        storage_dead(b);
+        storage_dead(_9);
+        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_11)) -> bb4 (unwind: bb5);
     }
 
     bb4: {
@@ -10089,6 +10121,10 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         _9 = Option::<usize>::Some { _0: copy a };
         storage_dead(a);
         storage_dead(b);
@@ -10097,26 +10133,30 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_9);
         storage_live(_18);
         _18 = copy src_usize < copy dst_usize;
-        if move _18 -> bb7 else -> bb8;
-    }
-
-    bb7: {
-        diff = copy dst_usize wrap.- copy src_usize;
-        goto bb9;
+        if move _18 -> bb8 else -> bb9;
     }
 
     bb8: {
-        diff = copy src_usize wrap.- copy dst_usize;
-        goto bb9;
+        diff = copy dst_usize wrap.- copy src_usize;
+        goto bb10;
     }
 
     bb9: {
+        diff = copy src_usize wrap.- copy dst_usize;
+        goto bb10;
+    }
+
+    bb10: {
         storage_dead(_18);
         _0 = move diff >= copy size_8;
         storage_dead(size_8);
         storage_dead(dst_usize);
         storage_dead(src_usize);
         return;
+    }
+
+    bb11: {
+        undefined_behavior;
     }
 }
 
@@ -10646,15 +10686,18 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.+ move _9;
+        _7 = add_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_13);
         storage_live(_5);
         storage_live(_10);
@@ -10682,11 +10725,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -10694,7 +10733,15 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -10794,6 +10841,11 @@ fn swap_chunk::<1usize>(x: &'_ mut MaybeUninit::<[u8; 1usize]>, y: &'_ mut Maybe
     }
 }
 
+// Full name: core::intrinsics::mul_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:mul_with_overflow>
+
 // Full name: core::intrinsics::saturating_sub::<usize>
 #[rustc_intrinsic]
 pub fn saturating_sub::<usize>(a_1: usize, b_2: usize) -> usize
@@ -10892,7 +10944,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         _28 = cast<u64>(copy size);
         storage_live(_29);
         _29 = cast<u64>(copy buckets);
-        _27 = move _28 checked.* move _29;
+        _27 = mul_with_overflow::<u64>(move _28, move _29) -> bb1 (unwind: bb29);
+    }
+
+    bb1: {
         storage_dead(_29);
         storage_dead(_28);
         storage_live(_25);
@@ -10901,14 +10956,14 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(_27);
         a = cast<usize>(copy _25);
         storage_dead(_25);
-        if copy b_26 -> bb1 else -> bb6;
-    }
-
-    bb1: {
-        _31 = cold_path() -> bb2 (unwind: bb5);
+        if copy b_26 -> bb2 else -> bb7;
     }
 
     bb2: {
+        _31 = cold_path() -> bb3 (unwind: bb6);
+    }
+
+    bb3: {
         self_9 = const Option::<usize>::None {  };
         storage_dead(a);
         storage_dead(b_26);
@@ -10917,19 +10972,15 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_live(_38);
         _37 = @discriminant(_10);
         _38 = copy _37 == const 0isize;
-        _50 = assume(move _38) -> bb3 (unwind: bb4);
+        _50 = assume(move _38) -> bb4 (unwind: bb5);
     }
 
-    bb3: {
+    bb4: {
         _0 = Option::<(Layout, usize)>::None {  };
         storage_dead(_38);
         storage_dead(_37);
         storage_dead(self_7);
-        goto bb10;
-    }
-
-    bb4: {
-        undefined_behavior;
+        goto bb12;
     }
 
     bb5: {
@@ -10937,6 +10988,10 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         self_9 = Option::<usize>::Some { _0: copy a };
         storage_dead(a);
         storage_dead(b_26);
@@ -10949,16 +11004,19 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         rhs_12 = copy ctrl_align wrap.- const 1usize;
         storage_live(b_33);
         storage_live(_34);
-        _34 = copy val_11 checked.+ copy rhs_12;
-        b_33 = copy _34._1;
-        if copy b_33 -> bb7 else -> bb13;
-    }
-
-    bb7: {
-        _36 = cold_path() -> bb8 (unwind: bb12);
+        _34 = add_with_overflow::<usize>(copy val_11, copy rhs_12) -> bb8 (unwind: bb28);
     }
 
     bb8: {
+        b_33 = copy _34._1;
+        if copy b_33 -> bb9 else -> bb15;
+    }
+
+    bb9: {
+        _36 = cold_path() -> bb10 (unwind: bb14);
+    }
+
+    bb10: {
         storage_dead(_34);
         storage_dead(b_33);
         self_7 = const Option::<usize>::None {  };
@@ -10967,31 +11025,31 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_live(_45);
         _44 = @discriminant(_13);
         _45 = copy _44 == const 0isize;
-        _51 = assume(move _45) -> bb9 (unwind: bb11);
-    }
-
-    bb9: {
-        _0 = Option::<(Layout, usize)>::None {  };
-        storage_dead(_45);
-        storage_dead(_44);
-        goto bb10;
-    }
-
-    bb10: {
-        storage_dead(_8);
-        storage_dead(_6);
-        goto bb21;
+        _51 = assume(move _45) -> bb11 (unwind: bb13);
     }
 
     bb11: {
-        undefined_behavior;
+        _0 = Option::<(Layout, usize)>::None {  };
+        storage_dead(_45);
+        storage_dead(_44);
+        goto bb12;
     }
 
     bb12: {
-        undefined_behavior;
+        storage_dead(_8);
+        storage_dead(_6);
+        goto bb24;
     }
 
     bb13: {
+        undefined_behavior;
+    }
+
+    bb14: {
+        undefined_behavior;
+    }
+
+    bb15: {
         storage_dead(_34);
         storage_dead(b_33);
         storage_live(_35);
@@ -11016,16 +11074,19 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         rhs_18 = copy buckets wrap.+ const 8usize;
         storage_live(b_40);
         storage_live(_41);
-        _41 = copy ctrl_offset checked.+ copy rhs_18;
+        _41 = add_with_overflow::<usize>(copy ctrl_offset, copy rhs_18) -> bb16 (unwind: bb27);
+    }
+
+    bb16: {
         b_40 = copy _41._1;
-        if copy b_40 -> bb14 else -> bb19;
+        if copy b_40 -> bb17 else -> bb22;
     }
 
-    bb14: {
-        _43 = cold_path() -> bb15 (unwind: bb18);
+    bb17: {
+        _43 = cold_path() -> bb18 (unwind: bb21);
     }
 
-    bb15: {
+    bb18: {
         storage_dead(_41);
         storage_dead(b_40);
         self_17 = const Option::<usize>::None {  };
@@ -11035,26 +11096,26 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_live(_48);
         _47 = @discriminant(_19);
         _48 = copy _47 == const 0isize;
-        _52 = assume(move _48) -> bb16 (unwind: bb17);
+        _52 = assume(move _48) -> bb19 (unwind: bb20);
     }
 
-    bb16: {
+    bb19: {
         _0 = Option::<(Layout, usize)>::None {  };
         storage_dead(_48);
         storage_dead(_47);
         storage_dead(_16);
-        goto bb21;
+        goto bb24;
     }
 
-    bb17: {
+    bb20: {
         undefined_behavior;
     }
 
-    bb18: {
+    bb21: {
         undefined_behavior;
     }
 
-    bb19: {
+    bb22: {
         storage_dead(_41);
         storage_dead(b_40);
         storage_live(_42);
@@ -11073,24 +11134,24 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_live(_22);
         _22 = const 9223372036854775807usize wrap.- copy rhs_12;
         _21 = copy len > move _22;
-        if move _21 -> bb20 else -> bb22;
+        if move _21 -> bb23 else -> bb25;
     }
 
-    bb20: {
+    bb23: {
         storage_dead(_22);
         _0 = Option::<(Layout, usize)>::None {  };
         storage_dead(_21);
-        goto bb21;
+        goto bb24;
     }
 
-    bb21: {
+    bb24: {
         storage_dead(ctrl_offset);
         storage_dead(ctrl_align);
         storage_dead(size);
-        goto bb23;
+        goto bb26;
     }
 
-    bb22: {
+    bb25: {
         storage_dead(_22);
         storage_dead(_21);
         storage_live(_23);
@@ -11106,11 +11167,23 @@ fn calculate_layout_for(self_1: TableLayout, buckets: usize) -> Option::<(Layout
         storage_dead(ctrl_offset);
         storage_dead(ctrl_align);
         storage_dead(size);
-        goto bb23;
+        goto bb26;
     }
 
-    bb23: {
+    bb26: {
         return;
+    }
+
+    bb27: {
+        undefined_behavior;
+    }
+
+    bb28: {
+        undefined_behavior;
+    }
+
+    bb29: {
+        undefined_behavior;
     }
 }
 
@@ -11378,6 +11451,11 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 #[rustc_intrinsic]
 pub fn simd_or::<uint8x8_t>(x_1: uint8x8_t, y_2: uint8x8_t) -> uint8x8_t
 = <intrinsic:simd_or>
+
+// Full name: core::intrinsics::add_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: alloc::alloc::{Global}::alloc_impl_runtime
 fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>, AllocError>

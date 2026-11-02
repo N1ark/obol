@@ -100,19 +100,26 @@ fn access_mutable_static()
         _0 = ();
         storage_live(_1);
         _1 = const &raw mut COUNTER;
-        _2 = copy (*_1) checked.+ const 1usize;
-        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _2 = add_with_overflow::<usize>(copy (*_1), const 1usize) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _2._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         (*_1) = move _2._0;
         storage_dead(_1);
         _0 = const ();
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -184,6 +191,11 @@ pub fn read::<u32>(self: *const u32) -> u32
         return;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: test_crate::COUNTER
 fn COUNTER() -> usize

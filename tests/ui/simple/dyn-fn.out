@@ -192,18 +192,25 @@ fn test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -
         storage_live(counter);
         storage_live(_4);
         counter = noretag move spread_args._0;
-        _4 = copy (*counter) checked.+ const 1u32;
-        assert assert(move _4._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _4 = add_with_overflow::<u32>(copy (*counter), const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _4._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         (*counter) = move _4._0;
         _0 = const true;
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -230,6 +237,11 @@ pub fn call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>(_
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
 
 
 

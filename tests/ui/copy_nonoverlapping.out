@@ -882,7 +882,10 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         _14 = cast<u64>(copy size_3);
         storage_live(_15);
         _15 = cast<u64>(copy count);
-        _13 = move _14 checked.* move _15;
+        _13 = mul_with_overflow::<u64>(move _14, move _15) -> bb1 (unwind: bb11);
+    }
+
+    bb1: {
         storage_dead(_15);
         storage_dead(_14);
         storage_live(_11);
@@ -891,22 +894,18 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_13);
         a = cast<usize>(copy _11);
         storage_dead(_11);
-        if copy b -> bb1 else -> bb6;
-    }
-
-    bb1: {
-        _17 = cold_path() -> bb2 (unwind: bb5);
+        if copy b -> bb2 else -> bb7;
     }
 
     bb2: {
-        storage_dead(a);
-        storage_dead(b);
-        storage_dead(_9);
-        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_4)) -> bb3 (unwind: bb4);
+        _17 = cold_path() -> bb3 (unwind: bb6);
     }
 
     bb3: {
-        undefined_behavior;
+        storage_dead(a);
+        storage_dead(b);
+        storage_dead(_9);
+        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_4)) -> bb4 (unwind: bb5);
     }
 
     bb4: {
@@ -918,6 +917,10 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         _9 = Option::<usize>::Some { _0: copy a };
         storage_dead(a);
         storage_dead(b);
@@ -926,26 +929,30 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_9);
         storage_live(_18);
         _18 = copy src_usize < copy dst_usize;
-        if move _18 -> bb7 else -> bb8;
-    }
-
-    bb7: {
-        diff = copy dst_usize wrap.- copy src_usize;
-        goto bb9;
+        if move _18 -> bb8 else -> bb9;
     }
 
     bb8: {
-        diff = copy src_usize wrap.- copy dst_usize;
-        goto bb9;
+        diff = copy dst_usize wrap.- copy src_usize;
+        goto bb10;
     }
 
     bb9: {
+        diff = copy src_usize wrap.- copy dst_usize;
+        goto bb10;
+    }
+
+    bb10: {
         storage_dead(_18);
         _0 = move diff >= copy size_8;
         storage_dead(size_8);
         storage_dead(dst_usize);
         storage_dead(src_usize);
         return;
+    }
+
+    bb11: {
+        undefined_behavior;
     }
 }
 
@@ -1058,6 +1065,11 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::mul_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:mul_with_overflow>
 
 // Full name: core::intrinsics::cold_path
 #[miri::intrinsic_fallback_is_spec]

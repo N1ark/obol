@@ -251,40 +251,43 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_5);
         storage_live(_6);
         _6 = copy sum;
-        _7 = copy _6 checked.+ const 2u32;
-        assert assert(move _7._1 == false) (overflow) -> bb1 (unwind: bb24);
+        _7 = add_with_overflow::<u32>(copy _6, const 2u32) -> bb1 (unwind: bb34);
     }
 
     bb1: {
-        _5 = move _7._0;
-        storage_dead(_6);
-        _4 = function_call(move _5) -> bb2 (unwind: bb23);
+        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb33);
     }
 
     bb2: {
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_live(_8);
-        goto bb3;
+        _5 = move _7._0;
+        storage_dead(_6);
+        _4 = function_call(move _5) -> bb3 (unwind: bb32);
     }
 
     bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_live(_8);
+        goto bb4;
+    }
+
+    bb4: {
         storage_live(_10);
         storage_live(_11);
         _11 = copy i;
         storage_live(_12);
         storage_live(_13);
         _13 = &(*s) with_metadata(copy s.metadata);
-        _12 = len::<u32>(move _13) -> bb4 (unwind: bb22);
-    }
-
-    bb4: {
-        storage_dead(_13);
-        _10 = move _11 < move _12;
-        if move _10 -> bb5 else -> bb12;
+        _12 = len::<u32>(move _13) -> bb5 (unwind: bb31);
     }
 
     bb5: {
+        storage_dead(_13);
+        _10 = move _11 < move _12;
+        if move _10 -> bb6 else -> bb17;
+    }
+
+    bb6: {
         storage_dead(_12);
         storage_dead(_11);
         storage_live(_14);
@@ -292,43 +295,57 @@ pub fn sum(s: &'_ [u32]) -> u32
         _15 = copy i;
         _16 = noretag copy s.metadata;
         _17 = copy _15 < copy _16;
-        assert assert(move _17 == true) (bounds_check) -> bb6 (unwind: bb11);
-    }
-
-    bb6: {
-        _14 = copy (*s)[copy _15];
-        _18 = copy sum checked.+ copy _14;
-        assert assert(move _18._1 == false) (overflow) -> bb7 (unwind: bb10);
+        assert assert(move _17 == true) (bounds_check) -> bb7 (unwind: bb16);
     }
 
     bb7: {
-        sum = move _18._0;
-        storage_dead(_14);
-        storage_dead(_15);
-        _19 = copy i checked.+ const 1usize;
-        assert assert(move _19._1 == false) (overflow) -> bb8 (unwind: bb9);
+        _14 = copy (*s)[copy _15];
+        _18 = add_with_overflow::<u32>(copy sum, copy _14) -> bb8 (unwind: bb15);
     }
 
     bb8: {
-        i = move _19._0;
-        _9 = const ();
-        storage_dead(_10);
-        goto bb3;
+        assert assert(move _18._1 == false) (overflow) -> bb9 (unwind: bb14);
     }
 
     bb9: {
-        unwind_continue;
+        sum = move _18._0;
+        storage_dead(_14);
+        storage_dead(_15);
+        _19 = add_with_overflow::<usize>(copy i, const 1usize) -> bb10 (unwind: bb13);
     }
 
     bb10: {
-        unwind_continue;
+        assert assert(move _19._1 == false) (overflow) -> bb11 (unwind: bb12);
     }
 
     bb11: {
-        unwind_continue;
+        i = move _19._0;
+        _9 = const ();
+        storage_dead(_10);
+        goto bb4;
     }
 
     bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
+        undefined_behavior;
+    }
+
+    bb14: {
+        unwind_continue;
+    }
+
+    bb15: {
+        undefined_behavior;
+    }
+
+    bb16: {
+        unwind_continue;
+    }
+
+    bb17: {
         storage_dead(_12);
         storage_dead(_11);
         _8 = const ();
@@ -339,34 +356,41 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_22);
         _22 = copy sum;
         _21 = move _22 > const 10u32;
-        if move _21 -> bb13 else -> bb16;
+        if move _21 -> bb18 else -> bb23;
     }
 
-    bb13: {
+    bb18: {
         storage_dead(_22);
         storage_live(_23);
         _23 = copy sum;
-        _24 = copy _23 checked.+ const 100u32;
-        assert assert(move _24._1 == false) (overflow) -> bb14 (unwind: bb15);
+        _24 = add_with_overflow::<u32>(copy _23, const 100u32) -> bb19 (unwind: bb22);
     }
 
-    bb14: {
+    bb19: {
+        assert assert(move _24._1 == false) (overflow) -> bb20 (unwind: bb21);
+    }
+
+    bb20: {
         _20 = move _24._0;
         storage_dead(_23);
-        goto bb17;
+        goto bb24;
     }
 
-    bb15: {
+    bb21: {
         unwind_continue;
     }
 
-    bb16: {
-        storage_dead(_22);
-        _20 = copy sum;
-        goto bb17;
+    bb22: {
+        undefined_behavior;
     }
 
-    bb17: {
+    bb23: {
+        storage_dead(_22);
+        _20 = copy sum;
+        goto bb24;
+    }
+
+    bb24: {
         storage_dead(_21);
         sum = move _20;
         storage_dead(_20);
@@ -374,17 +398,20 @@ pub fn sum(s: &'_ [u32]) -> u32
         storage_live(_26);
         storage_live(_27);
         _27 = copy sum;
-        _28 = copy _27 checked.+ const 2u32;
-        assert assert(move _28._1 == false) (overflow) -> bb18 (unwind: bb21);
+        _28 = add_with_overflow::<u32>(copy _27, const 2u32) -> bb25 (unwind: bb30);
     }
 
-    bb18: {
+    bb25: {
+        assert assert(move _28._1 == false) (overflow) -> bb26 (unwind: bb29);
+    }
+
+    bb26: {
         _26 = move _28._0;
         storage_dead(_27);
-        _25 = function_call(move _26) -> bb19 (unwind: bb20);
+        _25 = function_call(move _26) -> bb27 (unwind: bb28);
     }
 
-    bb19: {
+    bb27: {
         storage_dead(_26);
         storage_dead(_25);
         _0 = copy sum;
@@ -393,24 +420,32 @@ pub fn sum(s: &'_ [u32]) -> u32
         return;
     }
 
-    bb20: {
+    bb28: {
         unwind_continue;
     }
 
-    bb21: {
+    bb29: {
         unwind_continue;
     }
 
-    bb22: {
+    bb30: {
+        undefined_behavior;
+    }
+
+    bb31: {
         unwind_continue;
     }
 
-    bb23: {
+    bb32: {
         unwind_continue;
     }
 
-    bb24: {
+    bb33: {
         unwind_continue;
+    }
+
+    bb34: {
+        undefined_behavior;
     }
 }
 
@@ -702,25 +737,28 @@ pub fn thing()
         storage_live(_2);
         _3 = cast<u32>(const 3i32);
         _4 = move _3 < const 32u32;
-        assert assert(move _4 == true) (overflow) -> bb1 (unwind: bb6);
+        assert assert(move _4 == true) (overflow) -> bb1 (unwind: bb8);
     }
 
     bb1: {
         _2 = const CONSTANT wrap.>> const 3i32;
-        _5 = copy _2 checked.+ const 12u32;
-        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb5);
+        _5 = add_with_overflow::<u32>(copy _2, const 12u32) -> bb2 (unwind: bb7);
     }
 
     bb2: {
+        assert assert(move _5._1 == false) (overflow) -> bb3 (unwind: bb6);
+    }
+
+    bb3: {
         x = move _5._0;
         storage_dead(_2);
         storage_live(_6);
         storage_live(_7);
         _7 = copy x;
-        _6 = function_call(move _7) -> bb3 (unwind: bb4);
+        _6 = function_call(move _7) -> bb4 (unwind: bb5);
     }
 
-    bb3: {
+    bb4: {
         storage_dead(_7);
         storage_dead(_6);
         _0 = const ();
@@ -728,15 +766,19 @@ pub fn thing()
         return;
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
     bb5: {
         unwind_continue;
     }
 
     bb6: {
+        unwind_continue;
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
         unwind_continue;
     }
 }
@@ -772,6 +814,11 @@ fn fool()
     }
 }
 
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
+
 // Full name: core::slice::{[T]}::len::<u32>
 #[lang_item(SliceLen)]
 pub fn len::<u32>(self: &'_ [u32]) -> usize
@@ -785,6 +832,11 @@ pub fn len::<u32>(self: &'_ [u32]) -> usize
         return;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::default::{impl Default for u32}::default
 pub fn impl_Default_for_u32::default() -> u32

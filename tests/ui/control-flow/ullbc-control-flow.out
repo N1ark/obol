@@ -300,7 +300,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_5);
         storage_live(_6);
         _6 = Range::<i32> { start: const 0i32, end: const 128i32 };
-        _5 = into_iter::<Range::<i32>>(move _6) -> bb1 (unwind: bb30);
+        _5 = into_iter::<Range::<i32>>(move _6) -> bb1 (unwind: bb34);
     }
 
     bb1: {
@@ -317,13 +317,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_12);
         _12 = &mut iter_7;
         _11 = &two-phase-mut (*_12);
-        _10 = next::<i32>(move _11) -> bb3 (unwind: bb29);
+        _10 = next::<i32>(move _11) -> bb3 (unwind: bb33);
     }
 
     bb3: {
         storage_dead(_11);
         _13 = @discriminant(_10);
-        switch move _13 -> 0isize: bb4, 1isize: bb25, otherwise: bb28;
+        switch move _13 -> 0isize: bb4, 1isize: bb27, otherwise: bb32;
     }
 
     bb4: {
@@ -341,7 +341,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         _18 = copy step_out;
         _17 = Range::<usize> { start: const 0usize, end: move _18 };
         storage_dead(_18);
-        _16 = into_iter::<Range::<usize>>(move _17) -> bb5 (unwind: bb24);
+        _16 = into_iter::<Range::<usize>>(move _17) -> bb5 (unwind: bb26);
     }
 
     bb5: {
@@ -358,13 +358,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_23);
         _23 = &mut iter_19;
         _22 = &two-phase-mut (*_23);
-        _21 = next::<usize>(move _22) -> bb7 (unwind: bb23);
+        _21 = next::<usize>(move _22) -> bb7 (unwind: bb25);
     }
 
     bb7: {
         storage_dead(_22);
         _24 = @discriminant(_21);
-        switch move _24 -> 0isize: bb8, 1isize: bb9, otherwise: bb28;
+        switch move _24 -> 0isize: bb8, 1isize: bb9, otherwise: bb32;
     }
 
     bb8: {
@@ -387,7 +387,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         _27 = copy step_in;
         _26 = Range::<usize> { start: const 0usize, end: move _27 };
         storage_dead(_27);
-        _25 = into_iter::<Range::<usize>>(move _26) -> bb10 (unwind: bb22);
+        _25 = into_iter::<Range::<usize>>(move _26) -> bb10 (unwind: bb24);
     }
 
     bb10: {
@@ -404,13 +404,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_32);
         _32 = &mut iter_28;
         _31 = &two-phase-mut (*_32);
-        _30 = next::<usize>(move _31) -> bb12 (unwind: bb21);
+        _30 = next::<usize>(move _31) -> bb12 (unwind: bb23);
     }
 
     bb12: {
         storage_dead(_31);
         _33 = @discriminant(_30);
-        switch move _33 -> 0isize: bb13, 1isize: bb14, otherwise: bb28;
+        switch move _33 -> 0isize: bb13, 1isize: bb14, otherwise: bb32;
     }
 
     bb13: {
@@ -428,21 +428,24 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb14: {
-        _34 = copy s checked.+ const 1usize;
-        assert assert(move _34._1 == false) (overflow) -> bb15 (unwind: bb20);
+        _34 = add_with_overflow::<usize>(copy s, const 1usize) -> bb15 (unwind: bb22);
     }
 
     bb15: {
+        assert assert(move _34._1 == false) (overflow) -> bb16 (unwind: bb21);
+    }
+
+    bb16: {
         s = move _34._0;
         storage_live(_35);
         storage_live(_36);
         storage_live(_37);
         _37 = copy s;
         _36 = move _37 >= const 1usize;
-        if move _36 -> bb16 else -> bb17;
+        if move _36 -> bb17 else -> bb18;
     }
 
-    bb16: {
+    bb17: {
         storage_dead(_37);
         _35 = const ();
         storage_dead(_36);
@@ -455,18 +458,14 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         goto bb11;
     }
 
-    bb17: {
+    bb18: {
         storage_dead(_37);
         storage_live(_38);
-        _38 = panic(const unsize_cast<&'_ str, 24usize>(&raw const anon_const_0)) -> bb18 (unwind: bb19);
-    }
-
-    bb18: {
-        undefined_behavior;
+        _38 = panic(const unsize_cast<&'_ str, 24usize>(&raw const anon_const_0)) -> bb19 (unwind: bb20);
     }
 
     bb19: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb20: {
@@ -478,7 +477,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb22: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb23: {
@@ -490,11 +489,22 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb25: {
-        _14 = copy s checked.+ const 1usize;
-        assert assert(move _14._1 == false) (overflow) -> bb26 (unwind: bb27);
+        unwind_continue;
     }
 
     bb26: {
+        unwind_continue;
+    }
+
+    bb27: {
+        _14 = add_with_overflow::<usize>(copy s, const 1usize) -> bb28 (unwind: bb31);
+    }
+
+    bb28: {
+        assert assert(move _14._1 == false) (overflow) -> bb29 (unwind: bb30);
+    }
+
+    bb29: {
         s = move _14._0;
         _9 = const ();
         storage_dead(_12);
@@ -504,19 +514,23 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         goto bb2;
     }
 
-    bb27: {
+    bb30: {
         unwind_continue;
     }
 
-    bb28: {
+    bb31: {
         undefined_behavior;
     }
 
-    bb29: {
+    bb32: {
+        undefined_behavior;
+    }
+
+    bb33: {
         unwind_continue;
     }
 
-    bb30: {
+    bb34: {
         unwind_continue;
     }
 }
@@ -566,6 +580,11 @@ pub fn into_iter::<Range::<usize>>(self: Range::<usize>) -> Range::<usize>
         return;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::iter::range::{impl Iterator for Range::<_>}::next::<usize>
 pub fn next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
@@ -933,7 +952,10 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         storage_live(_5);
         _5 = cast<i32>(copy rhs);
         storage_live(_8);
-        _8 = copy start checked.+ copy _5;
+        _8 = add_with_overflow::<i32>(copy start, copy _5) -> bb1 (unwind: bb10);
+    }
+
+    bb1: {
         a = copy _8._0;
         storage_live(_7);
         _7 = copy _8._1;
@@ -944,29 +966,25 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         storage_dead(_10);
         storage_dead(_7);
         storage_dead(_5);
-        if copy b -> bb1 else -> bb8;
-    }
-
-    bb1: {
-        _11 = cold_path() -> bb2 (unwind: bb7);
+        if copy b -> bb2 else -> bb9;
     }
 
     bb2: {
+        _11 = cold_path() -> bb3 (unwind: bb8);
+    }
+
+    bb3: {
         self = const Option::<i32>::None {  };
         storage_dead(b);
         storage_dead(a);
         storage_dead(rhs);
         storage_live(_13);
         _13 = ub_checks;
-        _14 = assume(move _13) -> bb3 (unwind: bb6);
-    }
-
-    bb3: {
-        _12 = core::hint::unreachable_unchecked::precondition_check() -> bb4 (unwind: bb5);
+        _14 = assume(move _13) -> bb4 (unwind: bb7);
     }
 
     bb4: {
-        undefined_behavior;
+        _12 = core::hint::unreachable_unchecked::precondition_check() -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -982,6 +1000,10 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
     }
 
     bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
         self = Option::<i32>::Some { _0: copy a };
         storage_dead(b);
         storage_dead(a);
@@ -989,6 +1011,10 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         val = move (self as variant Option::<i32>::Some)._0;
         storage_dead(self);
         return;
+    }
+
+    bb10: {
+        undefined_behavior;
     }
 }
 
@@ -1090,6 +1116,11 @@ fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unw
 #[lang_item(PanicImpl)]
 extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 = <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
+
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::intrinsics::cold_path
 #[miri::intrinsic_fallback_is_spec]
@@ -1195,15 +1226,18 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.+ move _9;
+        _7 = add_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_2);
         storage_live(_5);
         storage_live(_10);
@@ -1231,11 +1265,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -1243,7 +1273,15 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -1284,6 +1322,11 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         unwind_terminate;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
 #[track_caller]

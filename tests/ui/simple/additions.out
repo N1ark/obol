@@ -80,8 +80,15 @@ pub fn overflowing_add(self: u8, rhs: u8) -> (u8, bool)
 
     bb0: {
         storage_live(_0);
-        _0 = copy self checked.+ copy rhs;
+        _0 = add_with_overflow::<u8>(copy self, copy rhs) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
         return;
+    }
+
+    bb2: {
+        undefined_behavior;
     }
 }
 
@@ -104,6 +111,11 @@ pub fn core::num::{u8}::saturating_add(self: u8, rhs: u8) -> u8
         undefined_behavior;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u8>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u8>(x_1: u8, y_2: u8) -> (u8, bool)
+= <intrinsic:add_with_overflow>
 
 #[rustc_intrinsic]
 pub fn core::intrinsics::saturating_add::<u8>(a_1: u8, b_2: u8) -> u8

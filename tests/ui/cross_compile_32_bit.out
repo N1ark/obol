@@ -176,11 +176,14 @@ fn main()
         _4 = copy y;
         storage_live(_5);
         _5 = copy x;
-        _6 = copy _4 checked.- copy _5;
-        assert assert(move _6._1 == false) (overflow) -> bb1 (unwind: bb4);
+        _6 = sub_with_overflow::<usize>(copy _4, copy _5) -> bb1 (unwind: bb6);
     }
 
     bb1: {
+        assert assert(move _6._1 == false) (overflow) -> bb2 (unwind: bb5);
+    }
+
+    bb2: {
         z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
@@ -188,10 +191,10 @@ fn main()
         storage_live(_8);
         storage_live(_9);
         _9 = &raw mut x;
-        _8 = new_unchecked::<usize>(move _9) -> bb2 (unwind: bb3);
+        _8 = new_unchecked::<usize>(move _9) -> bb3 (unwind: bb4);
     }
 
-    bb2: {
+    bb3: {
         storage_dead(_9);
         a = HasPointerNiche::Second { _0: move _8 };
         storage_dead(_8);
@@ -203,14 +206,23 @@ fn main()
         return;
     }
 
-    bb3: {
-        unwind_continue;
-    }
-
     bb4: {
         unwind_continue;
     }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::sub_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn sub_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:sub_with_overflow>
 
 // Full name: core::ptr::non_null::{NonNull::<_>}::new_unchecked::<usize>
 #[track_caller]

@@ -56,19 +56,31 @@ pub fn lens() -> usize
     bb0: {
         storage_live(_0);
         storage_live(_1);
-        _1 = const LEN::<u8> checked.+ const LEN::<u32>;
-        assert assert(move _1._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _1 = add_with_overflow::<usize>(const LEN::<u8>, const LEN::<u32>) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _1._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _1._0;
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
     }
+
+    bb4: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 
 

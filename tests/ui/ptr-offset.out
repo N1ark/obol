@@ -388,7 +388,10 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         _13 = cast<i64>(copy count);
         storage_live(_14);
         _14 = cast<i64>(copy rhs);
-        _12 = move _13 checked.* move _14;
+        _12 = mul_with_overflow::<i64>(move _13, move _14) -> bb1 (unwind: bb12);
+    }
+
+    bb1: {
         storage_dead(_14);
         storage_dead(_13);
         storage_live(_10);
@@ -397,25 +400,25 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_dead(_12);
         byte_offset = cast<isize>(copy _10);
         storage_dead(_10);
-        if copy b -> bb1 else -> bb4;
-    }
-
-    bb1: {
-        _16 = cold_path() -> bb2 (unwind: bb3);
+        if copy b -> bb2 else -> bb5;
     }
 
     bb2: {
-        storage_dead(b);
-        storage_dead(rhs);
-        storage_dead(overflow);
-        goto bb6;
+        _16 = cold_path() -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        undefined_behavior;
+        storage_dead(b);
+        storage_dead(rhs);
+        storage_dead(overflow);
+        goto bb8;
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         storage_dead(b);
         storage_dead(rhs);
         storage_live(self);
@@ -428,7 +431,10 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         _22 = cast<u64>(copy self);
         storage_live(_23);
         _23 = cast<u64>(copy _17);
-        _21 = move _22 checked.+ move _23;
+        _21 = add_with_overflow::<u64>(move _22, move _23) -> bb6 (unwind: bb11);
+    }
+
+    bb6: {
         storage_dead(_23);
         storage_dead(_22);
         _20 = copy _21._1;
@@ -442,15 +448,15 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         storage_dead(self);
         _4 = ~(copy overflow);
         storage_dead(overflow);
-        if move _4 -> bb5 else -> bb6;
+        if move _4 -> bb7 else -> bb8;
     }
 
-    bb5: {
+    bb7: {
         storage_dead(_4);
         return;
     }
 
-    bb6: {
+    bb8: {
         msg = const unsize_cast<&'_ str, 210usize>(&raw const anon_const_1);
         storage_live(_7);
         storage_live(_24);
@@ -478,14 +484,22 @@ fn precondition_check(this: *const (), count: isize, size: usize)
         _7 = Arguments::<'_> { template: move _24, args: move _26 };
         storage_dead(_26);
         storage_dead(_24);
-        _6 = panic_nounwind_fmt(move _7, const false) -> bb7 (unwind: bb8);
+        _6 = panic_nounwind_fmt(move _7, const false) -> bb9 (unwind: bb10);
     }
 
-    bb7: {
+    bb9: {
         undefined_behavior;
     }
 
-    bb8: {
+    bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        undefined_behavior;
+    }
+
+    bb12: {
         undefined_behavior;
     }
 }
@@ -618,11 +632,21 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
     }
 }
 
+// Full name: core::intrinsics::mul_with_overflow::<i64>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<i64>(x_1: i64, y_2: i64) -> (i64, bool)
+= <intrinsic:mul_with_overflow>
+
 // Full name: core::intrinsics::cold_path
 #[miri::intrinsic_fallback_is_spec]
 #[rustc_intrinsic]
 pub fn cold_path()
 = <intrinsic:cold_path>
+
+// Full name: core::intrinsics::add_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::panicking::panic_nounwind_fmt
 #[track_caller]

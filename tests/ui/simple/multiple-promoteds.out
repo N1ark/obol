@@ -46,29 +46,35 @@ fn six() -> u32
         storage_live(_7);
         storage_live(_8);
         storage_live(x);
-        _2 = const 0u32 checked.+ const 1u32;
-        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb6);
+        _2 = add_with_overflow::<u32>(const 0u32, const 1u32) -> bb1 (unwind: bb10);
     }
 
     bb1: {
-        _8 = const &anon_const_0;
-        x = &(*_8);
-        storage_live(y);
-        _4 = const 2u32 checked.+ const 3u32;
-        assert assert(move _4._1 == false) (overflow) -> bb2 (unwind: bb5);
+        assert assert(move _2._1 == false) (overflow) -> bb2 (unwind: bb9);
     }
 
     bb2: {
+        _8 = const &anon_const_0;
+        x = &(*_8);
+        storage_live(y);
+        _4 = add_with_overflow::<u32>(const 2u32, const 3u32) -> bb3 (unwind: bb8);
+    }
+
+    bb3: {
+        assert assert(move _4._1 == false) (overflow) -> bb4 (unwind: bb7);
+    }
+
+    bb4: {
         _7 = const &anon_const_1;
         y = &(*_7);
         storage_live(_5);
         _5 = copy x;
         storage_live(_6);
         _6 = copy y;
-        _0 = add::<'_, '_>(move _5, move _6) -> bb3 (unwind: bb4);
+        _0 = add::<'_, '_>(move _5, move _6) -> bb5 (unwind: bb6);
     }
 
-    bb3: {
+    bb5: {
         storage_dead(_6);
         storage_dead(_5);
         storage_dead(y);
@@ -76,18 +82,31 @@ fn six() -> u32
         return;
     }
 
-    bb4: {
-        unwind_continue;
-    }
-
-    bb5: {
-        unwind_continue;
-    }
-
     bb6: {
         unwind_continue;
     }
+
+    bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::ops::arith::{impl Add<&'_ u32> for &'_ u32}::add::<'_, '_>
 #[track_caller]
@@ -107,11 +126,14 @@ pub fn add::<'_, '_>(self_1: &'_ u32, other_2: &'_ u32) -> u32
         storage_live(other_4);
         other_4 = copy (*other_2);
         storage_live(_5);
-        _5 = copy self_3 checked.+ copy other_4;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _5 = add_with_overflow::<u32>(copy self_3, copy other_4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _5._0;
         storage_dead(_5);
         storage_dead(other_4);
@@ -119,8 +141,12 @@ pub fn add::<'_, '_>(self_1: &'_ u32, other_2: &'_ u32) -> u32
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 

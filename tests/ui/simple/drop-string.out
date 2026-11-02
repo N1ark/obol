@@ -862,15 +862,18 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.* move _9;
+        _7 = mul_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_0);
         storage_live(_5);
         storage_live(_10);
@@ -898,11 +901,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -910,7 +909,15 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -1043,6 +1050,11 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
 // Full name: alloc::alloc::__rust_dealloc
 extern fn __rust_dealloc(_1: NonNull::<u8>, _2: usize, _3: Alignment)
 = <extern:_RNvCs<hash>_7___rustc14___rust_dealloc>
+
+// Full name: core::intrinsics::mul_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:mul_with_overflow>
 
 // Full name: core::panicking::panic_nounwind_fmt
 #[track_caller]

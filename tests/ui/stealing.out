@@ -166,17 +166,24 @@ fn four() -> usize
         storage_live(_2);
         _2 = const FOO;
         storage_dead(_2);
-        _3 = const 2usize checked.+ const 2usize;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _3 = add_with_overflow::<usize>(const 2usize, const 2usize) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _3._0;
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -295,6 +302,11 @@ fn main()
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::slice::{[T]}::len::<()>
 #[lang_item(SliceLen)]

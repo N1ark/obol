@@ -15,7 +15,7 @@ use rustc_hir::attrs::{
     AttributeKind, DeprecatedSince, Deprecation, InlineAttr, Linkage, OptimizeAttr,
 };
 use rustc_span::symbol::Ident;
-use rustc_target::spec::{Arch, CfgAbi, Env, Os};
+use rustc_target::spec::{Arch, BinaryFormat, CfgAbi, Env, Os};
 
 use crate::translate::translate_ctx::TranslateCtx;
 
@@ -304,6 +304,13 @@ impl TranslateCtx<'_> {
         self.translate_cfg_abi_from_rustc(value)
     }
 
+    pub(crate) fn translate_rustc_binary_format(
+        &mut self,
+        value: &BinaryFormat,
+    ) -> Result<from_rustc::BinaryFormat, FromRustcError> {
+        self.translate_binary_format_from_rustc(value)
+    }
+
     fn translate_attribute_kind_from_rustc(
         &mut self,
         value: &AttributeKind,
@@ -545,6 +552,19 @@ impl TranslateCtx<'_> {
             CfgAbi::V8Plus => Ok(from_rustc::CfgAbi::V8Plus),
             CfgAbi::Unspecified => Ok(from_rustc::CfgAbi::Unspecified),
             CfgAbi::Other(_0) => Ok(from_rustc::CfgAbi::Other((_0).as_ref().into())),
+        }
+    }
+
+    fn translate_binary_format_from_rustc(
+        &mut self,
+        value: &BinaryFormat,
+    ) -> Result<from_rustc::BinaryFormat, FromRustcError> {
+        match value {
+            BinaryFormat::Coff => Ok(from_rustc::BinaryFormat::Coff),
+            BinaryFormat::Elf => Ok(from_rustc::BinaryFormat::Elf),
+            BinaryFormat::MachO => Ok(from_rustc::BinaryFormat::MachO),
+            BinaryFormat::Wasm => Ok(from_rustc::BinaryFormat::Wasm),
+            BinaryFormat::Xcoff => Ok(from_rustc::BinaryFormat::Xcoff),
         }
     }
 

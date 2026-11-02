@@ -54,7 +54,7 @@ fn main()
         storage_live(_2);
         _2 = const 0usize;
         _3 = copy _2 < const 3usize;
-        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb14);
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb16);
     }
 
     bb1: {
@@ -62,11 +62,14 @@ fn main()
         storage_dead(_2);
         storage_dead(_1);
         storage_live(_4);
-        _5 = const 5i32 checked.* const 10i32;
-        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb13);
+        _5 = mul_with_overflow::<i32>(const 5i32, const 10i32) -> bb2 (unwind: bb15);
     }
 
     bb2: {
+        assert assert(move _5._1 == false) (overflow) -> bb3 (unwind: bb14);
+    }
+
+    bb3: {
         _4 = move _5._0;
         storage_dead(_4);
         storage_live(x);
@@ -75,50 +78,46 @@ fn main()
         storage_live(_8);
         _8 = copy x;
         _9 = copy _8 == const -128i8;
-        assert assert(move _9 == false) (overflow_neg) -> bb3 (unwind: bb12);
+        assert assert(move _9 == false) (overflow_neg) -> bb4 (unwind: bb13);
     }
 
-    bb3: {
+    bb4: {
         _7 = ub.-(move _8);
         storage_dead(_8);
         storage_dead(_7);
         storage_live(_10);
         _11 = const 1i32 == const 0i32;
-        assert assert(move _11 == false) (division_by_zero) -> bb4 (unwind: bb11);
-    }
-
-    bb4: {
-        _12 = const 1i32 == const -1i32;
-        _13 = const 1i32 == const -2147483648i32;
-        _14 = move _12 & move _13;
-        assert assert(move _14 == false) (overflow) -> bb5 (unwind: bb10);
+        assert assert(move _11 == false) (division_by_zero) -> bb5 (unwind: bb12);
     }
 
     bb5: {
+        _12 = const 1i32 == const -1i32;
+        _13 = const 1i32 == const -2147483648i32;
+        _14 = move _12 & move _13;
+        assert assert(move _14 == false) (overflow) -> bb6 (unwind: bb11);
+    }
+
+    bb6: {
         _10 = const 1i32 ub./ const 1i32;
         storage_dead(_10);
         storage_live(_15);
         _16 = const 1i32 == const 0i32;
-        assert assert(move _16 == false) (remainder_by_zero) -> bb6 (unwind: bb9);
-    }
-
-    bb6: {
-        _17 = const 1i32 == const -1i32;
-        _18 = const 1i32 == const -2147483648i32;
-        _19 = move _17 & move _18;
-        assert assert(move _19 == false) (overflow) -> bb7 (unwind: bb8);
+        assert assert(move _16 == false) (remainder_by_zero) -> bb7 (unwind: bb10);
     }
 
     bb7: {
+        _17 = const 1i32 == const -1i32;
+        _18 = const 1i32 == const -2147483648i32;
+        _19 = move _17 & move _18;
+        assert assert(move _19 == false) (overflow) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
         _15 = const 1i32 wrap.% const 1i32;
         storage_dead(_15);
         _0 = const ();
         storage_dead(x);
         return;
-    }
-
-    bb8: {
-        unwind_continue;
     }
 
     bb9: {
@@ -144,7 +143,20 @@ fn main()
     bb14: {
         unwind_continue;
     }
+
+    bb15: {
+        undefined_behavior;
+    }
+
+    bb16: {
+        unwind_continue;
+    }
 }
+
+// Full name: core::intrinsics::mul_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:mul_with_overflow>
 
 
 

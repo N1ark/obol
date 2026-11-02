@@ -105,7 +105,7 @@ fn test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCo
         storage_live(_4);
         storage_live(_5);
         _5 = move _1.upvar_0;
-        _4 = drop::<NotCopy>(move _5) -> bb1 (unwind: bb4);
+        _4 = drop::<NotCopy>(move _5) -> bb1 (unwind: bb6);
     }
 
     bb1: {
@@ -113,21 +113,28 @@ fn test_crate::main::{closure}::<i32, extern "rust-call" fn((u8,)) -> u8, (NotCo
         storage_dead(_4);
         storage_live(_6);
         _6 = copy x;
-        _7 = copy _6 checked.+ const 1u8;
-        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb3);
+        _7 = add_with_overflow::<u8>(copy _6, const 1u8) -> bb2 (unwind: bb5);
     }
 
     bb2: {
+        assert assert(move _7._1 == false) (overflow) -> bb3 (unwind: bb4);
+    }
+
+    bb3: {
         _0 = move _7._0;
         storage_dead(_6);
         return;
     }
 
-    bb3: {
+    bb4: {
         unwind_continue;
     }
 
-    bb4: {
+    bb5: {
+        undefined_behavior;
+    }
+
+    bb6: {
         unwind_continue;
     }
 }
@@ -145,6 +152,11 @@ pub fn drop::<NotCopy>(_x: NotCopy)
         return;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u8>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u8>(x_1: u8, y_2: u8) -> (u8, bool)
+= <intrinsic:add_with_overflow>
 
 
 

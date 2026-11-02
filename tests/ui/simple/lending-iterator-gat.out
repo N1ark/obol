@@ -483,12 +483,15 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mu
         storage_live(_4);
         _4 = copy (*item);
         _6 = noretag copy (*_1).upvar_0;
-        _5 = copy (*_6) checked.+ copy _4;
-        _7 = noretag copy (*_1).upvar_0;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _5 = add_with_overflow::<i32>(copy (*_6), copy _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        _7 = noretag copy (*_1).upvar_0;
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _8 = noretag copy (*_1).upvar_0;
         (*_8) = move _5._0;
         _0 = const ();
@@ -496,8 +499,12 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mu
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -505,6 +512,11 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((&'_ i32,)), (&'_ mu
 #[track_caller]
 fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
 = <missing>
+
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::ptr::drop_glue::<&'_ i32>
 #[lang_item(DropGlue)]

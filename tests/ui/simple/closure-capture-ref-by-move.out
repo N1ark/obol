@@ -81,22 +81,34 @@ fn test_crate::foo::{closure}::<i16, extern "rust-call" fn(()), (&'_ mut i32,)>(
         storage_live(_6);
         _0 = ();
         _4 = noretag copy (*_1).upvar_0;
-        _3 = copy (*_4) checked.+ const 1i32;
-        _5 = noretag copy (*_1).upvar_0;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _3 = add_with_overflow::<i32>(copy (*_4), const 1i32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        _5 = noretag copy (*_1).upvar_0;
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _6 = noretag copy (*_1).upvar_0;
         (*_6) = move _3._0;
         _0 = const ();
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
     }
+
+    bb4: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
 
 
 

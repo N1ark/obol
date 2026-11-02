@@ -452,18 +452,25 @@ pub fn incr_u32(x: u32) -> u32
         storage_live(_3);
         storage_live(_2);
         _2 = copy x;
-        _3 = copy _2 checked.+ const 1u32;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _3 = add_with_overflow::<u32>(copy _2, const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _3._0;
         storage_dead(_2);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -991,6 +998,11 @@ fn test_fnmut_with_ref()
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: test_crate::map_option::<u32, incr_u32>
 #[allow(clippy::manual_map)]
@@ -1535,33 +1547,47 @@ fn test_crate::test_closure_capture::{closure}::<i8, extern "rust-call" fn((u32,
         storage_live(_6);
         _11 = noretag copy (*_1).upvar_1;
         _6 = copy (*_11);
-        _7 = copy _5 checked.+ copy _6;
-        assert assert(move _7._1 == false) (overflow) -> bb1 (unwind: bb4);
+        _7 = add_with_overflow::<u32>(copy _5, copy _6) -> bb1 (unwind: bb8);
     }
 
     bb1: {
+        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb7);
+    }
+
+    bb2: {
         _4 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         storage_live(_8);
         _8 = copy z;
-        _9 = copy _4 checked.+ copy _8;
-        assert assert(move _9._1 == false) (overflow) -> bb2 (unwind: bb3);
+        _9 = add_with_overflow::<u32>(copy _4, copy _8) -> bb3 (unwind: bb6);
     }
 
-    bb2: {
+    bb3: {
+        assert assert(move _9._1 == false) (overflow) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
         _0 = move _9._0;
         storage_dead(_8);
         storage_dead(_4);
         return;
     }
 
-    bb3: {
+    bb5: {
         unwind_continue;
     }
 
-    bb4: {
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         unwind_continue;
+    }
+
+    bb8: {
+        undefined_behavior;
     }
 }
 
@@ -1618,12 +1644,15 @@ fn test_crate::test_fnmut_with_ref::{closure}::<i16, extern "rust-call" fn((&'_ 
         storage_live(_4);
         _4 = copy (*x);
         _6 = noretag copy (*_1).upvar_0;
-        _5 = copy (*_6) checked.+ copy _4;
-        _7 = noretag copy (*_1).upvar_0;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _5 = add_with_overflow::<usize>(copy (*_6), copy _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        _7 = noretag copy (*_1).upvar_0;
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _8 = noretag copy (*_1).upvar_0;
         (*_8) = move _5._0;
         _0 = const ();
@@ -1631,8 +1660,12 @@ fn test_crate::test_fnmut_with_ref::{closure}::<i16, extern "rust-call" fn((&'_ 
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -1749,18 +1782,25 @@ fn test_crate::test_map_option3::{closure}::<i8, extern "rust-call" fn((u32,)) -
         x = noretag move spread_args._0;
         storage_live(_4);
         _4 = copy x;
-        _5 = copy _4 checked.+ const 1u32;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _5 = add_with_overflow::<u32>(copy _4, const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _5._0;
         storage_dead(_4);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -1858,6 +1898,11 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
         unwind_terminate;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::array::try_from_fn::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>, 256usize>
 pub fn try_from_fn::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>, 256usize>(cb: &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>) -> NeverShortCircuit::<[i32; 256usize]>
@@ -2734,15 +2779,18 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.+ move _9;
+        _7 = add_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_3);
         storage_live(_5);
         storage_live(_10);
@@ -2770,11 +2818,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -2782,7 +2826,15 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -2985,15 +3037,18 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.- move _9;
+        _7 = sub_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_5);
         storage_live(_5);
         storage_live(_10);
@@ -3021,11 +3076,7 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -3033,7 +3084,15 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -3249,6 +3308,11 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 }
 
+// Full name: core::intrinsics::add_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:add_with_overflow>
+
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
@@ -3392,6 +3456,11 @@ fn test_crate::test_array_map::{closure}::<i16, extern "rust-call" fn((i32,)) ->
         return;
     }
 }
+
+// Full name: core::intrinsics::sub_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn sub_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:sub_with_overflow>
 
 // Full name: core::fmt::{impl Display for &'_ T}::fmt::<'_, str>
 pub fn {impl Display for &'_ T}::fmt::<'_, str>(self: &'_ &'_ str, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
@@ -3664,19 +3733,26 @@ fn test_crate::test_closure_u32s::{closure}::<i8, extern "rust-call" fn((u32, u3
         _5 = copy x;
         storage_live(_6);
         _6 = copy y;
-        _7 = copy _5 checked.+ copy _6;
-        assert assert(move _7._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _7 = add_with_overflow::<u32>(copy _5, copy _6) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -3760,18 +3836,25 @@ fn test_crate::test_map_option2::{closure}::<i8, extern "rust-call" fn((u32,)) -
         x = noretag move spread_args._0;
         storage_live(_4);
         _4 = copy x;
-        _5 = copy _4 checked.+ const 1u32;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _5 = add_with_overflow::<u32>(copy _4, const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _5._0;
         storage_dead(_4);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 

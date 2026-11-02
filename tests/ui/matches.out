@@ -124,7 +124,7 @@ pub fn test3(x: E2) -> u32
         storage_live(_8);
         storage_live(y);
         _3 = @discriminant(x);
-        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb4, otherwise: bb10;
+        switch move _3 -> 0isize: bb1, 1isize: bb2, 2isize: bb4, otherwise: bb12;
     }
 
     bb1: {
@@ -152,7 +152,7 @@ pub fn test3(x: E2) -> u32
 
     bb5: {
         storage_live(z);
-        z = id::<u32>(const 3u32) -> bb6 (unwind: bb9);
+        z = id::<u32>(const 3u32) -> bb6 (unwind: bb11);
     }
 
     bb6: {
@@ -160,11 +160,14 @@ pub fn test3(x: E2) -> u32
         _6 = copy y;
         storage_live(_7);
         _7 = copy z;
-        _8 = copy _6 checked.+ copy _7;
-        assert assert(move _8._1 == false) (overflow) -> bb7 (unwind: bb8);
+        _8 = add_with_overflow::<u32>(copy _6, copy _7) -> bb7 (unwind: bb10);
     }
 
     bb7: {
+        assert assert(move _8._1 == false) (overflow) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
         _0 = move _8._0;
         storage_dead(_7);
         storage_dead(_6);
@@ -173,15 +176,19 @@ pub fn test3(x: E2) -> u32
         return;
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
     bb9: {
         unwind_continue;
     }
 
     bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
         undefined_behavior;
     }
 }
@@ -198,6 +205,11 @@ pub fn id::<u32>(x: u32) -> u32
         return;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
 
 
 

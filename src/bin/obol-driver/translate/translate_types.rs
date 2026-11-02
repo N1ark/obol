@@ -113,8 +113,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         trait_: RegionBinder::empty(self.dummy_trait_decl_ref()),
                     }]
                     .into(),
-                    regions_outlive: vec![].into(),
-                    types_outlive: vec![].into(),
+                    outlives: vec![].into(),
                     trait_type_constraints: vec![].into(),
                 },
                 skip_binder: TyKind::TypeVar(DeBruijnVar::bound(

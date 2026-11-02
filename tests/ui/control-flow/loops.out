@@ -417,7 +417,7 @@ pub fn test_loop1(max: u32) -> u32
         storage_live(_8);
         _8 = copy max;
         _6 = move _7 < move _8;
-        if move _6 -> bb2 else -> bb7;
+        if move _6 -> bb2 else -> bb11;
     }
 
     bb2: {
@@ -425,43 +425,60 @@ pub fn test_loop1(max: u32) -> u32
         storage_dead(_7);
         storage_live(_9);
         _9 = copy i;
-        _10 = copy s checked.+ copy _9;
-        assert assert(move _10._1 == false) (overflow) -> bb3 (unwind: bb6);
+        _10 = add_with_overflow::<u32>(copy s, copy _9) -> bb3 (unwind: bb10);
     }
 
     bb3: {
-        s = move _10._0;
-        storage_dead(_9);
-        _11 = copy i checked.+ const 1u32;
-        assert assert(move _11._1 == false) (overflow) -> bb4 (unwind: bb5);
+        assert assert(move _10._1 == false) (overflow) -> bb4 (unwind: bb9);
     }
 
     bb4: {
+        s = move _10._0;
+        storage_dead(_9);
+        _11 = add_with_overflow::<u32>(copy i, const 1u32) -> bb5 (unwind: bb8);
+    }
+
+    bb5: {
+        assert assert(move _11._1 == false) (overflow) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
         i = move _11._0;
         _5 = const ();
         storage_dead(_6);
         goto bb1;
     }
 
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
-        unwind_continue;
-    }
-
     bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
         storage_dead(_8);
         storage_dead(_7);
         _4 = const ();
         storage_dead(_6);
         storage_dead(_4);
-        _12 = copy s checked.* const 2u32;
-        assert assert(move _12._1 == false) (overflow) -> bb8 (unwind: bb9);
+        _12 = mul_with_overflow::<u32>(copy s, const 2u32) -> bb12 (unwind: bb15);
     }
 
-    bb8: {
+    bb12: {
+        assert assert(move _12._1 == false) (overflow) -> bb13 (unwind: bb14);
+    }
+
+    bb13: {
         s = move _12._0;
         _0 = copy s;
         storage_dead(s);
@@ -469,8 +486,12 @@ pub fn test_loop1(max: u32) -> u32
         return;
     }
 
-    bb9: {
+    bb14: {
         unwind_continue;
+    }
+
+    bb15: {
+        undefined_behavior;
     }
 }
 
@@ -513,7 +534,7 @@ pub fn test_loop2(max: u32) -> u32
         storage_live(_8);
         _8 = copy max;
         _6 = move _7 < move _8;
-        if move _6 -> bb2 else -> bb9;
+        if move _6 -> bb2 else -> bb13;
     }
 
     bb2: {
@@ -532,7 +553,7 @@ pub fn test_loop2(max: u32) -> u32
         _4 = const ();
         storage_dead(_10);
         storage_dead(_9);
-        goto bb10;
+        goto bb14;
     }
 
     bb4: {
@@ -542,40 +563,54 @@ pub fn test_loop2(max: u32) -> u32
         storage_dead(_9);
         storage_live(_12);
         _12 = copy i;
-        _13 = copy s checked.+ copy _12;
-        assert assert(move _13._1 == false) (overflow) -> bb5 (unwind: bb8);
+        _13 = add_with_overflow::<u32>(copy s, copy _12) -> bb5 (unwind: bb12);
     }
 
     bb5: {
-        s = move _13._0;
-        storage_dead(_12);
-        _14 = copy i checked.+ const 1u32;
-        assert assert(move _14._1 == false) (overflow) -> bb6 (unwind: bb7);
+        assert assert(move _13._1 == false) (overflow) -> bb6 (unwind: bb11);
     }
 
     bb6: {
+        s = move _13._0;
+        storage_dead(_12);
+        _14 = add_with_overflow::<u32>(copy i, const 1u32) -> bb7 (unwind: bb10);
+    }
+
+    bb7: {
+        assert assert(move _14._1 == false) (overflow) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
         i = move _14._0;
         _5 = const ();
         storage_dead(_6);
         goto bb1;
     }
 
-    bb7: {
-        unwind_continue;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
     bb9: {
-        storage_dead(_8);
-        storage_dead(_7);
-        _4 = const ();
-        goto bb10;
+        unwind_continue;
     }
 
     bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
+        undefined_behavior;
+    }
+
+    bb13: {
+        storage_dead(_8);
+        storage_dead(_7);
+        _4 = const ();
+        goto bb14;
+    }
+
+    bb14: {
         storage_dead(_6);
         storage_dead(_4);
         _0 = copy s;
@@ -640,7 +675,7 @@ pub fn test_loop3(max: u32) -> u32
         storage_live(_9);
         _9 = copy max;
         _7 = move _8 < move _9;
-        if move _7 -> bb2 else -> bb18;
+        if move _7 -> bb2 else -> bb28;
     }
 
     bb2: {
@@ -657,7 +692,7 @@ pub fn test_loop3(max: u32) -> u32
         storage_live(_13);
         _13 = copy max;
         _11 = move _12 < move _13;
-        if move _11 -> bb4 else -> bb13;
+        if move _11 -> bb4 else -> bb19;
     }
 
     bb4: {
@@ -670,19 +705,22 @@ pub fn test_loop3(max: u32) -> u32
         _17 = copy i;
         storage_live(_18);
         _18 = copy j;
-        _19 = copy _17 checked.+ copy _18;
-        assert assert(move _19._1 == false) (overflow) -> bb5 (unwind: bb12);
+        _19 = add_with_overflow::<u32>(copy _17, copy _18) -> bb5 (unwind: bb18);
     }
 
     bb5: {
+        assert assert(move _19._1 == false) (overflow) -> bb6 (unwind: bb17);
+    }
+
+    bb6: {
         _16 = move _19._0;
         storage_dead(_18);
         storage_dead(_17);
         _15 = move _16 == const 17u32;
-        if move _15 -> bb6 else -> bb7;
+        if move _15 -> bb7 else -> bb8;
     }
 
-    bb6: {
+    bb7: {
         storage_dead(_16);
         storage_dead(_15);
         storage_dead(_14);
@@ -690,25 +728,31 @@ pub fn test_loop3(max: u32) -> u32
         goto bb3;
     }
 
-    bb7: {
+    bb8: {
         storage_dead(_16);
         _14 = const ();
         storage_dead(_15);
         storage_dead(_14);
         storage_live(_20);
         _20 = copy i;
-        _21 = copy s checked.+ copy _20;
-        assert assert(move _21._1 == false) (overflow) -> bb8 (unwind: bb11);
-    }
-
-    bb8: {
-        s = move _21._0;
-        storage_dead(_20);
-        _22 = copy j checked.+ const 1u32;
-        assert assert(move _22._1 == false) (overflow) -> bb9 (unwind: bb10);
+        _21 = add_with_overflow::<u32>(copy s, copy _20) -> bb9 (unwind: bb16);
     }
 
     bb9: {
+        assert assert(move _21._1 == false) (overflow) -> bb10 (unwind: bb15);
+    }
+
+    bb10: {
+        s = move _21._0;
+        storage_dead(_20);
+        _22 = add_with_overflow::<u32>(copy j, const 1u32) -> bb11 (unwind: bb14);
+    }
+
+    bb11: {
+        assert assert(move _22._1 == false) (overflow) -> bb12 (unwind: bb13);
+    }
+
+    bb12: {
         j = move _22._0;
         storage_dead(_11);
         storage_dead(_10);
@@ -716,19 +760,31 @@ pub fn test_loop3(max: u32) -> u32
         goto bb1;
     }
 
-    bb10: {
-        unwind_continue;
-    }
-
-    bb11: {
-        unwind_continue;
-    }
-
-    bb12: {
-        unwind_continue;
-    }
-
     bb13: {
+        unwind_continue;
+    }
+
+    bb14: {
+        undefined_behavior;
+    }
+
+    bb15: {
+        unwind_continue;
+    }
+
+    bb16: {
+        undefined_behavior;
+    }
+
+    bb17: {
+        unwind_continue;
+    }
+
+    bb18: {
+        undefined_behavior;
+    }
+
+    bb19: {
         storage_dead(_13);
         storage_dead(_12);
         _10 = const ();
@@ -737,33 +793,47 @@ pub fn test_loop3(max: u32) -> u32
         j = const 0u32;
         storage_live(_23);
         _23 = copy i;
-        _24 = copy s checked.+ copy _23;
-        assert assert(move _24._1 == false) (overflow) -> bb14 (unwind: bb17);
+        _24 = add_with_overflow::<u32>(copy s, copy _23) -> bb20 (unwind: bb27);
     }
 
-    bb14: {
+    bb20: {
+        assert assert(move _24._1 == false) (overflow) -> bb21 (unwind: bb26);
+    }
+
+    bb21: {
         s = move _24._0;
         storage_dead(_23);
-        _25 = copy i checked.+ const 1u32;
-        assert assert(move _25._1 == false) (overflow) -> bb15 (unwind: bb16);
+        _25 = add_with_overflow::<u32>(copy i, const 1u32) -> bb22 (unwind: bb25);
     }
 
-    bb15: {
+    bb22: {
+        assert assert(move _25._1 == false) (overflow) -> bb23 (unwind: bb24);
+    }
+
+    bb23: {
         i = move _25._0;
         _6 = const ();
         storage_dead(_7);
         goto bb1;
     }
 
-    bb16: {
+    bb24: {
         unwind_continue;
     }
 
-    bb17: {
+    bb25: {
+        undefined_behavior;
+    }
+
+    bb26: {
         unwind_continue;
     }
 
-    bb18: {
+    bb27: {
+        undefined_behavior;
+    }
+
+    bb28: {
         storage_dead(_9);
         storage_dead(_8);
         _5 = const ();
@@ -833,7 +903,7 @@ pub fn test_loop4(max: u32) -> u32
         storage_live(_9);
         _9 = copy max;
         _7 = move _8 < move _9;
-        if move _7 -> bb2 else -> bb18;
+        if move _7 -> bb2 else -> bb28;
     }
 
     bb2: {
@@ -850,7 +920,7 @@ pub fn test_loop4(max: u32) -> u32
         storage_live(_13);
         _13 = copy max;
         _11 = move _12 < move _13;
-        if move _11 -> bb4 else -> bb13;
+        if move _11 -> bb4 else -> bb19;
     }
 
     bb4: {
@@ -863,19 +933,22 @@ pub fn test_loop4(max: u32) -> u32
         _17 = copy i;
         storage_live(_18);
         _18 = copy j;
-        _19 = copy _17 checked.+ copy _18;
-        assert assert(move _19._1 == false) (overflow) -> bb5 (unwind: bb12);
+        _19 = add_with_overflow::<u32>(copy _17, copy _18) -> bb5 (unwind: bb18);
     }
 
     bb5: {
+        assert assert(move _19._1 == false) (overflow) -> bb6 (unwind: bb17);
+    }
+
+    bb6: {
         _16 = move _19._0;
         storage_dead(_18);
         storage_dead(_17);
         _15 = move _16 == const 17u32;
-        if move _15 -> bb6 else -> bb7;
+        if move _15 -> bb7 else -> bb8;
     }
 
-    bb6: {
+    bb7: {
         storage_dead(_16);
         storage_dead(_15);
         storage_dead(_14);
@@ -883,45 +956,63 @@ pub fn test_loop4(max: u32) -> u32
         goto bb3;
     }
 
-    bb7: {
+    bb8: {
         storage_dead(_16);
         _14 = const ();
         storage_dead(_15);
         storage_dead(_14);
         storage_live(_20);
         _20 = copy i;
-        _21 = copy s checked.+ copy _20;
-        assert assert(move _21._1 == false) (overflow) -> bb8 (unwind: bb11);
-    }
-
-    bb8: {
-        s = move _21._0;
-        storage_dead(_20);
-        _22 = copy j checked.+ const 1u32;
-        assert assert(move _22._1 == false) (overflow) -> bb9 (unwind: bb10);
+        _21 = add_with_overflow::<u32>(copy s, copy _20) -> bb9 (unwind: bb16);
     }
 
     bb9: {
+        assert assert(move _21._1 == false) (overflow) -> bb10 (unwind: bb15);
+    }
+
+    bb10: {
+        s = move _21._0;
+        storage_dead(_20);
+        _22 = add_with_overflow::<u32>(copy j, const 1u32) -> bb11 (unwind: bb14);
+    }
+
+    bb11: {
+        assert assert(move _22._1 == false) (overflow) -> bb12 (unwind: bb13);
+    }
+
+    bb12: {
         j = move _22._0;
         _5 = const ();
         storage_dead(_11);
         storage_dead(_10);
-        goto bb19;
-    }
-
-    bb10: {
-        unwind_continue;
-    }
-
-    bb11: {
-        unwind_continue;
-    }
-
-    bb12: {
-        unwind_continue;
+        goto bb29;
     }
 
     bb13: {
+        unwind_continue;
+    }
+
+    bb14: {
+        undefined_behavior;
+    }
+
+    bb15: {
+        unwind_continue;
+    }
+
+    bb16: {
+        undefined_behavior;
+    }
+
+    bb17: {
+        unwind_continue;
+    }
+
+    bb18: {
+        undefined_behavior;
+    }
+
+    bb19: {
         storage_dead(_13);
         storage_dead(_12);
         _10 = const ();
@@ -930,40 +1021,54 @@ pub fn test_loop4(max: u32) -> u32
         j = const 0u32;
         storage_live(_23);
         _23 = copy i;
-        _24 = copy s checked.+ copy _23;
-        assert assert(move _24._1 == false) (overflow) -> bb14 (unwind: bb17);
+        _24 = add_with_overflow::<u32>(copy s, copy _23) -> bb20 (unwind: bb27);
     }
 
-    bb14: {
+    bb20: {
+        assert assert(move _24._1 == false) (overflow) -> bb21 (unwind: bb26);
+    }
+
+    bb21: {
         s = move _24._0;
         storage_dead(_23);
-        _25 = copy i checked.+ const 1u32;
-        assert assert(move _25._1 == false) (overflow) -> bb15 (unwind: bb16);
+        _25 = add_with_overflow::<u32>(copy i, const 1u32) -> bb22 (unwind: bb25);
     }
 
-    bb15: {
+    bb22: {
+        assert assert(move _25._1 == false) (overflow) -> bb23 (unwind: bb24);
+    }
+
+    bb23: {
         i = move _25._0;
         _6 = const ();
         storage_dead(_7);
         goto bb1;
     }
 
-    bb16: {
+    bb24: {
         unwind_continue;
     }
 
-    bb17: {
+    bb25: {
+        undefined_behavior;
+    }
+
+    bb26: {
         unwind_continue;
     }
 
-    bb18: {
+    bb27: {
+        undefined_behavior;
+    }
+
+    bb28: {
         storage_dead(_9);
         storage_dead(_8);
         _5 = const ();
-        goto bb19;
+        goto bb29;
     }
 
-    bb19: {
+    bb29: {
         storage_dead(_7);
         storage_dead(_5);
         _0 = copy s;
@@ -1022,7 +1127,7 @@ pub fn test_loop5(max: u32) -> u32
         storage_live(_9);
         _9 = copy max;
         _7 = move _8 < move _9;
-        if move _7 -> bb2 else -> bb14;
+        if move _7 -> bb2 else -> bb22;
     }
 
     bb2: {
@@ -1039,7 +1144,7 @@ pub fn test_loop5(max: u32) -> u32
         storage_live(_13);
         _13 = copy max;
         _11 = move _12 < move _13;
-        if move _11 -> bb4 else -> bb9;
+        if move _11 -> bb4 else -> bb13;
     }
 
     bb4: {
@@ -1047,33 +1152,47 @@ pub fn test_loop5(max: u32) -> u32
         storage_dead(_12);
         storage_live(_14);
         _14 = copy j;
-        _15 = copy s checked.+ copy _14;
-        assert assert(move _15._1 == false) (overflow) -> bb5 (unwind: bb8);
+        _15 = add_with_overflow::<u32>(copy s, copy _14) -> bb5 (unwind: bb12);
     }
 
     bb5: {
-        s = move _15._0;
-        storage_dead(_14);
-        _16 = copy j checked.+ const 1u32;
-        assert assert(move _16._1 == false) (overflow) -> bb6 (unwind: bb7);
+        assert assert(move _15._1 == false) (overflow) -> bb6 (unwind: bb11);
     }
 
     bb6: {
+        s = move _15._0;
+        storage_dead(_14);
+        _16 = add_with_overflow::<u32>(copy j, const 1u32) -> bb7 (unwind: bb10);
+    }
+
+    bb7: {
+        assert assert(move _16._1 == false) (overflow) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
         j = move _16._0;
         _6 = const ();
         storage_dead(_11);
         goto bb3;
     }
 
-    bb7: {
-        unwind_continue;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
     bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
+        undefined_behavior;
+    }
+
+    bb13: {
         storage_dead(_13);
         storage_dead(_12);
         _10 = const ();
@@ -1081,33 +1200,47 @@ pub fn test_loop5(max: u32) -> u32
         storage_dead(_10);
         storage_live(_17);
         _17 = copy i;
-        _18 = copy s checked.+ copy _17;
-        assert assert(move _18._1 == false) (overflow) -> bb10 (unwind: bb13);
+        _18 = add_with_overflow::<u32>(copy s, copy _17) -> bb14 (unwind: bb21);
     }
 
-    bb10: {
+    bb14: {
+        assert assert(move _18._1 == false) (overflow) -> bb15 (unwind: bb20);
+    }
+
+    bb15: {
         s = move _18._0;
         storage_dead(_17);
-        _19 = copy i checked.+ const 1u32;
-        assert assert(move _19._1 == false) (overflow) -> bb11 (unwind: bb12);
+        _19 = add_with_overflow::<u32>(copy i, const 1u32) -> bb16 (unwind: bb19);
     }
 
-    bb11: {
+    bb16: {
+        assert assert(move _19._1 == false) (overflow) -> bb17 (unwind: bb18);
+    }
+
+    bb17: {
         i = move _19._0;
         _6 = const ();
         storage_dead(_7);
         goto bb1;
     }
 
-    bb12: {
+    bb18: {
         unwind_continue;
     }
 
-    bb13: {
+    bb19: {
+        undefined_behavior;
+    }
+
+    bb20: {
         unwind_continue;
     }
 
-    bb14: {
+    bb21: {
+        undefined_behavior;
+    }
+
+    bb22: {
         storage_dead(_9);
         storage_dead(_8);
         _5 = const ();
@@ -1162,7 +1295,7 @@ pub fn test_loop6(max: u32) -> u32
         storage_live(_8);
         _8 = copy max;
         _6 = move _7 < move _8;
-        if move _6 -> bb2 else -> bb9;
+        if move _6 -> bb2 else -> bb13;
     }
 
     bb2: {
@@ -1181,7 +1314,7 @@ pub fn test_loop6(max: u32) -> u32
         _4 = const ();
         storage_dead(_10);
         storage_dead(_9);
-        goto bb10;
+        goto bb14;
     }
 
     bb4: {
@@ -1191,47 +1324,64 @@ pub fn test_loop6(max: u32) -> u32
         storage_dead(_9);
         storage_live(_12);
         _12 = copy i;
-        _13 = copy s checked.+ copy _12;
-        assert assert(move _13._1 == false) (overflow) -> bb5 (unwind: bb8);
+        _13 = add_with_overflow::<u32>(copy s, copy _12) -> bb5 (unwind: bb12);
     }
 
     bb5: {
-        s = move _13._0;
-        storage_dead(_12);
-        _14 = copy i checked.+ const 1u32;
-        assert assert(move _14._1 == false) (overflow) -> bb6 (unwind: bb7);
+        assert assert(move _13._1 == false) (overflow) -> bb6 (unwind: bb11);
     }
 
     bb6: {
+        s = move _13._0;
+        storage_dead(_12);
+        _14 = add_with_overflow::<u32>(copy i, const 1u32) -> bb7 (unwind: bb10);
+    }
+
+    bb7: {
+        assert assert(move _14._1 == false) (overflow) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
         i = move _14._0;
         _5 = const ();
         storage_dead(_6);
         goto bb1;
     }
 
-    bb7: {
-        unwind_continue;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
     bb9: {
-        storage_dead(_8);
-        storage_dead(_7);
-        _4 = const ();
-        goto bb10;
+        unwind_continue;
     }
 
     bb10: {
-        storage_dead(_6);
-        storage_dead(_4);
-        _15 = copy s checked.+ const 1u32;
-        assert assert(move _15._1 == false) (overflow) -> bb11 (unwind: bb12);
+        undefined_behavior;
     }
 
     bb11: {
+        unwind_continue;
+    }
+
+    bb12: {
+        undefined_behavior;
+    }
+
+    bb13: {
+        storage_dead(_8);
+        storage_dead(_7);
+        _4 = const ();
+        goto bb14;
+    }
+
+    bb14: {
+        storage_dead(_6);
+        storage_dead(_4);
+        _15 = add_with_overflow::<u32>(copy s, const 1u32) -> bb15 (unwind: bb18);
+    }
+
+    bb15: {
+        assert assert(move _15._1 == false) (overflow) -> bb16 (unwind: bb17);
+    }
+
+    bb16: {
         s = move _15._0;
         _0 = copy s;
         storage_dead(s);
@@ -1239,8 +1389,12 @@ pub fn test_loop6(max: u32) -> u32
         return;
     }
 
-    bb12: {
+    bb17: {
         unwind_continue;
+    }
+
+    bb18: {
+        undefined_behavior;
     }
 }
 
@@ -1284,7 +1438,7 @@ pub fn test_loop7(max: u32) -> u32
         storage_live(_7);
         _7 = copy max;
         _5 = move _6 < move _7;
-        if move _5 -> bb1 else -> bb12;
+        if move _5 -> bb1 else -> bb16;
     }
 
     bb1: {
@@ -1300,7 +1454,7 @@ pub fn test_loop7(max: u32) -> u32
         storage_live(_11);
         _11 = copy max;
         _9 = move _10 < move _11;
-        if move _9 -> bb3 else -> bb10;
+        if move _9 -> bb3 else -> bb14;
     }
 
     bb3: {
@@ -1319,7 +1473,7 @@ pub fn test_loop7(max: u32) -> u32
         _4 = const ();
         storage_dead(_13);
         storage_dead(_12);
-        goto bb11;
+        goto bb15;
     }
 
     bb5: {
@@ -1329,60 +1483,77 @@ pub fn test_loop7(max: u32) -> u32
         storage_dead(_12);
         storage_live(_15);
         _15 = copy i;
-        _16 = copy s checked.+ copy _15;
-        assert assert(move _16._1 == false) (overflow) -> bb6 (unwind: bb9);
+        _16 = add_with_overflow::<u32>(copy s, copy _15) -> bb6 (unwind: bb13);
     }
 
     bb6: {
-        s = move _16._0;
-        storage_dead(_15);
-        _17 = copy i checked.+ const 1u32;
-        assert assert(move _17._1 == false) (overflow) -> bb7 (unwind: bb8);
+        assert assert(move _16._1 == false) (overflow) -> bb7 (unwind: bb12);
     }
 
     bb7: {
+        s = move _16._0;
+        storage_dead(_15);
+        _17 = add_with_overflow::<u32>(copy i, const 1u32) -> bb8 (unwind: bb11);
+    }
+
+    bb8: {
+        assert assert(move _17._1 == false) (overflow) -> bb9 (unwind: bb10);
+    }
+
+    bb9: {
         i = move _17._0;
         _8 = const ();
         storage_dead(_9);
         goto bb2;
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
     bb10: {
-        storage_dead(_11);
-        storage_dead(_10);
-        _4 = const ();
-        goto bb11;
+        unwind_continue;
     }
 
     bb11: {
-        storage_dead(_9);
-        goto bb13;
+        undefined_behavior;
     }
 
     bb12: {
+        unwind_continue;
+    }
+
+    bb13: {
+        undefined_behavior;
+    }
+
+    bb14: {
+        storage_dead(_11);
+        storage_dead(_10);
+        _4 = const ();
+        goto bb15;
+    }
+
+    bb15: {
+        storage_dead(_9);
+        goto bb17;
+    }
+
+    bb16: {
         storage_dead(_7);
         storage_dead(_6);
         s = const 2u32;
         _4 = const ();
-        goto bb13;
+        goto bb17;
     }
 
-    bb13: {
+    bb17: {
         storage_dead(_5);
         storage_dead(_4);
-        _18 = copy s checked.+ const 1u32;
-        assert assert(move _18._1 == false) (overflow) -> bb14 (unwind: bb15);
+        _18 = add_with_overflow::<u32>(copy s, const 1u32) -> bb18 (unwind: bb21);
     }
 
-    bb14: {
+    bb18: {
+        assert assert(move _18._1 == false) (overflow) -> bb19 (unwind: bb20);
+    }
+
+    bb19: {
         s = move _18._0;
         _0 = copy s;
         storage_dead(s);
@@ -1390,8 +1561,12 @@ pub fn test_loop7(max: u32) -> u32
         return;
     }
 
-    bb15: {
+    bb20: {
         unwind_continue;
+    }
+
+    bb21: {
+        undefined_behavior;
     }
 }
 
@@ -1713,7 +1888,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_5);
         storage_live(_6);
         _6 = Range::<i32> { start: const 0i32, end: const 128i32 };
-        _5 = into_iter::<Range::<i32>>(move _6) -> bb1 (unwind: bb26);
+        _5 = into_iter::<Range::<i32>>(move _6) -> bb1 (unwind: bb30);
     }
 
     bb1: {
@@ -1730,13 +1905,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_12);
         _12 = &mut iter_7;
         _11 = &two-phase-mut (*_12);
-        _10 = next::<i32>(move _11) -> bb3 (unwind: bb25);
+        _10 = next::<i32>(move _11) -> bb3 (unwind: bb29);
     }
 
     bb3: {
         storage_dead(_11);
         _13 = @discriminant(_10);
-        switch move _13 -> 0isize: bb4, 1isize: bb21, otherwise: bb24;
+        switch move _13 -> 0isize: bb4, 1isize: bb23, otherwise: bb28;
     }
 
     bb4: {
@@ -1754,7 +1929,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         _18 = copy step_out;
         _17 = Range::<usize> { start: const 0usize, end: move _18 };
         storage_dead(_18);
-        _16 = into_iter::<Range::<usize>>(move _17) -> bb5 (unwind: bb20);
+        _16 = into_iter::<Range::<usize>>(move _17) -> bb5 (unwind: bb22);
     }
 
     bb5: {
@@ -1771,13 +1946,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_23);
         _23 = &mut iter_19;
         _22 = &two-phase-mut (*_23);
-        _21 = next::<usize>(move _22) -> bb7 (unwind: bb19);
+        _21 = next::<usize>(move _22) -> bb7 (unwind: bb21);
     }
 
     bb7: {
         storage_dead(_22);
         _24 = @discriminant(_21);
-        switch move _24 -> 0isize: bb8, 1isize: bb9, otherwise: bb24;
+        switch move _24 -> 0isize: bb8, 1isize: bb9, otherwise: bb28;
     }
 
     bb8: {
@@ -1800,7 +1975,7 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         _27 = copy step_in;
         _26 = Range::<usize> { start: const 0usize, end: move _27 };
         storage_dead(_27);
-        _25 = into_iter::<Range::<usize>>(move _26) -> bb10 (unwind: bb18);
+        _25 = into_iter::<Range::<usize>>(move _26) -> bb10 (unwind: bb20);
     }
 
     bb10: {
@@ -1817,13 +1992,13 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         storage_live(_32);
         _32 = &mut iter_28;
         _31 = &two-phase-mut (*_32);
-        _30 = next::<usize>(move _31) -> bb12 (unwind: bb17);
+        _30 = next::<usize>(move _31) -> bb12 (unwind: bb19);
     }
 
     bb12: {
         storage_dead(_31);
         _33 = @discriminant(_30);
-        switch move _33 -> 0isize: bb13, 1isize: bb14, otherwise: bb24;
+        switch move _33 -> 0isize: bb13, 1isize: bb14, otherwise: bb28;
     }
 
     bb13: {
@@ -1841,11 +2016,14 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb14: {
-        _34 = copy s checked.+ const 1usize;
-        assert assert(move _34._1 == false) (overflow) -> bb15 (unwind: bb16);
+        _34 = add_with_overflow::<usize>(copy s, const 1usize) -> bb15 (unwind: bb18);
     }
 
     bb15: {
+        assert assert(move _34._1 == false) (overflow) -> bb16 (unwind: bb17);
+    }
+
+    bb16: {
         s = move _34._0;
         _29 = const ();
         storage_dead(_32);
@@ -1855,16 +2033,12 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         goto bb11;
     }
 
-    bb16: {
-        unwind_continue;
-    }
-
     bb17: {
         unwind_continue;
     }
 
     bb18: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb19: {
@@ -1876,11 +2050,22 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
     }
 
     bb21: {
-        _14 = copy s checked.+ const 1usize;
-        assert assert(move _14._1 == false) (overflow) -> bb22 (unwind: bb23);
+        unwind_continue;
     }
 
     bb22: {
+        unwind_continue;
+    }
+
+    bb23: {
+        _14 = add_with_overflow::<usize>(copy s, const 1usize) -> bb24 (unwind: bb27);
+    }
+
+    bb24: {
+        assert assert(move _14._1 == false) (overflow) -> bb25 (unwind: bb26);
+    }
+
+    bb25: {
         s = move _14._0;
         _9 = const ();
         storage_dead(_12);
@@ -1890,19 +2075,23 @@ pub fn nested_loops_enum(step_out: usize, step_in: usize) -> usize
         goto bb2;
     }
 
-    bb23: {
+    bb26: {
         unwind_continue;
     }
 
-    bb24: {
+    bb27: {
         undefined_behavior;
     }
 
-    bb25: {
+    bb28: {
+        undefined_behavior;
+    }
+
+    bb29: {
         unwind_continue;
     }
 
-    bb26: {
+    bb30: {
         unwind_continue;
     }
 }
@@ -1937,7 +2126,7 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
         storage_live(_18);
         storage_live(_3);
         _3 = copy b;
-        if move _3 -> bb1 else -> bb12;
+        if move _3 -> bb1 else -> bb14;
     }
 
     bb1: {
@@ -1950,7 +2139,7 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
         _8 = copy n;
         _7 = Range::<u32> { start: const 0u32, end: move _8 };
         storage_dead(_8);
-        _6 = into_iter::<Range::<u32>>(move _7) -> bb2 (unwind: bb11);
+        _6 = into_iter::<Range::<u32>>(move _7) -> bb2 (unwind: bb13);
     }
 
     bb2: {
@@ -1967,13 +2156,13 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
         storage_live(_14);
         _14 = &mut iter;
         _13 = &two-phase-mut (*_14);
-        _12 = next::<u32>(move _13) -> bb4 (unwind: bb10);
+        _12 = next::<u32>(move _13) -> bb4 (unwind: bb12);
     }
 
     bb4: {
         storage_dead(_13);
         _15 = @discriminant(_12);
-        switch move _15 -> 0isize: bb5, 1isize: bb6, otherwise: bb9;
+        switch move _15 -> 0isize: bb5, 1isize: bb6, otherwise: bb11;
     }
 
     bb5: {
@@ -1986,7 +2175,7 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
         storage_dead(_5);
         _0 = copy s;
         storage_dead(s);
-        goto bb13;
+        goto bb15;
     }
 
     bb6: {
@@ -1994,11 +2183,14 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
         i = copy (_12 as variant Option::<u32>::Some)._0;
         storage_live(_17);
         _17 = copy i;
-        _18 = copy s checked.+ copy _17;
-        assert assert(move _18._1 == false) (overflow) -> bb7 (unwind: bb8);
+        _18 = add_with_overflow::<u32>(copy s, copy _17) -> bb7 (unwind: bb10);
     }
 
     bb7: {
+        assert assert(move _18._1 == false) (overflow) -> bb8 (unwind: bb9);
+    }
+
+    bb8: {
         s = move _18._0;
         storage_dead(_17);
         _11 = const ();
@@ -2010,28 +2202,32 @@ pub fn loop_inside_if(b: bool, n: u32) -> u32
         goto bb3;
     }
 
-    bb8: {
-        unwind_continue;
-    }
-
     bb9: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb10: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb11: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb12: {
-        _0 = const 0u32;
-        goto bb13;
+        unwind_continue;
     }
 
     bb13: {
+        unwind_continue;
+    }
+
+    bb14: {
+        _0 = const 0u32;
+        goto bb15;
+    }
+
+    bb15: {
         storage_dead(_3);
         return;
     }
@@ -2075,7 +2271,7 @@ pub fn sum(max: u32) -> u32
         storage_live(_8);
         _8 = copy max;
         _6 = move _7 < move _8;
-        if move _6 -> bb2 else -> bb7;
+        if move _6 -> bb2 else -> bb11;
     }
 
     bb2: {
@@ -2083,43 +2279,60 @@ pub fn sum(max: u32) -> u32
         storage_dead(_7);
         storage_live(_9);
         _9 = copy i;
-        _10 = copy s checked.+ copy _9;
-        assert assert(move _10._1 == false) (overflow) -> bb3 (unwind: bb6);
+        _10 = add_with_overflow::<u32>(copy s, copy _9) -> bb3 (unwind: bb10);
     }
 
     bb3: {
-        s = move _10._0;
-        storage_dead(_9);
-        _11 = copy i checked.+ const 1u32;
-        assert assert(move _11._1 == false) (overflow) -> bb4 (unwind: bb5);
+        assert assert(move _10._1 == false) (overflow) -> bb4 (unwind: bb9);
     }
 
     bb4: {
+        s = move _10._0;
+        storage_dead(_9);
+        _11 = add_with_overflow::<u32>(copy i, const 1u32) -> bb5 (unwind: bb8);
+    }
+
+    bb5: {
+        assert assert(move _11._1 == false) (overflow) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
         i = move _11._0;
         _5 = const ();
         storage_dead(_6);
         goto bb1;
     }
 
-    bb5: {
-        unwind_continue;
-    }
-
-    bb6: {
-        unwind_continue;
-    }
-
     bb7: {
+        unwind_continue;
+    }
+
+    bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        undefined_behavior;
+    }
+
+    bb11: {
         storage_dead(_8);
         storage_dead(_7);
         _4 = const ();
         storage_dead(_6);
         storage_dead(_4);
-        _12 = copy s checked.* const 2u32;
-        assert assert(move _12._1 == false) (overflow) -> bb8 (unwind: bb9);
+        _12 = mul_with_overflow::<u32>(copy s, const 2u32) -> bb12 (unwind: bb15);
     }
 
-    bb8: {
+    bb12: {
+        assert assert(move _12._1 == false) (overflow) -> bb13 (unwind: bb14);
+    }
+
+    bb13: {
         s = move _12._0;
         _0 = copy s;
         storage_dead(s);
@@ -2127,8 +2340,12 @@ pub fn sum(max: u32) -> u32
         return;
     }
 
-    bb9: {
+    bb14: {
         unwind_continue;
+    }
+
+    bb15: {
+        undefined_behavior;
     }
 }
 
@@ -2165,13 +2382,13 @@ pub fn clear(v: &'_ mut Vec::<u32, Global>)
         storage_live(_6);
         storage_live(_7);
         _7 = &(*v);
-        _6 = len::<u32, Global>(move _7) -> bb2 (unwind: bb9);
+        _6 = len::<u32, Global>(move _7) -> bb2 (unwind: bb11);
     }
 
     bb2: {
         storage_dead(_7);
         _4 = move _5 < move _6;
-        if move _4 -> bb3 else -> bb8;
+        if move _4 -> bb3 else -> bb10;
     }
 
     bb3: {
@@ -2182,7 +2399,7 @@ pub fn clear(v: &'_ mut Vec::<u32, Global>)
         _9 = &mut (*v);
         storage_live(_10);
         _10 = copy i;
-        _8 = {impl IndexMut<I> for Vec::<_, missing(@TypeFree(2))>}::index_mut::<u32, usize, Global>(move _9, move _10) -> bb4 (unwind: bb7);
+        _8 = {impl IndexMut<I> for Vec::<_, missing(@TypeFree(2))>}::index_mut::<u32, usize, Global>(move _9, move _10) -> bb4 (unwind: bb9);
     }
 
     bb4: {
@@ -2190,19 +2407,18 @@ pub fn clear(v: &'_ mut Vec::<u32, Global>)
         storage_dead(_9);
         (*_8) = const 0u32;
         storage_dead(_8);
-        _11 = copy i checked.+ const 1usize;
-        assert assert(move _11._1 == false) (overflow) -> bb5 (unwind: bb6);
+        _11 = add_with_overflow::<usize>(copy i, const 1usize) -> bb5 (unwind: bb8);
     }
 
     bb5: {
+        assert assert(move _11._1 == false) (overflow) -> bb6 (unwind: bb7);
+    }
+
+    bb6: {
         i = move _11._0;
         _3 = const ();
         storage_dead(_4);
         goto bb1;
-    }
-
-    bb6: {
-        unwind_continue;
     }
 
     bb7: {
@@ -2210,6 +2426,14 @@ pub fn clear(v: &'_ mut Vec::<u32, Global>)
     }
 
     bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
         storage_dead(_6);
         storage_dead(_5);
         _0 = const ();
@@ -2218,7 +2442,7 @@ pub fn clear(v: &'_ mut Vec::<u32, Global>)
         return;
     }
 
-    bb9: {
+    bb11: {
         unwind_continue;
     }
 }
@@ -2734,6 +2958,16 @@ pub fn trick_exit_computation()
     }
 }
 
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
+
+// Full name: core::intrinsics::mul_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:mul_with_overflow>
+
 // Full name: core::panicking::panic
 #[track_caller]
 #[lang_item(Panic)]
@@ -2817,6 +3051,11 @@ pub fn into_iter::<Range::<usize>>(self: Range::<usize>) -> Range::<usize>
         return;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<usize>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::iter::range::{impl Iterator for Range::<_>}::next::<usize>
 pub fn next::<usize>(self: &'_ mut Range::<usize>) -> Option::<usize>
@@ -3389,7 +3628,10 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         storage_live(_5);
         _5 = cast<i32>(copy rhs);
         storage_live(_8);
-        _8 = copy start checked.+ copy _5;
+        _8 = add_with_overflow::<i32>(copy start, copy _5) -> bb1 (unwind: bb10);
+    }
+
+    bb1: {
         a = copy _8._0;
         storage_live(_7);
         _7 = copy _8._1;
@@ -3400,29 +3642,25 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         storage_dead(_10);
         storage_dead(_7);
         storage_dead(_5);
-        if copy b -> bb1 else -> bb8;
-    }
-
-    bb1: {
-        _11 = cold_path() -> bb2 (unwind: bb7);
+        if copy b -> bb2 else -> bb9;
     }
 
     bb2: {
+        _11 = cold_path() -> bb3 (unwind: bb8);
+    }
+
+    bb3: {
         self = const Option::<i32>::None {  };
         storage_dead(b);
         storage_dead(a);
         storage_dead(rhs);
         storage_live(_13);
         _13 = ub_checks;
-        _14 = assume(move _13) -> bb3 (unwind: bb6);
-    }
-
-    bb3: {
-        _12 = core::hint::unreachable_unchecked::precondition_check() -> bb4 (unwind: bb5);
+        _14 = assume(move _13) -> bb4 (unwind: bb7);
     }
 
     bb4: {
-        undefined_behavior;
+        _12 = core::hint::unreachable_unchecked::precondition_check() -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -3438,6 +3676,10 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
     }
 
     bb8: {
+        undefined_behavior;
+    }
+
+    bb9: {
         self = Option::<i32>::Some { _0: copy a };
         storage_dead(b);
         storage_dead(a);
@@ -3445,6 +3687,10 @@ pub fn impl_Step_for_i32::forward_unchecked(start: i32, n: usize) -> i32
         val = move (self as variant Option::<i32>::Some)._0;
         storage_dead(self);
         return;
+    }
+
+    bb10: {
+        undefined_behavior;
     }
 }
 
@@ -3563,6 +3809,11 @@ pub fn impl_Step_for_u32::forward_unchecked(start: u32, n: usize) -> u32
 pub fn caller_location() -> &'_ Location::<'_>
 = <intrinsic:caller_location>
 
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
+
 // Full name: core::intrinsics::cold_path
 #[miri::intrinsic_fallback_is_spec]
 #[rustc_intrinsic]
@@ -3662,15 +3913,18 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.+ move _9;
+        _7 = add_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_5);
         storage_live(_5);
         storage_live(_10);
@@ -3698,11 +3952,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -3710,7 +3960,15 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -3741,12 +3999,15 @@ fn core::num::{u32}::unchecked_add::precondition_check(lhs: u32, rhs: u32)
         _0 = ();
         storage_live(_3);
         storage_live(_4);
-        _4 = copy lhs checked.+ copy rhs;
-        _3 = copy _4._1;
-        if move _3 -> bb1 else -> bb4;
+        _4 = add_with_overflow::<u32>(copy lhs, copy rhs) -> bb1 (unwind: bb6);
     }
 
     bb1: {
+        _3 = copy _4._1;
+        if move _3 -> bb2 else -> bb5;
+    }
+
+    bb2: {
         storage_dead(_4);
         msg = const unsize_cast<&'_ str, 184usize>(&raw const anon_const_6);
         storage_live(_7);
@@ -3775,11 +4036,7 @@ fn core::num::{u32}::unchecked_add::precondition_check(lhs: u32, rhs: u32)
         _7 = Arguments::<'_> { template: move _8, args: move _10 };
         storage_dead(_10);
         storage_dead(_8);
-        _6 = panic_nounwind_fmt(move _7, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _6 = panic_nounwind_fmt(move _7, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -3787,9 +4044,17 @@ fn core::num::{u32}::unchecked_add::precondition_check(lhs: u32, rhs: u32)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         storage_dead(_4);
         storage_dead(_3);
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -3825,6 +4090,11 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
         unwind_terminate;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::panicking::panic_nounwind_fmt::compiletime
 #[track_caller]

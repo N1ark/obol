@@ -57,18 +57,25 @@ pub fn incr(n: u32) -> u32
         storage_live(_3);
         storage_live(_2);
         _2 = copy n;
-        _3 = copy _2 checked.+ const 1u32;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _3 = add_with_overflow::<u32>(copy _2, const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _3._0;
         storage_dead(_2);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -161,19 +168,26 @@ pub fn add(a: i32, b: i32) -> i32
         _3 = copy a;
         storage_live(_4);
         _4 = copy b;
-        _5 = copy _3 checked.+ copy _4;
-        assert assert(move _5._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _5 = add_with_overflow::<i32>(copy _3, copy _4) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _0 = move _5._0;
         storage_dead(_4);
         storage_dead(_3);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -217,6 +231,16 @@ pub fn get_z2() -> i32
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
+
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
 
 
 

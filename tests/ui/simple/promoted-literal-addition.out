@@ -27,11 +27,14 @@ fn two() -> &'_ u32
         storage_live(_2);
         storage_live(_3);
         storage_live(_1);
-        _2 = const 1u32 checked.+ const 1u32;
-        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _2 = add_with_overflow::<u32>(const 1u32, const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _2._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         _3 = const &anon_const_0;
         _1 = &(*_3);
         _0 = &(*_1);
@@ -39,10 +42,19 @@ fn two() -> &'_ u32
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
     }
+
+    bb4: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
 
 
 

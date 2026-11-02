@@ -113,12 +113,15 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_ m
         storage_live(_11);
         x = noretag move spread_args._0;
         _8 = noretag copy (*_1).upvar_0;
-        _4 = copy (*_8) checked.+ const 1u8;
-        _9 = noretag copy (*_1).upvar_0;
-        assert assert(move _4._1 == false) (overflow) -> bb1 (unwind: bb4);
+        _4 = add_with_overflow::<u8>(copy (*_8), const 1u8) -> bb1 (unwind: bb8);
     }
 
     bb1: {
+        _9 = noretag copy (*_1).upvar_0;
+        assert assert(move _4._1 == false) (overflow) -> bb2 (unwind: bb7);
+    }
+
+    bb2: {
         _10 = noretag copy (*_1).upvar_0;
         (*_10) = move _4._0;
         storage_live(_5);
@@ -126,25 +129,41 @@ fn test_crate::main::{closure}::<i16, extern "rust-call" fn((u8,)) -> u8, (&'_ m
         storage_live(_6);
         _11 = noretag copy (*_1).upvar_0;
         _6 = copy (*_11);
-        _7 = copy _5 checked.+ copy _6;
-        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb3);
+        _7 = add_with_overflow::<u8>(copy _5, copy _6) -> bb3 (unwind: bb6);
     }
 
-    bb2: {
+    bb3: {
+        assert assert(move _7._1 == false) (overflow) -> bb4 (unwind: bb5);
+    }
+
+    bb4: {
         _0 = move _7._0;
         storage_dead(_6);
         storage_dead(_5);
         return;
     }
 
-    bb3: {
+    bb5: {
         unwind_continue;
     }
 
-    bb4: {
+    bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         unwind_continue;
     }
+
+    bb8: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u8>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u8>(x_1: u8, y_2: u8) -> (u8, bool)
+= <intrinsic:add_with_overflow>
 
 
 

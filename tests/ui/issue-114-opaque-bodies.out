@@ -349,62 +349,59 @@ fn use_inlines() -> u32
         storage_live(_1);
         storage_live(_2);
         storage_live(_3);
-        _3 = inline_always() -> bb1 (unwind: bb14);
+        _3 = inline_always() -> bb1 (unwind: bb20);
     }
 
     bb1: {
         storage_live(_4);
-        _4 = inline_sometimes() -> bb2 (unwind: bb13);
+        _4 = inline_sometimes() -> bb2 (unwind: bb19);
     }
 
     bb2: {
-        _5 = copy _3 checked.+ copy _4;
-        assert assert(move _5._1 == false) (overflow) -> bb3 (unwind: bb12);
+        _5 = add_with_overflow::<u32>(copy _3, copy _4) -> bb3 (unwind: bb18);
     }
 
     bb3: {
+        assert assert(move _5._1 == false) (overflow) -> bb4 (unwind: bb17);
+    }
+
+    bb4: {
         _2 = move _5._0;
         storage_dead(_4);
         storage_dead(_3);
         storage_live(_6);
-        _6 = inline_never() -> bb4 (unwind: bb11);
-    }
-
-    bb4: {
-        _7 = copy _2 checked.+ copy _6;
-        assert assert(move _7._1 == false) (overflow) -> bb5 (unwind: bb10);
+        _6 = inline_never() -> bb5 (unwind: bb16);
     }
 
     bb5: {
+        _7 = add_with_overflow::<u32>(copy _2, copy _6) -> bb6 (unwind: bb15);
+    }
+
+    bb6: {
+        assert assert(move _7._1 == false) (overflow) -> bb7 (unwind: bb14);
+    }
+
+    bb7: {
         _1 = move _7._0;
         storage_dead(_6);
         storage_dead(_2);
         storage_live(_8);
-        _8 = inline_generic::<bool>() -> bb6 (unwind: bb9);
+        _8 = inline_generic::<bool>() -> bb8 (unwind: bb13);
     }
 
-    bb6: {
-        _9 = copy _1 checked.+ copy _8;
-        assert assert(move _9._1 == false) (overflow) -> bb7 (unwind: bb8);
+    bb8: {
+        _9 = add_with_overflow::<u32>(copy _1, copy _8) -> bb9 (unwind: bb12);
     }
 
-    bb7: {
+    bb9: {
+        assert assert(move _9._1 == false) (overflow) -> bb10 (unwind: bb11);
+    }
+
+    bb10: {
         _0 = move _9._0;
         storage_dead(_8);
         storage_dead(_1);
         return;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
-        unwind_continue;
     }
 
     bb11: {
@@ -412,7 +409,7 @@ fn use_inlines() -> u32
     }
 
     bb12: {
-        unwind_continue;
+        undefined_behavior;
     }
 
     bb13: {
@@ -420,6 +417,30 @@ fn use_inlines() -> u32
     }
 
     bb14: {
+        unwind_continue;
+    }
+
+    bb15: {
+        undefined_behavior;
+    }
+
+    bb16: {
+        unwind_continue;
+    }
+
+    bb17: {
+        unwind_continue;
+    }
+
+    bb18: {
+        undefined_behavior;
+    }
+
+    bb19: {
+        unwind_continue;
+    }
+
+    bb20: {
         unwind_continue;
     }
 }
@@ -538,6 +559,11 @@ pub fn inline_sometimes() -> u32
         return;
     }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: issue_114_opaque_bodies_aux::inline_never
 pub fn inline_never() -> u32
@@ -1024,15 +1050,18 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.* move _9;
+        _7 = mul_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_0);
         storage_live(_5);
         storage_live(_10);
@@ -1060,11 +1089,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -1072,7 +1097,15 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
@@ -1205,6 +1238,11 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
 // Full name: alloc::alloc::__rust_dealloc
 extern fn __rust_dealloc(_1: NonNull::<u8>, _2: usize, _3: Alignment)
 = <extern:_RNvCs<hash>_7___rustc14___rust_dealloc>
+
+// Full name: core::intrinsics::mul_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:mul_with_overflow>
 
 // Full name: core::panicking::panic_nounwind_fmt
 #[track_caller]

@@ -617,11 +617,14 @@ pub fn test2()
         _4 = copy x;
         storage_live(_5);
         _5 = copy y;
-        _6 = copy _4 checked.+ copy _5;
-        assert assert(move _6._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _6 = add_with_overflow::<u32>(copy _4, copy _5) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _6._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         z = move _6._0;
         storage_dead(_5);
         storage_dead(_4);
@@ -656,8 +659,12 @@ pub fn test2()
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -929,7 +936,7 @@ pub fn even(x: u32) -> bool
     bb1: {
         storage_dead(_3);
         _0 = const true;
-        goto bb5;
+        goto bb6;
     }
 
     bb2: {
@@ -937,32 +944,39 @@ pub fn even(x: u32) -> bool
         storage_live(_4);
         storage_live(_5);
         _5 = copy x;
-        _6 = copy _5 checked.- const 1u32;
-        assert assert(move _6._1 == false) (overflow) -> bb3 (unwind: bb7);
+        _6 = sub_with_overflow::<u32>(copy _5, const 1u32) -> bb3 (unwind: bb9);
     }
 
     bb3: {
-        _4 = move _6._0;
-        storage_dead(_5);
-        _0 = odd(move _4) -> bb4 (unwind: bb6);
+        assert assert(move _6._1 == false) (overflow) -> bb4 (unwind: bb8);
     }
 
     bb4: {
-        storage_dead(_4);
-        goto bb5;
+        _4 = move _6._0;
+        storage_dead(_5);
+        _0 = odd(move _4) -> bb5 (unwind: bb7);
     }
 
     bb5: {
+        storage_dead(_4);
+        goto bb6;
+    }
+
+    bb6: {
         storage_dead(_2);
         return;
     }
 
-    bb6: {
+    bb7: {
         unwind_continue;
     }
 
-    bb7: {
+    bb8: {
         unwind_continue;
+    }
+
+    bb9: {
+        undefined_behavior;
     }
 }
 
@@ -990,7 +1004,7 @@ pub fn odd(x: u32) -> bool
     bb1: {
         storage_dead(_3);
         _0 = const false;
-        goto bb5;
+        goto bb6;
     }
 
     bb2: {
@@ -998,32 +1012,39 @@ pub fn odd(x: u32) -> bool
         storage_live(_4);
         storage_live(_5);
         _5 = copy x;
-        _6 = copy _5 checked.- const 1u32;
-        assert assert(move _6._1 == false) (overflow) -> bb3 (unwind: bb7);
+        _6 = sub_with_overflow::<u32>(copy _5, const 1u32) -> bb3 (unwind: bb9);
     }
 
     bb3: {
-        _4 = move _6._0;
-        storage_dead(_5);
-        _0 = even(move _4) -> bb4 (unwind: bb6);
+        assert assert(move _6._1 == false) (overflow) -> bb4 (unwind: bb8);
     }
 
     bb4: {
-        storage_dead(_4);
-        goto bb5;
+        _4 = move _6._0;
+        storage_dead(_5);
+        _0 = even(move _4) -> bb5 (unwind: bb7);
     }
 
     bb5: {
+        storage_dead(_4);
+        goto bb6;
+    }
+
+    bb6: {
         storage_dead(_2);
         return;
     }
 
-    bb6: {
+    bb7: {
         unwind_continue;
     }
 
-    bb7: {
+    bb8: {
         unwind_continue;
+    }
+
+    bb9: {
+        undefined_behavior;
     }
 }
 
@@ -1247,18 +1268,25 @@ pub fn incr(x: &'_ mut u32)
         storage_live(_0);
         storage_live(_2);
         _0 = ();
-        _2 = copy (*x) checked.+ const 1u32;
-        assert assert(move _2._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _2 = add_with_overflow::<u32>(copy (*x), const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _2._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         (*x) = move _2._0;
         _0 = const ();
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
+    }
+
+    bb4: {
+        undefined_behavior;
     }
 }
 
@@ -1275,21 +1303,33 @@ pub fn read_then_incr(x: &'_ mut u32) -> u32
         storage_live(_3);
         storage_live(r);
         r = copy (*x);
-        _3 = copy (*x) checked.+ const 1u32;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb2);
+        _3 = add_with_overflow::<u32>(copy (*x), const 1u32) -> bb1 (unwind: bb4);
     }
 
     bb1: {
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
         (*x) = move _3._0;
         _0 = copy r;
         storage_dead(r);
         return;
     }
 
-    bb2: {
+    bb3: {
         unwind_continue;
     }
+
+    bb4: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:add_with_overflow>
 
 #[diagnostic_item("box_new")]
 pub fn alloc::boxed::{Box::<_, Global>}::new::<List::<i32>>(x: List::<i32>) -> Box::<List::<i32>, Global>
@@ -1497,6 +1537,11 @@ pub fn panic(expr: &'_ str) -> !
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::sub_with_overflow::<u32>
+#[rustc_intrinsic]
+pub fn sub_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
+= <intrinsic:sub_with_overflow>
 
 // Full name: alloc::boxed::box_new_uninit
 fn box_new_uninit(layout: Layout) -> *mut u8

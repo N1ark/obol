@@ -167,11 +167,14 @@ fn main()
         storage_live(f);
         f = Foo {  };
         storage_live(_2);
-        _3 = const 255u8 checked.+ const 1u8;
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb3);
+        _3 = add_with_overflow::<u8>(const 255u8, const 1u8) -> bb1 (unwind: bb7);
     }
 
     bb1: {
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb4);
+    }
+
+    bb2: {
         _2 = move _3._0;
         storage_dead(_2);
         storage_live(f_ref);
@@ -179,25 +182,29 @@ fn main()
         _0 = const ();
         storage_dead(f_ref);
         _5 = &raw mut f;
-        _6 = drop_glue::<Foo>(move _5) -> bb2 (unwind: bb4);
+        _6 = drop_glue::<Foo>(move _5) -> bb3 (unwind: bb5);
     }
 
-    bb2: {
+    bb3: {
         storage_dead(f);
         return;
     }
 
-    bb3: {
-        _7 = &raw mut f;
-        _8 = drop_glue::<Foo>(move _7) -> bb4 (unwind: bb5);
-    }
-
     bb4: {
-        unwind_continue;
+        _7 = &raw mut f;
+        _8 = drop_glue::<Foo>(move _7) -> bb5 (unwind: bb6);
     }
 
     bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
         unwind_terminate;
+    }
+
+    bb7: {
+        undefined_behavior;
     }
 }
 
@@ -249,6 +256,11 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 // Full name: std::io::stdio::_print
 pub fn _print(_1: Arguments::<'_>)
 = <missing>
+
+// Full name: core::intrinsics::add_with_overflow::<u8>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<u8>(x_1: u8, y_2: u8) -> (u8, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::ptr::drop_glue::<Foo>
 #[lang_item(DropGlue)]

@@ -1622,34 +1622,46 @@ fn {impl test_crate::Modifiable<T> for Box::<i32, Global>}::modify::<i32>(self: 
         storage_live(_10);
         _5 = noretag copy (*self);
         _8 = transmute<*const i32>(copy _5._0);
-        _3 = copy (*_8) checked.+ const 1i32;
-        _6 = noretag copy (*self);
-        _9 = transmute<*const i32>(copy _6._0);
-        assert assert(move _3._1 == false) (overflow) -> bb1 (unwind: bb4);
+        _3 = add_with_overflow::<i32>(copy (*_8), const 1i32) -> bb1 (unwind: bb6);
     }
 
     bb1: {
+        _6 = noretag copy (*self);
+        _9 = transmute<*const i32>(copy _6._0);
+        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb5);
+    }
+
+    bb2: {
         _7 = noretag copy (*self);
         _10 = transmute<*const i32>(copy _7._0);
         (*_10) = move _3._0;
         storage_live(_4);
         _4 = &(*arg);
-        _0 = clone(move _4) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        storage_dead(_4);
-        return;
+        _0 = clone(move _4) -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        unwind_continue;
+        storage_dead(_4);
+        return;
     }
 
     bb4: {
         unwind_continue;
     }
+
+    bb5: {
+        unwind_continue;
+    }
+
+    bb6: {
+        undefined_behavior;
+    }
 }
+
+// Full name: core::intrinsics::add_with_overflow::<i32>
+#[rustc_intrinsic]
+pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
+= <intrinsic:add_with_overflow>
 
 // Full name: core::clone::impls::{impl Clone for i32}::clone
 pub fn clone(self: &'_ i32) -> i32

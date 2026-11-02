@@ -1372,7 +1372,10 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         _28 = cast<u64>(copy elem_layout_41);
         storage_live(_29);
         _29 = cast<u64>(copy capacity);
-        _27 = move _28 checked.* move _29;
+        _27 = mul_with_overflow::<u64>(move _28, move _29) -> bb1 (unwind: bb22);
+    }
+
+    bb1: {
         storage_dead(_29);
         storage_dead(_28);
         storage_live(_25);
@@ -1381,24 +1384,24 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_dead(_27);
         size = cast<usize>(copy _25);
         storage_dead(_25);
-        if copy b -> bb1 else -> bb4;
-    }
-
-    bb1: {
-        _31 = cold_path() -> bb2 (unwind: bb3);
+        if copy b -> bb2 else -> bb5;
     }
 
     bb2: {
-        storage_dead(b);
-        self_24 = const Result::<Layout, LayoutError>::Err { _0: LayoutError {  } };
-        goto bb19;
+        _31 = cold_path() -> bb3 (unwind: bb4);
     }
 
     bb3: {
-        undefined_behavior;
+        storage_dead(b);
+        self_24 = const Result::<Layout, LayoutError>::Err { _0: LayoutError {  } };
+        goto bb20;
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         storage_dead(b);
         storage_live(_32);
         storage_live(_34);
@@ -1408,10 +1411,10 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_dead(_35);
         _32 = copy size <= move _34;
         storage_dead(_34);
-        if move _32 -> bb5 else -> bb18;
+        if move _32 -> bb6 else -> bb19;
     }
 
-    bb5: {
+    bb6: {
         storage_live(_33);
         _33 = Layout { size: copy size, align: copy elem_layout_42 };
         self_24 = Result::<Layout, LayoutError>::Ok { _0: move _33 };
@@ -1428,10 +1431,10 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_dead(_5);
         storage_live(_7);
         _7 = copy layout.size;
-        switch copy _7 -> 0usize: bb6, otherwise: bb7;
+        switch copy _7 -> 0usize: bb7, otherwise: bb8;
     }
 
-    bb6: {
+    bb7: {
         storage_dead(_7);
         storage_live(_8);
         storage_live(alloc_9);
@@ -1446,44 +1449,44 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         storage_dead(alloc_9);
         _0 = Result::<RawVecInner::<Global>, TryReserveError>::Ok { _0: move _8 };
         storage_dead(_8);
-        goto bb20;
-    }
-
-    bb7: {
-        storage_dead(_7);
-        storage_live(result);
-        _11 = @discriminant(init);
-        switch move _11 -> 0isize: bb8, 1isize: bb10, otherwise: bb17;
+        goto bb21;
     }
 
     bb8: {
-        storage_live(_12);
-        _12 = &alloc_3;
-        result = allocate(move _12, copy layout) -> bb9 (unwind: bb15);
+        storage_dead(_7);
+        storage_live(result);
+        _11 = @discriminant(init);
+        switch move _11 -> 0isize: bb9, 1isize: bb11, otherwise: bb18;
     }
 
     bb9: {
-        storage_dead(_12);
-        goto bb12;
+        storage_live(_12);
+        _12 = &alloc_3;
+        result = allocate(move _12, copy layout) -> bb10 (unwind: bb16);
     }
 
     bb10: {
-        storage_live(_13);
-        _13 = &alloc_3;
-        result = allocate_zeroed(move _13, copy layout) -> bb11 (unwind: bb15);
+        storage_dead(_12);
+        goto bb13;
     }
 
     bb11: {
-        storage_dead(_13);
-        goto bb12;
+        storage_live(_13);
+        _13 = &alloc_3;
+        result = allocate_zeroed(move _13, copy layout) -> bb12 (unwind: bb16);
     }
 
     bb12: {
-        _14 = @discriminant(result);
-        switch move _14 -> 0isize: bb13, 1isize: bb14, otherwise: bb17;
+        storage_dead(_13);
+        goto bb13;
     }
 
     bb13: {
+        _14 = @discriminant(result);
+        switch move _14 -> 0isize: bb14, 1isize: bb15, otherwise: bb18;
+    }
+
+    bb14: {
         ptr = copy (result as variant Result::<NonNull::<[u8]>, AllocError>::Ok)._0;
         storage_live(_18);
         storage_live(_19);
@@ -1508,10 +1511,10 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         _0 = Result::<RawVecInner::<Global>, TryReserveError>::Ok { _0: move _18 };
         storage_dead(_18);
         storage_dead(result);
-        goto bb20;
+        goto bb21;
     }
 
-    bb14: {
+    bb15: {
         storage_live(_16);
         storage_live(self_17);
         self_17 = TryReserveErrorKind::AllocError { layout: copy layout, non_exhaustive: const () };
@@ -1520,38 +1523,42 @@ fn try_allocate_in::<Global>(capacity: usize, init: AllocInit, alloc_3: Global, 
         _0 = Result::<RawVecInner::<Global>, TryReserveError>::Err { _0: move _16 };
         storage_dead(_16);
         storage_dead(result);
-        goto bb20;
-    }
-
-    bb15: {
-        if copy _23 -> bb16 else -> bb16;
+        goto bb21;
     }
 
     bb16: {
-        unwind_continue;
+        if copy _23 -> bb17 else -> bb17;
     }
 
     bb17: {
-        undefined_behavior;
+        unwind_continue;
     }
 
     bb18: {
-        self_24 = const Result::<Layout, LayoutError>::Err { _0: LayoutError {  } };
-        storage_dead(_32);
-        goto bb19;
+        undefined_behavior;
     }
 
     bb19: {
+        self_24 = const Result::<Layout, LayoutError>::Err { _0: LayoutError {  } };
+        storage_dead(_32);
+        goto bb20;
+    }
+
+    bb20: {
         storage_dead(self_24);
         storage_dead(size);
         storage_dead(elem_layout_41);
         _0 = Result::<RawVecInner::<Global>, TryReserveError>::Err { _0: const TryReserveError { kind: TryReserveErrorKind::CapacityOverflow {  } } };
         storage_dead(_5);
-        goto bb20;
+        goto bb21;
     }
 
-    bb20: {
+    bb21: {
         return;
+    }
+
+    bb22: {
+        undefined_behavior;
     }
 }
 
@@ -1867,7 +1874,10 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         _14 = cast<u64>(copy size_3);
         storage_live(_15);
         _15 = cast<u64>(copy count);
-        _13 = move _14 checked.* move _15;
+        _13 = mul_with_overflow::<u64>(move _14, move _15) -> bb1 (unwind: bb11);
+    }
+
+    bb1: {
         storage_dead(_15);
         storage_dead(_14);
         storage_live(_11);
@@ -1876,22 +1886,18 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_13);
         a = cast<usize>(copy _11);
         storage_dead(_11);
-        if copy b -> bb1 else -> bb6;
-    }
-
-    bb1: {
-        _17 = cold_path() -> bb2 (unwind: bb5);
+        if copy b -> bb2 else -> bb7;
     }
 
     bb2: {
-        storage_dead(a);
-        storage_dead(b);
-        storage_dead(_9);
-        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_5)) -> bb3 (unwind: bb4);
+        _17 = cold_path() -> bb3 (unwind: bb6);
     }
 
     bb3: {
-        undefined_behavior;
+        storage_dead(a);
+        storage_dead(b);
+        storage_dead(_9);
+        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_5)) -> bb4 (unwind: bb5);
     }
 
     bb4: {
@@ -1903,6 +1909,10 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
     }
 
     bb6: {
+        undefined_behavior;
+    }
+
+    bb7: {
         _9 = Option::<usize>::Some { _0: copy a };
         storage_dead(a);
         storage_dead(b);
@@ -1911,26 +1921,30 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(_9);
         storage_live(_18);
         _18 = copy src_usize < copy dst_usize;
-        if move _18 -> bb7 else -> bb8;
-    }
-
-    bb7: {
-        diff = copy dst_usize wrap.- copy src_usize;
-        goto bb9;
+        if move _18 -> bb8 else -> bb9;
     }
 
     bb8: {
-        diff = copy src_usize wrap.- copy dst_usize;
-        goto bb9;
+        diff = copy dst_usize wrap.- copy src_usize;
+        goto bb10;
     }
 
     bb9: {
+        diff = copy src_usize wrap.- copy dst_usize;
+        goto bb10;
+    }
+
+    bb10: {
         storage_dead(_18);
         _0 = move diff >= copy size_8;
         storage_dead(size_8);
         storage_dead(dst_usize);
         storage_dead(src_usize);
         return;
+    }
+
+    bb11: {
+        undefined_behavior;
     }
 }
 
@@ -2003,6 +2017,11 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::mul_with_overflow::<u64>
+#[rustc_intrinsic]
+pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
+= <intrinsic:mul_with_overflow>
 
 // Full name: core::intrinsics::cold_path
 #[miri::intrinsic_fallback_is_spec]
@@ -2879,15 +2898,18 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         _8 = cast<u64>(copy lhs);
         storage_live(_9);
         _9 = cast<u64>(copy rhs);
-        _7 = move _8 checked.* move _9;
+        _7 = mul_with_overflow::<u64>(move _8, move _9) -> bb1 (unwind: bb6);
+    }
+
+    bb1: {
         storage_dead(_9);
         storage_dead(_8);
         _6 = copy _7._1;
         storage_dead(_7);
-        if copy _6 -> bb1 else -> bb4;
+        if copy _6 -> bb2 else -> bb5;
     }
 
-    bb1: {
+    bb2: {
         msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_8);
         storage_live(_5);
         storage_live(_10);
@@ -2915,11 +2937,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         _5 = Arguments::<'_> { template: move _10, args: move _12 };
         storage_dead(_12);
         storage_dead(_10);
-        _4 = panic_nounwind_fmt(move _5, const false) -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
+        _4 = panic_nounwind_fmt(move _5, const false) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -2927,7 +2945,15 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb4: {
+        undefined_behavior;
+    }
+
+    bb5: {
         return;
+    }
+
+    bb6: {
+        undefined_behavior;
     }
 }
 
