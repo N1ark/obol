@@ -170,6 +170,18 @@ fn perform_test(test_case: &Case) -> anyhow::Result<()> {
             (crate_name, path, rlib_path)
         })
         .collect();
+    // Dependencies must be built for the same target as the test crate.
+    let rustc_opts = &test_case.magic_comments.rustc_opts;
+    let target_flags: Vec<&String> = rustc_opts
+        .iter()
+        .enumerate()
+        .filter(|(i, opt)| {
+            opt.starts_with("--target=")
+                || *opt == "--target"
+                || (*i > 0 && rustc_opts[i - 1] == "--target")
+        })
+        .map(|(_, opt)| opt)
+        .collect();
     for (crate_name, rs_path, rlib_path) in deps.iter() {
         Command::new("rustc")
             .arg("--crate-type=rlib")
@@ -178,6 +190,7 @@ fn perform_test(test_case: &Case) -> anyhow::Result<()> {
             .arg("-o")
             .arg(rlib_path)
             .arg(rs_path)
+            .args(&target_flags)
             .output()?
             .assert()
             .try_success()
@@ -208,7 +221,9 @@ fn perform_test(test_case: &Case) -> anyhow::Result<()> {
     cmd.arg("--");
     cmd.arg(&test_case.input_path);
     cmd.arg("--crate-name=test_crate");
-    cmd.arg("--crate-type=rlib");
+    if !rustc_opts.iter().any(|opt| opt.starts_with("--crate-type")) {
+        cmd.arg("--crate-type=rlib");
+    }
     cmd.arg("--allow=unused"); // Removes noise
     cmd.arg("--edition=2021");
     for (crate_name, _, rlib_path) in deps {

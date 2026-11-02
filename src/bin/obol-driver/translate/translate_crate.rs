@@ -5,6 +5,8 @@ extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_public_bridge;
 extern crate rustc_span;
+extern crate rustc_structures;
+extern crate rustc_target;
 
 use crate::translate::my_gen_args::MyGenericArgs;
 use obol_lib::args::CliOpts;
@@ -402,10 +404,11 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
         src: &Option<DepSource>,
         stt: mir::mono::StaticDef,
     ) -> GlobalDeclId {
-        *self
-            .register_and_enqueue_id(src, TransItemSource::Static(stt))
-            .as_global()
-            .unwrap()
+        // Go through the static's allocation, so that it shares its declaration with the pointers
+        // to it (see `translate_alloc_target`).
+        let def_id = rustc_internal::internal(self.tcx, stt.def_id());
+        let alloc_id = self.tcx.reserve_and_set_static_alloc(def_id);
+        self.register_global_decl_id(src, rustc_internal::stable(alloc_id), Some(stt.ty()))
     }
 
     pub(crate) fn register_named_const(
@@ -602,7 +605,7 @@ impl<'tcx> TranslateCtx<'tcx> {
             .collect()
     }
 
-    fn collect_entrypoints(&mut self, options: &CliOpts) -> Vec<FunDeclId> {
+    fn collect_entrypoints(&mut self, options: &CliOpts) -> Vec<ItemId> {
         // When compiling a test binary, detect #[test] functions via the rustc_test_marker
         // attribute that rustc adds to the generated TestDescAndFn consts/statics during #[test] expansion.
         // If any test markers are found, use them exclusively as entry points (the normal
@@ -676,7 +679,77 @@ impl<'tcx> TranslateCtx<'tcx> {
                 None
             })
             .sorted_by_key(|i| i.def.def_id().to_index())
-            .map(|instance| self.register_fun_decl_id(&None, instance))
+            .map(|instance| ItemId::Fun(self.register_fun_decl_id(&None, instance)))
+            .collect()
+    }
+
+    /// Constructors that run before the program starts; which ones is decided by the linker,
+    /// which is a bit obscure, so we follow the same logic as Miri and charon. See:
+    /// https://github.com/rust-lang/miri/blob/ddd2b2fc87565b16fd38e7cab9838295aaca1c40/src/shims/global_ctor.rs
+    fn collect_global_ctors(&mut self) -> Vec<GlobalDeclId> {
+        use rustc_middle::middle::codegen_fn_attrs::CodegenFnAttrFlags;
+        use rustc_middle::middle::exported_symbols::ExportedSymbol;
+        use rustc_span::def_id::DefId as RustcDefId;
+        use rustc_structures::CrateType;
+        use rustc_target::spec::BinaryFormat;
+
+        let tcx = self.tcx;
+        let is_ctor_section = |section: &str| match tcx.sess.target.binary_format {
+            BinaryFormat::Coff => section == ".CRT$XCU",
+            BinaryFormat::MachO => {
+                let mut parts = section.splitn(3, ',');
+                parts.next() == Some("__DATA")
+                    && parts.next() == Some("__mod_init_func")
+                    && matches!(parts.next(), None | Some("mod_init_funcs"))
+            }
+            BinaryFormat::Elf | BinaryFormat::Wasm => section == ".init_array",
+            _ => false,
+        };
+        let mut ctors: Vec<RustcDefId> = vec![];
+        let mut add_if_ctor = |def_id: RustcDefId, used: bool| {
+            if used
+                && let Some(section) = tcx.codegen_fn_attrs(def_id).link_section
+                && is_ctor_section(section.as_str())
+            {
+                ctors.push(def_id);
+            }
+        };
+        // For the local crate, we walk all its items and check their `#[used]` flags. We can't do
+        // like below because if the crate is a binary its exported symbols don't include its
+        // `#[used]` statics.
+        for ldid in tcx.hir_crate_items(()).definitions() {
+            if tcx.def_kind(ldid).has_codegen_attrs() && !tcx.is_foreign_item(ldid) {
+                let flags = tcx.codegen_fn_attrs(ldid).flags;
+                let used = flags.intersects(
+                    CodegenFnAttrFlags::USED_COMPILER | CodegenFnAttrFlags::USED_LINKER,
+                );
+                add_if_ctor(ldid.to_def_id(), used);
+            }
+        }
+        // For binary crates, we also look at the exported symbols of the dependencies, because
+        // their constructors get linked into the final executable.
+        if tcx.crate_types().contains(&CrateType::Executable) {
+            for &cnum in tcx.crates(()) {
+                if tcx.crate_dep_kind(cnum).macros_only() {
+                    continue;
+                }
+                for &(symbol, info) in tcx.exported_non_generic_symbols(cnum) {
+                    if let ExportedSymbol::NonGeneric(def_id) = symbol
+                        && !tcx.is_foreign_item(def_id)
+                    {
+                        add_if_ctor(def_id, info.used);
+                    }
+                }
+            }
+        }
+
+        ctors
+            .into_iter()
+            .filter_map(|def_id| {
+                let item = rustc_public::CrateItem(rustc_internal::stable(def_id));
+                let stt = mir::mono::StaticDef::try_from(item).ok()?;
+                Some(self.register_global_from_static(&None, stt))
+            })
             .collect()
     }
 }
@@ -840,7 +913,8 @@ pub fn translate<'tcx, 'ctx>(
     ctx.reserve_unit_decl();
     ctx.translate_fake_dyn_trait();
 
-    let entrypoints = ctx.collect_entrypoints(options);
+    let mut entrypoints = ctx.collect_entrypoints(options);
+    entrypoints.extend(ctx.collect_global_ctors().into_iter().map(ItemId::Global));
 
     // Translate.
     //
@@ -885,8 +959,8 @@ pub fn translate<'tcx, 'ctx>(
 
     // Later passes (e.g. `reorder_decls`) keep only the items reachable from these.
     for id in entrypoints {
-        if let Some(decl) = ctx.translated.fun_decls.get_mut(id) {
-            decl.item_meta.started_from = true;
+        if let Some(mut item) = ctx.translated.get_item_mut(id) {
+            item.item_meta().started_from = true;
         }
     }
 
