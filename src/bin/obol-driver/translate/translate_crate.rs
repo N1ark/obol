@@ -10,7 +10,6 @@ extern crate rustc_target;
 
 use crate::translate::my_gen_args::MyGenericArgs;
 use obol_lib::args::CliOpts;
-use rustc_hir::attrs::AttributeKind;
 
 use super::translate_ctx::*;
 
@@ -572,43 +571,75 @@ impl<'tcx> TranslateCtx<'tcx> {
         self.tcx.is_intrinsic(def_id, name).then_some(def_id)
     }
 
-    /// When building a test binary (OBOL_BUILDING_TEST is set), scan all local const/static items for
-    /// the `#[rustc_test_marker = "path"]` attribute that rustc adds when expanding `#[test]`.
-    /// Returns a set of test function paths (e.g. "my_test" or "submod::my_test") that can be
-    /// matched against instance names.
-    fn collect_test_marker_paths(&self) -> std::collections::HashSet<String> {
-        self.tcx
-            .hir_crate_items(())
-            .free_items()
-            .filter_map(|item_id| {
-                let item = self.tcx.hir_item(item_id);
-                // rustc_test_marker is placed on generated const items (static on newer nightlies)
-                if !matches!(
-                    item.kind,
-                    rustc_hir::ItemKind::Const(..) | rustc_hir::ItemKind::Static(..)
-                ) {
-                    return None;
+    /// The `#[test]` functions of the crate, when it is compiled as a test harness (`rustc --test`).
+    ///
+    /// The harness expansion consumes the `#[test]` attribute of a test function: it leaves the
+    /// function unmarked, next to a generated `#[rustc_test_marker]` item (a `test::TestDescAndFn`)
+    /// whose initializer calls it. We find each test function as the argument-less local function
+    /// its marker calls (benchmarks take a `Bencher`). Matching by name instead would also pick up
+    /// unrelated functions that share a test's name, e.g. trait methods.
+    fn collect_test_functions(&self) -> std::collections::HashSet<rustc_hir::def_id::DefId> {
+        use rustc_hir::def::{DefKind, Res};
+        use rustc_hir::intravisit::{self, Visitor};
+        use rustc_hir::{Expr, ExprKind, QPath};
+
+        /// Collects the local functions an expression refers to, including in closures.
+        struct LocalFns<'tcx> {
+            tcx: TyCtxt<'tcx>,
+            fns: Vec<rustc_hir::def_id::DefId>,
+        }
+        impl<'tcx> Visitor<'tcx> for LocalFns<'tcx> {
+            type NestedFilter = rustc_middle::hir::nested_filter::OnlyBodies;
+            fn maybe_tcx(&mut self) -> TyCtxt<'tcx> {
+                self.tcx
+            }
+            fn visit_expr(&mut self, expr: &'tcx Expr<'tcx>) {
+                if let ExprKind::Path(QPath::Resolved(None, path)) = expr.kind
+                    && let Res::Def(DefKind::Fn, def_id) = path.res
+                    && def_id.is_local()
+                {
+                    self.fns.push(def_id);
                 }
-                let def_id = item_id.owner_id.def_id.to_def_id();
-                self.attributes_for(def_id).iter().find_map(|a| {
-                    if let rustc_hir::Attribute::Parsed(AttributeKind::RustcTestMarker(sym)) = a {
-                        Some(sym.as_str().to_owned())
-                    } else {
-                        None
-                    }
-                })
+                intravisit::walk_expr(self, expr)
+            }
+        }
+
+        let tcx = self.tcx;
+        if !tcx.sess.is_test_crate() {
+            return Default::default();
+        }
+        tcx.hir_crate_items(())
+            .free_items()
+            .map(|item| item.owner_id.def_id)
+            .filter(|&marker| {
+                let attrs = tcx.hir_attrs(tcx.local_def_id_to_hir_id(marker));
+                rustc_hir::find_attr!(attrs, RustcTestMarker(..))
+            })
+            .flat_map(|marker| {
+                let mut visitor = LocalFns {
+                    tcx,
+                    fns: Vec::new(),
+                };
+                visitor.visit_body(tcx.hir_body_owned_by(marker));
+                visitor.fns
+            })
+            .filter(|&f| {
+                tcx.fn_sig(f)
+                    .skip_binder()
+                    .inputs()
+                    .skip_binder()
+                    .is_empty()
             })
             .collect()
     }
 
     fn collect_entrypoints(&mut self, options: &CliOpts) -> Vec<ItemId> {
-        // When compiling a test binary, detect #[test] functions via the rustc_test_marker
-        // attribute that rustc adds to the generated TestDescAndFn consts/statics during #[test] expansion.
-        // If any test markers are found, use them exclusively as entry points (the normal
-        // start_from / start_from_attribute logic would otherwise pick up the generated `main`).
-        let use_test_markers = !self.test_fn_paths.is_empty();
+        // When compiling a test binary, the `#[test]` functions are entry points. If there are any,
+        // the selection by flags only adds to them (selecting everything would otherwise pick up
+        // the generated `main`).
+        let has_tests = !self.test_functions.is_empty();
 
-        let collect_all = !use_test_markers
+        let collect_all = !has_tests
             && options.start_from.is_empty()
             && options.start_from_attribute.is_empty()
             && !options.start_from_pub;
@@ -633,17 +664,8 @@ impl<'tcx> TranslateCtx<'tcx> {
                     return None;
                 }
 
-                // In test mode, only include functions whose fully-qualified name ends with one
-                // of the test marker paths (e.g. "crate::submod::my_test" ends with "submod::my_test").
-                if use_test_markers {
-                    let instance_name = instance.name();
-                    let is_test = self.test_fn_paths.iter().any(|test_path| {
-                        instance_name == test_path.as_str()
-                            || instance_name.ends_with(&format!("::{test_path}"))
-                    });
-                    if is_test {
-                        return Some(instance);
-                    };
+                if self.test_functions.contains(&def_id) {
+                    return Some(instance);
                 }
 
                 if collect_all {
@@ -891,7 +913,7 @@ pub fn translate<'tcx, 'ctx>(
         cached_names: Default::default(),
         type_trans_cache: Default::default(),
         alloc_types: Default::default(),
-        test_fn_paths: Default::default(),
+        test_functions: Default::default(),
     };
 
     let triple = ctx.get_target_triple();
@@ -900,11 +922,9 @@ pub fn translate<'tcx, 'ctx>(
         .target_information
         .insert(triple, target_info);
 
-    // When building a test binary, detect #[test] functions via rustc_test_marker and store
-    // the paths so translate_attr_info can inject a synthetic "test" attribute on them.
-    if std::env::var("OBOL_BUILDING_TEST").is_ok() {
-        ctx.test_fn_paths = ctx.collect_test_marker_paths();
-    }
+    // When building a test binary, find the `#[test]` functions, which are entry points and get
+    // back a `test` attribute (see `translate_attr_info`).
+    ctx.test_functions = ctx.collect_test_functions();
 
     ctx.reserve_unit_decl();
     ctx.translate_fake_dyn_trait();
