@@ -9,7 +9,19 @@ trait FakeTrait
 // Full name: test_crate::just_return
 #[naked]
 pub fn just_return()
-= error("Inline assembly is not supported")
+{
+    let _0: (); // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        naked_asm!("ret") -> unwind: bb1;
+    }
+
+    bb1: {
+        undefined_behavior;
+    }
+}
 
 
 

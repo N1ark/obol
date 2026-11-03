@@ -7,8 +7,29 @@ struct () {}
 trait FakeTrait
 
 // Full name: test_crate::add_via_asm
-pub fn add_via_asm(_1: u64) -> u64
-= error("Inline assembly is not supported")
+pub fn add_via_asm(x: u64) -> u64
+{
+    let _0: u64; // return
+    let x: u64; // arg #1
+    let _2: (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _2 = const ();
+        asm!("add {0}, {0}", inout(reg) copy x => x) -> fallthrough: bb1, unwind: bb2;
+    }
+
+    bb1: {
+        storage_dead(_2);
+        _0 = copy x;
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
 
 
 

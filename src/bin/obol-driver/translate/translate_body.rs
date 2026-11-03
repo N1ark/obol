@@ -1,9 +1,11 @@
 extern crate rustc_abi;
+extern crate rustc_ast;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
 extern crate rustc_public_bridge;
 extern crate rustc_span;
+extern crate rustc_target;
 
 use itertools::Itertools;
 use log::trace;
@@ -27,6 +29,9 @@ pub(crate) struct BodyTransCtx<'tcx, 'tctx, 'ictx> {
     pub i_ctx: &'ictx mut ItemTransCtx<'tcx, 'tctx>,
 
     pub local_decls: &'ictx [mir::LocalDecl],
+    /// The body in rustc's internal representation, for what rustc_public doesn't expose
+    /// (inline assembly). Its blocks have the same indices as the rustc_public body's.
+    pub internal_body: &'ictx rustc_middle::mir::Body<'tcx>,
     pub signature: &'ictx mut FunSig,
 
     /// The (regular) variables in the current function body.
@@ -61,11 +66,13 @@ impl<'tcx, 'tctx, 'ictx> BodyTransCtx<'tcx, 'tctx, 'ictx> {
     pub(crate) fn new(
         i_ctx: &'ictx mut ItemTransCtx<'tcx, 'tctx>,
         local_decls: &'ictx [mir::LocalDecl],
+        internal_body: &'ictx rustc_middle::mir::Body<'tcx>,
         signature: &'ictx mut FunSig,
     ) -> Self {
         BodyTransCtx {
             i_ctx,
             local_decls,
+            internal_body,
             signature,
             locals: Default::default(),
             locals_map: Default::default(),
@@ -393,6 +400,7 @@ impl BodyTransCtx<'_, '_, '_> {
     fn translate_basic_block(
         &mut self,
         block_id: BlockId,
+        mir_block_id: mir::BasicBlockIdx,
         block: &mir::BasicBlock,
     ) -> Result<(), Error> {
         // Translate the statements
@@ -402,7 +410,7 @@ impl BodyTransCtx<'_, '_, '_> {
         }
 
         // Translate the terminator; this fills in the block(s) we've been building.
-        block_ctx.translate_terminator(&block.terminator)?;
+        block_ctx.translate_terminator(mir_block_id, &block.terminator)?;
 
         Ok(())
     }
@@ -566,7 +574,7 @@ impl BodyTransCtx<'_, '_, '_> {
         while let Some(mir_block_id) = self.blocks_stack.pop_front() {
             let mir_block = body.blocks.get(mir_block_id).unwrap();
             let block_id = self.translate_basic_block_id(mir_block_id);
-            self.translate_basic_block(block_id, mir_block)?;
+            self.translate_basic_block(block_id, mir_block_id, mir_block)?;
         }
 
         // We might need to tuple arguments, and possibly create a local too
@@ -1278,7 +1286,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
 
     /// Translate a terminator. This closes the block currently being built (which may not be the
     /// block we started on, if translating the statements introduced calls).
-    fn translate_terminator(mut self, terminator: &mir::Terminator) -> Result<(), Error> {
+    fn translate_terminator(
+        mut self,
+        mir_block_id: mir::BasicBlockIdx,
+        terminator: &mir::Terminator,
+    ) -> Result<(), Error> {
         trace!("About to translate terminator (MIR) {:?}", terminator);
         // Compute the span information beforehand (we might need it to introduce
         // intermediate statements - we desugar some terminators)
@@ -1398,14 +1410,168 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     on_unwind,
                 }
             }
-            mir::TerminatorKind::InlineAsm { .. } => {
-                raise_error!(self, span, "Inline assembly is not supported");
+            mir::TerminatorKind::InlineAsm { unwind, .. } => {
+                self.translate_inline_asm(span, mir_block_id, unwind)?
             }
         };
 
         // Add the span information
         self.finish_current_block(Terminator::new(span, t_terminator));
         Ok(())
+    }
+
+    /// Translate the inline assembly block terminating the MIR block `mir_block_id`.
+    /// rustc_public renders the template, options and operand kinds as debug strings, so we read
+    /// them from the internal MIR.
+    fn translate_inline_asm(
+        &mut self,
+        span: Span,
+        mir_block_id: mir::BasicBlockIdx,
+        unwind: &mir::UnwindAction,
+    ) -> Result<TerminatorKind, Error> {
+        use rustc_ast::ast::{InlineAsmOptions as O, InlineAsmTemplatePiece};
+        use rustc_middle::mir as internal;
+        use rustc_target::asm::InlineAsmRegOrRegClass;
+
+        let internal_body = self.internal_body;
+        let internal::TerminatorKind::InlineAsm {
+            asm_macro,
+            template,
+            operands,
+            options,
+            targets,
+            ..
+        } = &internal_body.basic_blocks[internal::BasicBlock::from_usize(mir_block_id)]
+            .terminator()
+            .kind
+        else {
+            unreachable!("the internal MIR terminator is not inline assembly");
+        };
+        let kind = match asm_macro {
+            internal::InlineAsmMacro::Asm => AsmKind::Asm,
+            internal::InlineAsmMacro::NakedAsm => AsmKind::NakedAsm,
+        };
+        let options = AsmOptions {
+            pure: options.contains(O::PURE),
+            nomem: options.contains(O::NOMEM),
+            readonly: options.contains(O::READONLY),
+            preserves_flags: options.contains(O::PRESERVES_FLAGS),
+            noreturn: options.contains(O::NORETURN),
+            nostack: options.contains(O::NOSTACK),
+            att_syntax: options.contains(O::ATT_SYNTAX),
+            may_unwind: options.contains(O::MAY_UNWIND),
+        };
+        let template = template
+            .iter()
+            .map(|piece| match piece {
+                InlineAsmTemplatePiece::String(text) => {
+                    AsmTemplatePiece::Text(text.as_ref().into())
+                }
+                InlineAsmTemplatePiece::Placeholder {
+                    operand_idx,
+                    modifier,
+                    span,
+                } => AsmTemplatePiece::Placeholder {
+                    operand_id: AsmOperandId::from_usize(*operand_idx),
+                    modifier: *modifier,
+                    span: self.t_ctx.translate_span_from_rustc(span),
+                },
+            })
+            .collect();
+        let has_fallthrough = kind.is_asm() && !options.noreturn;
+        let translate_reg = |reg: &InlineAsmRegOrRegClass| match reg {
+            InlineAsmRegOrRegClass::Reg(reg) => AsmRegister::Explicit(reg.name().into()),
+            InlineAsmRegOrRegClass::RegClass(class) => {
+                AsmRegister::Class(class.name().as_str().into())
+            }
+        };
+        let operands = operands
+            .iter()
+            .map(|operand| {
+                Ok(match operand {
+                    internal::InlineAsmOperand::In { reg, value } => AsmOperand::In {
+                        reg: translate_reg(reg),
+                        value: self.translate_operand(span, &rustc_internal::stable(value))?,
+                    },
+                    internal::InlineAsmOperand::Out { reg, late, place } => AsmOperand::Out {
+                        reg: translate_reg(reg),
+                        late: *late,
+                        place: place
+                            .map(|place| self.translate_place(span, &rustc_internal::stable(place)))
+                            .transpose()?,
+                    },
+                    internal::InlineAsmOperand::InOut {
+                        reg,
+                        late,
+                        in_value,
+                        out_place,
+                    } => AsmOperand::InOut {
+                        reg: translate_reg(reg),
+                        late: *late,
+                        in_value: self
+                            .translate_operand(span, &rustc_internal::stable(in_value))?,
+                        out_place: out_place
+                            .map(|place| self.translate_place(span, &rustc_internal::stable(place)))
+                            .transpose()?,
+                    },
+                    internal::InlineAsmOperand::Const { value } => {
+                        AsmOperand::Const(self.translate_asm_constant(span, value)?)
+                    }
+                    internal::InlineAsmOperand::SymFn { value } => {
+                        let value = self.translate_asm_constant(span, value)?;
+                        let ConstantExprKind::FnDef(fn_ptr) = value.kind() else {
+                            raise_error!(self, span, "inline asm `sym` operand is not a function");
+                        };
+                        AsmOperand::SymFn(fn_ptr.clone())
+                    }
+                    internal::InlineAsmOperand::SymStatic { def_id } => {
+                        let item = rustc_public::CrateItem(rustc_internal::stable(*def_id));
+                        let stt: mir::mono::StaticDef = item.try_into()?;
+                        AsmOperand::SymStatic(GlobalDeclRef {
+                            id: self.register_global_from_static(span, stt),
+                            generics: Box::new(GenericArgs::empty()),
+                        })
+                    }
+                    internal::InlineAsmOperand::Label { target_index } => AsmOperand::Label(
+                        BranchId::from_usize(*target_index - usize::from(has_fallthrough)),
+                    ),
+                })
+            })
+            .collect::<Result<IndexVec<AsmOperandId, _>, Error>>()?;
+        let mut targets = targets
+            .iter()
+            .map(|target| self.translate_basic_block_id(target.as_usize()));
+        let fallthrough = if has_fallthrough {
+            targets.next()
+        } else {
+            None
+        };
+        let labels = targets.collect();
+        let on_unwind = self.translate_unwind(span, unwind);
+        Ok(TerminatorKind::InlineAsm {
+            asm: InlineAsm {
+                kind,
+                template,
+                operands,
+                options,
+            },
+            fallthrough,
+            labels,
+            on_unwind,
+        })
+    }
+
+    /// Translate the constant of an inline asm `const` or `sym` operand.
+    fn translate_asm_constant(
+        &mut self,
+        span: Span,
+        value: &rustc_middle::mir::ConstOperand<'tcx>,
+    ) -> Result<ConstantExpr, Error> {
+        let operand = mir::Operand::Constant(rustc_internal::stable(value));
+        match self.translate_operand(span, &operand)? {
+            Operand::Const(value) => Ok(value),
+            _ => unreachable!("a constant operand translates to a constant"),
+        }
     }
 
     /// Translate switch targets.

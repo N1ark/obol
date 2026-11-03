@@ -1,8 +1,7 @@
 //@ output=pretty-llbc
-//! Limitation regression test: inline `asm!` is not supported. The function is
-//! still translated, but its body is replaced by an `error("Inline assembly is
-//! not supported")` node rather than crashing. Documents that obol degrades
-//! gracefully on inline assembly.
+//! Regression test: inline `asm!` is translated to an `asm!` terminator carrying
+//! its template, operands and options (it used to be an `error("Inline assembly
+//! is not supported")` body). See `simple/inline-asm.rs` for all operand kinds.
 use std::arch::asm;
 
 pub unsafe fn add_via_asm(mut x: u64) -> u64 {
