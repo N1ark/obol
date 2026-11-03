@@ -59,7 +59,7 @@ impl<'tcx> rustc_middle::mir::visit::MutVisitor<'tcx> for NamedConstPreservingEv
     }
 }
 
-impl ItemTransCtx<'_, '_> {
+impl<'tcx> ItemTransCtx<'tcx, '_> {
     pub fn requires_caller_location(&self, instance: mir::mono::Instance) -> bool {
         let instance_internal = rustc_internal::internal(self.t_ctx.tcx, instance);
         instance_internal
@@ -175,12 +175,21 @@ impl ItemTransCtx<'_, '_> {
     }
 
     /// Get the (monomorphic) MIR body of this instance, if it exists.
+    pub fn get_body(&mut self, def: mir::mono::Instance) -> Option<rustc_public::mir::Body> {
+        self.get_internal_body(def).map(rustc_internal::stable)
+    }
+
+    /// Get the (monomorphic) MIR body of this instance in rustc's internal representation, if it
+    /// exists. Body translation needs it for what rustc_public doesn't expose (inline assembly).
     ///
     /// We deliberately do *not* use rustc_public's `Instance::body`: that goes through
     /// `BodyBuilder`, which evaluates every const operand. That would discard the information
     /// that a constant refers to a named const item. Instead we fetch the MIR ourselves,
     /// and run our own [`NamedConstPreservingEvaluator`].
-    pub fn get_body(&mut self, def: mir::mono::Instance) -> Option<rustc_public::mir::Body> {
+    pub fn get_internal_body(
+        &mut self,
+        def: mir::mono::Instance,
+    ) -> Option<rustc_middle::mir::Body<'tcx>> {
         let tcx = self.t_ctx.tcx;
         let instance = rustc_internal::internal(tcx, def);
         let typing_env = rustc_middle::ty::TypingEnv::fully_monomorphized();
@@ -221,7 +230,7 @@ impl ItemTransCtx<'_, '_> {
             );
             use rustc_middle::mir::visit::MutVisitor;
             NamedConstPreservingEvaluator { tcx, typing_env }.visit_body(&mut b);
-            rustc_public::rustc_internal::stable(b)
+            b
         })
     }
 

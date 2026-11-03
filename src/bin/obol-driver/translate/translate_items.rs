@@ -456,8 +456,10 @@ impl ItemTransCtx<'_, '_> {
             || matches!(def.kind, mir::mono::InstanceKind::Intrinsic)
         {
             Body::Opaque
-        } else if let Some(body) = self.get_body(def) {
-            let mut bt_ctx = BodyTransCtx::new(&mut self, body.locals(), &mut signature);
+        } else if let Some(internal_body) = self.get_internal_body(def) {
+            let body = rustc_public::rustc_internal::stable(&internal_body);
+            let mut bt_ctx =
+                BodyTransCtx::new(&mut self, body.locals(), &internal_body, &mut signature);
             bt_ctx.translate_body(span, def, &body)
         } else {
             trace!("Instance {} has no body -- left opaque.", def.name(),);
