@@ -633,17 +633,22 @@ impl ItemTransCtx<'_, '_> {
             Err(err) => TypeDeclKind::Error(err.msg),
         };
         let ptr_metadata = self.translate_ptr_metadata();
+        let closure_ty = ty::Ty::from_rigid_kind(ty::RigidTy::Closure(*def, genargs.clone()));
+        // The fields are the upvars in order, as in rustc's layout of the closure.
+        let layout = self
+            .translate_layout_of_ty(closure_ty, ReprOptions::default())
+            .into_iter()
+            .map(|l| (self.t_ctx.get_target_triple(), l))
+            .collect();
         let type_def = TypeDecl {
             def_id: trans_id,
             item_meta,
             generics: GenericParams::empty(),
             kind,
             src,
-            layout: Default::default(),
+            layout,
             ptr_metadata,
-            marker_traits: self.translate_marker_traits(ty::Ty::from_rigid_kind(
-                ty::RigidTy::Closure(*def, genargs.clone()),
-            )),
+            marker_traits: self.translate_marker_traits(closure_ty),
         };
 
         Ok(type_def)
