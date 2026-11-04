@@ -1,0 +1,94 @@
+
+// Final ULLBC:
+
+struct () {}
+
+struct (_, _, _)::<[u16; 2usize], [u8; 3usize], [i64; 1usize]> {
+  _0: [u16; 2usize],
+  _1: [u8; 3usize],
+  _2: [i64; 1usize],
+}
+
+// Full name: test_crate::ZEROS
+const ZEROS: [u8; 1048576usize] = [0u8; 1048576usize]
+
+// Full name: test_crate::BYTES
+const BYTES: &'_ [u8] = &anon_const_0 with_metadata(16777216usize)
+
+// Full name: test_crate::PAIR
+const PAIR: [u16; 2usize] = [3u16; 2usize]
+
+// Full name: test_crate::MIXED
+const MIXED: [u8; 3usize] = [1u8, 1u8, 2u8]
+
+// Full name: test_crate::ONE
+const ONE: [i64; 1usize] = [-1i64]
+
+// Full name: anon_const_0
+const anon_const_0: [u8; 16777216usize] = [42u8; 16777216usize]
+
+// Full name: FakeTrait
+trait FakeTrait
+
+// Full name: test_crate::main
+fn main()
+{
+    let _0: (); // return
+    let _1: [u8; 1048576usize]; // anonymous local
+    let _2: usize; // anonymous local
+    let _3: bool; // anonymous local
+    let _4: &'_ [u8]; // anonymous local
+    let _5: usize; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: bool; // anonymous local
+    let _8: ([u16; 2usize], [u8; 3usize], [i64; 1usize]); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_6);
+        storage_live(_7);
+        _0 = ();
+        storage_live(_1);
+        _1 = const ZEROS;
+        storage_live(_2);
+        _2 = const 5usize;
+        _3 = copy _2 < const 1048576usize;
+        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        _ = _1[copy _2];
+        storage_dead(_2);
+        storage_dead(_1);
+        storage_live(_4);
+        _4 = const BYTES;
+        storage_live(_5);
+        _5 = const 7usize;
+        _6 = noretag copy _4.metadata;
+        _7 = copy _5 < copy _6;
+        assert assert(move _7 == true) (bounds_check) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        _ = (*_4)[copy _5];
+        storage_dead(_5);
+        storage_dead(_4);
+        storage_live(_8);
+        _8 = (const PAIR, const MIXED, const ONE);
+        storage_dead(_8);
+        _0 = const ();
+        return;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
+
+
+

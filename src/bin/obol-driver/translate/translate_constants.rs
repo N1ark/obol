@@ -136,6 +136,19 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     .map(|field| self.translate_read_const(span, field))
                     .try_collect()?;
                 match c.ty.kind() {
+                    // An array of copies of one value is a repeat, as in Charon: a large
+                    // constant like `[0u8; 1 << 24]` then stays small.
+                    mty::Array(..)
+                        if let TyKind::Array(_, count, value_is_sized) = ty.kind()
+                            && fields.len() >= 2
+                            && let Ok(value) = fields.iter().dedup().exactly_one() =>
+                    {
+                        ConstantExprKind::Repeat {
+                            value: value.clone(),
+                            count: count.clone(),
+                            value_is_sized: value_is_sized.clone(),
+                        }
+                    }
                     mty::Array(..) | mty::Slice(..) => ConstantExprKind::Array(fields),
                     mty::Adt(adt_def, _) if adt_def.is_enum() => {
                         let variant = variant.map(|variant| self.translate_rvariant_id(variant));
