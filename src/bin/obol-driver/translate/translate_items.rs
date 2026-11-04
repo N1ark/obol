@@ -302,6 +302,7 @@ impl ItemTransCtx<'_, '_> {
             kind,
             src: TypeSource::Normal,
             layout,
+            monomorphic_layouts: Default::default(),
             ptr_metadata,
             marker_traits,
         };
@@ -327,6 +328,7 @@ impl ItemTransCtx<'_, '_> {
             kind,
             src: TypeSource::Normal,
             layout: Default::default(),
+            monomorphic_layouts: Default::default(),
             ptr_metadata: PtrMetadata::None,
             marker_traits: self
                 .translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Foreign(*def))),
@@ -390,6 +392,7 @@ impl ItemTransCtx<'_, '_> {
             kind: TypeDeclKind::Struct(fields),
             src: TypeSource::Builtin(BuiltinAdt::Tuple),
             layout,
+            monomorphic_layouts: Default::default(),
             ptr_metadata,
             marker_traits,
         })
@@ -427,6 +430,7 @@ impl ItemTransCtx<'_, '_> {
             kind: TypeDeclKind::Struct(fields),
             src: TypeSource::Builtin(BuiltinAdt::Str),
             layout,
+            monomorphic_layouts: Default::default(),
             ptr_metadata: PtrMetadata::Length,
             marker_traits: self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Str)),
         })
@@ -650,6 +654,7 @@ impl ItemTransCtx<'_, '_> {
             kind,
             src,
             layout,
+            monomorphic_layouts: Default::default(),
             ptr_metadata,
             marker_traits: self.translate_marker_traits(closure_ty),
         };
