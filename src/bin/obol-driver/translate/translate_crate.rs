@@ -699,23 +699,62 @@ impl<'tcx> TranslateCtx<'tcx> {
                     return Some(instance);
                 }
 
-                let attrib_match = self.attributes_for(def_id).iter().any(|a| match a {
-                    rustc_hir::Attribute::Parsed(..) => false,
-                    rustc_hir::Attribute::Unparsed(attr) => {
-                        let path = attr.path.segments.iter().map(|i| i.to_string()).join("::");
-                        options.start_from_attribute.contains(&path)
-                    }
-                });
-
-                if attrib_match {
+                if self.has_start_attribute(options, def_id) {
                     return Some(instance);
                 }
 
                 None
             })
             .sorted_by_key(|i| i.def.def_id().to_index())
+            .chain(self.dependency_items_with_start_attribute(options))
             .map(|instance| ItemId::Fun(self.register_fun_decl_id(&None, instance)))
             .collect()
+    }
+
+    /// Whether the item has one of the attributes of `--start-from-attribute`.
+    fn has_start_attribute(&self, options: &CliOpts, def_id: rustc_hir::def_id::DefId) -> bool {
+        self.attributes_for(def_id).iter().any(|a| match a {
+            rustc_hir::Attribute::Parsed(..) => false,
+            rustc_hir::Attribute::Unparsed(attr) => {
+                let path = attr.path.segments.iter().map(|i| i.to_string()).join("::");
+                options.start_from_attribute.contains(&path)
+            }
+        })
+    }
+
+    /// The monomorphic functions of the dependencies that have one of the attributes of
+    /// `--start-from-attribute`, by crate then in definition order. Attributes select items in the
+    /// whole crate graph, e.g. so that the models a library defines for a verification tool apply
+    /// to its integration tests, which are crates of their own. The crates of the sysroot are
+    /// skipped: they are not compiled with the user's attributes, and are much larger.
+    fn dependency_items_with_start_attribute(&self, options: &CliOpts) -> Vec<Instance> {
+        if options.start_from_attribute.is_empty() {
+            return Vec::new();
+        }
+        let tcx = self.tcx;
+        let sysroot_lib = &tcx.sess.target_tlib_path.dir;
+        let mut items: Vec<(rustc_hir::def_id::DefId, Instance)> = rustc_public::external_crates()
+            .into_iter()
+            .filter(|krate| {
+                let cnum = rustc_internal::internal(tcx, krate.id);
+                !tcx.crate_dep_kind(cnum).macros_only()
+                    && !tcx
+                        .used_crate_source(cnum)
+                        .paths()
+                        .any(|path| path.starts_with(sysroot_lib))
+            })
+            .flat_map(|krate| krate.fn_defs())
+            .filter_map(|fun| {
+                let def_id = rustc_internal::internal(tcx, fun.def_id());
+                if !self.has_start_attribute(options, def_id) {
+                    return None;
+                }
+                let instance = Instance::try_from(rustc_public::CrateItem(fun.def_id())).ok()?;
+                Some((def_id, instance))
+            })
+            .collect();
+        items.sort_by_key(|(def_id, _)| (def_id.krate, def_id.index));
+        items.into_iter().map(|(_, instance)| instance).collect()
     }
 
     /// Constructors that run before the program starts; which ones is decided by the linker,
