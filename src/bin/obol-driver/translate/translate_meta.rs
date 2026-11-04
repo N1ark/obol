@@ -515,6 +515,19 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             }));
         }
 
+        // The global allocator's functions (`#[global_allocator]`) have no `#[export_name]`, but
+        // are exported under the standard library's internal symbols, which the foreign allocator
+        // functions link to (see `exported_fns`): give them the attribute that stands for it.
+        if matches!(src, TransItemSource::Fun(..))
+            && let Some(symbol) =
+                super::translate_crate::global_allocator_symbol(self.tcx, internal)
+        {
+            attributes.push(Attribute::Builtin(from_rustc::AttributeKind::ExportName {
+                name: symbol.into(),
+                span,
+            }));
+        }
+
         let rename = {
             let mut renames = attributes.iter().filter_map(|a| a.as_rename()).cloned();
             let rename = renames.next();

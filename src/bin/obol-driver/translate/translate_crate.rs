@@ -834,8 +834,11 @@ impl<'tcx> TranslateCtx<'tcx> {
 /// left to consumers, which model what they stand for at the foreign item:
 /// - weak ones (`#[linkage = "weak"]`, e.g. `compiler_builtins`' fallbacks for the C math
 ///   library), which the system's definitions take precedence over;
-/// - the standard library's internal symbols (`#[rustc_std_internal_symbol]`: the allocator
-///   shims, the panic runtime, ...), which implement what the compiler provides.
+/// - the standard library's internal symbols (`#[rustc_std_internal_symbol]`: the default
+///   allocator, the panic runtime, ...), which implement what the compiler provides. The global
+///   allocator's are kept: `#[global_allocator]` defines `__rust_alloc` and the other allocator
+///   functions as such symbols (with `#[rustc_allocator]`, ...), which the program's allocations
+///   go through.
 fn exported_fns(
     tcx: TyCtxt<'_>,
 ) -> std::collections::HashMap<String, Vec<rustc_span::def_id::DefId>> {
@@ -866,16 +869,55 @@ fn exported_fns(
         })
         .filter(|&def_id| {
             let attrs = tcx.codegen_fn_attrs(def_id);
-            (attrs.flags.contains(CodegenFnAttrFlags::NO_MANGLE) || attrs.symbol_name.is_some())
+            let explicit = (attrs.flags.contains(CodegenFnAttrFlags::NO_MANGLE)
+                || attrs.symbol_name.is_some())
                 && !attrs
                     .flags
-                    .contains(CodegenFnAttrFlags::RUSTC_STD_INTERNAL_SYMBOL)
+                    .contains(CodegenFnAttrFlags::RUSTC_STD_INTERNAL_SYMBOL);
+            (explicit || is_global_allocator_fn(attrs))
                 && matches!(attrs.linkage, None | Some(Linkage::External))
         })
         .into_group_map_by(|&def_id| {
             let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
             tcx.symbol_name(instance).name.to_owned()
         })
+}
+
+/// Whether the function with these attributes is one of the global allocator's, as
+/// `#[global_allocator]` defines them: a standard library's internal symbol (`__rust_alloc`, ...)
+/// marked `#[rustc_allocator]`, `#[rustc_deallocator]`, ...
+fn is_global_allocator_fn(attrs: &rustc_middle::middle::codegen_fn_attrs::CodegenFnAttrs) -> bool {
+    use rustc_middle::middle::codegen_fn_attrs::CodegenFnAttrFlags;
+    attrs
+        .flags
+        .contains(CodegenFnAttrFlags::RUSTC_STD_INTERNAL_SYMBOL)
+        && attrs.flags.intersects(
+            CodegenFnAttrFlags::ALLOCATOR
+                | CodegenFnAttrFlags::DEALLOCATOR
+                | CodegenFnAttrFlags::REALLOCATOR
+                | CodegenFnAttrFlags::ALLOCATOR_ZEROED,
+        )
+}
+
+/// The symbol of `def_id` if it is one of the global allocator's functions (see
+/// `is_global_allocator_fn`): the standard library's internal symbol the foreign allocator
+/// functions link to.
+pub(crate) fn global_allocator_symbol(
+    tcx: TyCtxt<'_>,
+    def_id: rustc_span::def_id::DefId,
+) -> Option<String> {
+    let is_fn = matches!(
+        tcx.def_kind(def_id),
+        rustc_hir::def::DefKind::Fn | rustc_hir::def::DefKind::AssocFn
+    );
+    (is_fn
+        && !tcx.is_foreign_item(def_id)
+        && !tcx.generics_of(def_id).requires_monomorphization(tcx)
+        && is_global_allocator_fn(tcx.codegen_fn_attrs(def_id)))
+    .then(|| {
+        let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
+        tcx.symbol_name(instance).name.to_owned()
+    })
 }
 
 pub(crate) const FAKE_DYN_TRAIT: TraitDeclId = TraitDeclId::ZERO;
