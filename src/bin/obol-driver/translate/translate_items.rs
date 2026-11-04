@@ -450,6 +450,9 @@ impl ItemTransCtx<'_, '_> {
             let arg_names = self.translate_argument_names(def, signature.inputs.len());
             Body::Intrinsic { name, arg_names }
         } else if let Some(name) = self.as_extern_name(def) {
+            if def.ty().kind().is_fn() {
+                self.t_ctx.enqueue_linked_definitions(&name);
+            }
             Body::Extern(name)
         } else if item_meta.opacity.with_private_contents().is_opaque()
             || matches!(def.kind, mir::mono::InstanceKind::Virtual { .. })

@@ -547,6 +547,23 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 }
 
 impl<'tcx> TranslateCtx<'tcx> {
+    /// Enqueues the definitions the foreign function `symbol` links to (see `exported_fns`). They
+    /// are roots of the translation, like entry points: nothing refers to them but their symbol.
+    pub(crate) fn enqueue_linked_definitions(&mut self, symbol: &str) {
+        let tcx = self.tcx;
+        let exported = self
+            .exported_fns
+            .get_or_insert_with(|| exported_fns(tcx))
+            .get(symbol)
+            .cloned()
+            .unwrap_or_default();
+        for def_id in exported {
+            let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
+            let id = self.register_fun_decl_id(&None, rustc_internal::stable(instance));
+            self.linked_definitions.insert(ItemId::Fun(id));
+        }
+    }
+
     /// Resolve `core::intrinsics::$name` to its `DefId`.
     ///
     /// Rustc exposes no name -> `DefId` map for intrinsics, so we walk down `core`'s module tree
@@ -772,6 +789,56 @@ impl<'tcx> TranslateCtx<'tcx> {
     }
 }
 
+/// The functions of the crate and its dependencies exported under an explicit symbol
+/// (`#[no_mangle]` or `#[export_name]`), by symbol: the definitions the linker binds the foreign
+/// items with that symbol to, as Miri's `lookup_exported_symbol` finds them. Some definitions are
+/// left to consumers, which model what they stand for at the foreign item:
+/// - weak ones (`#[linkage = "weak"]`, e.g. `compiler_builtins`' fallbacks for the C math
+///   library), which the system's definitions take precedence over;
+/// - the standard library's internal symbols (`#[rustc_std_internal_symbol]`: the allocator
+///   shims, the panic runtime, ...), which implement what the compiler provides.
+fn exported_fns(
+    tcx: TyCtxt<'_>,
+) -> std::collections::HashMap<String, Vec<rustc_span::def_id::DefId>> {
+    use rustc_hir::attrs::Linkage;
+    use rustc_hir::def::DefKind;
+    use rustc_middle::middle::codegen_fn_attrs::CodegenFnAttrFlags;
+    use rustc_middle::middle::exported_symbols::ExportedSymbol;
+
+    let local = tcx
+        .hir_crate_items(())
+        .definitions()
+        .map(|ldid| ldid.to_def_id());
+    let dependencies = tcx
+        .crates(())
+        .iter()
+        .filter(|&&cnum| !tcx.crate_dep_kind(cnum).macros_only())
+        .flat_map(|&cnum| tcx.exported_non_generic_symbols(cnum))
+        .filter_map(|(symbol, _)| match symbol {
+            ExportedSymbol::NonGeneric(def_id) => Some(*def_id),
+            _ => None,
+        });
+    local
+        .chain(dependencies)
+        .filter(|&def_id| {
+            matches!(tcx.def_kind(def_id), DefKind::Fn | DefKind::AssocFn)
+                && !tcx.is_foreign_item(def_id)
+                && !tcx.generics_of(def_id).requires_monomorphization(tcx)
+        })
+        .filter(|&def_id| {
+            let attrs = tcx.codegen_fn_attrs(def_id);
+            (attrs.flags.contains(CodegenFnAttrFlags::NO_MANGLE) || attrs.symbol_name.is_some())
+                && !attrs
+                    .flags
+                    .contains(CodegenFnAttrFlags::RUSTC_STD_INTERNAL_SYMBOL)
+                && matches!(attrs.linkage, None | Some(Linkage::External))
+        })
+        .into_group_map_by(|&def_id| {
+            let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
+            tcx.symbol_name(instance).name.to_owned()
+        })
+}
+
 pub(crate) const FAKE_DYN_TRAIT: TraitDeclId = TraitDeclId::ZERO;
 
 /// Describe the target platform we're compiling for. Mirrors charon's `register_target_info`.
@@ -914,6 +981,8 @@ pub fn translate<'tcx, 'ctx>(
         type_trans_cache: Default::default(),
         alloc_types: Default::default(),
         test_functions: Default::default(),
+        exported_fns: None,
+        linked_definitions: Default::default(),
     };
 
     let triple = ctx.get_target_triple();
@@ -973,8 +1042,10 @@ pub fn translate<'tcx, 'ctx>(
         }
     }
 
-    // Later passes (e.g. `reorder_decls`) keep only the items reachable from these.
-    for id in entrypoints {
+    // Later passes (e.g. `reorder_decls`) keep only the items reachable from these. Linked
+    // definitions are only reachable through their symbol.
+    let linked = std::mem::take(&mut ctx.linked_definitions);
+    for id in entrypoints.into_iter().chain(linked) {
         if let Some(mut item) = ctx.translated.get_item_mut(id) {
             item.item_meta().started_from = true;
         }

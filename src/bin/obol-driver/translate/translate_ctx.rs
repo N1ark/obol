@@ -68,6 +68,12 @@ pub struct TranslateCtx<'tcx> {
     // FIXME: in the future, we should look into preserving attributes that exist in the AST.
     // see https://rust-lang.zulipchat.com/#narrow/channel/131828-t-compiler/topic/Retrieving.20.60.23.5Btest.5D.60.20and.20.60.23.5Bshould_panic.5D.60/with/577547122
     pub test_functions: HashSet<rustc_hir::def_id::DefId>,
+    /// The functions of the crate and its dependencies exported under an explicit symbol, by
+    /// symbol (see `exported_fns`); computed on first use.
+    pub exported_fns: Option<HashMap<String, Vec<rustc_hir::def_id::DefId>>>,
+    /// The functions translated because a foreign function's symbol links to them (see
+    /// `enqueue_linked_definitions`).
+    pub linked_definitions: BTreeSet<ItemId>,
 }
 
 /// A translation context for items.
