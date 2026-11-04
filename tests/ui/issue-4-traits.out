@@ -38,7 +38,7 @@ pub enum Option::<&'_ [u8; 4usize]> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -52,7 +52,7 @@ pub enum Result::<(), Error> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::fmt::Error
@@ -66,7 +66,7 @@ pub struct FormattingOptions {
 }
 
 #[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<TryFromSliceError>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<TryFromSliceError>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(impl_Debug_for_TryFromSliceError::fmt))]
+vtable {vtable}::core::fmt::Debug::<TryFromSliceError>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<TryFromSliceError>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr({impl core::fmt::Debug for TryFromSliceError}::fmt))]
 
 // Full name: anon_const_0
 const anon_const_0: [u8; 43usize] = [99u8, 97u8, 108u8, 108u8, 101u8, 100u8, 32u8, 96u8, 82u8, 101u8, 115u8, 117u8, 108u8, 116u8, 58u8, 58u8, 117u8, 110u8, 119u8, 114u8, 97u8, 112u8, 40u8, 41u8, 96u8, 32u8, 111u8, 110u8, 32u8, 97u8, 110u8, 32u8, 96u8, 69u8, 114u8, 114u8, 96u8, 32u8, 118u8, 97u8, 108u8, 117u8, 101u8]
@@ -80,8 +80,21 @@ const anon_const_1: [u8; 17usize] = [84u8, 114u8, 121u8, 70u8, 114u8, 111u8, 109
 // Full name: anon_const_2
 const anon_const_2: [u8; 2usize] = [40u8, 41u8]
 
+// Full name: {vtable}::unknown_trait::<TryFromSliceError>
+vtable unknown_trait::<TryFromSliceError>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<TryFromSliceError>)), no-provenance 0, no-provenance 1]
+
+// Full name: {vtable}::unknown_trait::<&'_ ()>
+vtable unknown_trait::<&'_ ()>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ ()>)), no-provenance 8, no-provenance 8]
+
 // Full name: FakeTrait
 trait FakeTrait
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
+
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
 
 // Full name: core::convert::TryInto
 #[diagnostic_item("TryInto")]
@@ -90,9 +103,6 @@ trait TryInto
 // Full name: core::convert::TryFrom
 #[diagnostic_item("TryFrom")]
 trait TryFrom
-
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
 
 // Full name: core::convert::{impl TryInto<U> for T}
 impl<T, U> "impl_TryInto_for_T" TryInto<U> for T {
@@ -104,9 +114,21 @@ impl<'_, _, T, const _ : type_error("const generic param type"), const _ : type_
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::fmt::Debug for TryFromSliceError}
+impl core::fmt::Debug for TryFromSliceError {
+    proof ImpliedClause0: (TryFromSliceError: FakeTrait) = impl_FakeTrait_for_TryFromSliceError
+    vtable: {vtable}::core::fmt::Debug::<TryFromSliceError>
+}
+
 // Full name: core::array::{impl core::fmt::Debug for TryFromSliceError}
-impl "impl_Debug_for_TryFromSliceError" core::fmt::Debug for TryFromSliceError {
+impl core::fmt::Debug for TryFromSliceError {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl core::fmt::Debug for &'_ ()}
+impl core::fmt::Debug for &'_ () {
+    proof ImpliedClause0: (&'_ (): FakeTrait) = {impl FakeTrait for &'_ ()}
+    vtable: {vtable}::core::fmt::Debug::<&'_ ()>
 }
 
 // Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
@@ -117,6 +139,16 @@ impl<'_, _, T> core::fmt::Debug for &'_ T {
 // Full name: core::fmt::{impl core::fmt::Debug for ()}
 impl "impl_Debug_for_unit" core::fmt::Debug for () {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl FakeTrait for TryFromSliceError}
+impl "impl_FakeTrait_for_TryFromSliceError" FakeTrait for TryFromSliceError {
+    vtable: unknown_trait::<TryFromSliceError>
+}
+
+// Full name: {impl FakeTrait for &'_ ()}
+impl FakeTrait for &'_ () {
+    vtable: unknown_trait::<&'_ ()>
 }
 
 // Full name: test_crate::trait_error
@@ -188,7 +220,7 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
     let mut _2: isize; // anonymous local
     let e: TryFromSliceError; // local
     let mut _4: !; // anonymous local
-    let mut _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _5: &'_ (dyn core::fmt::Debug); // anonymous local
     let _6: &'_ TryFromSliceError; // anonymous local
 
     bb0: {
@@ -210,7 +242,7 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
         storage_live(_5);
         storage_live(_6);
         _6 = &e;
-        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<TryFromSliceError>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<TryFromSliceError>)>(copy _6);
         _4 = unwrap_failed(const unsize_cast<&'_ str, 43usize>(&raw const anon_const_0), move _5) -> bb3 (unwind: bb4);
     }
 
@@ -306,7 +338,7 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
 
 // Full name: core::result::unwrap_failed
 #[track_caller]
-fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
+fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn core::fmt::Debug)) -> !
 = <missing>
 
 // Full name: core::ptr::drop_glue::<TryFromSliceError>
@@ -324,12 +356,12 @@ fn drop_glue::<TryFromSliceError>(_1: &'_ mut TryFromSliceError)
 }
 
 // Full name: core::array::{impl core::fmt::Debug for TryFromSliceError}::fmt
-pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn {impl core::fmt::Debug for TryFromSliceError}::fmt(self: &'_ TryFromSliceError, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let mut _0: Result::<(), Error>; // return
     let self: &'_ TryFromSliceError; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let mut _3: &'_ (dyn FakeTrait); // anonymous local
+    let mut _3: &'_ (dyn core::fmt::Debug); // anonymous local
     let _4: &'_ &'_ (); // anonymous local
     let _5: &'_ (); // anonymous local
 
@@ -340,7 +372,7 @@ pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_
         storage_live(_5);
         _5 = &(*self)._0;
         _4 = &_5;
-        _3 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ ()>)>(copy _4);
+        _3 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ ()>)>(copy _4);
         _0 = debug_tuple_field1_finish::<'_>(move f, const unsize_cast<&'_ str, 17usize>(&raw const anon_const_1), move _3) -> bb1 (unwind: bb2);
     }
 
@@ -357,7 +389,7 @@ pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_
 }
 
 // Full name: core::fmt::{Formatter::<'_>}::debug_tuple_field1_finish::<'_>
-pub fn debug_tuple_field1_finish::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str, _3: &'_ (dyn FakeTrait)) -> Result::<(), Error>
+pub fn debug_tuple_field1_finish::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str, _3: &'_ (dyn core::fmt::Debug)) -> Result::<(), Error>
 = <missing>
 
 // Full name: core::ptr::drop_glue::<&'_ ()>

@@ -30,21 +30,67 @@ struct (_, _)::<u32, bool> {
 // Full name: anon_const_0
 const anon_const_0: MaybeUninit::<[u8; 0usize]> = RawMemory()
 
-// Full name: {vtable}::core::ops::function::Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>
 #[lang_item(Fn)]
-vtable Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>: [*const (); 6usize] = [cast<*const ()>(fnptr(drop_glue::<test_crate::gives_fn::{closure}::{closure}>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)), cast<*const ()>(fnptr(test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>)), cast<*const ()>(fnptr(test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>))]
+vtable {vtable}::core::ops::function::Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>: [*const (); 6usize] = [cast<*const ()>(fnptr(drop_glue::<test_crate::gives_fn::{closure}::{closure}>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)), cast<*const ()>(fnptr(test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>)), cast<*const ()>(fnptr(test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>))]
+
+// Full name: {vtable}::unknown_trait::<test_crate::gives_fn::{closure}::{closure}>
+vtable unknown_trait::<test_crate::gives_fn::{closure}::{closure}>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<test_crate::gives_fn::{closure}::{closure}>)), no-provenance 0, no-provenance 1]
+
+#[lang_item(FnOnce)]
+vtable {vtable}::core::ops::function::FnOnce::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<test_crate::gives_fn::{closure}::{closure}>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>))]
+
+#[lang_item(FnMut)]
+vtable {vtable}::core::ops::function::FnMut::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<test_crate::gives_fn::{closure}::{closure}>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(call_once::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)), cast<*const ()>(fnptr(test_crate::gives_fn::{closure}::<i8, extern "rust-call" fn((&'_ mut u32,)) -> bool, ()>))]
 
 // Full name: FakeTrait
 trait FakeTrait
 
+#[fundamental]
+#[lang_item(Fn)]
+trait core::ops::function::Fn
+
+#[fundamental]
+#[lang_item(FnMut)]
+trait core::ops::function::FnMut
+
+#[fundamental]
+#[lang_item(FnOnce)]
+trait core::ops::function::FnOnce
+
+// Full name: {impl core::ops::function::Fn<(&'_ mut u32,)> for test_crate::gives_fn::{closure}::{closure}}
+impl "impl_Fn_for_closure" core::ops::function::Fn<(&'_ mut u32,)> for test_crate::gives_fn::{closure}::{closure} {
+    proof ImpliedClause0: (test_crate::gives_fn::{closure}::{closure}: core::ops::function::FnMut<(&'_ mut u32,)>) = impl_FnMut_for_closure
+    proof ImpliedClause1: (test_crate::gives_fn::{closure}::{closure}: core::ops::function::FnOnce<(&'_ mut u32,)>) = impl_FnOnce_for_closure
+    proof ImpliedClause2: (test_crate::gives_fn::{closure}::{closure}: FakeTrait) = impl_FakeTrait_for_closure
+    vtable: {vtable}::core::ops::function::Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>
+}
+
+// Full name: {impl core::ops::function::FnMut<(&'_ mut u32,)> for test_crate::gives_fn::{closure}::{closure}}
+impl "impl_FnMut_for_closure" core::ops::function::FnMut<(&'_ mut u32,)> for test_crate::gives_fn::{closure}::{closure} {
+    proof ImpliedClause0: (test_crate::gives_fn::{closure}::{closure}: core::ops::function::FnOnce<(&'_ mut u32,)>) = impl_FnOnce_for_closure
+    proof ImpliedClause1: (test_crate::gives_fn::{closure}::{closure}: FakeTrait) = impl_FakeTrait_for_closure
+    vtable: {vtable}::core::ops::function::FnMut::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>
+}
+
+// Full name: {impl core::ops::function::FnOnce<(&'_ mut u32,)> for test_crate::gives_fn::{closure}::{closure}}
+impl "impl_FnOnce_for_closure" core::ops::function::FnOnce<(&'_ mut u32,)> for test_crate::gives_fn::{closure}::{closure} {
+    proof ImpliedClause0: (test_crate::gives_fn::{closure}::{closure}: FakeTrait) = impl_FakeTrait_for_closure
+    vtable: {vtable}::core::ops::function::FnOnce::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>
+}
+
+// Full name: {impl FakeTrait for test_crate::gives_fn::{closure}::{closure}}
+impl "impl_FakeTrait_for_closure" FakeTrait for test_crate::gives_fn::{closure}::{closure} {
+    vtable: unknown_trait::<test_crate::gives_fn::{closure}::{closure}>
+}
+
 // Full name: test_crate::takes_fn
-fn takes_fn(f: &'_ (dyn FakeTrait))
+fn takes_fn(f: &'_ (dyn core::ops::function::Fn<(&'_ mut u32,)>))
 {
     let mut _0: (); // return
-    let f: &'_ (dyn FakeTrait); // arg #1
+    let f: &'_ (dyn core::ops::function::Fn<(&'_ mut u32,)>); // arg #1
     let mut counter: u32; // local
     let mut _3: bool; // anonymous local
-    let mut _4: &'_ (dyn FakeTrait); // anonymous local
+    let mut _4: &'_ (dyn core::ops::function::Fn<(&'_ mut u32,)>); // anonymous local
     let mut _5: (&'_ mut u32,); // anonymous local
     let mut _6: &'_ mut u32; // anonymous local
     let mut _7: &'_ mut u32; // anonymous local
@@ -109,7 +155,7 @@ fn takes_fn(f: &'_ (dyn FakeTrait))
 fn gives_fn()
 {
     let mut _0: (); // return
-    let mut _1: &'_ (dyn FakeTrait); // anonymous local
+    let mut _1: &'_ (dyn core::ops::function::Fn<(&'_ mut u32,)>); // anonymous local
     let mut _2: &'_ test_crate::gives_fn::{closure}::{closure}; // anonymous local
     let _3: &'_ test_crate::gives_fn::{closure}::{closure}; // anonymous local
     let mut _4: &'_ test_crate::gives_fn::{closure}::{closure}; // anonymous local
@@ -124,7 +170,7 @@ fn gives_fn()
         _4 = const cast<&'_ test_crate::gives_fn::{closure}::{closure}>(&raw const anon_const_0);
         _3 = &(*_4);
         _2 = &(*_3);
-        _1 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)>(move _2);
+        _1 = unsize_cast<&'_ (dyn core::ops::function::Fn<(&'_ mut u32,)>), cast<*const ()>(&raw const {vtable}::core::ops::function::Fn::<test_crate::gives_fn::{closure}::{closure}, (&'_ mut u32,)>)>(move _2);
         storage_dead(_2);
         _0 = takes_fn(move _1) -> bb1 (unwind: bb2);
     }
@@ -140,8 +186,8 @@ fn gives_fn()
     }
 }
 
-// Full name: core::ops::function::Fn::call::<(dyn FakeTrait), (&'_ mut u32,)>
-pub fn call::<(dyn FakeTrait), (&'_ mut u32,)>(_1: &'_ (dyn FakeTrait), _2: &'_ mut u32) -> bool
+// Full name: core::ops::function::Fn::call::<(dyn core::ops::function::Fn<(&'_ mut u32,)>), (&'_ mut u32,)>
+pub fn call::<(dyn core::ops::function::Fn<(&'_ mut u32,)>), (&'_ mut u32,)>(_1: &'_ (dyn core::ops::function::Fn<(&'_ mut u32,)>), _2: &'_ mut u32) -> bool
 = <opaque>
 
 // Full name: core::ptr::drop_glue::<test_crate::gives_fn::{closure}::{closure}>

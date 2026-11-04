@@ -10,32 +10,61 @@ vtable {vtable}::test_crate::Cat::<HouseCat>: [*const (); 7usize] = [cast<*const
 
 vtable {vtable}::test_crate::Pettable::<HouseCat>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<HouseCat>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(pet))]
 
+// Full name: {vtable}::unknown_trait::<HouseCat>
+vtable unknown_trait::<HouseCat>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<HouseCat>)), no-provenance 0, no-provenance 1]
+
+vtable {vtable}::test_crate::Feline::<HouseCat>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<HouseCat>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(hunt))]
+
 // Full name: FakeTrait
 trait FakeTrait
 
-// Full name: test_crate::Feline
-trait Feline
+trait test_crate::Cat
+
+trait test_crate::Feline
 
 trait test_crate::Pettable
 
-trait test_crate::Cat
-
-// Full name: test_crate::{impl Feline for HouseCat}
-impl "impl_Feline_for_HouseCat" Feline for HouseCat {
+// Full name: test_crate::{impl test_crate::Feline for HouseCat}
+impl test_crate::Feline for HouseCat {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::Pettable for HouseCat}
-impl "impl_Pettable_for_HouseCat" test_crate::Pettable for HouseCat {
+impl test_crate::Pettable for HouseCat {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::Cat for HouseCat}
-impl "impl_Cat_for_HouseCat" test_crate::Cat for HouseCat {
+impl test_crate::Cat for HouseCat {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
-// Full name: test_crate::{impl Feline for HouseCat}::hunt
+// Full name: {impl test_crate::Cat for HouseCat}
+impl test_crate::Cat for HouseCat {
+    proof ImpliedClause0: (HouseCat: test_crate::Pettable) = {impl test_crate::Pettable for HouseCat}
+    proof ImpliedClause1: (HouseCat: test_crate::Feline) = {impl test_crate::Feline for HouseCat}
+    proof ImpliedClause2: (HouseCat: FakeTrait) = impl_FakeTrait_for_HouseCat
+    vtable: {vtable}::test_crate::Cat::<HouseCat>
+}
+
+// Full name: {impl test_crate::Pettable for HouseCat}
+impl test_crate::Pettable for HouseCat {
+    proof ImpliedClause0: (HouseCat: FakeTrait) = impl_FakeTrait_for_HouseCat
+    vtable: {vtable}::test_crate::Pettable::<HouseCat>
+}
+
+// Full name: {impl test_crate::Feline for HouseCat}
+impl test_crate::Feline for HouseCat {
+    proof ImpliedClause0: (HouseCat: FakeTrait) = impl_FakeTrait_for_HouseCat
+    vtable: {vtable}::test_crate::Feline::<HouseCat>
+}
+
+// Full name: {impl FakeTrait for HouseCat}
+impl "impl_FakeTrait_for_HouseCat" FakeTrait for HouseCat {
+    vtable: unknown_trait::<HouseCat>
+}
+
+// Full name: test_crate::{impl test_crate::Feline for HouseCat}::hunt
 fn hunt(self: &'_ HouseCat)
 {
     let mut _0: (); // return
@@ -82,13 +111,13 @@ fn main()
 {
     let mut _0: (); // return
     let cat: HouseCat; // local
-    let dyn_cat: &'_ (dyn FakeTrait); // local
+    let dyn_cat: &'_ (dyn test_crate::Cat); // local
     let mut _3: &'_ HouseCat; // anonymous local
     let _4: &'_ HouseCat; // anonymous local
-    let dyn_feline: &'_ (dyn FakeTrait); // local
-    let mut _6: &'_ (dyn FakeTrait); // anonymous local
-    let dyn_pettable: &'_ (dyn FakeTrait); // local
-    let mut _8: &'_ (dyn FakeTrait); // anonymous local
+    let dyn_feline: &'_ (dyn test_crate::Feline); // local
+    let mut _6: &'_ (dyn test_crate::Cat); // anonymous local
+    let dyn_pettable: &'_ (dyn test_crate::Pettable); // local
+    let mut _8: &'_ (dyn test_crate::Cat); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -100,18 +129,18 @@ fn main()
         storage_live(_4);
         _4 = &cat;
         _3 = &(*_4);
-        dyn_cat = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Cat::<HouseCat>)>(move _3);
+        dyn_cat = unsize_cast<&'_ (dyn test_crate::Cat), cast<*const ()>(&raw const {vtable}::test_crate::Cat::<HouseCat>)>(move _3);
         storage_dead(_3);
         storage_dead(_4);
         storage_live(dyn_feline);
         storage_live(_6);
         _6 = &(*dyn_cat) with_metadata(read dyn_cat.metadata);
-        dyn_feline = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _6);
+        dyn_feline = unsize_cast<&'_ (dyn test_crate::Feline),  at []>(move _6);
         storage_dead(_6);
         storage_live(dyn_pettable);
         storage_live(_8);
         _8 = &(*dyn_cat) with_metadata(read dyn_cat.metadata);
-        dyn_pettable = unsize_cast<&'_ (dyn FakeTrait),  at [5]>(move _8);
+        dyn_pettable = unsize_cast<&'_ (dyn test_crate::Pettable),  at [5]>(move _8);
         storage_dead(_8);
         _0 = const ();
         storage_dead(dyn_pettable);

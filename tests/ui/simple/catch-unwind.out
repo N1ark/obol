@@ -3,11 +3,11 @@
 
 struct () {}
 
-// Full name: core::result::Result::<(), Box::<(dyn FakeTrait), Global>>
+// Full name: core::result::Result::<(), Box::<(dyn Any), Global>>
 #[diagnostic_item("Result")]
-pub enum Result::<(), Box::<(dyn FakeTrait), Global>> {
+pub enum Result::<(), Box::<(dyn Any), Global>> {
   Ok { _0: () },
-  Err { _0: Box::<(dyn FakeTrait), Global> },
+  Err { _0: Box::<(dyn Any), Global> },
 }
 
 struct test_crate::main::{closure}::{closure} {}
@@ -16,7 +16,7 @@ struct test_crate::main::{closure}::{closure} {}
 union Data::<test_crate::main::{closure}::{closure}, ()> {
   f: ManuallyDrop::<test_crate::main::{closure}::{closure}>,
   r: ManuallyDrop::<()>,
-  p: ManuallyDrop::<Box::<(dyn FakeTrait), Global>>,
+  p: ManuallyDrop::<Box::<(dyn Any), Global>>,
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<test_crate::main::{closure}::{closure}>
@@ -25,18 +25,18 @@ pub struct ManuallyDrop::<test_crate::main::{closure}::{closure}> {
   value: test_crate::main::{closure}::{closure},
 }
 
-// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
+// Full name: alloc::boxed::Box::<(dyn Any), Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
-pub struct Box::<(dyn FakeTrait), Global> {
-  _0: Unique::<(dyn FakeTrait)>,
+pub struct Box::<(dyn Any), Global> {
+  _0: Unique::<(dyn Any)>,
   _1: Global,
 }
 
-// Full name: core::mem::manually_drop::ManuallyDrop::<Box::<(dyn FakeTrait), Global>>
+// Full name: core::mem::manually_drop::ManuallyDrop::<Box::<(dyn Any), Global>>
 #[lang_item(ManuallyDrop)]
-pub struct ManuallyDrop::<Box::<(dyn FakeTrait), Global>> {
-  value: Box::<(dyn FakeTrait), Global>,
+pub struct ManuallyDrop::<Box::<(dyn Any), Global>> {
+  value: Box::<(dyn Any), Global>,
 }
 
 // Full name: core::mem::manually_drop::ManuallyDrop::<()>
@@ -45,16 +45,16 @@ pub struct ManuallyDrop::<()> {
   value: (),
 }
 
-// Full name: core::ptr::unique::Unique::<(dyn FakeTrait)>
-pub struct Unique::<(dyn FakeTrait)> {
-  pointer: NonNull::<(dyn FakeTrait)>,
-  _marker: PhantomData::<(dyn FakeTrait)>,
+// Full name: core::ptr::unique::Unique::<(dyn Any)>
+pub struct Unique::<(dyn Any)> {
+  pointer: NonNull::<(dyn Any)>,
+  _marker: PhantomData::<(dyn Any)>,
 }
 
-// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
+// Full name: core::ptr::non_null::NonNull::<(dyn Any)>
 #[lang_item(NonNull)]
-pub struct NonNull::<(dyn FakeTrait)> {
-  pointer: *const (dyn FakeTrait) is !null,
+pub struct NonNull::<(dyn Any)> {
+  pointer: *const (dyn Any) is !null,
 }
 
 // Full name: alloc::alloc::Global
@@ -79,9 +79,9 @@ pub struct NonNull::<u8> {
   pointer: *const u8 is !null,
 }
 
-// Full name: core::marker::PhantomData::<(dyn FakeTrait)>
+// Full name: core::marker::PhantomData::<(dyn Any)>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<(dyn FakeTrait)> {}
+pub struct PhantomData::<(dyn Any)> {}
 
 struct str {
   _0: [u8],
@@ -241,7 +241,7 @@ pub struct NonNull::<()> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -274,6 +274,14 @@ const anon_const_1: [u8; 259usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 3
 // Full name: FakeTrait
 trait FakeTrait
 
+// Full name: core::any::Any
+#[diagnostic_item("Any")]
+trait Any
+
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
+
 // Full name: core::ops::drop::Drop
 #[lang_item(Drop)]
 trait Drop
@@ -295,9 +303,9 @@ unsafe impl "impl_Allocator_for_Global" Allocator for Global {
 fn main()
 {
     let mut _0: (); // return
-    let mut _1: Result::<(), Box::<(dyn FakeTrait), Global>>; // anonymous local
+    let mut _1: Result::<(), Box::<(dyn Any), Global>>; // anonymous local
     let mut _2: test_crate::main::{closure}::{closure}; // anonymous local
-    let mut _3: *mut Result::<(), Box::<(dyn FakeTrait), Global>>; // anonymous local
+    let mut _3: *mut Result::<(), Box::<(dyn Any), Global>>; // anonymous local
     let mut _4: (); // anonymous local
 
     bb0: {
@@ -314,7 +322,7 @@ fn main()
     bb1: {
         storage_dead(_2);
         _3 = &raw mut _1;
-        _4 = drop_glue::<Result::<(), Box::<(dyn FakeTrait), Global>>>(move _3) -> bb2 (unwind: bb3);
+        _4 = drop_glue::<Result::<(), Box::<(dyn Any), Global>>>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -332,9 +340,9 @@ fn main()
     }
 }
 
-pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f: test_crate::main::{closure}::{closure}) -> Result::<(), Box::<(dyn FakeTrait), Global>>
+pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f: test_crate::main::{closure}::{closure}) -> Result::<(), Box::<(dyn Any), Global>>
 {
-    let mut _0: Result::<(), Box::<(dyn FakeTrait), Global>>; // return
+    let mut _0: Result::<(), Box::<(dyn Any), Global>>; // return
     let f: test_crate::main::{closure}::{closure}; // arg #1
     let mut data: Data::<test_crate::main::{closure}::{closure}, ()>; // local
     let mut _3: ManuallyDrop::<test_crate::main::{closure}::{closure}>; // anonymous local
@@ -342,7 +350,7 @@ pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f:
     let mut _5: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>); // anonymous local
     let mut _6: *mut Data::<test_crate::main::{closure}::{closure}, ()>; // anonymous local
     let mut _7: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>, *mut u8); // anonymous local
-    let mut slot_8: Box::<(dyn FakeTrait), Global>; // local
+    let mut slot_8: Box::<(dyn Any), Global>; // local
     let mut slot_9: (); // local
 
     bb0: {
@@ -373,7 +381,7 @@ pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f:
         storage_dead(_6);
         storage_dead(_5);
         slot_8 = move data.p.value;
-        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Err { _0: copy slot_8 };
+        _0 = Result::<(), Box::<(dyn Any), Global>>::Err { _0: copy slot_8 };
         goto bb4;
     }
 
@@ -382,7 +390,7 @@ pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f:
         storage_dead(_6);
         storage_dead(_5);
         slot_9 = move data.r.value;
-        _0 = Result::<(), Box::<(dyn FakeTrait), Global>>::Ok { _0: copy slot_9 };
+        _0 = Result::<(), Box::<(dyn Any), Global>>::Ok { _0: copy slot_9 };
         goto bb4;
     }
 
@@ -399,14 +407,14 @@ pub fn std::panic::catch_unwind::<test_crate::main::{closure}::{closure}, ()>(f:
     }
 }
 
-// Full name: core::ptr::drop_glue::<Result::<(), Box::<(dyn FakeTrait), Global>>>
+// Full name: core::ptr::drop_glue::<Result::<(), Box::<(dyn Any), Global>>>
 #[lang_item(DropGlue)]
-fn drop_glue::<Result::<(), Box::<(dyn FakeTrait), Global>>>(_1: &'_ mut Result::<(), Box::<(dyn FakeTrait), Global>>)
+fn drop_glue::<Result::<(), Box::<(dyn Any), Global>>>(_1: &'_ mut Result::<(), Box::<(dyn Any), Global>>)
 {
     let mut _0: (); // return
-    let _1: &'_ mut Result::<(), Box::<(dyn FakeTrait), Global>>; // arg #1
+    let _1: &'_ mut Result::<(), Box::<(dyn Any), Global>>; // arg #1
     let mut _2: isize; // anonymous local
-    let mut _3: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _3: *mut Box::<(dyn Any), Global>; // anonymous local
     let mut _4: (); // anonymous local
 
     bb0: {
@@ -420,8 +428,8 @@ fn drop_glue::<Result::<(), Box::<(dyn FakeTrait), Global>>>(_1: &'_ mut Result:
     }
 
     bb1: {
-        _3 = &raw mut ((*_1) as variant Result::<(), Box::<(dyn FakeTrait), Global>>::Err)._0;
-        _4 = drop_glue::<Box::<(dyn FakeTrait), Global>>(move _3) -> bb2 (unwind: bb3);
+        _3 = &raw mut ((*_1) as variant Result::<(), Box::<(dyn Any), Global>>::Err)._0;
+        _4 = drop_glue::<Box::<(dyn Any), Global>>(move _3) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -472,8 +480,8 @@ fn do_catch::<test_crate::main::{closure}::{closure}, ()>(data: *mut Data::<test
     let mut _0: (); // return
     let data: *mut Data::<test_crate::main::{closure}::{closure}, ()>; // arg #1
     let payload: *mut u8; // arg #2
-    let obj: Box::<(dyn FakeTrait), Global>; // local
-    let mut _4: ManuallyDrop::<Box::<(dyn FakeTrait), Global>>; // anonymous local
+    let obj: Box::<(dyn Any), Global>; // local
+    let mut _4: ManuallyDrop::<Box::<(dyn Any), Global>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -484,7 +492,7 @@ fn do_catch::<test_crate::main::{closure}::{closure}, ()>(data: *mut Data::<test
 
     bb1: {
         storage_live(_4);
-        _4 = ManuallyDrop::<Box::<(dyn FakeTrait), Global>> { value: copy obj };
+        _4 = ManuallyDrop::<Box::<(dyn Any), Global>> { value: copy obj };
         (*data).p = move _4;
         storage_dead(_4);
         storage_dead(obj);
@@ -500,18 +508,18 @@ fn do_catch::<test_crate::main::{closure}::{closure}, ()>(data: *mut Data::<test
 pub fn core::intrinsics::catch_unwind::<Data::<test_crate::main::{closure}::{closure}, ()>>(_try_fn_1: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>), _data_2: *mut Data::<test_crate::main::{closure}::{closure}, ()>, _catch_fn_3: unsafe fn(*mut Data::<test_crate::main::{closure}::{closure}, ()>, *mut u8)) -> bool
 = <intrinsic:catch_unwind>
 
-// Full name: core::ptr::drop_glue::<Box::<(dyn FakeTrait), Global>>
+// Full name: core::ptr::drop_glue::<Box::<(dyn Any), Global>>
 #[lang_item(DropGlue)]
-fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait), Global>)
+fn drop_glue::<Box::<(dyn Any), Global>>(_1: &'_ mut Box::<(dyn Any), Global>)
 {
     let mut _0: (); // return
-    let _1: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
-    let mut _2: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let _1: &'_ mut Box::<(dyn Any), Global>; // arg #1
+    let mut _2: &'_ mut Box::<(dyn Any), Global>; // anonymous local
     let mut _3: (); // anonymous local
-    let mut _4: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _4: &'_ mut Box::<(dyn Any), Global>; // anonymous local
     let mut _5: (); // anonymous local
-    let mut _6: *const (dyn FakeTrait); // anonymous local
-    let mut _7: *mut (dyn FakeTrait); // anonymous local
+    let mut _6: *const (dyn Any); // anonymous local
+    let mut _7: *mut (dyn Any); // anonymous local
     let mut _8: (); // anonymous local
 
     bb0: {
@@ -524,14 +532,14 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
         storage_live(_7);
         storage_live(_8);
         _0 = ();
-        _6 = transmute<*const (dyn FakeTrait)>(copy (*_1)._0.pointer);
+        _6 = transmute<*const (dyn Any)>(copy (*_1)._0.pointer);
         _7 = &raw mut (*_6) with_metadata(read _6.metadata);
         _8 = (copy (*_7.metadata))(move _7) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         _2 = &mut (*_1);
-        _3 = drop::<(dyn FakeTrait), Global>(move _2) -> bb2 (unwind: bb3);
+        _3 = drop::<(dyn Any), Global>(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -544,7 +552,7 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
 
     bb4: {
         _4 = &mut (*_1);
-        _5 = drop::<(dyn FakeTrait), Global>(move _4) -> bb5 (unwind: bb6);
+        _5 = drop::<(dyn Any), Global>(move _4) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -571,16 +579,16 @@ fn test_crate::main::{closure}::<i32, extern "rust-call" fn(()), ()>(_1: test_cr
 }
 
 // Full name: std::panicking::catch_unwind::cleanup
-fn cleanup(_1: *mut u8) -> Box::<(dyn FakeTrait), Global>
+fn cleanup(_1: *mut u8) -> Box::<(dyn Any), Global>
 = <missing>
 
-// Full name: core::ptr::drop_glue::<(dyn FakeTrait)>
+// Full name: core::ptr::drop_glue::<(dyn Any)>
 #[lang_item(DropGlue)]
-fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
+fn drop_glue::<(dyn Any)>(_1: &'_ mut (dyn Any))
 {
     let mut _0: (); // return
-    let _1: &'_ mut (dyn FakeTrait); // arg #1
-    let mut _2: *mut (dyn FakeTrait); // anonymous local
+    let _1: &'_ mut (dyn Any); // arg #1
+    let mut _2: *mut (dyn Any); // anonymous local
     let mut _3: (); // anonymous local
 
     bb0: {
@@ -601,14 +609,14 @@ fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
     }
 }
 
-// Full name: alloc::boxed::{impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>
-pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Global>)
+// Full name: alloc::boxed::{impl Drop for Box::<_, _>}::drop::<(dyn Any), Global>
+pub fn drop::<(dyn Any), Global>(self: &'_ mut Box::<(dyn Any), Global>)
 {
     let mut _0: (); // return
-    let self: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
+    let self: &'_ mut Box::<(dyn Any), Global>; // arg #1
     let layout: Layout; // local
-    let mut val: *const (dyn FakeTrait); // local
-    let mut _4: *mut (dyn FakeTrait); // anonymous local
+    let mut val: *const (dyn Any); // local
+    let mut _4: *mut (dyn Any); // anonymous local
     let _5: (); // anonymous local
     let mut _6: &'_ Global; // anonymous local
     let mut size: usize; // local
@@ -618,8 +626,8 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
     let _11: (); // anonymous local
     let mut unique: NonNull::<u8>; // local
     let mut _13: *mut u8; // anonymous local
-    let ptr_14: NonNull::<(dyn FakeTrait)>; // local
-    let ptr_15: PhantomData::<(dyn FakeTrait)>; // local
+    let ptr_14: NonNull::<(dyn Any)>; // local
+    let ptr_15: PhantomData::<(dyn Any)>; // local
     let mut _16: bool; // anonymous local
     let mut _17: bool; // anonymous local
 
@@ -638,15 +646,15 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
         ptr_15 = copy (*self)._0._marker;
         storage_live(layout);
         storage_live(val);
-        _4 = transmute<*mut (dyn FakeTrait)>(copy ptr_14);
-        val = transmute<*const (dyn FakeTrait)>(copy ptr_14);
+        _4 = transmute<*mut (dyn Any)>(copy ptr_14);
+        val = transmute<*const (dyn Any)>(copy ptr_14);
         storage_live(alignment);
-        size = size_of_val::<(dyn FakeTrait)>(copy val) -> bb1 (unwind: bb14);
+        size = size_of_val::<(dyn Any)>(copy val) -> bb1 (unwind: bb14);
     }
 
     bb1: {
         storage_live(align);
-        align = align_of_val::<(dyn FakeTrait)>(move val) -> bb2 (unwind: bb13);
+        align = align_of_val::<(dyn Any)>(move val) -> bb2 (unwind: bb13);
     }
 
     bb2: {
@@ -721,14 +729,14 @@ pub fn drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Glob
     }
 }
 
-// Full name: core::intrinsics::size_of_val::<(dyn FakeTrait)>
+// Full name: core::intrinsics::size_of_val::<(dyn Any)>
 #[rustc_intrinsic]
-pub fn size_of_val::<(dyn FakeTrait)>(ptr_1: *const (dyn FakeTrait)) -> usize
+pub fn size_of_val::<(dyn Any)>(ptr_1: *const (dyn Any)) -> usize
 = <intrinsic:size_of_val>
 
-// Full name: core::intrinsics::align_of_val::<(dyn FakeTrait)>
+// Full name: core::intrinsics::align_of_val::<(dyn Any)>
 #[rustc_intrinsic]
-pub fn align_of_val::<(dyn FakeTrait)>(ptr_1: *const (dyn FakeTrait)) -> usize
+pub fn align_of_val::<(dyn Any)>(ptr_1: *const (dyn Any)) -> usize
 = <intrinsic:align_of_val>
 
 #[track_caller]

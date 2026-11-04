@@ -9,18 +9,22 @@ pub struct String {
   vec: Vec::<u8, Global>,
 }
 
-// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
+// Full name: alloc::boxed::Box::<(dyn core::fmt::Display), Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
-pub struct Box::<(dyn FakeTrait), Global> {
-  _0: Unique::<(dyn FakeTrait)>,
+pub struct Box::<(dyn core::fmt::Display), Global> {
+  _0: Unique::<(dyn core::fmt::Display)>,
   _1: Global,
 }
 
-// Full name: core::ptr::unique::Unique::<(dyn FakeTrait)>
-pub struct Unique::<(dyn FakeTrait)> {
-  pointer: NonNull::<(dyn FakeTrait)>,
-  _marker: PhantomData::<(dyn FakeTrait)>,
+// Full name: core::ptr::unique::Unique::<(dyn core::fmt::Display)>
+pub struct Unique::<(dyn core::fmt::Display)> {
+  pointer: NonNull::<(dyn core::fmt::Display)>,
+  _marker: PhantomData::<(dyn core::fmt::Display)>,
+}
+
+struct (_,)::<&'_ (dyn core::fmt::Display)> {
+  _0: &'_ (dyn core::fmt::Display),
 }
 
 // Full name: alloc::vec::Vec::<u8, Global>
@@ -76,17 +80,17 @@ pub struct Box::<String, Global> {
   _1: Global,
 }
 
-// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
+// Full name: core::ptr::non_null::NonNull::<(dyn core::fmt::Display)>
 #[lang_item(NonNull)]
-pub struct NonNull::<(dyn FakeTrait)> {
-  pointer: *const (dyn FakeTrait) is !null,
+pub struct NonNull::<(dyn core::fmt::Display)> {
+  pointer: *const (dyn core::fmt::Display) is !null,
 }
 
 // Full name: core::fmt::Formatter::<'_>
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn core::fmt::Write),
 }
 
 // Full name: core::fmt::FormattingOptions
@@ -119,9 +123,9 @@ pub struct Alignment {
   _inner_repr_trick: AlignmentEnum,
 }
 
-// Full name: core::marker::PhantomData::<(dyn FakeTrait)>
+// Full name: core::marker::PhantomData::<(dyn core::fmt::Display)>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<(dyn FakeTrait)> {}
+pub struct PhantomData::<(dyn core::fmt::Display)> {}
 
 // Full name: core::fmt::Error
 pub struct Error {}
@@ -499,14 +503,14 @@ pub enum ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn core::fmt::Write),
 }
 
 #[diagnostic_item("Display")]
-vtable {vtable}::core::fmt::Display::<String>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8, cast<*const ()>(fnptr(impl_Display_for_String::fmt))]
+vtable {vtable}::core::fmt::Display::<String>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Display for String}::fmt))]
 
 #[diagnostic_item("FmtWrite")]
-vtable {vtable}::core::fmt::Write::<String>: [*const (); 6usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8, cast<*const ()>(fnptr(impl_Write_for_String::write_str)), cast<*const ()>(fnptr(write_char)), cast<*const ()>(fnptr(write_fmt::<String>))]
+vtable {vtable}::core::fmt::Write::<String>: [*const (); 6usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Write for String}::write_str)), cast<*const ()>(fnptr(write_char)), cast<*const ()>(fnptr(write_fmt::<String>))]
 
 // Full name: anon_const_0
 const anon_const_0: [u8; 55usize] = [97u8, 32u8, 68u8, 105u8, 115u8, 112u8, 108u8, 97u8, 121u8, 32u8, 105u8, 109u8, 112u8, 108u8, 101u8, 109u8, 101u8, 110u8, 116u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 114u8, 101u8, 116u8, 117u8, 114u8, 110u8, 101u8, 100u8, 32u8, 97u8, 110u8, 32u8, 101u8, 114u8, 114u8, 111u8, 114u8, 32u8, 117u8, 110u8, 101u8, 120u8, 112u8, 101u8, 99u8, 116u8, 101u8, 100u8, 108u8, 121u8]
@@ -515,7 +519,7 @@ const anon_const_0: [u8; 55usize] = [97u8, 32u8, 68u8, 105u8, 115u8, 112u8, 108u
 pub const LAYOUT::<String>: Layout = Layout { size: 24usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl3 {  } } }
 
 #[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<Error>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<Error>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(impl_Debug_for_Error::fmt))]
+vtable {vtable}::core::fmt::Debug::<Error>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<Error>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr({impl core::fmt::Debug for Error}::fmt))]
 
 // Full name: anon_const_2
 const anon_const_2: [u8; 198usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 65u8, 108u8, 105u8, 103u8, 110u8, 109u8, 101u8, 110u8, 116u8, 58u8, 58u8, 110u8, 101u8, 119u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 32u8, 111u8, 102u8, 32u8, 116u8, 119u8, 111u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
@@ -585,8 +589,28 @@ const anon_const_17: [u8; 228usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 
 // Full name: anon_const_18
 const anon_const_18: [u8; 5usize] = [69u8, 114u8, 114u8, 111u8, 114u8]
 
+// Full name: {vtable}::unknown_trait::<String>
+vtable unknown_trait::<String>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8]
+
+// Full name: {vtable}::unknown_trait::<Error>
+vtable unknown_trait::<Error>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<Error>)), no-provenance 0, no-provenance 1]
+
 // Full name: FakeTrait
 trait FakeTrait
+
+#[diagnostic_item("Display")]
+trait core::fmt::Display
+
+// Full name: core::ops::function::Fn
+#[fundamental]
+#[lang_item(Fn)]
+trait Fn
+
+#[diagnostic_item("FmtWrite")]
+trait core::fmt::Write
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
 
 // Full name: alloc::string::ToString
 #[diagnostic_item("ToString")]
@@ -602,17 +626,8 @@ trait Drop
 // Full name: core::alloc::Allocator
 unsafe trait Allocator
 
-#[diagnostic_item("Display")]
-trait core::fmt::Display
-
-#[diagnostic_item("FmtWrite")]
-trait core::fmt::Write
-
 // Full name: core::fmt::Write::write_fmt::SpecWriteFmt
 trait SpecWriteFmt
-
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
 
 // Full name: core::cmp::PartialOrd
 #[lang_item(PartialOrd)]
@@ -649,8 +664,14 @@ unsafe impl<T, A> Drop for RawVec::<_, _> {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::fmt::Display for String}
+impl core::fmt::Display for String {
+    proof ImpliedClause0: (String: FakeTrait) = impl_FakeTrait_for_String
+    vtable: {vtable}::core::fmt::Display::<String>
+}
+
 // Full name: alloc::string::{impl core::fmt::Display for String}
-impl "impl_Display_for_String" core::fmt::Display for String {
+impl core::fmt::Display for String {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
@@ -659,8 +680,14 @@ impl "impl_Display_for_str" core::fmt::Display for str {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::fmt::Write for String}
+impl core::fmt::Write for String {
+    proof ImpliedClause0: (String: FakeTrait) = impl_FakeTrait_for_String
+    vtable: {vtable}::core::fmt::Write::<String>
+}
+
 // Full name: alloc::string::{impl core::fmt::Write for String}
-impl "impl_Write_for_String" core::fmt::Write for String {
+impl core::fmt::Write for String {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
@@ -669,8 +696,14 @@ impl<'_, _, W> SpecWriteFmt for &'_ mut W {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::fmt::Debug for Error}
+impl core::fmt::Debug for Error {
+    proof ImpliedClause0: (Error: FakeTrait) = impl_FakeTrait_for_Error
+    vtable: {vtable}::core::fmt::Debug::<Error>
+}
+
 // Full name: core::fmt::{impl core::fmt::Debug for Error}
-impl "impl_Debug_for_Error" core::fmt::Debug for Error {
+impl core::fmt::Debug for Error {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
@@ -679,18 +712,28 @@ impl "impl_PartialOrd_usize_for_usize" PartialOrd<usize> for usize {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl FakeTrait for String}
+impl "impl_FakeTrait_for_String" FakeTrait for String {
+    vtable: unknown_trait::<String>
+}
+
+// Full name: {impl FakeTrait for Error}
+impl "impl_FakeTrait_for_Error" FakeTrait for Error {
+    vtable: unknown_trait::<Error>
+}
+
 // Full name: test_crate::destruct
-fn destruct(x: &'_ (dyn FakeTrait)) -> String
+fn destruct(x: &'_ (dyn core::fmt::Display)) -> String
 {
     let mut _0: String; // return
-    let x: &'_ (dyn FakeTrait); // arg #1
-    let mut _2: &'_ (dyn FakeTrait); // anonymous local
+    let x: &'_ (dyn core::fmt::Display); // arg #1
+    let mut _2: &'_ (dyn core::fmt::Display); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         _2 = &(*x) with_metadata(read x.metadata);
-        _0 = to_string::<(dyn FakeTrait)>(move _2) -> bb1 (unwind: bb2);
+        _0 = to_string::<(dyn core::fmt::Display)>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -709,17 +752,17 @@ fn combine()
     let mut _0: (); // return
     let x: String; // local
     let mut _2: String; // anonymous local
-    let mut _3: &'_ (dyn FakeTrait); // anonymous local
-    let mut _4: &'_ (dyn FakeTrait); // anonymous local
-    let _5: &'_ (dyn FakeTrait); // anonymous local
-    let _6: Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _3: &'_ (dyn core::fmt::Display); // anonymous local
+    let mut _4: &'_ (dyn core::fmt::Display); // anonymous local
+    let _5: &'_ (dyn core::fmt::Display); // anonymous local
+    let _6: Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let mut _7: String; // anonymous local
-    let mut _8: *const (dyn FakeTrait); // anonymous local
+    let mut _8: *const (dyn core::fmt::Display); // anonymous local
     let mut _9: *mut String; // anonymous local
     let mut _10: (); // anonymous local
-    let mut _11: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _11: *mut Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let mut _12: (); // anonymous local
-    let mut _13: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _13: *mut Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let mut _14: (); // anonymous local
 
     bb0: {
@@ -749,10 +792,10 @@ fn combine()
 
     bb2: {
         storage_dead(_7);
-        _8 = transmute<*const (dyn FakeTrait)>(copy _6._0);
+        _8 = transmute<*const (dyn core::fmt::Display)>(copy _6._0);
         _5 = &(*_8) with_metadata(read _8.metadata);
         _4 = &(*_5) with_metadata(read _5.metadata);
-        _3 = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _4);
+        _3 = unsize_cast<&'_ (dyn core::fmt::Display),  at []>(move _4);
         storage_dead(_4);
         _2 = destruct(move _3) -> bb3 (unwind: bb6);
     }
@@ -765,7 +808,7 @@ fn combine()
 
     bb4: {
         _13 = &raw mut _6;
-        _14 = drop_glue::<Box::<(dyn FakeTrait), Global>>(move _13) -> bb5 (unwind: bb8);
+        _14 = drop_glue::<Box::<(dyn core::fmt::Display), Global>>(move _13) -> bb5 (unwind: bb8);
     }
 
     bb5: {
@@ -779,7 +822,7 @@ fn combine()
 
     bb6: {
         _11 = &raw mut _6;
-        _12 = drop_glue::<Box::<(dyn FakeTrait), Global>>(move _11) -> bb8 (unwind: bb7);
+        _12 = drop_glue::<Box::<(dyn core::fmt::Display), Global>>(move _11) -> bb8 (unwind: bb7);
     }
 
     bb7: {
@@ -796,10 +839,10 @@ fn combine()
 }
 
 // Full name: test_crate::bar
-fn bar(_1: &'_ (dyn FakeTrait))
+fn bar(_1: &'_ (dyn Fn<(&'_ (dyn core::fmt::Display),)>))
 {
     let mut _0: (); // return
-    let mut _1: &'_ (dyn FakeTrait); // arg #1
+    let mut _1: &'_ (dyn Fn<(&'_ (dyn core::fmt::Display),)>); // arg #1
 
     bb0: {
         storage_live(_0);
@@ -809,15 +852,15 @@ fn bar(_1: &'_ (dyn FakeTrait))
     }
 }
 
-// Full name: alloc::string::{impl ToString for T}::to_string::<(dyn FakeTrait)>
-pub fn to_string::<(dyn FakeTrait)>(self: &'_ (dyn FakeTrait)) -> String
+// Full name: alloc::string::{impl ToString for T}::to_string::<(dyn core::fmt::Display)>
+pub fn to_string::<(dyn core::fmt::Display)>(self: &'_ (dyn core::fmt::Display)) -> String
 {
     let mut _0: String; // return
-    let self: &'_ (dyn FakeTrait); // arg #1
+    let self: &'_ (dyn core::fmt::Display); // arg #1
 
     bb0: {
         storage_live(_0);
-        _0 = spec_to_string::<(dyn FakeTrait)>(move self) -> bb1 (unwind: bb2);
+        _0 = spec_to_string::<(dyn core::fmt::Display)>(move self) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -846,11 +889,11 @@ pub fn alloc::string::{String}::new() -> String
 }
 
 // Full name: test_crate::construct::<String>
-fn construct::<String>(x: String) -> Box::<(dyn FakeTrait), Global>
+fn construct::<String>(x: String) -> Box::<(dyn core::fmt::Display), Global>
 {
-    let mut _0: Box::<(dyn FakeTrait), Global>; // return
+    let mut _0: Box::<(dyn core::fmt::Display), Global>; // return
     let x: String; // arg #1
-    let mut _2: Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _2: Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let mut _3: Box::<String, Global>; // anonymous local
     let mut _4: String; // anonymous local
 
@@ -864,10 +907,10 @@ fn construct::<String>(x: String) -> Box::<(dyn FakeTrait), Global>
     }
 
     bb1: {
-        _2 = unsize_cast<Box::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _3);
+        _2 = unsize_cast<Box::<(dyn core::fmt::Display), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _3);
         storage_dead(_4);
         storage_dead(_3);
-        _0 = unsize_cast<Box::<(dyn FakeTrait), Global>,  at []>(move _2);
+        _0 = unsize_cast<Box::<(dyn core::fmt::Display), Global>,  at []>(move _2);
         storage_dead(_2);
         return;
     }
@@ -904,18 +947,18 @@ fn drop_glue::<String>(_1: &'_ mut String)
     }
 }
 
-// Full name: core::ptr::drop_glue::<Box::<(dyn FakeTrait), Global>>
+// Full name: core::ptr::drop_glue::<Box::<(dyn core::fmt::Display), Global>>
 #[lang_item(DropGlue)]
-fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait), Global>)
+fn drop_glue::<Box::<(dyn core::fmt::Display), Global>>(_1: &'_ mut Box::<(dyn core::fmt::Display), Global>)
 {
     let mut _0: (); // return
-    let _1: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
-    let mut _2: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let _1: &'_ mut Box::<(dyn core::fmt::Display), Global>; // arg #1
+    let mut _2: &'_ mut Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let mut _3: (); // anonymous local
-    let mut _4: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _4: &'_ mut Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let mut _5: (); // anonymous local
-    let mut _6: *const (dyn FakeTrait); // anonymous local
-    let mut _7: *mut (dyn FakeTrait); // anonymous local
+    let mut _6: *const (dyn core::fmt::Display); // anonymous local
+    let mut _7: *mut (dyn core::fmt::Display); // anonymous local
     let mut _8: (); // anonymous local
 
     bb0: {
@@ -928,14 +971,14 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
         storage_live(_7);
         storage_live(_8);
         _0 = ();
-        _6 = transmute<*const (dyn FakeTrait)>(copy (*_1)._0.pointer);
+        _6 = transmute<*const (dyn core::fmt::Display)>(copy (*_1)._0.pointer);
         _7 = &raw mut (*_6) with_metadata(read _6.metadata);
         _8 = (copy (*_7.metadata))(move _7) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         _2 = &mut (*_1);
-        _3 = {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(move _2) -> bb2 (unwind: bb3);
+        _3 = {impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -948,7 +991,7 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
 
     bb4: {
         _4 = &mut (*_1);
-        _5 = {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(move _4) -> bb5 (unwind: bb6);
+        _5 = {impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>(move _4) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -960,14 +1003,14 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
     }
 }
 
-// Full name: alloc::string::{impl SpecToString for T}::spec_to_string::<(dyn FakeTrait)>
-fn spec_to_string::<(dyn FakeTrait)>(self: &'_ (dyn FakeTrait)) -> String
+// Full name: alloc::string::{impl SpecToString for T}::spec_to_string::<(dyn core::fmt::Display)>
+fn spec_to_string::<(dyn core::fmt::Display)>(self: &'_ (dyn core::fmt::Display)) -> String
 {
     let mut _0: String; // return
-    let self: &'_ (dyn FakeTrait); // arg #1
+    let self: &'_ (dyn core::fmt::Display); // arg #1
     let mut buf: String; // local
     let mut formatter: Formatter::<'_>; // local
-    let mut write: &'_ mut (dyn FakeTrait); // local
+    let mut write: &'_ mut (dyn core::fmt::Write); // local
     let mut _5: &'_ mut String; // anonymous local
     let mut options: FormattingOptions; // local
     let _7: (); // anonymous local
@@ -994,7 +1037,7 @@ fn spec_to_string::<(dyn FakeTrait)>(self: &'_ (dyn FakeTrait)) -> String
         storage_live(write);
         storage_live(_5);
         _5 = &mut buf;
-        write = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<String>)>(copy _5);
+        write = unsize_cast<&'_ mut (dyn core::fmt::Write), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<String>)>(copy _5);
         storage_live(options);
         options = FormattingOptions { flags: const 1610612768u32, width: const 0u16, precision: const 0u16 };
         formatter = Formatter::<'_> { options: copy options, buf: copy write };
@@ -1130,13 +1173,13 @@ fn drop_glue::<Vec::<u8, Global>>(_1: &'_ mut Vec::<u8, Global>)
     }
 }
 
-// Full name: core::ptr::drop_glue::<(dyn FakeTrait)>
+// Full name: core::ptr::drop_glue::<(dyn core::fmt::Display)>
 #[lang_item(DropGlue)]
-fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
+fn drop_glue::<(dyn core::fmt::Display)>(_1: &'_ mut (dyn core::fmt::Display))
 {
     let mut _0: (); // return
-    let _1: &'_ mut (dyn FakeTrait); // arg #1
-    let mut _2: *mut (dyn FakeTrait); // anonymous local
+    let _1: &'_ mut (dyn core::fmt::Display); // arg #1
+    let mut _2: *mut (dyn core::fmt::Display); // anonymous local
     let mut _3: (); // anonymous local
 
     bb0: {
@@ -1157,14 +1200,14 @@ fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
     }
 }
 
-// Full name: alloc::boxed::{impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>
-pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Global>)
+// Full name: alloc::boxed::{impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>
+pub fn {impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>(self: &'_ mut Box::<(dyn core::fmt::Display), Global>)
 {
     let mut _0: (); // return
-    let self: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
+    let self: &'_ mut Box::<(dyn core::fmt::Display), Global>; // arg #1
     let layout: Layout; // local
-    let mut val: *const (dyn FakeTrait); // local
-    let mut _4: *mut (dyn FakeTrait); // anonymous local
+    let mut val: *const (dyn core::fmt::Display); // local
+    let mut _4: *mut (dyn core::fmt::Display); // anonymous local
     let _5: (); // anonymous local
     let mut _6: &'_ Global; // anonymous local
     let mut size: usize; // local
@@ -1174,8 +1217,8 @@ pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mu
     let _11: (); // anonymous local
     let mut unique: NonNull::<u8>; // local
     let mut _13: *mut u8; // anonymous local
-    let ptr_14: NonNull::<(dyn FakeTrait)>; // local
-    let ptr_15: PhantomData::<(dyn FakeTrait)>; // local
+    let ptr_14: NonNull::<(dyn core::fmt::Display)>; // local
+    let ptr_15: PhantomData::<(dyn core::fmt::Display)>; // local
     let mut _16: bool; // anonymous local
     let mut _17: bool; // anonymous local
 
@@ -1194,15 +1237,15 @@ pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mu
         ptr_15 = copy (*self)._0._marker;
         storage_live(layout);
         storage_live(val);
-        _4 = transmute<*mut (dyn FakeTrait)>(copy ptr_14);
-        val = transmute<*const (dyn FakeTrait)>(copy ptr_14);
+        _4 = transmute<*mut (dyn core::fmt::Display)>(copy ptr_14);
+        val = transmute<*const (dyn core::fmt::Display)>(copy ptr_14);
         storage_live(alignment);
-        size = size_of_val::<(dyn FakeTrait)>(copy val) -> bb1 (unwind: bb14);
+        size = size_of_val::<(dyn core::fmt::Display)>(copy val) -> bb1 (unwind: bb14);
     }
 
     bb1: {
         storage_live(align);
-        align = align_of_val::<(dyn FakeTrait)>(move val) -> bb2 (unwind: bb13);
+        align = align_of_val::<(dyn core::fmt::Display)>(move val) -> bb2 (unwind: bb13);
     }
 
     bb2: {
@@ -1277,7 +1320,7 @@ pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mu
     }
 }
 
-pub fn core::fmt::Display::fmt::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait), _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn core::fmt::Display::fmt::<(dyn core::fmt::Display)>(_1: &'_ (dyn core::fmt::Display), _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 = <opaque>
 
 // Full name: core::result::{Result::<_, _>}::expect::<(), Error>
@@ -1290,7 +1333,7 @@ pub fn expect::<(), Error>(self: Result::<(), Error>, msg: &'_ str)
     let mut _3: isize; // anonymous local
     let e: Error; // local
     let mut _5: !; // anonymous local
-    let mut _6: &'_ (dyn FakeTrait); // anonymous local
+    let mut _6: &'_ (dyn core::fmt::Debug); // anonymous local
     let _7: &'_ Error; // anonymous local
 
     bb0: {
@@ -1313,7 +1356,7 @@ pub fn expect::<(), Error>(self: Result::<(), Error>, msg: &'_ str)
         storage_live(_6);
         storage_live(_7);
         _7 = &e;
-        _6 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<Error>)>(copy _7);
+        _6 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<Error>)>(copy _7);
         _5 = unwrap_failed(move msg, move _6) -> bb3 (unwind: bb4);
     }
 
@@ -1463,14 +1506,14 @@ fn drop_glue::<RawVec::<u8, Global>>(_1: &'_ mut RawVec::<u8, Global>)
     }
 }
 
-// Full name: core::intrinsics::size_of_val::<(dyn FakeTrait)>
+// Full name: core::intrinsics::size_of_val::<(dyn core::fmt::Display)>
 #[rustc_intrinsic]
-pub fn size_of_val::<(dyn FakeTrait)>(ptr_1: *const (dyn FakeTrait)) -> usize
+pub fn size_of_val::<(dyn core::fmt::Display)>(ptr_1: *const (dyn core::fmt::Display)) -> usize
 = <intrinsic:size_of_val>
 
-// Full name: core::intrinsics::align_of_val::<(dyn FakeTrait)>
+// Full name: core::intrinsics::align_of_val::<(dyn core::fmt::Display)>
 #[rustc_intrinsic]
-pub fn align_of_val::<(dyn FakeTrait)>(ptr_1: *const (dyn FakeTrait)) -> usize
+pub fn align_of_val::<(dyn core::fmt::Display)>(ptr_1: *const (dyn core::fmt::Display)) -> usize
 = <intrinsic:align_of_val>
 
 #[track_caller]
@@ -1680,7 +1723,7 @@ pub fn impl_Allocator_for_Global::deallocate(self: &'_ Global, ptr: NonNull::<u8
 
 // Full name: core::result::unwrap_failed
 #[track_caller]
-fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
+fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn core::fmt::Debug)) -> !
 = <missing>
 
 // Full name: alloc::alloc::{Global}::alloc_impl_runtime
@@ -2827,7 +2870,7 @@ pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
 = <intrinsic:mul_with_overflow>
 
 // Full name: alloc::string::{impl core::fmt::Display for String}::fmt
-pub fn impl_Display_for_String::fmt(self: &'_ String, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn {impl core::fmt::Display for String}::fmt(self: &'_ String, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let mut _0: Result::<(), Error>; // return
     let self: &'_ String; // arg #1
@@ -2876,7 +2919,7 @@ pub fn impl_Display_for_str::fmt(_1: &'_ str, _2: &'_ mut Formatter::<'_>) -> Re
 = <missing>
 
 // Full name: alloc::string::{impl core::fmt::Write for String}::write_str
-pub fn impl_Write_for_String::write_str(self: &'_ mut String, s: &'_ str) -> Result::<(), Error>
+pub fn {impl core::fmt::Write for String}::write_str(self: &'_ mut String, s: &'_ str) -> Result::<(), Error>
 {
     let mut _0: Result::<(), Error>; // return
     let self: &'_ mut String; // arg #1
@@ -3206,7 +3249,7 @@ fn spec_write_fmt::<'_, String>(self: &'_ mut String, args: Arguments::<'_>) -> 
     let mut _4: &'_ Arguments::<'_>; // anonymous local
     let mut _5: isize; // anonymous local
     let s: &'_ str; // local
-    let mut _7: &'_ mut (dyn FakeTrait); // anonymous local
+    let mut _7: &'_ mut (dyn core::fmt::Write); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3226,7 +3269,7 @@ fn spec_write_fmt::<'_, String>(self: &'_ mut String, args: Arguments::<'_>) -> 
     bb2: {
         storage_live(s);
         s = copy (_3 as variant Option::<&'_ str>::Some)._0;
-        _0 = impl_Write_for_String::write_str(move self, move s) -> bb3 (unwind: bb4);
+        _0 = {impl core::fmt::Write for String}::write_str(move self, move s) -> bb3 (unwind: bb4);
     }
 
     bb3: {
@@ -3242,7 +3285,7 @@ fn spec_write_fmt::<'_, String>(self: &'_ mut String, args: Arguments::<'_>) -> 
     bb5: {
         storage_dead(_3);
         storage_live(_7);
-        _7 = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<String>)>(copy self);
+        _7 = unsize_cast<&'_ mut (dyn core::fmt::Write), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<String>)>(copy self);
         _0 = write(move _7, copy args) -> bb6 (unwind: bb8);
     }
 
@@ -4021,7 +4064,7 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
 }
 
 // Full name: core::fmt::write
-pub fn write(_1: &'_ mut (dyn FakeTrait), _2: Arguments::<'_>) -> Result::<(), Error>
+pub fn write(_1: &'_ mut (dyn core::fmt::Write), _2: Arguments::<'_>) -> Result::<(), Error>
 = <missing>
 
 #[track_caller]
@@ -6375,7 +6418,7 @@ fn drop_glue::<Error>(_1: &'_ mut Error)
 }
 
 // Full name: core::fmt::{impl core::fmt::Debug for Error}::fmt
-pub fn impl_Debug_for_Error::fmt(self: &'_ Error, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn {impl core::fmt::Debug for Error}::fmt(self: &'_ Error, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let mut _0: Result::<(), Error>; // return
     let self: &'_ Error; // arg #1

@@ -76,7 +76,7 @@ pub struct NonNull::<()> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -106,16 +106,23 @@ const anon_const_0: i32 = 42i32
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
 
+// Full name: {vtable}::unknown_trait::<&'_ i32>
+vtable unknown_trait::<&'_ i32>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8]
+
 // Full name: FakeTrait
 trait FakeTrait
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
+
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
 
 // Full name: core::clone::Clone
 #[lang_item(Clone)]
 #[diagnostic_item("Clone")]
 trait Clone
-
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
 
 // Full name: core::fmt::LowerHex
 trait LowerHex
@@ -130,6 +137,12 @@ trait Display
 // Full name: core::clone::impls::{impl Clone for i32}
 impl "impl_Clone_for_i32" Clone for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl core::fmt::Debug for &'_ i32}
+impl core::fmt::Debug for &'_ i32 {
+    proof ImpliedClause0: (&'_ i32: FakeTrait) = {impl FakeTrait for &'_ i32}
+    vtable: {vtable}::core::fmt::Debug::<&'_ i32>
 }
 
 // Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
@@ -155,6 +168,11 @@ impl "impl_UpperHex_for_i32" UpperHex for i32 {
 // Full name: core::fmt::num::imp::{impl Display for i32}
 impl "impl_Display_for_i32" Display for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl FakeTrait for &'_ i32}
+impl FakeTrait for &'_ i32 {
+    vtable: unknown_trait::<&'_ i32>
 }
 
 // Full name: test_crate::main
@@ -349,9 +367,9 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
     let left: &'_ i32; // arg #2
     let right: &'_ i32; // arg #3
     let args: Option::<Arguments::<'_>>; // arg #4
-    let mut _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _5: &'_ (dyn core::fmt::Debug); // anonymous local
     let _6: &'_ &'_ i32; // anonymous local
-    let mut _7: &'_ (dyn FakeTrait); // anonymous local
+    let mut _7: &'_ (dyn core::fmt::Debug); // anonymous local
     let _8: &'_ &'_ i32; // anonymous local
 
     bb0: {
@@ -359,11 +377,11 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
         storage_live(_5);
         storage_live(_6);
         _6 = &left;
-        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
         storage_live(_7);
         storage_live(_8);
         _8 = &right;
-        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
+        _7 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
         _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
@@ -404,7 +422,7 @@ pub fn clone(self: &'_ i32) -> i32
 
 // Full name: core::panicking::assert_failed_inner
 #[track_caller]
-fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
+fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn core::fmt::Debug), _3: &'_ (dyn core::fmt::Debug), _4: Option::<Arguments::<'_>>) -> !
 = <missing>
 
 // Full name: core::ptr::drop_glue::<&'_ i32>

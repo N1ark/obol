@@ -22,7 +22,10 @@ pub struct ManuallyDrop::<[u8; 0usize]> {
 // Full name: anon_const_0
 const anon_const_0: MaybeUninit::<[u8; 0usize]> = RawMemory()
 
-vtable {vtable}::test_crate::MyTrait::<MyStruct>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<MyStruct>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(impl_MyTrait_for_MyStruct::foo))]
+vtable {vtable}::test_crate::MyTrait::<MyStruct>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<MyStruct>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr({impl test_crate::MyTrait for MyStruct}::foo))]
+
+// Full name: {vtable}::unknown_trait::<MyStruct>
+vtable unknown_trait::<MyStruct>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<MyStruct>)), no-provenance 0, no-provenance 1]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -30,12 +33,23 @@ trait FakeTrait
 trait test_crate::MyTrait
 
 // Full name: test_crate::{impl test_crate::MyTrait for MyStruct}
-impl "impl_MyTrait_for_MyStruct" test_crate::MyTrait for MyStruct {
+impl test_crate::MyTrait for MyStruct {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl test_crate::MyTrait for MyStruct}
+impl test_crate::MyTrait for MyStruct {
+    proof ImpliedClause0: (MyStruct: FakeTrait) = impl_FakeTrait_for_MyStruct
+    vtable: {vtable}::test_crate::MyTrait::<MyStruct>
+}
+
+// Full name: {impl FakeTrait for MyStruct}
+impl "impl_FakeTrait_for_MyStruct" FakeTrait for MyStruct {
+    vtable: unknown_trait::<MyStruct>
+}
+
 // Full name: test_crate::{impl test_crate::MyTrait for MyStruct}::foo
-pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
+pub fn {impl test_crate::MyTrait for MyStruct}::foo(self: &'_ MyStruct)
 {
     let mut _0: (); // return
     let self: &'_ MyStruct; // arg #1
@@ -52,11 +66,11 @@ pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
 fn main()
 {
     let mut _0: (); // return
-    let x: &'_ (dyn FakeTrait); // local
+    let x: &'_ (dyn test_crate::MyTrait); // local
     let mut _2: &'_ MyStruct; // anonymous local
     let _3: &'_ MyStruct; // anonymous local
     let _4: (); // anonymous local
-    let mut _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _5: &'_ (dyn test_crate::MyTrait); // anonymous local
     let mut _6: &'_ MyStruct; // anonymous local
     let mut _7: usize; // anonymous local
     let mut _8: *const *const (); // anonymous local
@@ -72,7 +86,7 @@ fn main()
         _6 = const cast<&'_ MyStruct>(&raw const anon_const_0);
         _3 = &(*_6);
         _2 = &(*_3);
-        x = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<MyStruct>)>(move _2);
+        x = unsize_cast<&'_ (dyn test_crate::MyTrait), cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<MyStruct>)>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
@@ -97,7 +111,7 @@ fn main()
     }
 }
 
-pub fn test_crate::MyTrait::foo::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
+pub fn test_crate::MyTrait::foo::<(dyn test_crate::MyTrait)>(_1: &'_ (dyn test_crate::MyTrait))
 = <opaque>
 
 // Full name: core::ptr::drop_glue::<MyStruct>

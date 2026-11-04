@@ -18,7 +18,7 @@ struct str {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -39,16 +39,23 @@ pub struct FormattingOptions {
 pub struct Error {}
 
 #[diagnostic_item("Debug")]
-vtable {vtable}::core::fmt::Debug::<u32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<u32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Debug_for_u32::fmt))]
+vtable {vtable}::core::fmt::Debug::<u32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<u32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr({impl core::fmt::Debug for u32}::fmt))]
 
 // Full name: anon_const_0
 const anon_const_0: [u8; 43usize] = [99u8, 97u8, 108u8, 108u8, 101u8, 100u8, 32u8, 96u8, 82u8, 101u8, 115u8, 117u8, 108u8, 116u8, 58u8, 58u8, 117u8, 110u8, 119u8, 114u8, 97u8, 112u8, 40u8, 41u8, 96u8, 32u8, 111u8, 110u8, 32u8, 97u8, 110u8, 32u8, 96u8, 69u8, 114u8, 114u8, 96u8, 32u8, 118u8, 97u8, 108u8, 117u8, 101u8]
+
+// Full name: {vtable}::unknown_trait::<u32>
+vtable unknown_trait::<u32>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<u32>)), no-provenance 4, no-provenance 4]
 
 // Full name: FakeTrait
 trait FakeTrait
 
 #[diagnostic_item("Debug")]
 trait core::fmt::Debug
+
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
 
 // Full name: core::fmt::LowerHex
 trait LowerHex
@@ -60,8 +67,14 @@ trait UpperHex
 #[diagnostic_item("Display")]
 trait Display
 
+// Full name: {impl core::fmt::Debug for u32}
+impl core::fmt::Debug for u32 {
+    proof ImpliedClause0: (u32: FakeTrait) = impl_FakeTrait_for_u32
+    vtable: {vtable}::core::fmt::Debug::<u32>
+}
+
 // Full name: core::fmt::num::{impl core::fmt::Debug for u32}
-impl "impl_Debug_for_u32" core::fmt::Debug for u32 {
+impl core::fmt::Debug for u32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
@@ -78,6 +91,11 @@ impl "impl_UpperHex_for_u32" UpperHex for u32 {
 // Full name: core::fmt::num::imp::{impl Display for u32}
 impl "impl_Display_for_u32" Display for u32 {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl FakeTrait for u32}
+impl "impl_FakeTrait_for_u32" FakeTrait for u32 {
+    vtable: unknown_trait::<u32>
 }
 
 fn test_crate::unwrap(res: Result::<u32, u32>) -> u32
@@ -111,7 +129,7 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
     let mut _2: isize; // anonymous local
     let e: u32; // local
     let mut _4: !; // anonymous local
-    let mut _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _5: &'_ (dyn core::fmt::Debug); // anonymous local
     let _6: &'_ u32; // anonymous local
 
     bb0: {
@@ -133,7 +151,7 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
         storage_live(_5);
         storage_live(_6);
         _6 = &e;
-        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<u32>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<u32>)>(copy _6);
         _4 = unwrap_failed(const unsize_cast<&'_ str, 43usize>(&raw const anon_const_0), move _5) -> bb3 (unwind: bb4);
     }
 
@@ -152,7 +170,7 @@ pub fn core::result::{Result::<_, _>}::unwrap::<u32, u32>(self: Result::<u32, u3
 
 // Full name: core::result::unwrap_failed
 #[track_caller]
-fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
+fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn core::fmt::Debug)) -> !
 = <missing>
 
 // Full name: core::ptr::drop_glue::<u32>
@@ -170,7 +188,7 @@ fn drop_glue::<u32>(_1: &'_ mut u32)
 }
 
 // Full name: core::fmt::num::{impl core::fmt::Debug for u32}::fmt
-pub fn impl_Debug_for_u32::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn {impl core::fmt::Debug for u32}::fmt(self: &'_ u32, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let mut _0: Result::<(), Error>; // return
     let self: &'_ u32; // arg #1

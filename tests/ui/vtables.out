@@ -373,7 +373,7 @@ pub struct NonNull::<()> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -418,7 +418,7 @@ const anon_const_5: i64 = 200i64
 // Full name: anon_const_6
 const anon_const_6: i32 = 42i32
 
-vtable {vtable}::test_crate::Checkable::<i32, i32>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(super_method)), cast<*const ()>(fnptr(impl_Checkable_i32_for_i32::check))]
+vtable {vtable}::test_crate::Checkable::<i32, i32>: [*const (); 5usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(super_method)), cast<*const ()>(fnptr({impl test_crate::Checkable<i32> for i32}::check))]
 
 vtable {vtable}::test_crate::Modifiable::<i32, i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Modifiable_for_i32::modify::<i32>))]
 
@@ -440,8 +440,7 @@ const anon_const_11: i32 = 42i32
 // Full name: anon_const_12
 const anon_const_12: i32 = 42i32
 
-// Full name: {vtable}::test_crate::Both32And64::<i32>
-vtable Both32And64::<i32>: [*const (); 7usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_BaseOn_i32_for_i32::operate_on)), cast<*const ()>(fnptr(impl_BaseOn_i64_for_i32::operate_on)), cast<*const ()>(&raw const {vtable}::test_crate::BaseOn::<i32, i64>), cast<*const ()>(fnptr(both_operate::<i32>))]
+vtable {vtable}::test_crate::Both32And64::<i32>: [*const (); 7usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr({impl test_crate::BaseOn<i32> for i32}::operate_on)), cast<*const ()>(fnptr({impl test_crate::BaseOn<i64> for i32}::operate_on)), cast<*const ()>(&raw const {vtable}::test_crate::BaseOn::<i32, i64>), cast<*const ()>(fnptr(both_operate::<i32>))]
 
 // Full name: anon_const_13
 const anon_const_13: i32 = 100i32
@@ -452,7 +451,7 @@ const anon_const_14: i64 = 200i64
 // Full name: anon_const_15
 const anon_const_15: i32 = 42i32
 
-vtable {vtable}::test_crate::LifetimeTrait::<i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_LifetimeTrait_for_i32::lifetime_method))]
+vtable {vtable}::test_crate::LifetimeTrait::<i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr({impl test_crate::LifetimeTrait for i32}::lifetime_method))]
 
 // Full name: anon_const_16
 const anon_const_16: i32 = 10i32
@@ -462,7 +461,7 @@ const anon_const_17: i32 = 10i32
 
 vtable {vtable}::test_crate::Modifiable::<i32, String>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Modifiable_for_i32::modify::<String>))]
 
-vtable {vtable}::test_crate::NoParam::<i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_NoParam_for_i32::dummy))]
+vtable {vtable}::test_crate::NoParam::<i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr({impl test_crate::NoParam for i32}::dummy))]
 
 #[diagnostic_item("Debug")]
 vtable {vtable}::core::fmt::Debug::<&'_ i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Debug for &'_ T}::fmt::<'_, i32>))]
@@ -511,21 +510,41 @@ const anon_const_27: [u8; 210usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 
 // Full name: anon_const_28
 const anon_const_28: [u8; 198usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 65u8, 108u8, 105u8, 103u8, 110u8, 109u8, 101u8, 110u8, 116u8, 58u8, 58u8, 110u8, 101u8, 119u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 32u8, 111u8, 102u8, 32u8, 116u8, 119u8, 111u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
-vtable {vtable}::test_crate::BaseOn::<i32, i64>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_BaseOn_i64_for_i32::operate_on))]
+vtable {vtable}::test_crate::BaseOn::<i32, i64>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr({impl test_crate::BaseOn<i64> for i32}::operate_on))]
+
+// Full name: {vtable}::unknown_trait::<&'_ i32>
+vtable unknown_trait::<&'_ i32>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ i32>)), no-provenance 8, no-provenance 8]
+
+// Full name: {vtable}::unknown_trait::<i32>
+vtable unknown_trait::<i32>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4]
+
+vtable {vtable}::test_crate::Super::<i32, i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(super_method))]
+
+vtable {vtable}::test_crate::BaseOn::<i32, i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr({impl test_crate::BaseOn<i32> for i32}::operate_on))]
 
 // Full name: FakeTrait
 trait FakeTrait
 
-// Full name: test_crate::Super
-trait Super
+trait test_crate::LifetimeTrait
+
+trait test_crate::Both32And64
 
 trait test_crate::Checkable
 
+trait test_crate::Modifiable
+
 trait test_crate::NoParam
+
+#[diagnostic_item("Debug")]
+trait core::fmt::Debug
+
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
 
 trait test_crate::BaseOn
 
-trait test_crate::LifetimeTrait
+trait test_crate::Super
 
 // Full name: alloc::string::ToString
 #[diagnostic_item("ToString")]
@@ -544,9 +563,6 @@ trait Drop
 // Full name: core::alloc::Allocator
 unsafe trait Allocator
 
-#[diagnostic_item("Debug")]
-trait core::fmt::Debug
-
 // Full name: core::fmt::LowerHex
 trait LowerHex
 
@@ -557,40 +573,38 @@ trait UpperHex
 #[diagnostic_item("Display")]
 trait Display
 
-trait test_crate::Modifiable
-
 // Full name: core::clone::Clone
 #[lang_item(Clone)]
 #[diagnostic_item("Clone")]
 trait Clone
 
-// Full name: test_crate::{impl Super<i32> for i32}
-impl "impl_Super_i32_for_i32" Super<i32> for i32 {
+// Full name: test_crate::{impl test_crate::Super<i32> for i32}
+impl test_crate::Super<i32> for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::Checkable<i32> for i32}
-impl "impl_Checkable_i32_for_i32" test_crate::Checkable<i32> for i32 {
+impl test_crate::Checkable<i32> for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::NoParam for i32}
-impl "impl_NoParam_for_i32" test_crate::NoParam for i32 {
+impl test_crate::NoParam for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::BaseOn<i32> for i32}
-impl "impl_BaseOn_i32_for_i32" test_crate::BaseOn<i32> for i32 {
+impl test_crate::BaseOn<i32> for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::BaseOn<i64> for i32}
-impl "impl_BaseOn_i64_for_i32" test_crate::BaseOn<i64> for i32 {
+impl test_crate::BaseOn<i64> for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::LifetimeTrait for i32}
-impl "impl_LifetimeTrait_for_i32" test_crate::LifetimeTrait for i32 {
+impl test_crate::LifetimeTrait for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
@@ -624,6 +638,12 @@ unsafe impl "impl_Allocator_for_Global" Allocator for Global {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::fmt::Debug for &'_ i32}
+impl core::fmt::Debug for &'_ i32 {
+    proof ImpliedClause0: (&'_ i32: FakeTrait) = {impl FakeTrait for &'_ i32}
+    vtable: {vtable}::core::fmt::Debug::<&'_ i32>
+}
+
 // Full name: core::fmt::{impl core::fmt::Debug for &'_ T}
 impl<'_, _, T> core::fmt::Debug for &'_ T {
     vtable: unknown // obol doesn't translate trait impl vtables
@@ -649,6 +669,19 @@ impl "impl_Display_for_i32" Display for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl test_crate::Checkable<i32> for i32}
+impl test_crate::Checkable<i32> for i32 {
+    proof ImpliedClause0: (i32: test_crate::Super<i32>) = {impl test_crate::Super<i32> for i32}
+    proof ImpliedClause1: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::Checkable::<i32, i32>
+}
+
+// Full name: {impl test_crate::Modifiable<i32> for i32}
+impl "impl_Modifiable_i32_for_i32" test_crate::Modifiable<i32> for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::Modifiable::<i32, i32>
+}
+
 // Full name: test_crate::{impl test_crate::Modifiable<T> for i32}
 impl<T> "impl_Modifiable_for_i32" test_crate::Modifiable<T> for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
@@ -659,12 +692,66 @@ impl "impl_Clone_for_i32" Clone for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl test_crate::Modifiable<String> for i32}
+impl "impl_Modifiable_String_for_i32" test_crate::Modifiable<String> for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::Modifiable::<i32, String>
+}
+
 // Full name: alloc::string::{impl Clone for String}
 impl "impl_Clone_for_String" Clone for String {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
-// Full name: test_crate::{impl Super<i32> for i32}::super_method
+// Full name: {impl test_crate::LifetimeTrait for i32}
+impl test_crate::LifetimeTrait for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::LifetimeTrait::<i32>
+}
+
+// Full name: {impl test_crate::Both32And64 for i32}
+impl "impl_Both32And64_for_i32" test_crate::Both32And64 for i32 {
+    proof ImpliedClause0: (i32: test_crate::BaseOn<i64>) = {impl test_crate::BaseOn<i64> for i32}
+    proof ImpliedClause1: (i32: test_crate::BaseOn<i32>) = {impl test_crate::BaseOn<i32> for i32}
+    proof ImpliedClause2: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::Both32And64::<i32>
+}
+
+// Full name: {impl test_crate::BaseOn<i64> for i32}
+impl test_crate::BaseOn<i64> for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::BaseOn::<i32, i64>
+}
+
+// Full name: {impl test_crate::NoParam for i32}
+impl test_crate::NoParam for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::NoParam::<i32>
+}
+
+// Full name: {impl FakeTrait for &'_ i32}
+impl FakeTrait for &'_ i32 {
+    vtable: unknown_trait::<&'_ i32>
+}
+
+// Full name: {impl FakeTrait for i32}
+impl "impl_FakeTrait_for_i32" FakeTrait for i32 {
+    vtable: unknown_trait::<i32>
+}
+
+// Full name: {impl test_crate::Super<i32> for i32}
+impl test_crate::Super<i32> for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::Super::<i32, i32>
+}
+
+// Full name: {impl test_crate::BaseOn<i32> for i32}
+impl test_crate::BaseOn<i32> for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::BaseOn::<i32, i32>
+}
+
+// Full name: test_crate::{impl test_crate::Super<i32> for i32}::super_method
 fn super_method(self: &'_ i32, arg: i32) -> i32
 {
     let mut _0: i32; // return
@@ -705,7 +792,7 @@ fn super_method(self: &'_ i32, arg: i32) -> i32
 }
 
 // Full name: test_crate::{impl test_crate::Checkable<i32> for i32}::check
-fn impl_Checkable_i32_for_i32::check(self: &'_ i32) -> bool
+fn {impl test_crate::Checkable<i32> for i32}::check(self: &'_ i32) -> bool
 {
     let mut _0: bool; // return
     let self: &'_ i32; // arg #1
@@ -733,7 +820,7 @@ fn impl_Checkable_i32_for_i32::check(self: &'_ i32) -> bool
 }
 
 // Full name: test_crate::{impl test_crate::NoParam for i32}::dummy
-fn impl_NoParam_for_i32::dummy(self: &'_ i32)
+fn {impl test_crate::NoParam for i32}::dummy(self: &'_ i32)
 {
     let mut _0: (); // return
     let self: &'_ i32; // arg #1
@@ -778,7 +865,7 @@ fn impl_NoParam_for_i32::dummy(self: &'_ i32)
 }
 
 // Full name: test_crate::{impl test_crate::BaseOn<i32> for i32}::operate_on
-fn impl_BaseOn_i32_for_i32::operate_on(self: &'_ i32, t: &'_ i32)
+fn {impl test_crate::BaseOn<i32> for i32}::operate_on(self: &'_ i32, t: &'_ i32)
 {
     let mut _0: (); // return
     let self: &'_ i32; // arg #1
@@ -829,7 +916,7 @@ fn impl_BaseOn_i32_for_i32::operate_on(self: &'_ i32, t: &'_ i32)
 }
 
 // Full name: test_crate::{impl test_crate::BaseOn<i64> for i32}::operate_on
-fn impl_BaseOn_i64_for_i32::operate_on(self: &'_ i32, t: &'_ i64)
+fn {impl test_crate::BaseOn<i64> for i32}::operate_on(self: &'_ i32, t: &'_ i64)
 {
     let mut _0: (); // return
     let self: &'_ i32; // arg #1
@@ -884,7 +971,7 @@ fn impl_BaseOn_i64_for_i32::operate_on(self: &'_ i32, t: &'_ i64)
 }
 
 // Full name: test_crate::{impl test_crate::LifetimeTrait for i32}::lifetime_method
-fn impl_LifetimeTrait_for_i32::lifetime_method(self: &'_ i32, arg: &'_ i32) -> &'_ i32
+fn {impl test_crate::LifetimeTrait for i32}::lifetime_method(self: &'_ i32, arg: &'_ i32) -> &'_ i32
 {
     let mut _0: &'_ i32; // return
     let self: &'_ i32; // arg #1
@@ -934,13 +1021,13 @@ fn impl_LifetimeTrait_for_i32::lifetime_method(self: &'_ i32, arg: &'_ i32) -> &
 }
 
 // Full name: test_crate::use_lifetime_trait
-fn use_lifetime_trait(x: &'_ (dyn FakeTrait), y: &'_ i32) -> &'_ i32
+fn use_lifetime_trait(x: &'_ (dyn test_crate::LifetimeTrait), y: &'_ i32) -> &'_ i32
 {
     let mut _0: &'_ i32; // return
-    let x: &'_ (dyn FakeTrait); // arg #1
+    let x: &'_ (dyn test_crate::LifetimeTrait); // arg #1
     let y: &'_ i32; // arg #2
     let _3: &'_ i32; // anonymous local
-    let mut _4: &'_ (dyn FakeTrait); // anonymous local
+    let mut _4: &'_ (dyn test_crate::LifetimeTrait); // anonymous local
     let mut _5: &'_ i32; // anonymous local
     let mut _6: usize; // anonymous local
     let mut _7: *const *const (); // anonymous local
@@ -973,12 +1060,12 @@ fn use_lifetime_trait(x: &'_ (dyn FakeTrait), y: &'_ i32) -> &'_ i32
 }
 
 // Full name: test_crate::use_alias
-fn use_alias(x: &'_ (dyn FakeTrait))
+fn use_alias(x: &'_ (dyn test_crate::Both32And64))
 {
     let mut _0: (); // return
-    let x: &'_ (dyn FakeTrait); // arg #1
+    let x: &'_ (dyn test_crate::Both32And64); // arg #1
     let _2: (); // anonymous local
-    let mut _3: &'_ (dyn FakeTrait); // anonymous local
+    let mut _3: &'_ (dyn test_crate::Both32And64); // anonymous local
     let mut _4: &'_ i32; // anonymous local
     let _5: &'_ i32; // anonymous local
     let mut _6: &'_ i64; // anonymous local
@@ -1033,14 +1120,14 @@ fn use_alias(x: &'_ (dyn FakeTrait))
 fn main()
 {
     let mut _0: (); // return
-    let x: &'_ (dyn FakeTrait); // local
+    let x: &'_ (dyn test_crate::Checkable<i32>); // local
     let mut _2: &'_ i32; // anonymous local
     let _3: &'_ i32; // anonymous local
     let _4: (); // anonymous local
     let mut _5: bool; // anonymous local
-    let mut _6: &'_ (dyn FakeTrait); // anonymous local
+    let mut _6: &'_ (dyn test_crate::Checkable<i32>); // anonymous local
     let mut _7: !; // anonymous local
-    let y: &'_ mut (dyn FakeTrait); // local
+    let y: &'_ mut (dyn test_crate::Modifiable<i32>); // local
     let mut _9: &'_ mut i32; // anonymous local
     let mut _10: &'_ mut i32; // anonymous local
     let mut _11: i32; // anonymous local
@@ -1058,7 +1145,7 @@ fn main()
     let mut _23: (&'_ i32, &'_ i32); // anonymous local
     let mut _24: &'_ i32; // anonymous local
     let _25: i32; // anonymous local
-    let mut _26: &'_ mut (dyn FakeTrait); // anonymous local
+    let mut _26: &'_ mut (dyn test_crate::Modifiable<i32>); // anonymous local
     let mut _27: &'_ i32; // anonymous local
     let _28: &'_ mut i32; // anonymous local
     let mut _29: i32; // anonymous local
@@ -1076,31 +1163,31 @@ fn main()
     let mut _41: &'_ i32; // anonymous local
     let _42: &'_ i32; // anonymous local
     let mut _43: Option::<Arguments::<'_>>; // anonymous local
-    let z: &'_ (dyn FakeTrait); // local
-    let mut _45: &'_ (dyn FakeTrait); // anonymous local
-    let _46: &'_ (dyn FakeTrait); // anonymous local
+    let z: &'_ (dyn test_crate::NoParam); // local
+    let mut _45: &'_ (dyn test_crate::NoParam); // anonymous local
+    let _46: &'_ (dyn test_crate::NoParam); // anonymous local
     let mut _47: &'_ i32; // anonymous local
     let _48: &'_ i32; // anonymous local
     let _49: (); // anonymous local
-    let mut _50: &'_ (dyn FakeTrait); // anonymous local
-    let a: &'_ (dyn FakeTrait); // local
+    let mut _50: &'_ (dyn test_crate::NoParam); // anonymous local
+    let a: &'_ (dyn test_crate::Both32And64); // local
     let mut _52: &'_ i32; // anonymous local
     let _53: &'_ i32; // anonymous local
     let _54: (); // anonymous local
-    let mut _55: &'_ (dyn FakeTrait); // anonymous local
+    let mut _55: &'_ (dyn test_crate::Both32And64); // anonymous local
     let mut _56: &'_ i32; // anonymous local
     let _57: &'_ i32; // anonymous local
     let mut _58: &'_ i64; // anonymous local
     let _59: &'_ i64; // anonymous local
-    let b: &'_ (dyn FakeTrait); // local
+    let b: &'_ (dyn test_crate::LifetimeTrait); // local
     let mut _61: &'_ i32; // anonymous local
     let _62: &'_ i32; // anonymous local
     let _63: (); // anonymous local
     let mut _64: (&'_ i32, &'_ i32); // anonymous local
     let mut _65: &'_ i32; // anonymous local
     let _66: &'_ i32; // anonymous local
-    let mut _67: &'_ (dyn FakeTrait); // anonymous local
-    let mut _68: &'_ (dyn FakeTrait); // anonymous local
+    let mut _67: &'_ (dyn test_crate::LifetimeTrait); // anonymous local
+    let mut _68: &'_ (dyn test_crate::LifetimeTrait); // anonymous local
     let mut _69: &'_ i32; // anonymous local
     let _70: &'_ i32; // anonymous local
     let mut _71: &'_ i32; // anonymous local
@@ -1181,7 +1268,7 @@ fn main()
         _93 = const &anon_const_6;
         _3 = &(*_93);
         _2 = &(*_3);
-        x = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Checkable::<i32, i32>)>(move _2);
+        x = unsize_cast<&'_ (dyn test_crate::Checkable<i32>), cast<*const ()>(&raw const {vtable}::test_crate::Checkable::<i32, i32>)>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
@@ -1210,7 +1297,7 @@ fn main()
         _11 = const 99i32;
         _10 = &mut _11;
         _9 = &mut (*_10);
-        y = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Modifiable::<i32, i32>)>(move _9);
+        y = unsize_cast<&'_ mut (dyn test_crate::Modifiable<i32>), cast<*const ()>(&raw const {vtable}::test_crate::Modifiable::<i32, i32>)>(move _9);
         storage_dead(_9);
         storage_dead(_10);
         storage_live(_12);
@@ -1357,7 +1444,7 @@ fn main()
 
     bb16: {
         _45 = &(*_46) with_metadata(read _46.metadata);
-        z = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _45);
+        z = unsize_cast<&'_ (dyn test_crate::NoParam),  at []>(move _45);
         storage_dead(_47);
         storage_dead(_45);
         storage_dead(_48);
@@ -1380,7 +1467,7 @@ fn main()
         _90 = const &anon_const_12;
         _53 = &(*_90);
         _52 = &(*_53);
-        a = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const Both32And64::<i32>)>(move _52);
+        a = unsize_cast<&'_ (dyn test_crate::Both32And64), cast<*const ()>(&raw const {vtable}::test_crate::Both32And64::<i32>)>(move _52);
         storage_dead(_52);
         storage_dead(_53);
         storage_live(_54);
@@ -1415,7 +1502,7 @@ fn main()
         _87 = const &anon_const_15;
         _62 = &(*_87);
         _61 = &(*_62);
-        b = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::LifetimeTrait::<i32>)>(move _61);
+        b = unsize_cast<&'_ (dyn test_crate::LifetimeTrait), cast<*const ()>(&raw const {vtable}::test_crate::LifetimeTrait::<i32>)>(move _61);
         storage_dead(_61);
         storage_dead(_62);
         storage_live(_63);
@@ -1425,7 +1512,7 @@ fn main()
         storage_live(_67);
         storage_live(_68);
         _68 = &(*b) with_metadata(read b.metadata);
-        _67 = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _68);
+        _67 = unsize_cast<&'_ (dyn test_crate::LifetimeTrait),  at []>(move _68);
         storage_dead(_68);
         storage_live(_69);
         storage_live(_70);
@@ -1645,14 +1732,14 @@ pub fn panic(expr: &'_ str) -> !
     }
 }
 
-fn test_crate::LifetimeTrait::lifetime_method::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait), _2: &'_ i32) -> &'_ i32
+fn test_crate::LifetimeTrait::lifetime_method::<(dyn test_crate::LifetimeTrait)>(_1: &'_ (dyn test_crate::LifetimeTrait), _2: &'_ i32) -> &'_ i32
 = <opaque>
 
-// Full name: test_crate::Both32And64::both_operate::<(dyn FakeTrait)>
-fn both_operate::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait), _2: &'_ i32, _3: &'_ i64)
+// Full name: test_crate::Both32And64::both_operate::<(dyn test_crate::Both32And64)>
+fn both_operate::<(dyn test_crate::Both32And64)>(_1: &'_ (dyn test_crate::Both32And64), _2: &'_ i32, _3: &'_ i64)
 = <opaque>
 
-fn test_crate::Checkable::check::<(dyn FakeTrait), i32>(_1: &'_ (dyn FakeTrait)) -> bool
+fn test_crate::Checkable::check::<(dyn test_crate::Checkable<i32>), i32>(_1: &'_ (dyn test_crate::Checkable<i32>)) -> bool
 = <opaque>
 
 // Full name: alloc::string::{impl ToString for T}::to_string::<str>
@@ -1680,11 +1767,11 @@ fn modify_trait_object::<String>(arg: &'_ String) -> String
 {
     let mut _0: String; // return
     let arg: &'_ String; // arg #1
-    let x: &'_ mut (dyn FakeTrait); // local
+    let x: &'_ mut (dyn test_crate::Modifiable<String>); // local
     let mut _3: &'_ mut i32; // anonymous local
     let mut _4: &'_ mut i32; // anonymous local
     let mut _5: i32; // anonymous local
-    let mut _6: &'_ mut (dyn FakeTrait); // anonymous local
+    let mut _6: &'_ mut (dyn test_crate::Modifiable<String>); // anonymous local
     let mut _7: &'_ String; // anonymous local
     let mut _8: usize; // anonymous local
     let mut _9: *const *const (); // anonymous local
@@ -1699,7 +1786,7 @@ fn modify_trait_object::<String>(arg: &'_ String) -> String
         _5 = const 199i32;
         _4 = &mut _5;
         _3 = &mut (*_4);
-        x = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Modifiable::<i32, String>)>(move _3);
+        x = unsize_cast<&'_ mut (dyn test_crate::Modifiable<String>), cast<*const ()>(&raw const {vtable}::test_crate::Modifiable::<i32, String>)>(move _3);
         storage_dead(_3);
         storage_dead(_4);
         storage_live(_6);
@@ -1783,16 +1870,16 @@ fn drop_glue::<String>(_1: &'_ mut String)
     }
 }
 
-fn test_crate::Modifiable::modify::<(dyn FakeTrait), i32>(_1: &'_ mut (dyn FakeTrait), _2: &'_ i32) -> i32
+fn test_crate::Modifiable::modify::<(dyn test_crate::Modifiable<i32>), i32>(_1: &'_ mut (dyn test_crate::Modifiable<i32>), _2: &'_ i32) -> i32
 = <opaque>
 
 // Full name: test_crate::to_dyn_obj::<i32>
-fn to_dyn_obj::<i32>(arg: &'_ i32) -> &'_ (dyn FakeTrait)
+fn to_dyn_obj::<i32>(arg: &'_ i32) -> &'_ (dyn test_crate::NoParam)
 {
-    let mut _0: &'_ (dyn FakeTrait); // return
+    let mut _0: &'_ (dyn test_crate::NoParam); // return
     let arg: &'_ i32; // arg #1
-    let mut _2: &'_ (dyn FakeTrait); // anonymous local
-    let _3: &'_ (dyn FakeTrait); // anonymous local
+    let mut _2: &'_ (dyn test_crate::NoParam); // anonymous local
+    let _3: &'_ (dyn test_crate::NoParam); // anonymous local
     let mut _4: &'_ i32; // anonymous local
 
     bb0: {
@@ -1801,10 +1888,10 @@ fn to_dyn_obj::<i32>(arg: &'_ i32) -> &'_ (dyn FakeTrait)
         storage_live(_3);
         storage_live(_4);
         _4 = &(*arg);
-        _3 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::NoParam::<i32>)>(move _4);
+        _3 = unsize_cast<&'_ (dyn test_crate::NoParam), cast<*const ()>(&raw const {vtable}::test_crate::NoParam::<i32>)>(move _4);
         storage_dead(_4);
         _2 = &(*_3) with_metadata(read _3.metadata);
-        _0 = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _2);
+        _0 = unsize_cast<&'_ (dyn test_crate::NoParam),  at []>(move _2);
         storage_dead(_3);
         storage_dead(_2);
         return;
@@ -1820,9 +1907,9 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
     let left: &'_ i32; // arg #2
     let right: &'_ i32; // arg #3
     let args: Option::<Arguments::<'_>>; // arg #4
-    let mut _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _5: &'_ (dyn core::fmt::Debug); // anonymous local
     let _6: &'_ &'_ i32; // anonymous local
-    let mut _7: &'_ (dyn FakeTrait); // anonymous local
+    let mut _7: &'_ (dyn core::fmt::Debug); // anonymous local
     let _8: &'_ &'_ i32; // anonymous local
 
     bb0: {
@@ -1830,11 +1917,11 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
         storage_live(_5);
         storage_live(_6);
         _6 = &left;
-        _5 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
+        _5 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _6);
         storage_live(_7);
         storage_live(_8);
         _8 = &right;
-        _7 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
+        _7 = unsize_cast<&'_ (dyn core::fmt::Debug), cast<*const ()>(&raw const {vtable}::core::fmt::Debug::<&'_ i32>)>(copy _8);
         _0 = assert_failed_inner(move kind, move _5, move _7, move args) -> bb1 (unwind: bb2);
     }
 
@@ -1847,7 +1934,7 @@ pub fn assert_failed::<i32, i32>(kind: AssertKind, left: &'_ i32, right: &'_ i32
     }
 }
 
-fn test_crate::NoParam::dummy::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
+fn test_crate::NoParam::dummy::<(dyn test_crate::NoParam)>(_1: &'_ (dyn test_crate::NoParam))
 = <opaque>
 
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
@@ -2006,7 +2093,7 @@ fn spec_to_string(self_1: &'_ str) -> String
     }
 }
 
-fn test_crate::Modifiable::modify::<(dyn FakeTrait), String>(_1: &'_ mut (dyn FakeTrait), _2: &'_ String) -> String
+fn test_crate::Modifiable::modify::<(dyn test_crate::Modifiable<String>), String>(_1: &'_ mut (dyn test_crate::Modifiable<String>), _2: &'_ String) -> String
 = <opaque>
 
 // Full name: core::intrinsics::assume
@@ -2069,7 +2156,7 @@ fn drop_glue::<Vec::<u8, Global>>(_1: &'_ mut Vec::<u8, Global>)
 
 // Full name: core::panicking::assert_failed_inner
 #[track_caller]
-fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn FakeTrait), _3: &'_ (dyn FakeTrait), _4: Option::<Arguments::<'_>>) -> !
+fn assert_failed_inner(_1: AssertKind, _2: &'_ (dyn core::fmt::Debug), _3: &'_ (dyn core::fmt::Debug), _4: Option::<Arguments::<'_>>) -> !
 = <missing>
 
 // Full name: core::intrinsics::abort
@@ -4866,7 +4953,7 @@ fn both_operate::<i32>(self: &'_ i32, t32: &'_ i32, t64: &'_ i64)
         _5 = &(*self);
         storage_live(_6);
         _6 = &(*t32);
-        _4 = impl_BaseOn_i32_for_i32::operate_on(move _5, move _6) -> bb1 (unwind: bb4);
+        _4 = {impl test_crate::BaseOn<i32> for i32}::operate_on(move _5, move _6) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -4878,7 +4965,7 @@ fn both_operate::<i32>(self: &'_ i32, t32: &'_ i32, t64: &'_ i64)
         _8 = &(*self);
         storage_live(_9);
         _9 = &(*t64);
-        _7 = impl_BaseOn_i64_for_i32::operate_on(move _8, move _9) -> bb2 (unwind: bb3);
+        _7 = {impl test_crate::BaseOn<i64> for i32}::operate_on(move _8, move _9) -> bb2 (unwind: bb3);
     }
 
     bb2: {
