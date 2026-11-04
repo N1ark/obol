@@ -246,8 +246,8 @@ enum ErrorData::<&'_ Custom> {
 // Full name: core::io::error::Custom
 pub struct Custom {
   kind: ErrorKind,
-  error: NonNull::<(dyn FakeTrait)>,
-  error_drop: unsafe fn(NonNull::<(dyn FakeTrait)>),
+  error: NonNull::<(dyn core::error::Error)>,
+  error_drop: unsafe fn(NonNull::<(dyn core::error::Error)>),
   outer_drop: unsafe fn(NonNull::<Custom>),
 }
 
@@ -385,7 +385,7 @@ enum ArgumentType::<'_> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn core::fmt::Write),
 }
 
 // Full name: core::marker::PhantomData::<&'_ ()>
@@ -419,10 +419,10 @@ pub struct NonNull::<str> {
 #[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ str> {}
 
-// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
+// Full name: core::ptr::non_null::NonNull::<(dyn core::error::Error)>
 #[lang_item(NonNull)]
-pub struct NonNull::<(dyn FakeTrait)> {
-  pointer: *const (dyn FakeTrait) is !null,
+pub struct NonNull::<(dyn core::error::Error)> {
+  pointer: *const (dyn core::error::Error) is !null,
 }
 
 // Full name: core::fmt::FormattingOptions
@@ -516,6 +516,9 @@ const anon_const_18: [u8; 71usize] = [18u8, 101u8, 110u8, 99u8, 111u8, 100u8, 10
 // Full name: anon_const_19
 const anon_const_19: [u8; 283usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 58u8, 58u8, 102u8, 114u8, 111u8, 109u8, 95u8, 114u8, 97u8, 119u8, 95u8, 112u8, 97u8, 114u8, 116u8, 115u8, 95u8, 109u8, 117u8, 116u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 116u8, 111u8, 32u8, 98u8, 101u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 97u8, 110u8, 100u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 116u8, 104u8, 101u8, 32u8, 116u8, 111u8, 116u8, 97u8, 108u8, 32u8, 115u8, 105u8, 122u8, 101u8, 32u8, 111u8, 102u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 32u8, 110u8, 111u8, 116u8, 32u8, 116u8, 111u8, 32u8, 101u8, 120u8, 99u8, 101u8, 101u8, 100u8, 32u8, 96u8, 105u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 77u8, 65u8, 88u8, 96u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
+// Full name: {vtable}::unknown_trait::<Adapter::<'_, Stderr>>
+vtable unknown_trait::<Adapter::<'_, Stderr>>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<Adapter::<'_, Stderr>>)), no-provenance 16, no-provenance 8]
+
 // Full name: anon_const_6
 const anon_const_6: MaybeUninit::<[u8; 24usize]> = RawMemory(&anon_const_20[0], &anon_const_20[1], &anon_const_20[2], &anon_const_20[3], &anon_const_20[4], &anon_const_20[5], &anon_const_20[6], &anon_const_20[7], 0x1c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x17, --, --, --, --, --, --, --)
 
@@ -524,6 +527,12 @@ const anon_const_20: MaybeUninit::<[u8; 28usize]> = RawMemory(0x66, 0x61, 0x69, 
 
 // Full name: FakeTrait
 trait FakeTrait
+
+#[diagnostic_item("FmtWrite")]
+trait core::fmt::Write
+
+#[diagnostic_item("Error")]
+trait core::error::Error
 
 // Full name: std::sys::thread_local::native::lazy::DestroyedState
 unsafe trait DestroyedState
@@ -538,9 +547,6 @@ trait Drop
 // Full name: core::fmt::Display
 #[diagnostic_item("Display")]
 trait Display
-
-#[diagnostic_item("FmtWrite")]
-trait core::fmt::Write
 
 // Full name: core::fmt::Write::write_fmt::SpecWriteFmt
 trait SpecWriteFmt
@@ -573,6 +579,12 @@ impl "impl_Drop_for_CustomOwner" Drop for CustomOwner {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::fmt::Write for Adapter::<'_, Stderr>}
+impl core::fmt::Write for Adapter::<'_, Stderr> {
+    proof ImpliedClause0: (Adapter::<'_, Stderr>: FakeTrait) = {impl FakeTrait for Adapter::<'_, Stderr>}
+    vtable: {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>
+}
+
 // Full name: core::io::write::default_write_fmt::{impl core::fmt::Write for Adapter::<'_, _>}
 impl<'_, _, T> core::fmt::Write for Adapter::<'_, _> {
     vtable: unknown // obol doesn't translate trait impl vtables
@@ -586,6 +598,11 @@ impl<'_, _, W> SpecWriteFmt for &'_ mut W {
 // Full name: core::fmt::num::{impl UpperHex for u32}
 impl "impl_UpperHex_for_u32" UpperHex for u32 {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl FakeTrait for Adapter::<'_, Stderr>}
+impl FakeTrait for Adapter::<'_, Stderr> {
+    vtable: unknown_trait::<Adapter::<'_, Stderr>>
 }
 
 // Full name: test_crate::FOO::__rust_std_internal_init_fn
@@ -2129,7 +2146,7 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
     let args: Arguments::<'_>; // arg #2
     let output: Adapter::<'_, Stderr>; // local
     let _4: Result::<(), core::fmt::Error>; // anonymous local
-    let _5: &'_ mut (dyn FakeTrait); // anonymous local
+    let _5: &'_ mut (dyn core::fmt::Write); // anonymous local
     let _6: &'_ mut Adapter::<'_, Stderr>; // anonymous local
     let _7: isize; // anonymous local
     let _8: bool; // anonymous local
@@ -2165,7 +2182,7 @@ fn default_write_fmt::<Stderr>(this: &'_ mut Stderr, args: Arguments::<'_>) -> R
         storage_live(_5);
         storage_live(_6);
         _6 = &mut output;
-        _5 = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>)>(copy _6);
+        _5 = unsize_cast<&'_ mut (dyn core::fmt::Write), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>)>(copy _6);
         _4 = core::fmt::write(move _5, move args) -> bb1 (unwind: bb10);
     }
 
@@ -2816,7 +2833,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
     }
 }
 
-pub fn core::fmt::write(_1: &'_ mut (dyn FakeTrait), _2: Arguments::<'_>) -> Result::<(), core::fmt::Error>
+pub fn core::fmt::write(_1: &'_ mut (dyn core::fmt::Write), _2: Arguments::<'_>) -> Result::<(), core::fmt::Error>
 = <missing>
 
 // Full name: core::ptr::drop_glue::<Adapter::<'_, Stderr>>
@@ -4918,7 +4935,7 @@ fn spec_write_fmt::<'_, Adapter::<'_, Stderr>>(self: &'_ mut Adapter::<'_, Stder
     let _4: &'_ Arguments::<'_>; // anonymous local
     let _5: isize; // anonymous local
     let s: &'_ str; // local
-    let _7: &'_ mut (dyn FakeTrait); // anonymous local
+    let _7: &'_ mut (dyn core::fmt::Write); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4954,7 +4971,7 @@ fn spec_write_fmt::<'_, Adapter::<'_, Stderr>>(self: &'_ mut Adapter::<'_, Stder
     bb5: {
         storage_dead(_3);
         storage_live(_7);
-        _7 = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>)>(copy self);
+        _7 = unsize_cast<&'_ mut (dyn core::fmt::Write), cast<*const ()>(&raw const {vtable}::core::fmt::Write::<Adapter::<'_, Stderr>>)>(copy self);
         _0 = core::fmt::write(move _7, copy args) -> bb6 (unwind: bb8);
     }
 

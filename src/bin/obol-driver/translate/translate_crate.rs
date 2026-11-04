@@ -105,6 +105,8 @@ pub enum TransItemSource {
     /// The `str` type, which we declare as a `struct str([u8])`.
     Str,
     VTable(ty::Ty, Option<(ty::TraitDef, MyGenericArgs)>),
+    /// The trait implementation a vtable is for (see `translate_vtable_impl`).
+    VTableImpl(ty::Ty, Option<(ty::TraitDef, MyGenericArgs)>),
     TraitDecl(DefId),
     TraitImpl(DefId),
 }
@@ -129,6 +131,8 @@ impl TransItemSource {
             TransItemSource::Tuple(..) | TransItemSource::Str => None,
             TransItemSource::VTable(_, Some((tr, _))) => Some(tr.0),
             TransItemSource::VTable(_, None) => None,
+            // Named after their id, not the trait.
+            TransItemSource::VTableImpl(..) => None,
             TransItemSource::TraitDecl(did) => Some(*did),
             TransItemSource::TraitImpl(did) => Some(*did),
         }
@@ -165,6 +169,7 @@ impl TransItemSource {
             }
             TransItemSource::ForeignType(def) => (5, def.def_id().to_index(), 0),
             TransItemSource::VTable(ty, t) => (6, ty.to_index(), key_trait(t)),
+            TransItemSource::VTableImpl(ty, t) => (7, ty.to_index(), key_trait(t)),
             TransItemSource::NamedConst(def, gargs) => (11, def.0.to_index(), gargs.sort_key()),
             TransItemSource::TraitDecl(did) => (12, did.to_index(), 0),
             TransItemSource::TraitImpl(did) => (13, did.to_index(), 0),
@@ -214,7 +219,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     TransItemSource::TraitDecl(..) => {
                         ItemId::TraitDecl(self.translated.trait_decls.reserve_slot())
                     }
-                    TransItemSource::TraitImpl(..) => {
+                    TransItemSource::TraitImpl(..) | TransItemSource::VTableImpl(..) => {
                         ItemId::TraitImpl(self.translated.trait_impls.reserve_slot())
                     }
                 };
@@ -395,6 +400,18 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             .unwrap()
     }
 
+    pub(crate) fn register_vtable_impl(
+        &mut self,
+        src: &Option<DepSource>,
+        ty: ty::Ty,
+        traitdef: Option<(ty::TraitDef, MyGenericArgs)>,
+    ) -> TraitImplId {
+        *self
+            .register_and_enqueue_id(src, TransItemSource::VTableImpl(ty, traitdef))
+            .as_trait_impl()
+            .unwrap()
+    }
+
     pub(crate) fn register_global_from_static(
         &mut self,
         src: &Option<DepSource>,
@@ -526,6 +543,17 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         let src = self.make_dep_source(span);
         let traitdef = traitdef.map(|t| (t.def_id, t.args().clone().into()));
         self.t_ctx.register_vtable(&src, ty, traitdef)
+    }
+
+    pub(crate) fn register_vtable_impl(
+        &mut self,
+        span: Span,
+        ty: ty::Ty,
+        traitdef: Option<ty::TraitRef>,
+    ) -> TraitImplId {
+        let src = self.make_dep_source(span);
+        let traitdef = traitdef.map(|t| (t.def_id, t.args().clone().into()));
+        self.t_ctx.register_vtable_impl(&src, ty, traitdef)
     }
 
     pub(crate) fn register_global_from_static(

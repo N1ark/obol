@@ -94,7 +94,8 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         ))
     }
 
-    pub(crate) fn dummy_dyn_ty(&self) -> TyKind {
+    /// The `dyn` type whose only trait clause is `trait_ref` (see `translate_dyn_ty`).
+    fn dyn_ty(trait_ref: TraitDeclRef) -> TyKind {
         TyKind::DynTrait(DynPredicate {
             binder: Binder {
                 params: GenericParams {
@@ -110,7 +111,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         clause_id: TraitClauseId::ZERO,
                         span: None,
                         origin: PredicateOrigin::Dyn,
-                        trait_: RegionBinder::empty(self.dummy_trait_decl_ref()),
+                        trait_: RegionBinder::empty(trait_ref),
                     }]
                     .into(),
                     outlives: vec![].into(),
@@ -124,6 +125,38 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 kind: BinderKind::Dyn,
             },
         })
+    }
+
+    /// Translates the trait object type `dyn_ty`. Its trait clause is its principal trait,
+    /// applied to the `dyn` type variable and the trait's arguments (with lifetimes erased), or
+    /// `FakeTrait` if it has none (only auto traits). Auto traits and associated type bindings
+    /// are not recorded: like rustc's vtables, trait objects differing only in them have the same
+    /// type.
+    fn translate_dyn_ty(
+        &mut self,
+        span: Span,
+        dyn_ty: rustc_ty::Ty<'tcx>,
+    ) -> Result<TyKind, Error> {
+        let tcx = self.t_ctx.tcx;
+        let rustc_ty::Dynamic(preds, ..) = dyn_ty.kind() else {
+            unreachable!("not a trait object type: {dyn_ty:?}")
+        };
+        let Some(principal) = preds.principal() else {
+            return Ok(Self::dyn_ty(self.dummy_trait_decl_ref()));
+        };
+        let principal = tcx.instantiate_bound_regions_with_erased(principal);
+        let principal = rustc_public::rustc_internal::stable(principal);
+        // The `dyn` type variable, bound by the `dyn` binder.
+        let self_ty = TyKind::TypeVar(DeBruijnVar::bound(DeBruijnId::zero(), TypeVarId::ZERO));
+        let mut generics = self.translate_generic_args(span, &principal.generic_args)?;
+        generics.types = std::iter::once(self_ty.into_ty())
+            .chain(generics.types)
+            .collect();
+        let trait_ref = TraitDeclRef {
+            id: self.register_trait_decl_id(span, principal.def_id),
+            generics: Box::new(generics),
+        };
+        Ok(Self::dyn_ty(trait_ref))
     }
 
     /// Translate a Ty.
@@ -344,11 +377,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 TyKind::Adt(tref)
             }
 
-            ty::RigidTy::Dynamic(_existential_preds, _region) => {
-                // TODO: we don't translate the predicates yet because our machinery can't handle
-                // it.
-                self.dummy_dyn_ty()
-            }
+            ty::RigidTy::Dynamic(..) => self.translate_dyn_ty(span, internal_ty)?,
             ty::RigidTy::Pat(ty, pat) => {
                 let ty = self.translate_ty(span, *ty)?;
                 let pat = self.translate_pattern(span, pat)?;

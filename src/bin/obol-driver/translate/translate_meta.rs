@@ -324,6 +324,13 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 TransItemSource::Str => Name {
                     name: vec![PathElem::Builtin(BuiltinPathElem::Str, Disambiguator::ZERO)],
                 },
+                // Rendered `{impl Trait for Ty}`, like other trait impls.
+                TransItemSource::VTableImpl(..) => {
+                    let id = self.id_map[src].as_trait_impl().copied().unwrap();
+                    Name {
+                        name: vec![PathElem::Impl(ImplElem::Trait(id))],
+                    }
+                }
                 _ => unreachable!("Item source without def_id: {src:?}"),
             }
         };
@@ -580,7 +587,9 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             TransItemSource::Type(def, _) => Some(def.span()),
             // Builtins have no source location.
             TransItemSource::Tuple(..) | TransItemSource::Str => None,
-            TransItemSource::VTable(_, tdef) => tdef.as_ref().map(|t| t.0.span()),
+            TransItemSource::VTable(_, tdef) | TransItemSource::VTableImpl(_, tdef) => {
+                tdef.as_ref().map(|t| t.0.span())
+            }
             TransItemSource::TraitDecl(did) | TransItemSource::TraitImpl(did) => {
                 let internal = rustc_public::rustc_internal::internal(self.tcx, *did);
                 Some(rustc_public::rustc_internal::stable(

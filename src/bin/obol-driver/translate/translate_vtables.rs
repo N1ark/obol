@@ -1,5 +1,6 @@
 extern crate rustc_middle;
 extern crate rustc_public;
+extern crate rustc_trait_selection;
 
 use super::translate_ctx::*;
 
@@ -136,6 +137,10 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         let ty = Self::vtable_global_ty(&principal);
         let value = ConstantExpr::new(ConstantExprKind::Array(entries), ty.clone());
         let self_ty = self.translate_ty(span, from_ty)?;
+        let impl_ref = TraitImplRef {
+            id: self.register_vtable_impl(span, from_ty, principal),
+            generics: Box::new(GenericArgs::empty()),
+        };
         Ok(GlobalDecl {
             def_id,
             item_meta,
@@ -146,10 +151,103 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             global_kind: GlobalKind::VTable,
             src: GlobalSource::VTableInstance {
                 self_ty,
-                impl_ref: None,
+                impl_ref: Some(impl_ref),
             },
             ty,
             value,
         })
+    }
+    /// The trait implementation the vtable of `self_ty` for `principal` is for: an impl of the
+    /// principal trait for `self_ty`, or of `FakeTrait` without principal trait (the trait of
+    /// trait objects without principal, see `translate_dyn_ty`). This records which trait a vtable
+    /// is for, as charon's vtable instances do with their originating impl. Like Obol's other
+    /// trait impls, it omits the implemented items. Its implied trait refs are the impls of the
+    /// vtables the trait objects upcast to (see `supertraits`), and of `FakeTrait`; they don't
+    /// follow the (empty) implied clauses of Obol's trait declarations.
+    pub fn translate_vtable_impl(
+        mut self,
+        def_id: TraitImplId,
+        item_meta: ItemMeta,
+        self_ty: ty::Ty,
+        principal: Option<ty::TraitRef>,
+    ) -> Result<TraitImpl, Error> {
+        let span = item_meta.span;
+        let impl_trait = self.translate_principal_ref(span, self_ty, &principal)?;
+        let vtable = GlobalDeclRef {
+            id: self.register_vtable(span, self_ty, principal.clone()),
+            generics: Box::new(GenericArgs::empty()),
+        };
+        let upcasts = match &principal {
+            Some(principal) => {
+                let mut upcasts = self.supertraits(principal);
+                upcasts.push(None);
+                upcasts
+            }
+            None => vec![],
+        };
+        let implied_trait_refs = upcasts
+            .into_iter()
+            .map(|target| {
+                let trait_decl_ref = self.translate_principal_ref(span, self_ty, &target)?;
+                let impl_ref = TraitImplRef {
+                    id: self.register_vtable_impl(span, self_ty, target),
+                    generics: Box::new(GenericArgs::empty()),
+                };
+                let kind = TraitRefKind::TraitImpl(impl_ref);
+                Ok::<_, Error>(PolyTraitRef::empty(TraitRef::new(kind, trait_decl_ref)))
+            })
+            .try_collect()?;
+        Ok(TraitImpl {
+            def_id,
+            item_meta,
+            src: TraitImplSource::Normal,
+            impl_trait,
+            is_negative: false,
+            is_unsafe: false,
+            generics: GenericParams::empty(),
+            implied_trait_refs,
+            consts: IndexMap::new(),
+            types: IndexMap::new(),
+            methods: IndexMap::new(),
+            vtable: VTableDecl::VTable(vtable),
+        })
+    }
+
+    /// The principal trait `principal` of a vtable of `self_ty`, or `FakeTrait` (applied to
+    /// `self_ty`) if there is none.
+    fn translate_principal_ref(
+        &mut self,
+        span: Span,
+        self_ty: ty::Ty,
+        principal: &Option<ty::TraitRef>,
+    ) -> Result<TraitDeclRef, Error> {
+        Ok(match principal {
+            Some(principal) => TraitDeclRef {
+                id: self.register_trait_decl_id(span, principal.def_id),
+                generics: Box::new(self.translate_generic_args(span, principal.args())?),
+            },
+            None => TraitDeclRef {
+                generics: Box::new(GenericArgs::new_types(
+                    [self.translate_ty(span, self_ty)?].into(),
+                )),
+                ..self.dummy_trait_decl_ref()
+            },
+        })
+    }
+
+    /// The transitive supertraits of `trait_ref` that trait objects can upcast to: neither auto
+    /// traits nor sizedness traits.
+    fn supertraits(&self, trait_ref: &ty::TraitRef) -> Vec<Option<ty::TraitRef>> {
+        let tcx = self.t_ctx.tcx;
+        let internal = rustc_public::rustc_internal::internal(tcx, trait_ref);
+        rustc_trait_selection::traits::supertraits(tcx, mty::Binder::dummy(internal))
+            .map(|sup| tcx.instantiate_bound_regions_with_erased(sup))
+            .filter(|sup| {
+                *sup != internal
+                    && !tcx.trait_is_auto(sup.def_id)
+                    && !tcx.is_sizedness_trait(sup.def_id)
+            })
+            .map(|sup| Some(rustc_public::rustc_internal::stable(sup)))
+            .collect()
     }
 }

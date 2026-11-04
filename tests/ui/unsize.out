@@ -41,11 +41,11 @@ pub struct String {
   vec: Vec::<u8, Global>,
 }
 
-// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
+// Full name: alloc::boxed::Box::<(dyn core::fmt::Display), Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
-pub struct Box::<(dyn FakeTrait), Global> {
-  _0: Unique::<(dyn FakeTrait)>,
+pub struct Box::<(dyn core::fmt::Display), Global> {
+  _0: Unique::<(dyn core::fmt::Display)>,
   _1: Global,
 }
 
@@ -57,11 +57,11 @@ pub struct Box::<String, Global> {
   _1: Global,
 }
 
-// Full name: alloc::rc::Rc::<(dyn FakeTrait), Global>
+// Full name: alloc::rc::Rc::<(dyn core::fmt::Display), Global>
 #[diagnostic_item("Rc")]
-pub struct Rc::<(dyn FakeTrait), Global> {
-  ptr: NonNull::<RcInner::<(dyn FakeTrait)>>,
-  phantom: PhantomData::<RcInner::<(dyn FakeTrait)>>,
+pub struct Rc::<(dyn core::fmt::Display), Global> {
+  ptr: NonNull::<RcInner::<(dyn core::fmt::Display)>>,
+  phantom: PhantomData::<RcInner::<(dyn core::fmt::Display)>>,
   alloc: Global,
 }
 
@@ -180,16 +180,16 @@ pub struct UsizeNoHighBit {
   _0: usize is 0usize..=9223372036854775807usize,
 }
 
-// Full name: core::ptr::unique::Unique::<(dyn FakeTrait)>
-pub struct Unique::<(dyn FakeTrait)> {
-  pointer: NonNull::<(dyn FakeTrait)>,
-  _marker: PhantomData::<(dyn FakeTrait)>,
+// Full name: core::ptr::unique::Unique::<(dyn core::fmt::Display)>
+pub struct Unique::<(dyn core::fmt::Display)> {
+  pointer: NonNull::<(dyn core::fmt::Display)>,
+  _marker: PhantomData::<(dyn core::fmt::Display)>,
 }
 
-// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
+// Full name: core::ptr::non_null::NonNull::<(dyn core::fmt::Display)>
 #[lang_item(NonNull)]
-pub struct NonNull::<(dyn FakeTrait)> {
-  pointer: *const (dyn FakeTrait) is !null,
+pub struct NonNull::<(dyn core::fmt::Display)> {
+  pointer: *const (dyn core::fmt::Display) is !null,
 }
 
 // Full name: core::ptr::non_null::NonNull::<RcInner::<String>>
@@ -275,21 +275,21 @@ pub struct NonNull::<RcInner::<[i32]>> {
   pointer: *const RcInner::<[i32]> is !null,
 }
 
-// Full name: core::marker::PhantomData::<(dyn FakeTrait)>
+// Full name: core::marker::PhantomData::<(dyn core::fmt::Display)>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<(dyn FakeTrait)> {}
+pub struct PhantomData::<(dyn core::fmt::Display)> {}
 
-// Full name: alloc::rc::RcInner::<(dyn FakeTrait)>
-struct RcInner::<(dyn FakeTrait)> {
+// Full name: alloc::rc::RcInner::<(dyn core::fmt::Display)>
+struct RcInner::<(dyn core::fmt::Display)> {
   strong: Cell::<usize>,
   weak: Cell::<usize>,
-  value: (dyn FakeTrait),
+  value: (dyn core::fmt::Display),
 }
 
-// Full name: core::ptr::non_null::NonNull::<RcInner::<(dyn FakeTrait)>>
+// Full name: core::ptr::non_null::NonNull::<RcInner::<(dyn core::fmt::Display)>>
 #[lang_item(NonNull)]
-pub struct NonNull::<RcInner::<(dyn FakeTrait)>> {
-  pointer: *const RcInner::<(dyn FakeTrait)> is !null,
+pub struct NonNull::<RcInner::<(dyn core::fmt::Display)>> {
+  pointer: *const RcInner::<(dyn core::fmt::Display)> is !null,
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>
@@ -340,10 +340,10 @@ pub struct Weak::<[i32], &'_ Global> {
   alloc: &'_ Global,
 }
 
-// Full name: alloc::rc::Weak::<(dyn FakeTrait), &'_ Global>
+// Full name: alloc::rc::Weak::<(dyn core::fmt::Display), &'_ Global>
 #[diagnostic_item("RcWeak")]
-pub struct Weak::<(dyn FakeTrait), &'_ Global> {
-  ptr: NonNull::<RcInner::<(dyn FakeTrait)>>,
+pub struct Weak::<(dyn core::fmt::Display), &'_ Global> {
+  ptr: NonNull::<RcInner::<(dyn core::fmt::Display)>>,
   alloc: &'_ Global,
 }
 
@@ -438,9 +438,9 @@ pub struct Unique::<String> {
 #[lang_item(PhantomData)]
 pub struct PhantomData::<RcInner::<[i32]>> {}
 
-// Full name: core::marker::PhantomData::<RcInner::<(dyn FakeTrait)>>
+// Full name: core::marker::PhantomData::<RcInner::<(dyn core::fmt::Display)>>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<RcInner::<(dyn FakeTrait)>> {}
+pub struct PhantomData::<RcInner::<(dyn core::fmt::Display)>> {}
 
 // Full name: core::ptr::non_null::NonNull::<String>
 #[lang_item(NonNull)]
@@ -562,7 +562,7 @@ pub struct NonNull::<()> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -587,7 +587,7 @@ pub struct FormattingOptions {
 }
 
 #[diagnostic_item("Display")]
-vtable {vtable}::core::fmt::Display::<String>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8, cast<*const ()>(fnptr(impl_Display_for_String::fmt))]
+vtable {vtable}::core::fmt::Display::<String>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8, cast<*const ()>(fnptr({impl core::fmt::Display for String}::fmt))]
 
 // Full name: core::mem::SizedTypeProperties::LAYOUT::<[i32; 2usize]>
 pub const LAYOUT::<[i32; 2usize]>: Layout = Layout { size: 8usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl2 {  } } }
@@ -622,8 +622,18 @@ const anon_const_5: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 3
 // Full name: anon_const_6
 const anon_const_6: [u8; 281usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 76u8, 97u8, 121u8, 111u8, 117u8, 116u8, 58u8, 58u8, 102u8, 114u8, 111u8, 109u8, 95u8, 115u8, 105u8, 122u8, 101u8, 95u8, 97u8, 108u8, 105u8, 103u8, 110u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 32u8, 105u8, 115u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 32u8, 111u8, 102u8, 32u8, 50u8, 32u8, 97u8, 110u8, 100u8, 32u8, 116u8, 104u8, 101u8, 32u8, 114u8, 111u8, 117u8, 110u8, 100u8, 101u8, 100u8, 45u8, 117u8, 112u8, 32u8, 97u8, 108u8, 108u8, 111u8, 99u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 115u8, 105u8, 122u8, 101u8, 32u8, 100u8, 111u8, 101u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 101u8, 120u8, 99u8, 101u8, 101u8, 100u8, 32u8, 105u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 77u8, 65u8, 88u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
+// Full name: {vtable}::unknown_trait::<String>
+vtable unknown_trait::<String>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<String>)), no-provenance 24, no-provenance 8]
+
 // Full name: FakeTrait
 trait FakeTrait
+
+#[diagnostic_item("Display")]
+trait core::fmt::Display
+
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
 
 // Full name: core::clone::Clone
 #[lang_item(Clone)]
@@ -636,9 +646,6 @@ trait Drop
 
 // Full name: core::alloc::Allocator
 unsafe trait Allocator
-
-#[diagnostic_item("Display")]
-trait core::fmt::Display
 
 // Full name: alloc::string::{impl Clone for String}
 impl "impl_Clone_for_String" Clone for String {
@@ -680,14 +687,25 @@ unsafe impl<'_, _, A> Allocator for &'_ A {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::fmt::Display for String}
+impl core::fmt::Display for String {
+    proof ImpliedClause0: (String: FakeTrait) = impl_FakeTrait_for_String
+    vtable: {vtable}::core::fmt::Display::<String>
+}
+
 // Full name: alloc::string::{impl core::fmt::Display for String}
-impl "impl_Display_for_String" core::fmt::Display for String {
+impl core::fmt::Display for String {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: core::fmt::{impl core::fmt::Display for str}
 impl "impl_Display_for_str" core::fmt::Display for str {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl FakeTrait for String}
+impl "impl_FakeTrait_for_String" FakeTrait for String {
+    vtable: unknown_trait::<String>
 }
 
 // Full name: test_crate::foo
@@ -705,14 +723,14 @@ fn foo()
     let _9: Rc::<[i32; 2usize], Global>; // anonymous local
     let _10: [i32; 2usize]; // anonymous local
     let string: String; // local
-    let _12: &'_ (dyn FakeTrait); // anonymous local
+    let _12: &'_ (dyn core::fmt::Display); // anonymous local
     let _13: &'_ String; // anonymous local
     let _14: &'_ String; // anonymous local
-    let _15: Box::<(dyn FakeTrait), Global>; // anonymous local
+    let _15: Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let _16: Box::<String, Global>; // anonymous local
     let _17: String; // anonymous local
     let _18: &'_ String; // anonymous local
-    let _19: Rc::<(dyn FakeTrait), Global>; // anonymous local
+    let _19: Rc::<(dyn core::fmt::Display), Global>; // anonymous local
     let _20: Rc::<String, Global>; // anonymous local
     let _21: String; // anonymous local
     let _22: &'_ String; // anonymous local
@@ -722,9 +740,9 @@ fn foo()
     let _26: (); // anonymous local
     let _27: *mut String; // anonymous local
     let _28: (); // anonymous local
-    let _29: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let _29: *mut Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let _30: (); // anonymous local
-    let _31: *mut Rc::<(dyn FakeTrait), Global>; // anonymous local
+    let _31: *mut Rc::<(dyn core::fmt::Display), Global>; // anonymous local
     let _32: (); // anonymous local
     let _33: *mut String; // anonymous local
     let _34: (); // anonymous local
@@ -799,7 +817,7 @@ fn foo()
         storage_live(_14);
         _14 = &string;
         _13 = &(*_14);
-        _12 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _13);
+        _12 = unsize_cast<&'_ (dyn core::fmt::Display), cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _13);
         storage_dead(_13);
         storage_dead(_14);
         storage_dead(_12);
@@ -817,11 +835,11 @@ fn foo()
     }
 
     bb7: {
-        _15 = unsize_cast<Box::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _16);
+        _15 = unsize_cast<Box::<(dyn core::fmt::Display), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _16);
         storage_dead(_17);
         storage_dead(_16);
         _29 = &raw mut _15;
-        _30 = drop_glue::<Box::<(dyn FakeTrait), Global>>(move _29) -> bb8 (unwind: bb13);
+        _30 = drop_glue::<Box::<(dyn core::fmt::Display), Global>>(move _29) -> bb8 (unwind: bb13);
     }
 
     bb8: {
@@ -840,11 +858,11 @@ fn foo()
     }
 
     bb10: {
-        _19 = unsize_cast<Rc::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _20);
+        _19 = unsize_cast<Rc::<(dyn core::fmt::Display), Global>, cast<*const ()>(&raw const {vtable}::core::fmt::Display::<String>)>(move _20);
         storage_dead(_21);
         storage_dead(_20);
         _31 = &raw mut _19;
-        _32 = drop_glue::<Rc::<(dyn FakeTrait), Global>>(move _31) -> bb11 (unwind: bb13);
+        _32 = drop_glue::<Rc::<(dyn core::fmt::Display), Global>>(move _31) -> bb11 (unwind: bb13);
     }
 
     bb11: {
@@ -1125,18 +1143,18 @@ fn drop_glue::<String>(_1: &'_ mut String)
     }
 }
 
-// Full name: core::ptr::drop_glue::<Box::<(dyn FakeTrait), Global>>
+// Full name: core::ptr::drop_glue::<Box::<(dyn core::fmt::Display), Global>>
 #[lang_item(DropGlue)]
-fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait), Global>)
+fn drop_glue::<Box::<(dyn core::fmt::Display), Global>>(_1: &'_ mut Box::<(dyn core::fmt::Display), Global>)
 {
     let _0: (); // return
-    let _1: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
-    let _2: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let _1: &'_ mut Box::<(dyn core::fmt::Display), Global>; // arg #1
+    let _2: &'_ mut Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let _3: (); // anonymous local
-    let _4: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let _4: &'_ mut Box::<(dyn core::fmt::Display), Global>; // anonymous local
     let _5: (); // anonymous local
-    let _6: *const (dyn FakeTrait); // anonymous local
-    let _7: *mut (dyn FakeTrait); // anonymous local
+    let _6: *const (dyn core::fmt::Display); // anonymous local
+    let _7: *mut (dyn core::fmt::Display); // anonymous local
     let _8: (); // anonymous local
 
     bb0: {
@@ -1149,14 +1167,14 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
         storage_live(_7);
         storage_live(_8);
         _0 = ();
-        _6 = transmute<*const (dyn FakeTrait)>(copy (*_1)._0.pointer);
+        _6 = transmute<*const (dyn core::fmt::Display)>(copy (*_1)._0.pointer);
         _7 = &raw mut (*_6) with_metadata(copy _6.metadata);
         _8 = (copy (*_7.metadata))(move _7) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         _2 = &mut (*_1);
-        _3 = {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(move _2) -> bb2 (unwind: bb3);
+        _3 = {impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>(move _2) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -1169,7 +1187,7 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
 
     bb4: {
         _4 = &mut (*_1);
-        _5 = {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(move _4) -> bb5 (unwind: bb6);
+        _5 = {impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>(move _4) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -1249,13 +1267,13 @@ pub fn alloc::rc::{Rc::<_, Global>}::new::<String>(value: String) -> Rc::<String
     }
 }
 
-// Full name: core::ptr::drop_glue::<Rc::<(dyn FakeTrait), Global>>
+// Full name: core::ptr::drop_glue::<Rc::<(dyn core::fmt::Display), Global>>
 #[lang_item(DropGlue)]
-fn drop_glue::<Rc::<(dyn FakeTrait), Global>>(_1: &'_ mut Rc::<(dyn FakeTrait), Global>)
+fn drop_glue::<Rc::<(dyn core::fmt::Display), Global>>(_1: &'_ mut Rc::<(dyn core::fmt::Display), Global>)
 {
     let _0: (); // return
-    let _1: &'_ mut Rc::<(dyn FakeTrait), Global>; // arg #1
-    let _2: &'_ mut Rc::<(dyn FakeTrait), Global>; // anonymous local
+    let _1: &'_ mut Rc::<(dyn core::fmt::Display), Global>; // arg #1
+    let _2: &'_ mut Rc::<(dyn core::fmt::Display), Global>; // anonymous local
     let _3: (); // anonymous local
 
     bb0: {
@@ -1264,7 +1282,7 @@ fn drop_glue::<Rc::<(dyn FakeTrait), Global>>(_1: &'_ mut Rc::<(dyn FakeTrait), 
         storage_live(_3);
         _0 = ();
         _2 = &mut (*_1);
-        _3 = {impl Drop for Rc::<_, _>}::drop::<(dyn FakeTrait), Global>(move _2) -> bb1 (unwind: bb2);
+        _3 = {impl Drop for Rc::<_, _>}::drop::<(dyn core::fmt::Display), Global>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -1705,13 +1723,13 @@ fn drop_glue::<Vec::<u8, Global>>(_1: &'_ mut Vec::<u8, Global>)
     }
 }
 
-// Full name: core::ptr::drop_glue::<(dyn FakeTrait)>
+// Full name: core::ptr::drop_glue::<(dyn core::fmt::Display)>
 #[lang_item(DropGlue)]
-fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
+fn drop_glue::<(dyn core::fmt::Display)>(_1: &'_ mut (dyn core::fmt::Display))
 {
     let _0: (); // return
-    let _1: &'_ mut (dyn FakeTrait); // arg #1
-    let _2: *mut (dyn FakeTrait); // anonymous local
+    let _1: &'_ mut (dyn core::fmt::Display); // arg #1
+    let _2: *mut (dyn core::fmt::Display); // anonymous local
     let _3: (); // anonymous local
 
     bb0: {
@@ -1732,14 +1750,14 @@ fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
     }
 }
 
-// Full name: alloc::boxed::{impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>
-pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Global>)
+// Full name: alloc::boxed::{impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>
+pub fn {impl Drop for Box::<_, _>}::drop::<(dyn core::fmt::Display), Global>(self: &'_ mut Box::<(dyn core::fmt::Display), Global>)
 {
     let _0: (); // return
-    let self: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
+    let self: &'_ mut Box::<(dyn core::fmt::Display), Global>; // arg #1
     let layout: Layout; // local
-    let val: *const (dyn FakeTrait); // local
-    let _4: *mut (dyn FakeTrait); // anonymous local
+    let val: *const (dyn core::fmt::Display); // local
+    let _4: *mut (dyn core::fmt::Display); // anonymous local
     let _5: (); // anonymous local
     let _6: &'_ Global; // anonymous local
     let size: usize; // local
@@ -1749,8 +1767,8 @@ pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mu
     let _11: (); // anonymous local
     let unique: NonNull::<u8>; // local
     let _13: *mut u8; // anonymous local
-    let ptr_14: NonNull::<(dyn FakeTrait)>; // local
-    let ptr_15: PhantomData::<(dyn FakeTrait)>; // local
+    let ptr_14: NonNull::<(dyn core::fmt::Display)>; // local
+    let ptr_15: PhantomData::<(dyn core::fmt::Display)>; // local
     let _16: bool; // anonymous local
     let _17: bool; // anonymous local
 
@@ -1769,15 +1787,15 @@ pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mu
         ptr_15 = copy (*self)._0._marker;
         storage_live(layout);
         storage_live(val);
-        _4 = transmute<*mut (dyn FakeTrait)>(copy ptr_14);
-        val = transmute<*const (dyn FakeTrait)>(copy ptr_14);
+        _4 = transmute<*mut (dyn core::fmt::Display)>(copy ptr_14);
+        val = transmute<*const (dyn core::fmt::Display)>(copy ptr_14);
         storage_live(alignment);
-        size = size_of_val::<(dyn FakeTrait)>(copy val) -> bb1 (unwind: bb14);
+        size = size_of_val::<(dyn core::fmt::Display)>(copy val) -> bb1 (unwind: bb14);
     }
 
     bb1: {
         storage_live(align);
-        align = align_of_val::<(dyn FakeTrait)>(move val) -> bb2 (unwind: bb13);
+        align = align_of_val::<(dyn core::fmt::Display)>(move val) -> bb2 (unwind: bb13);
     }
 
     bb2: {
@@ -1892,23 +1910,23 @@ pub fn alloc::boxed::{Box::<_, Global>}::new::<RcInner::<String>>(x: RcInner::<S
     }
 }
 
-// Full name: alloc::rc::{impl Drop for Rc::<_, _>}::drop::<(dyn FakeTrait), Global>
-pub fn {impl Drop for Rc::<_, _>}::drop::<(dyn FakeTrait), Global>(self_1: &'_ mut Rc::<(dyn FakeTrait), Global>)
+// Full name: alloc::rc::{impl Drop for Rc::<_, _>}::drop::<(dyn core::fmt::Display), Global>
+pub fn {impl Drop for Rc::<_, _>}::drop::<(dyn core::fmt::Display), Global>(self_1: &'_ mut Rc::<(dyn core::fmt::Display), Global>)
 {
     let _0: (); // return
-    let self_1: &'_ mut Rc::<(dyn FakeTrait), Global>; // arg #1
+    let self_1: &'_ mut Rc::<(dyn core::fmt::Display), Global>; // arg #1
     let _2: usize; // anonymous local
     let _3: (); // anonymous local
-    let self_4: *const RcInner::<(dyn FakeTrait)>; // local
-    let _5: NonNull::<RcInner::<(dyn FakeTrait)>>; // anonymous local
+    let self_4: *const RcInner::<(dyn core::fmt::Display)>; // local
+    let _5: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // anonymous local
     let val: usize; // local
     let _7: usize; // anonymous local
     let _8: *mut usize; // anonymous local
     let _9: *const UnsafeCell::<usize>; // anonymous local
     let _10: *mut usize; // anonymous local
     let _11: *const UnsafeCell::<usize>; // anonymous local
-    let self_12: *const RcInner::<(dyn FakeTrait)>; // local
-    let _13: NonNull::<RcInner::<(dyn FakeTrait)>>; // anonymous local
+    let self_12: *const RcInner::<(dyn core::fmt::Display)>; // local
+    let _13: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // anonymous local
     let _14: *mut usize; // anonymous local
     let _15: *const UnsafeCell::<usize>; // anonymous local
 
@@ -1920,7 +1938,7 @@ pub fn {impl Drop for Rc::<_, _>}::drop::<(dyn FakeTrait), Global>(self_1: &'_ m
         _0 = ();
         storage_live(_5);
         _5 = copy (*self_1).ptr;
-        self_4 = transmute<*const RcInner::<(dyn FakeTrait)>>(copy _5);
+        self_4 = transmute<*const RcInner::<(dyn core::fmt::Display)>>(copy _5);
         storage_dead(_5);
         storage_live(val);
         storage_live(_7);
@@ -1944,7 +1962,7 @@ pub fn {impl Drop for Rc::<_, _>}::drop::<(dyn FakeTrait), Global>(self_1: &'_ m
         storage_live(_2);
         storage_live(_13);
         _13 = copy (*self_1).ptr;
-        self_12 = transmute<*const RcInner::<(dyn FakeTrait)>>(copy _13);
+        self_12 = transmute<*const RcInner::<(dyn core::fmt::Display)>>(copy _13);
         storage_dead(_13);
         storage_live(_14);
         storage_live(_15);
@@ -1958,7 +1976,7 @@ pub fn {impl Drop for Rc::<_, _>}::drop::<(dyn FakeTrait), Global>(self_1: &'_ m
 
     bb1: {
         storage_dead(_2);
-        _3 = drop_slow::<(dyn FakeTrait), Global>(move self_1) -> bb4 (unwind: bb2);
+        _3 = drop_slow::<(dyn core::fmt::Display), Global>(move self_1) -> bb4 (unwind: bb2);
     }
 
     bb2: {
@@ -2664,14 +2682,14 @@ fn drop_glue::<RawVec::<u8, Global>>(_1: &'_ mut RawVec::<u8, Global>)
     }
 }
 
-// Full name: core::intrinsics::size_of_val::<(dyn FakeTrait)>
+// Full name: core::intrinsics::size_of_val::<(dyn core::fmt::Display)>
 #[rustc_intrinsic]
-pub fn size_of_val::<(dyn FakeTrait)>(ptr_1: *const (dyn FakeTrait)) -> usize
+pub fn size_of_val::<(dyn core::fmt::Display)>(ptr_1: *const (dyn core::fmt::Display)) -> usize
 = <intrinsic:size_of_val>
 
-// Full name: core::intrinsics::align_of_val::<(dyn FakeTrait)>
+// Full name: core::intrinsics::align_of_val::<(dyn core::fmt::Display)>
 #[rustc_intrinsic]
-pub fn align_of_val::<(dyn FakeTrait)>(ptr_1: *const (dyn FakeTrait)) -> usize
+pub fn align_of_val::<(dyn core::fmt::Display)>(ptr_1: *const (dyn core::fmt::Display)) -> usize
 = <intrinsic:align_of_val>
 
 // Full name: core::ptr::drop_glue::<RcInner::<String>>
@@ -2701,21 +2719,21 @@ fn drop_glue::<RcInner::<String>>(_1: &'_ mut RcInner::<String>)
     }
 }
 
-// Full name: alloc::rc::{Rc::<_, _>}::drop_slow::<(dyn FakeTrait), Global>
-fn drop_slow::<(dyn FakeTrait), Global>(self_1: &'_ mut Rc::<(dyn FakeTrait), Global>)
+// Full name: alloc::rc::{Rc::<_, _>}::drop_slow::<(dyn core::fmt::Display), Global>
+fn drop_slow::<(dyn core::fmt::Display), Global>(self_1: &'_ mut Rc::<(dyn core::fmt::Display), Global>)
 {
     let _0: (); // return
-    let self_1: &'_ mut Rc::<(dyn FakeTrait), Global>; // arg #1
-    let _weak: Weak::<(dyn FakeTrait), &'_ Global>; // local
-    let _3: NonNull::<RcInner::<(dyn FakeTrait)>>; // anonymous local
+    let self_1: &'_ mut Rc::<(dyn core::fmt::Display), Global>; // arg #1
+    let _weak: Weak::<(dyn core::fmt::Display), &'_ Global>; // local
+    let _3: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // anonymous local
     let _4: &'_ Global; // anonymous local
     let _5: (); // anonymous local
-    let _6: *mut RcInner::<(dyn FakeTrait)>; // anonymous local
-    let self_7: NonNull::<RcInner::<(dyn FakeTrait)>>; // local
-    let _8: &'_ mut (dyn FakeTrait); // anonymous local
-    let _9: *mut Weak::<(dyn FakeTrait), &'_ Global>; // anonymous local
+    let _6: *mut RcInner::<(dyn core::fmt::Display)>; // anonymous local
+    let self_7: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // local
+    let _8: &'_ mut (dyn core::fmt::Display); // anonymous local
+    let _9: *mut Weak::<(dyn core::fmt::Display), &'_ Global>; // anonymous local
     let _10: (); // anonymous local
-    let _11: *mut Weak::<(dyn FakeTrait), &'_ Global>; // anonymous local
+    let _11: *mut Weak::<(dyn core::fmt::Display), &'_ Global>; // anonymous local
     let _12: (); // anonymous local
 
     bb0: {
@@ -2732,22 +2750,22 @@ fn drop_slow::<(dyn FakeTrait), Global>(self_1: &'_ mut Rc::<(dyn FakeTrait), Gl
         _3 = copy (*self_1).ptr;
         storage_live(_4);
         _4 = &(*self_1).alloc;
-        _weak = Weak::<(dyn FakeTrait), &'_ Global> { ptr: move _3, alloc: copy _4 };
+        _weak = Weak::<(dyn core::fmt::Display), &'_ Global> { ptr: move _3, alloc: copy _4 };
         storage_dead(_4);
         storage_dead(_3);
         storage_live(self_7);
         self_7 = copy (*self_1).ptr;
-        _6 = transmute<*mut RcInner::<(dyn FakeTrait)>>(copy self_7);
+        _6 = transmute<*mut RcInner::<(dyn core::fmt::Display)>>(copy self_7);
         storage_dead(self_7);
         storage_live(_8);
         _8 = &mut (*_6).value with_metadata(copy _6.metadata);
-        _5 = drop_glue::<(dyn FakeTrait)>(move _8) -> bb1 (unwind: bb4);
+        _5 = drop_glue::<(dyn core::fmt::Display)>(move _8) -> bb1 (unwind: bb4);
     }
 
     bb1: {
         storage_dead(_8);
         _9 = &raw mut _weak;
-        _10 = drop_glue::<Weak::<(dyn FakeTrait), &'_ Global>>(move _9) -> bb2 (unwind: bb3);
+        _10 = drop_glue::<Weak::<(dyn core::fmt::Display), &'_ Global>>(move _9) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -2761,7 +2779,7 @@ fn drop_slow::<(dyn FakeTrait), Global>(self_1: &'_ mut Rc::<(dyn FakeTrait), Gl
 
     bb4: {
         _11 = &raw mut _weak;
-        _12 = drop_glue::<Weak::<(dyn FakeTrait), &'_ Global>>(move _11) -> bb5 (unwind: bb6);
+        _12 = drop_glue::<Weak::<(dyn core::fmt::Display), &'_ Global>>(move _11) -> bb5 (unwind: bb6);
     }
 
     bb5: {
@@ -2933,13 +2951,13 @@ pub fn {impl Drop for RawVec::<_, _>}::drop::<u8, Global>(self: &'_ mut RawVec::
     }
 }
 
-// Full name: core::ptr::drop_glue::<Weak::<(dyn FakeTrait), &'_ Global>>
+// Full name: core::ptr::drop_glue::<Weak::<(dyn core::fmt::Display), &'_ Global>>
 #[lang_item(DropGlue)]
-fn drop_glue::<Weak::<(dyn FakeTrait), &'_ Global>>(_1: &'_ mut Weak::<(dyn FakeTrait), &'_ Global>)
+fn drop_glue::<Weak::<(dyn core::fmt::Display), &'_ Global>>(_1: &'_ mut Weak::<(dyn core::fmt::Display), &'_ Global>)
 {
     let _0: (); // return
-    let _1: &'_ mut Weak::<(dyn FakeTrait), &'_ Global>; // arg #1
-    let _2: &'_ mut Weak::<(dyn FakeTrait), &'_ Global>; // anonymous local
+    let _1: &'_ mut Weak::<(dyn core::fmt::Display), &'_ Global>; // arg #1
+    let _2: &'_ mut Weak::<(dyn core::fmt::Display), &'_ Global>; // anonymous local
     let _3: (); // anonymous local
 
     bb0: {
@@ -2948,7 +2966,7 @@ fn drop_glue::<Weak::<(dyn FakeTrait), &'_ Global>>(_1: &'_ mut Weak::<(dyn Fake
         storage_live(_3);
         _0 = ();
         _2 = &mut (*_1);
-        _3 = {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(move _2) -> bb1 (unwind: bb2);
+        _3 = {impl Drop for Weak::<_, _>}::drop::<(dyn core::fmt::Display), &'_ Global>(move _2) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -3393,11 +3411,11 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
     }
 }
 
-// Full name: alloc::rc::{impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>
-pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(self_1: &'_ mut Weak::<(dyn FakeTrait), &'_ Global>)
+// Full name: alloc::rc::{impl Drop for Weak::<_, _>}::drop::<(dyn core::fmt::Display), &'_ Global>
+pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn core::fmt::Display), &'_ Global>(self_1: &'_ mut Weak::<(dyn core::fmt::Display), &'_ Global>)
 {
     let _0: (); // return
-    let self_1: &'_ mut Weak::<(dyn FakeTrait), &'_ Global>; // arg #1
+    let self_1: &'_ mut Weak::<(dyn core::fmt::Display), &'_ Global>; // arg #1
     let inner_2: WeakInner::<'_>; // local
     let _3: Option::<WeakInner::<'_>>; // anonymous local
     let inner_4: WeakInner::<'_>; // local
@@ -3405,16 +3423,16 @@ pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(self_1:
     let _6: (); // anonymous local
     let _7: &'_ &'_ Global; // anonymous local
     let _8: NonNull::<u8>; // anonymous local
-    let self_9: NonNull::<RcInner::<(dyn FakeTrait)>>; // local
+    let self_9: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // local
     let _10: Layout; // anonymous local
-    let val_11: *const RcInner::<(dyn FakeTrait)>; // local
-    let self_12: NonNull::<RcInner::<(dyn FakeTrait)>>; // local
+    let val_11: *const RcInner::<(dyn core::fmt::Display)>; // local
+    let self_12: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // local
     let _13: bool; // anonymous local
-    let ptr_14: *const RcInner::<(dyn FakeTrait)>; // local
-    let self_15: NonNull::<RcInner::<(dyn FakeTrait)>>; // local
+    let ptr_14: *const RcInner::<(dyn core::fmt::Display)>; // local
+    let self_15: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // local
     let _16: WeakInner::<'_>; // anonymous local
-    let ptr_17: *mut RcInner::<(dyn FakeTrait)>; // local
-    let self_18: NonNull::<RcInner::<(dyn FakeTrait)>>; // local
+    let ptr_17: *mut RcInner::<(dyn core::fmt::Display)>; // local
+    let self_18: NonNull::<RcInner::<(dyn core::fmt::Display)>>; // local
     let _19: &'_ Cell::<usize>; // anonymous local
     let _20: &'_ Cell::<usize>; // anonymous local
     let _21: usize; // anonymous local
@@ -3429,7 +3447,7 @@ pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(self_1:
     let _30: *mut usize; // anonymous local
     let _31: *const UnsafeCell::<usize>; // anonymous local
     let _32: *mut u8; // anonymous local
-    let _33: *mut RcInner::<(dyn FakeTrait)>; // anonymous local
+    let _33: *mut RcInner::<(dyn core::fmt::Display)>; // anonymous local
     let size: usize; // local
     let alignment: Alignment; // local
     let align: usize; // local
@@ -3452,7 +3470,7 @@ pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(self_1:
         storage_live(ptr_14);
         storage_live(self_15);
         self_15 = copy (*self_1).ptr;
-        ptr_14 = transmute<*const RcInner::<(dyn FakeTrait)>>(copy self_15);
+        ptr_14 = transmute<*const RcInner::<(dyn core::fmt::Display)>>(copy self_15);
         storage_dead(self_15);
         storage_live(_21);
         storage_live(_22);
@@ -3478,7 +3496,7 @@ pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(self_1:
         storage_live(ptr_17);
         storage_live(self_18);
         self_18 = copy (*self_1).ptr;
-        ptr_17 = transmute<*mut RcInner::<(dyn FakeTrait)>>(copy self_18);
+        ptr_17 = transmute<*mut RcInner::<(dyn core::fmt::Display)>>(copy self_18);
         storage_dead(self_18);
         storage_live(_19);
         _19 = &(*ptr_17).strong;
@@ -3534,7 +3552,7 @@ pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(self_1:
         self_9 = copy (*self_1).ptr;
         storage_live(_32);
         storage_live(_33);
-        _33 = transmute<*mut RcInner::<(dyn FakeTrait)>>(copy self_9);
+        _33 = transmute<*mut RcInner::<(dyn core::fmt::Display)>>(copy self_9);
         _32 = cast<*mut u8>(copy _33);
         storage_dead(_33);
         _8 = transmute<NonNull::<u8>>(copy _32);
@@ -3544,16 +3562,16 @@ pub fn {impl Drop for Weak::<_, _>}::drop::<(dyn FakeTrait), &'_ Global>(self_1:
         storage_live(val_11);
         storage_live(self_12);
         self_12 = copy (*self_1).ptr;
-        val_11 = transmute<*const RcInner::<(dyn FakeTrait)>>(copy self_12);
+        val_11 = transmute<*const RcInner::<(dyn core::fmt::Display)>>(copy self_12);
         storage_dead(self_12);
         storage_live(size);
         storage_live(alignment);
-        size = size_of_val::<RcInner::<(dyn FakeTrait)>>(copy val_11) -> bb4 (unwind: bb15);
+        size = size_of_val::<RcInner::<(dyn core::fmt::Display)>>(copy val_11) -> bb4 (unwind: bb15);
     }
 
     bb4: {
         storage_live(align);
-        align = align_of_val::<RcInner::<(dyn FakeTrait)>>(move val_11) -> bb5 (unwind: bb14);
+        align = align_of_val::<RcInner::<(dyn core::fmt::Display)>>(move val_11) -> bb5 (unwind: bb14);
     }
 
     bb5: {
@@ -3824,14 +3842,14 @@ fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layo
     }
 }
 
-// Full name: core::intrinsics::size_of_val::<RcInner::<(dyn FakeTrait)>>
+// Full name: core::intrinsics::size_of_val::<RcInner::<(dyn core::fmt::Display)>>
 #[rustc_intrinsic]
-pub fn size_of_val::<RcInner::<(dyn FakeTrait)>>(ptr_1: *const RcInner::<(dyn FakeTrait)>) -> usize
+pub fn size_of_val::<RcInner::<(dyn core::fmt::Display)>>(ptr_1: *const RcInner::<(dyn core::fmt::Display)>) -> usize
 = <intrinsic:size_of_val>
 
-// Full name: core::intrinsics::align_of_val::<RcInner::<(dyn FakeTrait)>>
+// Full name: core::intrinsics::align_of_val::<RcInner::<(dyn core::fmt::Display)>>
 #[rustc_intrinsic]
-pub fn align_of_val::<RcInner::<(dyn FakeTrait)>>(ptr_1: *const RcInner::<(dyn FakeTrait)>) -> usize
+pub fn align_of_val::<RcInner::<(dyn core::fmt::Display)>>(ptr_1: *const RcInner::<(dyn core::fmt::Display)>) -> usize
 = <intrinsic:align_of_val>
 
 // Full name: core::intrinsics::caller_location
@@ -4069,7 +4087,7 @@ pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
 = <intrinsic:mul_with_overflow>
 
 // Full name: alloc::string::{impl core::fmt::Display for String}::fmt
-pub fn impl_Display_for_String::fmt(self: &'_ String, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
+pub fn {impl core::fmt::Display for String}::fmt(self: &'_ String, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
     let self: &'_ String; // arg #1

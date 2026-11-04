@@ -124,7 +124,7 @@ pub struct NonNull::<()> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -148,11 +148,11 @@ pub struct FormattingOptions {
 // Full name: core::fmt::Error
 pub struct Error {}
 
-// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
+// Full name: alloc::boxed::Box::<(dyn core::any::Any), Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
-pub struct Box::<(dyn FakeTrait), Global> {
-  _0: Unique::<(dyn FakeTrait)>,
+pub struct Box::<(dyn core::any::Any), Global> {
+  _0: Unique::<(dyn core::any::Any)>,
   _1: Global,
 }
 
@@ -168,7 +168,7 @@ pub struct Box::<&'_ str, Global> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::alloc::layout::Layout
@@ -247,10 +247,10 @@ pub struct Unique::<&'_ str> {
   _marker: PhantomData::<&'_ str>,
 }
 
-// Full name: core::ptr::unique::Unique::<(dyn FakeTrait)>
-pub struct Unique::<(dyn FakeTrait)> {
-  pointer: NonNull::<(dyn FakeTrait)>,
-  _marker: PhantomData::<(dyn FakeTrait)>,
+// Full name: core::ptr::unique::Unique::<(dyn core::any::Any)>
+pub struct Unique::<(dyn core::any::Any)> {
+  pointer: NonNull::<(dyn core::any::Any)>,
+  _marker: PhantomData::<(dyn core::any::Any)>,
 }
 
 // Full name: core::ptr::non_null::NonNull::<&'_ str>
@@ -259,15 +259,15 @@ pub struct NonNull::<&'_ str> {
   pointer: *const &'_ str is !null,
 }
 
-// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
+// Full name: core::ptr::non_null::NonNull::<(dyn core::any::Any)>
 #[lang_item(NonNull)]
-pub struct NonNull::<(dyn FakeTrait)> {
-  pointer: *const (dyn FakeTrait) is !null,
+pub struct NonNull::<(dyn core::any::Any)> {
+  pointer: *const (dyn core::any::Any) is !null,
 }
 
-// Full name: core::marker::PhantomData::<(dyn FakeTrait)>
+// Full name: core::marker::PhantomData::<(dyn core::any::Any)>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<(dyn FakeTrait)> {}
+pub struct PhantomData::<(dyn core::any::Any)> {}
 
 // Full name: core::mem::alignment::AlignmentEnum
 enum AlignmentEnum {
@@ -378,20 +378,39 @@ const anon_const_8: [u8; 210usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 3
 // Full name: anon_const_9
 const anon_const_9: [u8; 17usize] = [97u8, 108u8, 108u8, 111u8, 99u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8]
 
+// Full name: {vtable}::unknown_trait::<&'_ str>
+vtable unknown_trait::<&'_ str>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<&'_ str>)), no-provenance 16, no-provenance 8]
+
+// Full name: {vtable}::unknown_trait::<Payload::<&'_ str>>
+vtable unknown_trait::<Payload::<&'_ str>>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<Payload::<&'_ str>>)), no-provenance 16, no-provenance 8]
+
+#[diagnostic_item("Display")]
+vtable {vtable}::core::fmt::Display::<Payload::<&'_ str>>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<Payload::<&'_ str>>)), no-provenance 16, no-provenance 8, cast<*const ()>(fnptr(fmt::<&'_ str>))]
+
 // Full name: FakeTrait
 trait FakeTrait
 
-// Full name: core::fmt::Display
-#[diagnostic_item("Display")]
-trait Display
-
 trait alloc::panicking::PanicPayload
+
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
 
 #[diagnostic_item("Any")]
 trait core::any::Any
 
-// Full name: std::panicking::begin_panic::{impl Display for Payload::<_>}
-impl<A> Display for Payload::<_> {
+#[diagnostic_item("Display")]
+trait core::fmt::Display
+
+// Full name: {impl alloc::panicking::PanicPayload for Payload::<&'_ str>}
+impl alloc::panicking::PanicPayload for Payload::<&'_ str> {
+    proof ImpliedClause0: (Payload::<&'_ str>: core::fmt::Display) = {impl core::fmt::Display for Payload::<&'_ str>}
+    proof ImpliedClause1: (Payload::<&'_ str>: FakeTrait) = {impl FakeTrait for Payload::<&'_ str>}
+    vtable: {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>
+}
+
+// Full name: std::panicking::begin_panic::{impl core::fmt::Display for Payload::<_>}
+impl<A> core::fmt::Display for Payload::<_> {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
@@ -400,9 +419,31 @@ impl<A> alloc::panicking::PanicPayload for Payload::<_> {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl core::any::Any for &'_ str}
+impl core::any::Any for &'_ str {
+    proof ImpliedClause0: (&'_ str: FakeTrait) = {impl FakeTrait for &'_ str}
+    vtable: {vtable}::core::any::Any::<&'_ str>
+}
+
 // Full name: core::any::{impl core::any::Any for T}
 impl<T> "impl_Any_for_T" core::any::Any for T {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl FakeTrait for &'_ str}
+impl FakeTrait for &'_ str {
+    vtable: unknown_trait::<&'_ str>
+}
+
+// Full name: {impl core::fmt::Display for Payload::<&'_ str>}
+impl core::fmt::Display for Payload::<&'_ str> {
+    proof ImpliedClause0: (Payload::<&'_ str>: FakeTrait) = {impl FakeTrait for Payload::<&'_ str>}
+    vtable: {vtable}::core::fmt::Display::<Payload::<&'_ str>>
+}
+
+// Full name: {impl FakeTrait for Payload::<&'_ str>}
+impl FakeTrait for Payload::<&'_ str> {
+    vtable: unknown_trait::<Payload::<&'_ str>>
 }
 
 // Full name: test_crate::panic1
@@ -988,7 +1029,7 @@ fn std::panicking::begin_panic::{closure}::<&'_ str, i32, extern "rust-call" fn(
     let _0: !; // return
     let _1: std::panicking::begin_panic::{closure}::{closure}; // arg #1
     let spread_args: (); // arg #2
-    let _3: &'_ mut (dyn FakeTrait); // anonymous local
+    let _3: &'_ mut (dyn alloc::panicking::PanicPayload); // anonymous local
     let _4: &'_ mut Payload::<&'_ str>; // anonymous local
     let _5: Payload::<&'_ str>; // anonymous local
     let _6: Option::<&'_ str>; // anonymous local
@@ -1009,7 +1050,7 @@ fn std::panicking::begin_panic::{closure}::<&'_ str, i32, extern "rust-call" fn(
         _5 = Payload::<&'_ str> { inner: move _6 };
         storage_dead(_6);
         _4 = &mut _5;
-        _3 = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>)>(copy _4);
+        _3 = unsize_cast<&'_ mut (dyn alloc::panicking::PanicPayload), cast<*const ()>(&raw const {vtable}::alloc::panicking::PanicPayload::<Payload::<&'_ str>>)>(copy _4);
         _8 = noretag copy _1.upvar_1;
         _0 = panic_with_hook(move _3, move _8, const true, const false) -> bb1 (unwind: bb2);
     }
@@ -1029,7 +1070,7 @@ pub fn black_box::<()>(dummy_1: ())
 = <intrinsic:black_box>
 
 // Full name: std::panicking::panic_with_hook
-fn panic_with_hook(_1: &'_ mut (dyn FakeTrait), _2: &'_ Location::<'_>, _3: bool, _4: bool) -> !
+fn panic_with_hook(_1: &'_ mut (dyn alloc::panicking::PanicPayload), _2: &'_ Location::<'_>, _3: bool, _4: bool) -> !
 = <missing>
 
 // Full name: core::ptr::drop_glue::<Payload::<&'_ str>>
@@ -1046,7 +1087,7 @@ fn drop_glue::<Payload::<&'_ str>>(_1: &'_ mut Payload::<&'_ str>)
     }
 }
 
-// Full name: std::panicking::begin_panic::{impl Display for Payload::<_>}::fmt::<&'_ str>
+// Full name: std::panicking::begin_panic::{impl core::fmt::Display for Payload::<_>}::fmt::<&'_ str>
 pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
     let _0: Result::<(), Error>; // return
@@ -1055,7 +1096,7 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
     let _3: isize; // anonymous local
     let a: &'_ &'_ str; // local
     let _5: &'_ str; // anonymous local
-    let _6: &'_ (dyn FakeTrait); // anonymous local
+    let _6: &'_ (dyn core::any::Any); // anonymous local
     let _7: !; // anonymous local
 
     bb0: {
@@ -1083,7 +1124,7 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
         a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
         storage_live(_5);
         storage_live(_6);
-        _6 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
+        _6 = unsize_cast<&'_ (dyn core::any::Any), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
         _5 = payload_as_str(move _6) -> bb5 (unwind: bb8);
     }
 
@@ -1112,9 +1153,9 @@ pub fn fmt::<&'_ str>(self: &'_ Payload::<&'_ str>, f: &'_ mut Formatter::<'_>) 
 }
 
 // Full name: std::panicking::begin_panic::{impl alloc::panicking::PanicPayload for Payload::<_>}::take_box::<&'_ str>
-pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeTrait), Global>
+pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn core::any::Any), Global>
 {
-    let _0: Box::<(dyn FakeTrait), Global>; // return
+    let _0: Box::<(dyn core::any::Any), Global>; // return
     let self: &'_ mut Payload::<&'_ str>; // arg #1
     let _2: Option::<&'_ str>; // anonymous local
     let _3: isize; // anonymous local
@@ -1157,7 +1198,7 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
     }
 
     bb5: {
-        _0 = unsize_cast<Box::<(dyn FakeTrait), Global>, cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(move _5);
+        _0 = unsize_cast<Box::<(dyn core::any::Any), Global>, cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(move _5);
         storage_dead(_5);
         storage_dead(a);
         storage_dead(_2);
@@ -1174,9 +1215,9 @@ pub fn take_box::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> Box::<(dyn FakeT
 }
 
 // Full name: std::panicking::begin_panic::{impl alloc::panicking::PanicPayload for Payload::<_>}::get::<&'_ str>
-pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
+pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn core::any::Any)
 {
-    let _0: &'_ (dyn FakeTrait); // return
+    let _0: &'_ (dyn core::any::Any); // return
     let self: &'_ mut Payload::<&'_ str>; // arg #1
     let _2: isize; // anonymous local
     let a: &'_ &'_ str; // local
@@ -1205,7 +1246,7 @@ pub fn get::<&'_ str>(self: &'_ mut Payload::<&'_ str>) -> &'_ (dyn FakeTrait)
     bb4: {
         storage_live(a);
         a = &((*self).inner as variant Option::<&'_ str>::Some)._0;
-        _0 = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
+        _0 = unsize_cast<&'_ (dyn core::any::Any), cast<*const ()>(&raw const {vtable}::core::any::Any::<&'_ str>)>(copy a);
         storage_dead(a);
         return;
     }
@@ -1233,7 +1274,7 @@ pub fn std::process::abort() -> !
 = <missing>
 
 // Full name: std::panicking::payload_as_str
-fn payload_as_str(_1: &'_ (dyn FakeTrait)) -> &'_ str
+fn payload_as_str(_1: &'_ (dyn core::any::Any)) -> &'_ str
 = <missing>
 
 // Full name: core::fmt::{Formatter::<'_>}::write_str::<'_>

@@ -3,83 +3,83 @@
 
 struct () {}
 
-// Full name: alloc::boxed::Box::<(dyn FakeTrait), Global>
+// Full name: alloc::boxed::Box::<(dyn T), Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
-pub struct Box::<(dyn FakeTrait), Global> {
-  _0: Unique::<(dyn FakeTrait)>,
+pub struct Box::<(dyn T), Global> {
+  _0: Unique::<(dyn T)>,
   _1: Global,
 }
 
-// Full name: alloc::rc::Rc::<(dyn FakeTrait), Global>
+// Full name: alloc::rc::Rc::<(dyn T), Global>
 #[diagnostic_item("Rc")]
-pub struct Rc::<(dyn FakeTrait), Global> {
-  ptr: NonNull::<RcInner::<(dyn FakeTrait)>>,
-  phantom: PhantomData::<RcInner::<(dyn FakeTrait)>>,
+pub struct Rc::<(dyn T), Global> {
+  ptr: NonNull::<RcInner::<(dyn T)>>,
+  phantom: PhantomData::<RcInner::<(dyn T)>>,
   alloc: Global,
 }
 
-// Full name: core::ptr::non_null::NonNull::<RcInner::<(dyn FakeTrait)>>
+// Full name: core::ptr::non_null::NonNull::<RcInner::<(dyn T)>>
 #[lang_item(NonNull)]
-pub struct NonNull::<RcInner::<(dyn FakeTrait)>> {
-  pointer: *const RcInner::<(dyn FakeTrait)> is !null,
+pub struct NonNull::<RcInner::<(dyn T)>> {
+  pointer: *const RcInner::<(dyn T)> is !null,
 }
 
-// Full name: alloc::rc::RcInner::<(dyn FakeTrait)>
-struct RcInner::<(dyn FakeTrait)> {
+// Full name: alloc::rc::RcInner::<(dyn T)>
+struct RcInner::<(dyn T)> {
   strong: Cell::<usize>,
   weak: Cell::<usize>,
-  value: (dyn FakeTrait),
+  value: (dyn T),
 }
 
-// Full name: alloc::sync::Arc::<(dyn FakeTrait), Global>
+// Full name: alloc::sync::Arc::<(dyn T), Global>
 #[diagnostic_item("Arc")]
-pub struct Arc::<(dyn FakeTrait), Global> {
-  ptr: NonNull::<ArcInner::<(dyn FakeTrait)>>,
-  phantom: PhantomData::<ArcInner::<(dyn FakeTrait)>>,
+pub struct Arc::<(dyn T), Global> {
+  ptr: NonNull::<ArcInner::<(dyn T)>>,
+  phantom: PhantomData::<ArcInner::<(dyn T)>>,
   alloc: Global,
 }
 
-// Full name: core::ptr::non_null::NonNull::<ArcInner::<(dyn FakeTrait)>>
+// Full name: core::ptr::non_null::NonNull::<ArcInner::<(dyn T)>>
 #[lang_item(NonNull)]
-pub struct NonNull::<ArcInner::<(dyn FakeTrait)>> {
-  pointer: *const ArcInner::<(dyn FakeTrait)> is !null,
+pub struct NonNull::<ArcInner::<(dyn T)>> {
+  pointer: *const ArcInner::<(dyn T)> is !null,
 }
 
-// Full name: alloc::sync::ArcInner::<(dyn FakeTrait)>
-struct ArcInner::<(dyn FakeTrait)> {
+// Full name: alloc::sync::ArcInner::<(dyn T)>
+struct ArcInner::<(dyn T)> {
   strong: Atomic::<usize>,
   weak: Atomic::<usize>,
-  data: (dyn FakeTrait),
+  data: (dyn T),
 }
 
-// Full name: core::pin::Pin::<&'_ mut (dyn FakeTrait)>
+// Full name: core::pin::Pin::<&'_ mut (dyn T)>
 #[fundamental]
 #[lang_item(Pin)]
-pub struct Pin::<&'_ mut (dyn FakeTrait)> {
-  pointer: &'_ mut (dyn FakeTrait),
+pub struct Pin::<&'_ mut (dyn T)> {
+  pointer: &'_ mut (dyn T),
 }
 
-// Full name: core::pin::Pin::<Box::<(dyn FakeTrait), Global>>
+// Full name: core::pin::Pin::<Box::<(dyn T), Global>>
 #[fundamental]
 #[lang_item(Pin)]
-pub struct Pin::<Box::<(dyn FakeTrait), Global>> {
-  pointer: Box::<(dyn FakeTrait), Global>,
+pub struct Pin::<Box::<(dyn T), Global>> {
+  pointer: Box::<(dyn T), Global>,
 }
 
 // Full name: alloc::alloc::Global
 #[lang_item(GlobalAlloc)]
 pub struct Global {}
 
-// Full name: core::ptr::unique::Unique::<(dyn FakeTrait)>
-pub struct Unique::<(dyn FakeTrait)> {
-  pointer: NonNull::<(dyn FakeTrait)>,
-  _marker: PhantomData::<(dyn FakeTrait)>,
+// Full name: core::ptr::unique::Unique::<(dyn T)>
+pub struct Unique::<(dyn T)> {
+  pointer: NonNull::<(dyn T)>,
+  _marker: PhantomData::<(dyn T)>,
 }
 
-// Full name: core::marker::PhantomData::<RcInner::<(dyn FakeTrait)>>
+// Full name: core::marker::PhantomData::<RcInner::<(dyn T)>>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<RcInner::<(dyn FakeTrait)>> {}
+pub struct PhantomData::<RcInner::<(dyn T)>> {}
 
 // Full name: core::cell::Cell::<usize>
 #[diagnostic_item("Cell")]
@@ -87,9 +87,9 @@ pub struct Cell::<usize> {
   value: UnsafeCell::<usize>,
 }
 
-// Full name: core::marker::PhantomData::<ArcInner::<(dyn FakeTrait)>>
+// Full name: core::marker::PhantomData::<ArcInner::<(dyn T)>>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<ArcInner::<(dyn FakeTrait)>> {}
+pub struct PhantomData::<ArcInner::<(dyn T)>> {}
 
 // Full name: core::sync::atomic::Atomic::<usize>
 #[diagnostic_item("Atomic")]
@@ -97,15 +97,15 @@ pub struct Atomic::<usize> {
   v: UnsafeCell::<Align8::<usize>>,
 }
 
-// Full name: core::ptr::non_null::NonNull::<(dyn FakeTrait)>
+// Full name: core::ptr::non_null::NonNull::<(dyn T)>
 #[lang_item(NonNull)]
-pub struct NonNull::<(dyn FakeTrait)> {
-  pointer: *const (dyn FakeTrait) is !null,
+pub struct NonNull::<(dyn T)> {
+  pointer: *const (dyn T) is !null,
 }
 
-// Full name: core::marker::PhantomData::<(dyn FakeTrait)>
+// Full name: core::marker::PhantomData::<(dyn T)>
 #[lang_item(PhantomData)]
-pub struct PhantomData::<(dyn FakeTrait)> {}
+pub struct PhantomData::<(dyn T)> {}
 
 // Full name: core::cell::UnsafeCell::<usize>
 #[lang_item(UnsafeCell)]
@@ -127,12 +127,15 @@ pub struct Align8::<usize> {
 // Full name: FakeTrait
 trait FakeTrait
 
+// Full name: test_crate::T
+trait T
+
 // Full name: test_crate::call_box
-pub fn call_box(x: Box::<(dyn FakeTrait), Global>)
+pub fn call_box(x: Box::<(dyn T), Global>)
 {
     let _0: (); // return
-    let x: Box::<(dyn FakeTrait), Global>; // arg #1
-    let _2: Box::<(dyn FakeTrait), Global>; // anonymous local
+    let x: Box::<(dyn T), Global>; // arg #1
+    let _2: Box::<(dyn T), Global>; // anonymous local
     let _3: usize; // anonymous local
     let _4: *const *const (); // anonymous local
 
@@ -159,11 +162,11 @@ pub fn call_box(x: Box::<(dyn FakeTrait), Global>)
 }
 
 // Full name: test_crate::call_rc
-pub fn call_rc(x: Rc::<(dyn FakeTrait), Global>)
+pub fn call_rc(x: Rc::<(dyn T), Global>)
 {
     let _0: (); // return
-    let x: Rc::<(dyn FakeTrait), Global>; // arg #1
-    let _2: Rc::<(dyn FakeTrait), Global>; // anonymous local
+    let x: Rc::<(dyn T), Global>; // arg #1
+    let _2: Rc::<(dyn T), Global>; // anonymous local
     let _3: usize; // anonymous local
     let _4: *const *const (); // anonymous local
 
@@ -190,11 +193,11 @@ pub fn call_rc(x: Rc::<(dyn FakeTrait), Global>)
 }
 
 // Full name: test_crate::call_arc
-pub fn call_arc(x: Arc::<(dyn FakeTrait), Global>)
+pub fn call_arc(x: Arc::<(dyn T), Global>)
 {
     let _0: (); // return
-    let x: Arc::<(dyn FakeTrait), Global>; // arg #1
-    let _2: Arc::<(dyn FakeTrait), Global>; // anonymous local
+    let x: Arc::<(dyn T), Global>; // arg #1
+    let _2: Arc::<(dyn T), Global>; // anonymous local
     let _3: usize; // anonymous local
     let _4: *const *const (); // anonymous local
 
@@ -221,11 +224,11 @@ pub fn call_arc(x: Arc::<(dyn FakeTrait), Global>)
 }
 
 // Full name: test_crate::call_pin_mut
-pub fn call_pin_mut(x: Pin::<&'_ mut (dyn FakeTrait)>)
+pub fn call_pin_mut(x: Pin::<&'_ mut (dyn T)>)
 {
     let _0: (); // return
-    let x: Pin::<&'_ mut (dyn FakeTrait)>; // arg #1
-    let _2: Pin::<&'_ mut (dyn FakeTrait)>; // anonymous local
+    let x: Pin::<&'_ mut (dyn T)>; // arg #1
+    let _2: Pin::<&'_ mut (dyn T)>; // anonymous local
     let _3: usize; // anonymous local
     let _4: *const *const (); // anonymous local
 
@@ -252,11 +255,11 @@ pub fn call_pin_mut(x: Pin::<&'_ mut (dyn FakeTrait)>)
 }
 
 // Full name: test_crate::call_pin_box
-pub fn call_pin_box(x: Pin::<Box::<(dyn FakeTrait), Global>>)
+pub fn call_pin_box(x: Pin::<Box::<(dyn T), Global>>)
 {
     let _0: (); // return
-    let x: Pin::<Box::<(dyn FakeTrait), Global>>; // arg #1
-    let _2: Pin::<Box::<(dyn FakeTrait), Global>>; // anonymous local
+    let x: Pin::<Box::<(dyn T), Global>>; // arg #1
+    let _2: Pin::<Box::<(dyn T), Global>>; // anonymous local
     let _3: usize; // anonymous local
     let _4: *const *const (); // anonymous local
 
@@ -282,24 +285,24 @@ pub fn call_pin_box(x: Pin::<Box::<(dyn FakeTrait), Global>>)
     }
 }
 
-// Full name: test_crate::T::by_box::<(dyn FakeTrait)>
-fn by_box::<(dyn FakeTrait)>(_1: *const (dyn FakeTrait))
+// Full name: test_crate::T::by_box::<(dyn T)>
+fn by_box::<(dyn T)>(_1: *const (dyn T))
 = <opaque>
 
-// Full name: test_crate::T::by_rc::<(dyn FakeTrait)>
-fn by_rc::<(dyn FakeTrait)>(_1: *const RcInner::<(dyn FakeTrait)>)
+// Full name: test_crate::T::by_rc::<(dyn T)>
+fn by_rc::<(dyn T)>(_1: *const RcInner::<(dyn T)>)
 = <opaque>
 
-// Full name: test_crate::T::by_arc::<(dyn FakeTrait)>
-fn by_arc::<(dyn FakeTrait)>(_1: *const ArcInner::<(dyn FakeTrait)>)
+// Full name: test_crate::T::by_arc::<(dyn T)>
+fn by_arc::<(dyn T)>(_1: *const ArcInner::<(dyn T)>)
 = <opaque>
 
-// Full name: test_crate::T::by_pin_mut::<(dyn FakeTrait)>
-fn by_pin_mut::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
+// Full name: test_crate::T::by_pin_mut::<(dyn T)>
+fn by_pin_mut::<(dyn T)>(_1: &'_ mut (dyn T))
 = <opaque>
 
-// Full name: test_crate::T::by_pin_box::<(dyn FakeTrait)>
-fn by_pin_box::<(dyn FakeTrait)>(_1: *const (dyn FakeTrait))
+// Full name: test_crate::T::by_pin_box::<(dyn T)>
+fn by_pin_box::<(dyn T)>(_1: *const (dyn T))
 = <opaque>
 
 

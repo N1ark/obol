@@ -106,7 +106,7 @@ pub struct NonNull::<()> {
 #[diagnostic_item("Formatter")]
 pub struct Formatter::<'_> {
   options: FormattingOptions,
-  buf: &'_ mut (dyn FakeTrait),
+  buf: &'_ mut (dyn Write),
 }
 
 // Full name: core::result::Result::<(), Error>
@@ -138,15 +138,28 @@ vtable {vtable}::test_crate::Modifiable::<i32, i32>: [*const (); 4usize] = [cast
 // Full name: anon_const_1
 const anon_const_1: [u8; 28usize] = [97u8, 116u8, 116u8, 101u8, 109u8, 112u8, 116u8, 32u8, 116u8, 111u8, 32u8, 97u8, 100u8, 100u8, 32u8, 119u8, 105u8, 116u8, 104u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8]
 
+// Full name: {vtable}::unknown_trait::<i32>
+vtable unknown_trait::<i32>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4]
+
 // Full name: FakeTrait
 trait FakeTrait
 
 trait test_crate::Modifiable
 
+// Full name: core::fmt::Write
+#[diagnostic_item("FmtWrite")]
+trait Write
+
 // Full name: core::clone::Clone
 #[lang_item(Clone)]
 #[diagnostic_item("Clone")]
 trait Clone
+
+// Full name: {impl test_crate::Modifiable<i32> for i32}
+impl "impl_Modifiable_i32_for_i32" test_crate::Modifiable<i32> for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::Modifiable::<i32, i32>
+}
 
 // Full name: test_crate::{impl test_crate::Modifiable<T> for i32}
 impl<T> "impl_Modifiable_for_i32" test_crate::Modifiable<T> for i32 {
@@ -156,6 +169,11 @@ impl<T> "impl_Modifiable_for_i32" test_crate::Modifiable<T> for i32 {
 // Full name: core::clone::impls::{impl Clone for i32}
 impl "impl_Clone_for_i32" Clone for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl FakeTrait for i32}
+impl "impl_FakeTrait_for_i32" FakeTrait for i32 {
+    vtable: unknown_trait::<i32>
 }
 
 // Full name: test_crate::main
@@ -198,11 +216,11 @@ fn modify_trait_object::<i32>(arg: &'_ i32) -> i32
 {
     let _0: i32; // return
     let arg: &'_ i32; // arg #1
-    let x: &'_ mut (dyn FakeTrait); // local
+    let x: &'_ mut (dyn test_crate::Modifiable<i32>); // local
     let _3: &'_ mut i32; // anonymous local
     let _4: &'_ mut i32; // anonymous local
     let _5: i32; // anonymous local
-    let _6: &'_ mut (dyn FakeTrait); // anonymous local
+    let _6: &'_ mut (dyn test_crate::Modifiable<i32>); // anonymous local
     let _7: &'_ i32; // anonymous local
     let _8: usize; // anonymous local
     let _9: *const *const (); // anonymous local
@@ -217,7 +235,7 @@ fn modify_trait_object::<i32>(arg: &'_ i32) -> i32
         _5 = const 199i32;
         _4 = &mut _5;
         _3 = &mut (*_4);
-        x = unsize_cast<&'_ mut (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Modifiable::<i32, i32>)>(move _3);
+        x = unsize_cast<&'_ mut (dyn test_crate::Modifiable<i32>), cast<*const ()>(&raw const {vtable}::test_crate::Modifiable::<i32, i32>)>(move _3);
         storage_dead(_3);
         storage_dead(_4);
         storage_live(_6);
@@ -243,7 +261,7 @@ fn modify_trait_object::<i32>(arg: &'_ i32) -> i32
     }
 }
 
-fn test_crate::Modifiable::modify::<(dyn FakeTrait), i32>(_1: &'_ mut (dyn FakeTrait), _2: &'_ i32) -> i32
+fn test_crate::Modifiable::modify::<(dyn test_crate::Modifiable<i32>), i32>(_1: &'_ mut (dyn test_crate::Modifiable<i32>), _2: &'_ i32) -> i32
 = <opaque>
 
 // Full name: core::ptr::drop_glue::<i32>

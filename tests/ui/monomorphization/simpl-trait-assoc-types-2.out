@@ -6,12 +6,18 @@ struct () {}
 // Full name: anon_const_0
 const anon_const_0: i32 = 42i32
 
-vtable {vtable}::test_crate::Trait::<i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr(impl_Trait_for_i32::comsume))]
+vtable {vtable}::test_crate::Trait::<i32>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4, cast<*const ()>(fnptr({impl test_crate::Trait for i32}::comsume))]
 
 // Full name: anon_const_1
 const anon_const_1: usize = 42usize
 
-vtable {vtable}::test_crate::Trait::<usize>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<usize>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr(impl_Trait_for_usize::comsume))]
+vtable {vtable}::test_crate::Trait::<usize>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<usize>)), no-provenance 8, no-provenance 8, cast<*const ()>(fnptr({impl test_crate::Trait for usize}::comsume))]
+
+// Full name: {vtable}::unknown_trait::<i32>
+vtable unknown_trait::<i32>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<i32>)), no-provenance 4, no-provenance 4]
+
+// Full name: {vtable}::unknown_trait::<usize>
+vtable unknown_trait::<usize>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<usize>)), no-provenance 8, no-provenance 8]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -19,17 +25,39 @@ trait FakeTrait
 trait test_crate::Trait
 
 // Full name: test_crate::{impl test_crate::Trait for i32}
-impl "impl_Trait_for_i32" test_crate::Trait for i32 {
+impl test_crate::Trait for i32 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::{impl test_crate::Trait for usize}
-impl "impl_Trait_for_usize" test_crate::Trait for usize {
+impl test_crate::Trait for usize {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: {impl test_crate::Trait for i32}
+impl test_crate::Trait for i32 {
+    proof ImpliedClause0: (i32: FakeTrait) = impl_FakeTrait_for_i32
+    vtable: {vtable}::test_crate::Trait::<i32>
+}
+
+// Full name: {impl test_crate::Trait for usize}
+impl test_crate::Trait for usize {
+    proof ImpliedClause0: (usize: FakeTrait) = impl_FakeTrait_for_usize
+    vtable: {vtable}::test_crate::Trait::<usize>
+}
+
+// Full name: {impl FakeTrait for i32}
+impl "impl_FakeTrait_for_i32" FakeTrait for i32 {
+    vtable: unknown_trait::<i32>
+}
+
+// Full name: {impl FakeTrait for usize}
+impl "impl_FakeTrait_for_usize" FakeTrait for usize {
+    vtable: unknown_trait::<usize>
+}
+
 // Full name: test_crate::{impl test_crate::Trait for i32}::comsume
-fn impl_Trait_for_i32::comsume(self: &'_ i32)
+fn {impl test_crate::Trait for i32}::comsume(self: &'_ i32)
 {
     let _0: (); // return
     let self: &'_ i32; // arg #1
@@ -43,7 +71,7 @@ fn impl_Trait_for_i32::comsume(self: &'_ i32)
 }
 
 // Full name: test_crate::{impl test_crate::Trait for usize}::comsume
-fn impl_Trait_for_usize::comsume(self: &'_ usize)
+fn {impl test_crate::Trait for usize}::comsume(self: &'_ usize)
 {
     let _0: (); // return
     let self: &'_ usize; // arg #1
@@ -60,16 +88,16 @@ fn impl_Trait_for_usize::comsume(self: &'_ usize)
 fn main()
 {
     let _0: (); // return
-    let a: &'_ (dyn FakeTrait); // local
+    let a: &'_ (dyn test_crate::Trait); // local
     let _2: &'_ i32; // anonymous local
     let _3: &'_ i32; // anonymous local
     let _4: (); // anonymous local
-    let _5: &'_ (dyn FakeTrait); // anonymous local
-    let b: &'_ (dyn FakeTrait); // local
+    let _5: &'_ (dyn test_crate::Trait); // anonymous local
+    let b: &'_ (dyn test_crate::Trait); // local
     let _7: &'_ usize; // anonymous local
     let _8: &'_ usize; // anonymous local
     let _9: (); // anonymous local
-    let _10: &'_ (dyn FakeTrait); // anonymous local
+    let _10: &'_ (dyn test_crate::Trait); // anonymous local
     let _11: &'_ usize; // anonymous local
     let _12: &'_ i32; // anonymous local
     let _13: usize; // anonymous local
@@ -90,7 +118,7 @@ fn main()
         _12 = const &anon_const_0;
         _3 = &(*_12);
         _2 = &(*_3);
-        a = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<i32>)>(move _2);
+        a = unsize_cast<&'_ (dyn test_crate::Trait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<i32>)>(move _2);
         storage_dead(_2);
         storage_dead(_3);
         storage_live(_4);
@@ -111,7 +139,7 @@ fn main()
         _11 = const &anon_const_1;
         _8 = &(*_11);
         _7 = &(*_8);
-        b = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<usize>)>(move _7);
+        b = unsize_cast<&'_ (dyn test_crate::Trait), cast<*const ()>(&raw const {vtable}::test_crate::Trait::<usize>)>(move _7);
         storage_dead(_7);
         storage_dead(_8);
         storage_live(_9);
@@ -141,10 +169,10 @@ fn main()
     }
 }
 
-fn test_crate::Trait::comsume::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
+fn test_crate::Trait::comsume::<(dyn test_crate::Trait)>(_1: &'_ (dyn test_crate::Trait))
 = <opaque>
 
-fn test_crate::Trait::comsume::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
+fn test_crate::Trait::comsume::<(dyn test_crate::Trait)>(_1: &'_ (dyn test_crate::Trait))
 = <opaque>
 
 // Full name: core::ptr::drop_glue::<i32>

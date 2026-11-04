@@ -20,12 +20,15 @@ pub struct ManuallyDrop::<[u8; 0usize]> {
 }
 
 // Full name: test_crate::C
-const C: &'_ (dyn FakeTrait) = unsize_cast<&'_ (dyn FakeTrait), cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<S>)>(cast<*const S>(&raw const anon_const_0))
+const C: &'_ (dyn test_crate::MyTrait) = unsize_cast<&'_ (dyn test_crate::MyTrait), cast<*const ()>(&raw const {vtable}::test_crate::MyTrait::<S>)>(cast<*const S>(&raw const anon_const_0))
 
 // Full name: anon_const_0
 const anon_const_0: MaybeUninit::<[u8; 0usize]> = RawMemory()
 
 vtable {vtable}::test_crate::MyTrait::<S>: [*const (); 4usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 0, no-provenance 1, cast<*const ()>(fnptr(val))]
+
+// Full name: {vtable}::unknown_trait::<S>
+vtable unknown_trait::<S>: [*const (); 3usize] = [cast<*const ()>(fnptr(drop_glue::<S>)), no-provenance 0, no-provenance 1]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -33,8 +36,19 @@ trait FakeTrait
 trait test_crate::MyTrait
 
 // Full name: test_crate::{impl test_crate::MyTrait for S}
-impl "impl_MyTrait_for_S" test_crate::MyTrait for S {
+impl test_crate::MyTrait for S {
     vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: {impl test_crate::MyTrait for S}
+impl test_crate::MyTrait for S {
+    proof ImpliedClause0: (S: FakeTrait) = impl_FakeTrait_for_S
+    vtable: {vtable}::test_crate::MyTrait::<S>
+}
+
+// Full name: {impl FakeTrait for S}
+impl "impl_FakeTrait_for_S" FakeTrait for S {
+    vtable: unknown_trait::<S>
 }
 
 // Full name: test_crate::{impl test_crate::MyTrait for S}::val
@@ -51,13 +65,13 @@ pub fn val(self: &'_ S) -> u32
 }
 
 // Full name: test_crate::get
-pub fn get() -> &'_ (dyn FakeTrait)
+pub fn get() -> &'_ (dyn test_crate::MyTrait)
 {
-    let _0: &'_ (dyn FakeTrait); // return
-    let _1: &'_ (dyn FakeTrait); // anonymous local
-    let _2: &'_ (dyn FakeTrait); // anonymous local
-    let _3: &'_ (dyn FakeTrait); // anonymous local
-    let _4: &'_ (dyn FakeTrait); // anonymous local
+    let _0: &'_ (dyn test_crate::MyTrait); // return
+    let _1: &'_ (dyn test_crate::MyTrait); // anonymous local
+    let _2: &'_ (dyn test_crate::MyTrait); // anonymous local
+    let _3: &'_ (dyn test_crate::MyTrait); // anonymous local
+    let _4: &'_ (dyn test_crate::MyTrait); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -67,10 +81,10 @@ pub fn get() -> &'_ (dyn FakeTrait)
         storage_live(_4);
         _4 = const C;
         _3 = &(*_4) with_metadata(copy _4.metadata);
-        _2 = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _3);
+        _2 = unsize_cast<&'_ (dyn test_crate::MyTrait),  at []>(move _3);
         storage_dead(_3);
         _1 = &(*_2) with_metadata(copy _2.metadata);
-        _0 = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _1);
+        _0 = unsize_cast<&'_ (dyn test_crate::MyTrait),  at []>(move _1);
         storage_dead(_4);
         storage_dead(_2);
         storage_dead(_1);
