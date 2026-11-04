@@ -1397,6 +1397,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 unwind, // We model unwinding as an effet, we don't represent it in control flow
             } => {
                 let kind = self.translate_assert_kind(span, msg)?;
+                self.enqueue_failed_check_fn(span, msg);
                 let assert = Assert {
                     cond: self.translate_operand(span, cond)?,
                     expected: *expected,

@@ -88,10 +88,6 @@ pub struct UnsafeCell::<u32> {
   value: u32,
 }
 
-struct str {
-  _0: [u8],
-}
-
 // Full name: core::fmt::Arguments::<'_>
 #[lang_item(FormatArguments)]
 pub struct Arguments::<'_> {
@@ -99,23 +95,8 @@ pub struct Arguments::<'_> {
   args: NonNull::<Argument::<'_>>,
 }
 
-// Full name: core::result::Result::<(), TryReserveError>
-#[diagnostic_item("Result")]
-pub enum Result::<(), TryReserveError> {
-  Ok { _0: () },
-  Err { _0: TryReserveError },
-}
-
-// Full name: alloc::collections::TryReserveError
-pub struct TryReserveError {
-  kind: TryReserveErrorKind,
-}
-
-// Full name: core::alloc::layout::Layout
-#[lang_item(AllocLayout)]
-pub struct Layout {
-  size: usize,
-  align: Alignment,
+struct str {
+  _0: [u8],
 }
 
 // Full name: core::fmt::Arguments::<'_>
@@ -147,6 +128,43 @@ pub struct Location::<'_> {
   line: u32,
   col: u32,
   _filename: PhantomData::<&'_ str>,
+}
+
+// Full name: core::result::Result::<(), TryReserveError>
+#[diagnostic_item("Result")]
+pub enum Result::<(), TryReserveError> {
+  Ok { _0: () },
+  Err { _0: TryReserveError },
+}
+
+// Full name: alloc::collections::TryReserveError
+pub struct TryReserveError {
+  kind: TryReserveErrorKind,
+}
+
+// Full name: core::alloc::layout::Layout
+#[lang_item(AllocLayout)]
+pub struct Layout {
+  size: usize,
+  align: Alignment,
+}
+
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
+}
+
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveErrorKind>, usize>
@@ -227,24 +245,6 @@ pub enum Option::<(NonNull::<u8>, Layout)> {
 struct (_, _)::<NonNull::<u8>, Layout> {
   _0: NonNull::<u8>,
   _1: Layout,
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
 }
 
 // Full name: core::ops::control_flow::ControlFlow::<Result::<!, TryReserveError>, Layout>
@@ -465,7 +465,10 @@ pub struct FormattingOptions {
 pub const ALIGNMENT::<u32>: Alignment = Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl2 {  } }
 
 // Full name: anon_const_0
-const anon_const_0: [u8; 43usize] = [99u8, 97u8, 108u8, 108u8, 101u8, 100u8, 32u8, 96u8, 79u8, 112u8, 116u8, 105u8, 111u8, 110u8, 58u8, 58u8, 117u8, 110u8, 119u8, 114u8, 97u8, 112u8, 40u8, 41u8, 96u8, 32u8, 111u8, 110u8, 32u8, 97u8, 32u8, 96u8, 78u8, 111u8, 110u8, 101u8, 96u8, 32u8, 118u8, 97u8, 108u8, 117u8, 101u8]
+const anon_const_0: [u8; 28usize] = [97u8, 116u8, 116u8, 101u8, 109u8, 112u8, 116u8, 32u8, 116u8, 111u8, 32u8, 97u8, 100u8, 100u8, 32u8, 119u8, 105u8, 116u8, 104u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8]
+
+// Full name: anon_const_1
+const anon_const_1: [u8; 43usize] = [99u8, 97u8, 108u8, 108u8, 101u8, 100u8, 32u8, 96u8, 79u8, 112u8, 116u8, 105u8, 111u8, 110u8, 58u8, 58u8, 117u8, 110u8, 119u8, 114u8, 97u8, 112u8, 40u8, 41u8, 96u8, 32u8, 111u8, 110u8, 32u8, 97u8, 32u8, 96u8, 78u8, 111u8, 110u8, 101u8, 96u8, 32u8, 118u8, 97u8, 108u8, 117u8, 101u8]
 
 // Full name: core::mem::SizedTypeProperties::SIZE::<u32>
 #[lang_item(SizeOf)]
@@ -474,38 +477,38 @@ pub const SIZE::<u32>: usize = 4usize
 // Full name: core::mem::SizedTypeProperties::LAYOUT::<u32>
 pub const LAYOUT::<u32>: Layout = Layout { size: 4usize, align: Alignment { _inner_repr_trick: AlignmentEnum::_Align1Shl2 {  } } }
 
-// Full name: anon_const_1
-const anon_const_1: [u8; 17usize] = [99u8, 97u8, 112u8, 97u8, 99u8, 105u8, 116u8, 121u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8]
-
 // Full name: anon_const_2
-const anon_const_2: [u8; 221usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 104u8, 105u8, 110u8, 116u8, 58u8, 58u8, 97u8, 115u8, 115u8, 101u8, 114u8, 116u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 109u8, 117u8, 115u8, 116u8, 32u8, 110u8, 101u8, 118u8, 101u8, 114u8, 32u8, 98u8, 101u8, 32u8, 99u8, 97u8, 108u8, 108u8, 101u8, 100u8, 32u8, 119u8, 104u8, 101u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 32u8, 105u8, 115u8, 32u8, 102u8, 97u8, 108u8, 115u8, 101u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_2: [u8; 17usize] = [99u8, 97u8, 112u8, 97u8, 99u8, 105u8, 116u8, 121u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8]
 
 // Full name: anon_const_3
-const anon_const_3: [u8; 17usize] = [97u8, 108u8, 108u8, 111u8, 99u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8]
+const anon_const_3: [u8; 221usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 104u8, 105u8, 110u8, 116u8, 58u8, 58u8, 97u8, 115u8, 115u8, 101u8, 114u8, 116u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 109u8, 117u8, 115u8, 116u8, 32u8, 110u8, 101u8, 118u8, 101u8, 114u8, 32u8, 98u8, 101u8, 32u8, 99u8, 97u8, 108u8, 108u8, 101u8, 100u8, 32u8, 119u8, 104u8, 101u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 32u8, 105u8, 115u8, 32u8, 102u8, 97u8, 108u8, 115u8, 101u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_4
-const anon_const_4: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 109u8, 117u8, 108u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_4: [u8; 17usize] = [97u8, 108u8, 108u8, 111u8, 99u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8]
 
 // Full name: anon_const_5
-const anon_const_5: [u8; 281usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 76u8, 97u8, 121u8, 111u8, 117u8, 116u8, 58u8, 58u8, 102u8, 114u8, 111u8, 109u8, 95u8, 115u8, 105u8, 122u8, 101u8, 95u8, 97u8, 108u8, 105u8, 103u8, 110u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 32u8, 105u8, 115u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 32u8, 111u8, 102u8, 32u8, 50u8, 32u8, 97u8, 110u8, 100u8, 32u8, 116u8, 104u8, 101u8, 32u8, 114u8, 111u8, 117u8, 110u8, 100u8, 101u8, 100u8, 45u8, 117u8, 112u8, 32u8, 97u8, 108u8, 108u8, 111u8, 99u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 115u8, 105u8, 122u8, 101u8, 32u8, 100u8, 111u8, 101u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 101u8, 120u8, 99u8, 101u8, 101u8, 100u8, 32u8, 105u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 77u8, 65u8, 88u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_5: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 109u8, 117u8, 108u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_6
-const anon_const_6: [u8; 198usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 65u8, 108u8, 105u8, 103u8, 110u8, 109u8, 101u8, 110u8, 116u8, 58u8, 58u8, 110u8, 101u8, 119u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 32u8, 111u8, 102u8, 32u8, 116u8, 119u8, 111u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_6: [u8; 281usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 76u8, 97u8, 121u8, 111u8, 117u8, 116u8, 58u8, 58u8, 102u8, 114u8, 111u8, 109u8, 95u8, 115u8, 105u8, 122u8, 101u8, 95u8, 97u8, 108u8, 105u8, 103u8, 110u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 32u8, 105u8, 115u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 32u8, 111u8, 102u8, 32u8, 50u8, 32u8, 97u8, 110u8, 100u8, 32u8, 116u8, 104u8, 101u8, 32u8, 114u8, 111u8, 117u8, 110u8, 100u8, 101u8, 100u8, 45u8, 117u8, 112u8, 32u8, 97u8, 108u8, 108u8, 111u8, 99u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 115u8, 105u8, 122u8, 101u8, 32u8, 100u8, 111u8, 101u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 101u8, 120u8, 99u8, 101u8, 101u8, 100u8, 32u8, 105u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 77u8, 65u8, 88u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_7
-const anon_const_7: [u8; 210usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 78u8, 111u8, 110u8, 78u8, 117u8, 108u8, 108u8, 58u8, 58u8, 110u8, 101u8, 119u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_7: [u8; 198usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 65u8, 108u8, 105u8, 103u8, 110u8, 109u8, 101u8, 110u8, 116u8, 58u8, 58u8, 110u8, 101u8, 119u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 32u8, 111u8, 102u8, 32u8, 116u8, 119u8, 111u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_8
-const anon_const_8: [u8; 283usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 99u8, 111u8, 112u8, 121u8, 95u8, 110u8, 111u8, 110u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 112u8, 105u8, 110u8, 103u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 98u8, 111u8, 116u8, 104u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 97u8, 114u8, 103u8, 117u8, 109u8, 101u8, 110u8, 116u8, 115u8, 32u8, 97u8, 114u8, 101u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 97u8, 110u8, 100u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 32u8, 97u8, 110u8, 100u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 112u8, 101u8, 99u8, 105u8, 102u8, 105u8, 101u8, 100u8, 32u8, 109u8, 101u8, 109u8, 111u8, 114u8, 121u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 115u8, 32u8, 100u8, 111u8, 32u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_8: [u8; 210usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 78u8, 111u8, 110u8, 78u8, 117u8, 108u8, 108u8, 58u8, 58u8, 110u8, 101u8, 119u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_9
-const anon_const_9: [u8; 228usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 119u8, 114u8, 105u8, 116u8, 101u8, 95u8, 98u8, 121u8, 116u8, 101u8, 115u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 100u8, 101u8, 115u8, 116u8, 105u8, 110u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 105u8, 115u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 97u8, 110u8, 100u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_9: [u8; 283usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 99u8, 111u8, 112u8, 121u8, 95u8, 110u8, 111u8, 110u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 112u8, 105u8, 110u8, 103u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 98u8, 111u8, 116u8, 104u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 97u8, 114u8, 103u8, 117u8, 109u8, 101u8, 110u8, 116u8, 115u8, 32u8, 97u8, 114u8, 101u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 97u8, 110u8, 100u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 32u8, 97u8, 110u8, 100u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 112u8, 101u8, 99u8, 105u8, 102u8, 105u8, 101u8, 100u8, 32u8, 109u8, 101u8, 109u8, 111u8, 114u8, 121u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 115u8, 32u8, 100u8, 111u8, 32u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_10
-const anon_const_10: [u8; 42usize] = [105u8, 115u8, 95u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 95u8, 116u8, 111u8, 58u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 45u8, 111u8, 102u8, 45u8, 116u8, 119u8, 111u8]
+const anon_const_10: [u8; 228usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 119u8, 114u8, 105u8, 116u8, 101u8, 95u8, 98u8, 121u8, 116u8, 101u8, 115u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 100u8, 101u8, 115u8, 116u8, 105u8, 110u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 114u8, 32u8, 105u8, 115u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 97u8, 110u8, 100u8, 32u8, 110u8, 111u8, 110u8, 45u8, 110u8, 117u8, 108u8, 108u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_11
-const anon_const_11: [u8; 61usize] = [105u8, 115u8, 95u8, 110u8, 111u8, 110u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 112u8, 105u8, 110u8, 103u8, 58u8, 32u8, 96u8, 115u8, 105u8, 122u8, 101u8, 95u8, 111u8, 102u8, 58u8, 58u8, 60u8, 84u8, 62u8, 40u8, 41u8, 32u8, 42u8, 32u8, 99u8, 111u8, 117u8, 110u8, 116u8, 96u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 115u8, 32u8, 97u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8]
+const anon_const_11: [u8; 42usize] = [105u8, 115u8, 95u8, 97u8, 108u8, 105u8, 103u8, 110u8, 101u8, 100u8, 95u8, 116u8, 111u8, 58u8, 32u8, 97u8, 108u8, 105u8, 103u8, 110u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 97u8, 32u8, 112u8, 111u8, 119u8, 101u8, 114u8, 45u8, 111u8, 102u8, 45u8, 116u8, 119u8, 111u8]
+
+// Full name: anon_const_12
+const anon_const_12: [u8; 61usize] = [105u8, 115u8, 95u8, 110u8, 111u8, 110u8, 111u8, 118u8, 101u8, 114u8, 108u8, 97u8, 112u8, 112u8, 105u8, 110u8, 103u8, 58u8, 32u8, 96u8, 115u8, 105u8, 122u8, 101u8, 95u8, 111u8, 102u8, 58u8, 58u8, 60u8, 84u8, 62u8, 40u8, 41u8, 32u8, 42u8, 32u8, 99u8, 111u8, 117u8, 110u8, 116u8, 96u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 115u8, 32u8, 97u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -898,6 +901,39 @@ pub fn get_mut::<u32>(self: &'_ mut Cell::<u32>) -> &'_ mut u32
 pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
 = <intrinsic:add_with_overflow>
 
+// Full name: core::panicking::panic_const::panic_const_add_overflow
+#[track_caller]
+#[lang_item(PanicAddOverflow)]
+pub fn panic_const_add_overflow() -> !
+{
+    let _0: !; // return
+    let _1: !; // anonymous local
+    let _2: Arguments::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        storage_live(_2);
+        _2 = from_str::<'_>(const unsize_cast<&'_ str, 28usize>(&raw const anon_const_0)) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        _1 = panic_fmt(move _2) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
+
 // Full name: core::option::unwrap_failed
 #[track_caller]
 fn unwrap_failed() -> !
@@ -906,7 +942,7 @@ fn unwrap_failed() -> !
 
     bb0: {
         storage_live(_0);
-        _0 = panic(const unsize_cast<&'_ str, 43usize>(&raw const anon_const_0)) -> bb1 (unwind: bb2);
+        _0 = panic(const unsize_cast<&'_ str, 43usize>(&raw const anon_const_1)) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -1076,6 +1112,134 @@ fn drop_glue::<RawVec::<u32, Global>>(_1: &'_ mut RawVec::<u32, Global>)
     }
 }
 
+// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
+{
+    let _0: Arguments::<'_>; // return
+    let s: &'_ str; // arg #1
+    let _2: NonNull::<u8>; // anonymous local
+    let _3: *const u8; // anonymous local
+    let _4: NonNull::<Argument::<'_>>; // anonymous local
+    let _5: usize; // anonymous local
+    let _6: usize; // anonymous local
+    let _7: usize; // anonymous local
+    let _8: *const str; // anonymous local
+    let _9: &'_ [u8]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_8);
+        _8 = &raw const (*s) with_metadata(copy s.metadata);
+        _3 = cast<*const u8>(copy _8);
+        storage_dead(_8);
+        _2 = transmute<NonNull::<u8>>(copy _3);
+        storage_dead(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_9);
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
+        storage_dead(_9);
+        _6 = move _7 wrap.<< const 1i32;
+        storage_dead(_7);
+        _5 = move _6 | const 1usize;
+        storage_dead(_6);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
+        storage_dead(_5);
+        _0 = Arguments::<'_> { template: move _2, args: move _4 };
+        storage_dead(_4);
+        storage_dead(_2);
+        return;
+    }
+}
+
+// Full name: core::panicking::panic_fmt
+#[track_caller]
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
+{
+    let _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let _2: (); // anonymous local
+    let _3: bool; // anonymous local
+    let _4: !; // anonymous local
+    let pi: PanicInfo::<'_>; // local
+    let _6: &'_ Arguments::<'_>; // anonymous local
+    let _7: &'_ Arguments::<'_>; // anonymous local
+    let _8: &'_ Location::<'_>; // anonymous local
+    let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let _10: &'_ PanicInfo::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        _3 = const false;
+        if move _3 -> bb1 else -> bb4;
+    }
+
+    bb1: {
+        storage_live(_4);
+        _4 = abort() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        _2 = const ();
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_6);
+        storage_live(_7);
+        _7 = &fmt;
+        _6 = &(*_7);
+        storage_live(_8);
+        _8 = caller::<'_>() -> bb5 (unwind: bb10);
+    }
+
+    bb5: {
+        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _6, move _8, const true, const false) -> bb6 (unwind: bb9);
+    }
+
+    bb6: {
+        storage_dead(_8);
+        storage_dead(_6);
+        storage_dead(_7);
+        storage_live(_9);
+        storage_live(_10);
+        _10 = &pi;
+        _9 = &(*_10);
+        _0 = panic_impl(move _9) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
+    }
+}
+
 // Full name: core::panicking::panic
 #[track_caller]
 #[lang_item(Panic)]
@@ -1218,133 +1382,50 @@ pub fn {impl Drop for RawVec::<_, _>}::drop::<u32, Global>(self: &'_ mut RawVec:
     }
 }
 
-// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
-{
-    let _0: Arguments::<'_>; // return
-    let s: &'_ str; // arg #1
-    let _2: NonNull::<u8>; // anonymous local
-    let _3: *const u8; // anonymous local
-    let _4: NonNull::<Argument::<'_>>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const str; // anonymous local
-    let _9: &'_ [u8]; // anonymous local
+// Full name: core::intrinsics::abort
+#[rustc_intrinsic]
+pub fn abort() -> !
+= <intrinsic:abort>
 
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_8);
-        _8 = &raw const (*s) with_metadata(copy s.metadata);
-        _3 = cast<*const u8>(copy _8);
-        storage_dead(_8);
-        _2 = transmute<NonNull::<u8>>(copy _3);
-        storage_dead(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_9);
-        _9 = transmute<&'_ [u8]>(copy s);
-        _7 = noretag copy _9.metadata;
-        storage_dead(_9);
-        _6 = move _7 wrap.<< const 1i32;
-        storage_dead(_7);
-        _5 = move _6 | const 1usize;
-        storage_dead(_6);
-        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
-        storage_dead(_5);
-        _0 = Arguments::<'_> { template: move _2, args: move _4 };
-        storage_dead(_4);
-        storage_dead(_2);
-        return;
-    }
-}
-
-// Full name: core::panicking::panic_fmt
+// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
 #[track_caller]
-#[lang_item(PanicFmt)]
-pub fn panic_fmt(fmt: Arguments::<'_>) -> !
+pub fn caller::<'_>() -> &'_ Location::<'_>
 {
-    let _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let _2: (); // anonymous local
-    let _3: bool; // anonymous local
-    let _4: !; // anonymous local
-    let pi: PanicInfo::<'_>; // local
-    let _6: &'_ Arguments::<'_>; // anonymous local
-    let _7: &'_ Arguments::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
-    let _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
+    let _0: &'_ Location::<'_>; // return
 
     bb0: {
         storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _3 = const false;
-        if move _3 -> bb1 else -> bb4;
+        _0 = caller_location() -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        storage_live(_4);
-        _4 = abort() -> bb2 (unwind: bb3);
+        return;
     }
 
     bb2: {
         undefined_behavior;
     }
+}
 
-    bb3: {
-        undefined_behavior;
-    }
+fn core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
+{
+    let _0: PanicInfo::<'_>; // return
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
 
-    bb4: {
-        _2 = const ();
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_6);
-        storage_live(_7);
-        _7 = &fmt;
-        _6 = &(*_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb10);
-    }
-
-    bb5: {
-        pi = core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(move _6, move _8, const true, const false) -> bb6 (unwind: bb9);
-    }
-
-    bb6: {
-        storage_dead(_8);
-        storage_dead(_6);
-        storage_dead(_7);
-        storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb7 (unwind: bb8);
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
-        unwind_continue;
+    bb0: {
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        return;
     }
 }
+
+// Full name: core::panicking::panic_fmt::panic_impl
+#[lang_item(PanicImpl)]
+extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
+= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
 
 // Full name: alloc::raw_vec::{RawVecInner::<_>}::grow_amortized::<Global>
 fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, additional: usize, elem_layout: Layout) -> Result::<(), TryReserveError>
@@ -1791,50 +1872,16 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
     }
 }
 
-// Full name: core::intrinsics::abort
+// Full name: core::intrinsics::caller_location
 #[rustc_intrinsic]
-pub fn abort() -> !
-= <intrinsic:abort>
+pub fn caller_location() -> &'_ Location::<'_>
+= <intrinsic:caller_location>
 
-// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
-#[track_caller]
-pub fn caller::<'_>() -> &'_ Location::<'_>
-{
-    let _0: &'_ Location::<'_>; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = caller_location() -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-}
-
-fn core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
-{
-    let _0: PanicInfo::<'_>; // return
-    let message: &'_ Arguments::<'_>; // arg #1
-    let location: &'_ Location::<'_>; // arg #2
-    let can_unwind: bool; // arg #3
-    let force_no_backtrace: bool; // arg #4
-
-    bb0: {
-        storage_live(_0);
-        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        return;
-    }
-}
-
-// Full name: core::panicking::panic_fmt::panic_impl
+// Full name: std::panicking::panic_handler
+#[export_name = "_RNvCs<hash>_7___rustc17rust_begin_unwind"]
 #[lang_item(PanicImpl)]
-extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
-= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
+fn panic_handler(_1: &'_ PanicInfo::<'_>) -> !
+= <missing>
 
 // Full name: core::intrinsics::add_with_overflow::<usize>
 #[rustc_intrinsic]
@@ -2227,7 +2274,7 @@ fn capacity_overflow() -> !
         storage_live(_0);
         storage_live(_1);
         storage_live(_2);
-        _2 = from_str::<'_>(const unsize_cast<&'_ str, 17usize>(&raw const anon_const_1)) -> bb1 (unwind: bb4);
+        _2 = from_str::<'_>(const unsize_cast<&'_ str, 17usize>(&raw const anon_const_2)) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -2428,17 +2475,6 @@ pub fn impl_Allocator_for_Global::deallocate(self: &'_ Global, ptr: NonNull::<u8
     }
 }
 
-// Full name: core::intrinsics::caller_location
-#[rustc_intrinsic]
-pub fn caller_location() -> &'_ Location::<'_>
-= <intrinsic:caller_location>
-
-// Full name: std::panicking::panic_handler
-#[export_name = "_RNvCs<hash>_7___rustc17rust_begin_unwind"]
-#[lang_item(PanicImpl)]
-fn panic_handler(_1: &'_ PanicInfo::<'_>) -> !
-= <missing>
-
 // Full name: core::intrinsics::mul_with_overflow::<u64>
 #[rustc_intrinsic]
 pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
@@ -2495,7 +2531,7 @@ fn core::hint::assert_unchecked::precondition_check(cond: bool)
     }
 
     bb2: {
-        msg = const unsize_cast<&'_ str, 221usize>(&raw const anon_const_2);
+        msg = const unsize_cast<&'_ str, 221usize>(&raw const anon_const_3);
         storage_live(_4);
         storage_live(_5);
         storage_live(_6);
@@ -2510,7 +2546,7 @@ fn core::hint::assert_unchecked::precondition_check(cond: bool)
         storage_live(_9);
         storage_live(_10);
         storage_live(_12);
-        _12 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 221usize>(&raw const anon_const_2));
+        _12 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 221usize>(&raw const anon_const_3));
         _10 = noretag copy _12.metadata;
         storage_dead(_12);
         _9 = move _10 wrap.<< const 1i32;
@@ -2569,7 +2605,7 @@ fn ct_error(_1: Layout) -> !
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
-        _3 = from_str::<'_>(const unsize_cast<&'_ str, 17usize>(&raw const anon_const_3)) -> bb1 (unwind: bb4);
+        _3 = from_str::<'_>(const unsize_cast<&'_ str, 17usize>(&raw const anon_const_4)) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -2634,7 +2670,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb2: {
-        msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_4);
+        msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_5);
         storage_live(_5);
         storage_live(_10);
         storage_live(_11);
@@ -2649,7 +2685,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 186usize>(&raw const anon_const_4));
+        _17 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 186usize>(&raw const anon_const_5));
         _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
@@ -2764,7 +2800,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
     }
 
     bb8: {
-        msg = const unsize_cast<&'_ str, 281usize>(&raw const anon_const_5);
+        msg = const unsize_cast<&'_ str, 281usize>(&raw const anon_const_6);
         storage_live(_6);
         storage_live(_13);
         storage_live(_14);
@@ -2779,7 +2815,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
         storage_live(_17);
         storage_live(_18);
         storage_live(_20);
-        _20 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 281usize>(&raw const anon_const_5));
+        _20 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 281usize>(&raw const anon_const_6));
         _18 = noretag copy _20.metadata;
         storage_dead(_20);
         _17 = move _18 wrap.<< const 1i32;
@@ -3613,7 +3649,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
     }
 
     bb3: {
-        msg = const unsize_cast<&'_ str, 198usize>(&raw const anon_const_6);
+        msg = const unsize_cast<&'_ str, 198usize>(&raw const anon_const_7);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -3628,7 +3664,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 198usize>(&raw const anon_const_6));
+        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 198usize>(&raw const anon_const_7));
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -3693,7 +3729,7 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
     }
 
     bb1: {
-        msg = const unsize_cast<&'_ str, 210usize>(&raw const anon_const_7);
+        msg = const unsize_cast<&'_ str, 210usize>(&raw const anon_const_8);
         storage_live(_5);
         storage_live(_7);
         storage_live(_8);
@@ -3708,7 +3744,7 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 210usize>(&raw const anon_const_7));
+        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 210usize>(&raw const anon_const_8));
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -3948,7 +3984,7 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
     }
 
     bb22: {
-        msg = const unsize_cast<&'_ str, 283usize>(&raw const anon_const_8);
+        msg = const unsize_cast<&'_ str, 283usize>(&raw const anon_const_9);
         storage_live(_14);
         storage_live(_21);
         storage_live(_22);
@@ -3963,7 +3999,7 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
         storage_live(_25);
         storage_live(_26);
         storage_live(_28);
-        _28 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 283usize>(&raw const anon_const_8));
+        _28 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 283usize>(&raw const anon_const_9));
         _26 = noretag copy _28.metadata;
         storage_dead(_28);
         _25 = move _26 wrap.<< const 1i32;
@@ -4069,7 +4105,7 @@ fn core::ptr::write_bytes::precondition_check(addr: *const (), align: usize, zer
     }
 
     bb7: {
-        msg = const unsize_cast<&'_ str, 228usize>(&raw const anon_const_9);
+        msg = const unsize_cast<&'_ str, 228usize>(&raw const anon_const_10);
         storage_live(_7);
         storage_live(_11);
         storage_live(_12);
@@ -4084,7 +4120,7 @@ fn core::ptr::write_bytes::precondition_check(addr: *const (), align: usize, zer
         storage_live(_15);
         storage_live(_16);
         storage_live(_18);
-        _18 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 228usize>(&raw const anon_const_9));
+        _18 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 228usize>(&raw const anon_const_10));
         _16 = noretag copy _18.metadata;
         storage_dead(_18);
         _15 = move _16 wrap.<< const 1i32;
@@ -4176,7 +4212,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
     bb3: {
         storage_live(_5);
         storage_live(s);
-        s = const unsize_cast<&'_ str, 42usize>(&raw const anon_const_10);
+        s = const unsize_cast<&'_ str, 42usize>(&raw const anon_const_11);
         storage_live(_12);
         storage_live(_13);
         storage_live(_18);
@@ -4190,7 +4226,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_16);
         storage_live(_17);
         storage_live(_19);
-        _19 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 42usize>(&raw const anon_const_10));
+        _19 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 42usize>(&raw const anon_const_11));
         _17 = noretag copy _19.metadata;
         storage_dead(_19);
         _16 = move _17 wrap.<< const 1i32;
@@ -4282,7 +4318,7 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
         storage_dead(a);
         storage_dead(b);
         storage_dead(_9);
-        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_11)) -> bb4 (unwind: bb5);
+        _7 = panic_nounwind(const unsize_cast<&'_ str, 61usize>(&raw const anon_const_12)) -> bb4 (unwind: bb5);
     }
 
     bb4: {

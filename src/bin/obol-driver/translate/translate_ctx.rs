@@ -71,9 +71,10 @@ pub struct TranslateCtx<'tcx> {
     /// The functions of the crate and its dependencies exported under an explicit symbol, by
     /// symbol (see `exported_fns`); computed on first use.
     pub exported_fns: Option<HashMap<String, Vec<rustc_hir::def_id::DefId>>>,
-    /// The functions translated because a foreign function's symbol links to them (see
-    /// `enqueue_linked_definitions`).
-    pub linked_definitions: BTreeSet<ItemId>,
+    /// The functions that are roots of the translation although no entry point names them: those
+    /// a foreign function's symbol links to (see `enqueue_linked_definitions`), and those rustc's
+    /// code generation calls when a check fails (see `enqueue_failed_check_fn`).
+    pub implicit_roots: BTreeSet<ItemId>,
 }
 
 /// A translation context for items.

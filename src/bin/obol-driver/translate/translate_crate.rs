@@ -1,5 +1,6 @@
 extern crate rustc_abi;
 extern crate rustc_ast;
+extern crate rustc_attr_ir;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
@@ -462,6 +463,20 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         self.t_ctx.register_fun_decl_id(&src, id)
     }
 
+    /// Enqueues the function rustc's code generation calls when the check `msg` fails (the lang
+    /// item `panic_bounds_check`, `panic_const_add_overflow`, ...; see `failed_check_lang_item`).
+    /// Asserts don't name it, so it is an implicit root of the translation.
+    pub(crate) fn enqueue_failed_check_fn(&mut self, span: Span, msg: &mir::AssertMessage) {
+        let tcx = self.t_ctx.tcx;
+        let Some(def_id) = failed_check_lang_item(msg).and_then(|item| tcx.lang_items().get(item))
+        else {
+            return;
+        };
+        let instance = rustc_internal::stable(rustc_middle::ty::Instance::mono(tcx, def_id));
+        let id = self.register_fun_decl_id(span, instance);
+        self.t_ctx.implicit_roots.insert(ItemId::Fun(id));
+    }
+
     pub(crate) fn register_closure_type_decl_id(
         &mut self,
         span: Span,
@@ -560,7 +575,7 @@ impl<'tcx> TranslateCtx<'tcx> {
         for def_id in exported {
             let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
             let id = self.register_fun_decl_id(&None, rustc_internal::stable(instance));
-            self.linked_definitions.insert(ItemId::Fun(id));
+            self.implicit_roots.insert(ItemId::Fun(id));
         }
     }
 
@@ -905,6 +920,40 @@ fn is_linked_internal_fn(tcx: TyCtxt<'_>, def_id: rustc_span::def_id::DefId) -> 
         && (global_allocator || panic_handler)
 }
 
+/// The lang item rustc's code generation calls when the check `msg` fails, with the operands of
+/// the check and the location of the assert (`codegen_assert_terminator`): `panic_bounds_check`
+/// and `panic_misaligned_pointer_dereference` take operands, the others print a fixed message
+/// (`AssertKind::panic_function`). Coroutine checks are not supported.
+fn failed_check_lang_item(msg: &mir::AssertMessage) -> Option<rustc_attr_ir::LangItem> {
+    use mir::{AssertMessage, BinOp};
+    use rustc_attr_ir::LangItem;
+    Some(match msg {
+        AssertMessage::BoundsCheck { .. } => LangItem::PanicBoundsCheck,
+        AssertMessage::MisalignedPointerDereference { .. } => {
+            LangItem::PanicMisalignedPointerDereference
+        }
+        AssertMessage::Overflow(op, _, _) => match op {
+            BinOp::Add => LangItem::PanicAddOverflow,
+            BinOp::Sub => LangItem::PanicSubOverflow,
+            BinOp::Mul => LangItem::PanicMulOverflow,
+            BinOp::Div => LangItem::PanicDivOverflow,
+            BinOp::Rem => LangItem::PanicRemOverflow,
+            BinOp::Shl => LangItem::PanicShlOverflow,
+            BinOp::Shr => LangItem::PanicShrOverflow,
+            _ => return None,
+        },
+        AssertMessage::OverflowNeg(_) => LangItem::PanicNegOverflow,
+        AssertMessage::DivisionByZero(_) => LangItem::PanicDivZero,
+        AssertMessage::RemainderByZero(_) => LangItem::PanicRemZero,
+        AssertMessage::NullPointerDereference => LangItem::PanicNullPointerDereference,
+        AssertMessage::NullReferenceConstructed => LangItem::PanicNullReferenceConstructed,
+        AssertMessage::InvalidEnumConstruction(_) => LangItem::PanicInvalidEnumConstruction,
+        AssertMessage::ResumedAfterReturn(_)
+        | AssertMessage::ResumedAfterPanic(_)
+        | AssertMessage::ResumedAfterDrop(_) => return None,
+    })
+}
+
 /// The symbol of `def_id` if it is one of the standard library's internal symbols the program
 /// defines (see `is_linked_internal_fn`), which foreign functions link to.
 pub(crate) fn linked_internal_symbol(
@@ -1069,7 +1118,7 @@ pub fn translate<'tcx, 'ctx>(
         alloc_types: Default::default(),
         test_functions: Default::default(),
         exported_fns: None,
-        linked_definitions: Default::default(),
+        implicit_roots: Default::default(),
     };
 
     let triple = ctx.get_target_triple();
@@ -1129,10 +1178,10 @@ pub fn translate<'tcx, 'ctx>(
         }
     }
 
-    // Later passes (e.g. `reorder_decls`) keep only the items reachable from these. Linked
-    // definitions are only reachable through their symbol.
-    let linked = std::mem::take(&mut ctx.linked_definitions);
-    for id in entrypoints.into_iter().chain(linked) {
+    // Later passes (e.g. `reorder_decls`) keep only the items reachable from these. Implicit roots
+    // are only reachable through their symbol, or from the code generation of checks.
+    let implicit_roots = std::mem::take(&mut ctx.implicit_roots);
+    for id in entrypoints.into_iter().chain(implicit_roots) {
         if let Some(mut item) = ctx.translated.get_item_mut(id) {
             item.item_meta().started_from = true;
         }

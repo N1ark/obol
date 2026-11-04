@@ -312,6 +312,9 @@ const anon_const_4: [u8; 210usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 3
 // Full name: anon_const_5
 const anon_const_5: [u8; 17usize] = [97u8, 108u8, 108u8, 111u8, 99u8, 97u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8]
 
+// Full name: anon_const_6
+const anon_const_6: [u8; 28usize] = [97u8, 116u8, 116u8, 101u8, 109u8, 112u8, 116u8, 32u8, 116u8, 111u8, 32u8, 97u8, 100u8, 100u8, 32u8, 119u8, 105u8, 116u8, 104u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8]
+
 // Full name: FakeTrait
 trait FakeTrait
 
@@ -1668,6 +1671,39 @@ fn {impl test_crate::Modifiable<T> for Box::<i32, Global>}::modify::<i32>(self: 
 #[rustc_intrinsic]
 pub fn add_with_overflow::<i32>(x_1: i32, y_2: i32) -> (i32, bool)
 = <intrinsic:add_with_overflow>
+
+// Full name: core::panicking::panic_const::panic_const_add_overflow
+#[track_caller]
+#[lang_item(PanicAddOverflow)]
+pub fn panic_const_add_overflow() -> !
+{
+    let _0: !; // return
+    let _1: !; // anonymous local
+    let _2: Arguments::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        storage_live(_2);
+        _2 = from_str::<'_>(const unsize_cast<&'_ str, 28usize>(&raw const anon_const_6)) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        _1 = panic_fmt(move _2) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
 
 // Full name: core::clone::impls::{impl Clone for i32}::clone
 pub fn clone(self: &'_ i32) -> i32
