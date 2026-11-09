@@ -37,7 +37,7 @@ impl "impl_MyTrait_for_MyStruct" test_crate::MyTrait for MyStruct {
 // Full name: test_crate::{impl test_crate::MyTrait for MyStruct}::foo
 pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self: &'_ MyStruct; // arg #1
 
     bb0: {
@@ -51,15 +51,15 @@ pub fn impl_MyTrait_for_MyStruct::foo(self: &'_ MyStruct)
 // Full name: test_crate::main
 fn main()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let x: &'_ (dyn FakeTrait); // local
-    let _2: &'_ MyStruct; // anonymous local
+    let mut _2: &'_ MyStruct; // anonymous local
     let _3: &'_ MyStruct; // anonymous local
     let _4: (); // anonymous local
-    let _5: &'_ (dyn FakeTrait); // anonymous local
-    let _6: &'_ MyStruct; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const *const (); // anonymous local
+    let mut _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _6: &'_ MyStruct; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: *const *const (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -77,7 +77,7 @@ fn main()
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
-        _5 = &(*x) with_metadata(copy x.metadata);
+        _5 = &(*x) with_metadata(read x.metadata);
         storage_live(_7);
         _7 = const 3usize ub.* const size_of::<*const ()>();
         _8 = &raw const (*_5.metadata).offset!(copy _7);
@@ -104,7 +104,7 @@ pub fn test_crate::MyTrait::foo::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait))
 #[lang_item(DropGlue)]
 fn drop_glue::<MyStruct>(_1: &'_ mut MyStruct)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut MyStruct; // arg #1
 
     bb0: {

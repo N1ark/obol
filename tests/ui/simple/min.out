@@ -10,16 +10,26 @@ trait FakeTrait
 #[diagnostic_item("Ord")]
 trait Ord
 
+// Full name: core::cmp::PartialOrd
+#[lang_item(PartialOrd)]
+#[diagnostic_item("PartialOrd")]
+trait PartialOrd
+
 // Full name: core::cmp::impls::{impl Ord for u64}
 impl "impl_Ord_for_u64" Ord for u64 {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<u64> for u64}
+impl "impl_PartialOrd_u64_for_u64" PartialOrd<u64> for u64 {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
 // Full name: test_crate::main
 fn main()
 {
-    let _0: (); // return
-    let _1: u64; // anonymous local
+    let mut _0: (); // return
+    let mut _1: u64; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -42,7 +52,7 @@ fn main()
 // Full name: core::cmp::impls::{impl Ord for u64}::min
 pub fn min(self: u64, other: u64) -> u64
 {
-    let _0: u64; // return
+    let mut _0: u64; // return
     let self: u64; // arg #1
     let other: u64; // arg #2
 
@@ -64,7 +74,79 @@ pub fn min(self: u64, other: u64) -> u64
 #[miri::intrinsic_fallback_is_spec]
 #[rustc_intrinsic]
 pub fn integer_min::<u64>(a_1: u64, b_2: u64) -> u64
-= <intrinsic:integer_min>
+= <intrinsic:integer_min> with fallback (spec) {fallback}::<u64>
+
+// Full name: core::intrinsics::integer_min::{fallback}::<u64>
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn {fallback}::<u64>(a: u64, b: u64) -> u64
+{
+    let mut _0: u64; // return
+    let a: u64; // arg #1
+    let b: u64; // arg #2
+    let mut _3: bool; // anonymous local
+    let mut _4: &'_ u64; // anonymous local
+    let mut _5: &'_ u64; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &a;
+        storage_live(_5);
+        _5 = &b;
+        _3 = lt(move _4, move _5) -> bb1 (unwind: bb5);
+    }
+
+    bb1: {
+        if move _3 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = copy a;
+        goto bb4;
+    }
+
+    bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = copy b;
+        goto bb4;
+    }
+
+    bb4: {
+        storage_dead(_3);
+        return;
+    }
+
+    bb5: {
+        unwind_terminate;
+    }
+}
+
+// Full name: core::cmp::impls::{impl PartialOrd<u64> for u64}::lt
+pub fn lt(self: &'_ u64, other: &'_ u64) -> bool
+{
+    let mut _0: bool; // return
+    let self: &'_ u64; // arg #1
+    let other: &'_ u64; // arg #2
+    let mut _3: u64; // anonymous local
+    let mut _4: u64; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
 
 
 

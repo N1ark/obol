@@ -58,7 +58,7 @@ fn operand_is_zero(op: &Operand) -> bool {
 
 fn operand_as_local(op: &Operand) -> Option<LocalId> {
     match op {
-        Operand::Copy(p) | Operand::Move(p) => p.as_local(),
+        Operand::Copy(p, _) | Operand::Read(p) | Operand::Move(p) => p.as_local(),
         Operand::Const(_) => None,
     }
 }

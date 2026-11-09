@@ -614,6 +614,11 @@ trait SpecWriteFmt
 #[diagnostic_item("Debug")]
 trait core::fmt::Debug
 
+// Full name: core::cmp::PartialOrd
+#[lang_item(PartialOrd)]
+#[diagnostic_item("PartialOrd")]
+trait PartialOrd
+
 // Full name: alloc::string::{impl ToString for T}
 impl<T> "impl_ToString_for_T" ToString for T {
     vtable: unknown // obol doesn't translate trait impl vtables
@@ -669,17 +674,22 @@ impl "impl_Debug_for_Error" core::fmt::Debug for Error {
     vtable: unknown // obol doesn't translate trait impl vtables
 }
 
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}
+impl "impl_PartialOrd_usize_for_usize" PartialOrd<usize> for usize {
+    vtable: unknown // obol doesn't translate trait impl vtables
+}
+
 // Full name: test_crate::destruct
 fn destruct(x: &'_ (dyn FakeTrait)) -> String
 {
-    let _0: String; // return
+    let mut _0: String; // return
     let x: &'_ (dyn FakeTrait); // arg #1
-    let _2: &'_ (dyn FakeTrait); // anonymous local
+    let mut _2: &'_ (dyn FakeTrait); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
-        _2 = &(*x) with_metadata(copy x.metadata);
+        _2 = &(*x) with_metadata(read x.metadata);
         _0 = to_string::<(dyn FakeTrait)>(move _2) -> bb1 (unwind: bb2);
     }
 
@@ -696,21 +706,21 @@ fn destruct(x: &'_ (dyn FakeTrait)) -> String
 // Full name: test_crate::combine
 fn combine()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let x: String; // local
-    let _2: String; // anonymous local
-    let _3: &'_ (dyn FakeTrait); // anonymous local
-    let _4: &'_ (dyn FakeTrait); // anonymous local
+    let mut _2: String; // anonymous local
+    let mut _3: &'_ (dyn FakeTrait); // anonymous local
+    let mut _4: &'_ (dyn FakeTrait); // anonymous local
     let _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: Box::<(dyn FakeTrait), Global>; // anonymous local
-    let _7: String; // anonymous local
-    let _8: *const (dyn FakeTrait); // anonymous local
-    let _9: *mut String; // anonymous local
-    let _10: (); // anonymous local
-    let _11: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
-    let _12: (); // anonymous local
-    let _13: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
-    let _14: (); // anonymous local
+    let mut _7: String; // anonymous local
+    let mut _8: *const (dyn FakeTrait); // anonymous local
+    let mut _9: *mut String; // anonymous local
+    let mut _10: (); // anonymous local
+    let mut _11: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _12: (); // anonymous local
+    let mut _13: *mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _14: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -740,8 +750,8 @@ fn combine()
     bb2: {
         storage_dead(_7);
         _8 = transmute<*const (dyn FakeTrait)>(copy _6._0);
-        _5 = &(*_8) with_metadata(copy _8.metadata);
-        _4 = &(*_5) with_metadata(copy _5.metadata);
+        _5 = &(*_8) with_metadata(read _8.metadata);
+        _4 = &(*_5) with_metadata(read _5.metadata);
         _3 = unsize_cast<&'_ (dyn FakeTrait),  at []>(move _4);
         storage_dead(_4);
         _2 = destruct(move _3) -> bb3 (unwind: bb6);
@@ -788,8 +798,8 @@ fn combine()
 // Full name: test_crate::bar
 fn bar(_1: &'_ (dyn FakeTrait))
 {
-    let _0: (); // return
-    let _1: &'_ (dyn FakeTrait); // arg #1
+    let mut _0: (); // return
+    let mut _1: &'_ (dyn FakeTrait); // arg #1
 
     bb0: {
         storage_live(_0);
@@ -802,7 +812,7 @@ fn bar(_1: &'_ (dyn FakeTrait))
 // Full name: alloc::string::{impl ToString for T}::to_string::<(dyn FakeTrait)>
 pub fn to_string::<(dyn FakeTrait)>(self: &'_ (dyn FakeTrait)) -> String
 {
-    let _0: String; // return
+    let mut _0: String; // return
     let self: &'_ (dyn FakeTrait); // arg #1
 
     bb0: {
@@ -822,8 +832,8 @@ pub fn to_string::<(dyn FakeTrait)>(self: &'_ (dyn FakeTrait)) -> String
 #[diagnostic_item("string_new")]
 pub fn alloc::string::{String}::new() -> String
 {
-    let _0: String; // return
-    let _1: Vec::<u8, Global>; // anonymous local
+    let mut _0: String; // return
+    let mut _1: Vec::<u8, Global>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -838,11 +848,11 @@ pub fn alloc::string::{String}::new() -> String
 // Full name: test_crate::construct::<String>
 fn construct::<String>(x: String) -> Box::<(dyn FakeTrait), Global>
 {
-    let _0: Box::<(dyn FakeTrait), Global>; // return
+    let mut _0: Box::<(dyn FakeTrait), Global>; // return
     let x: String; // arg #1
-    let _2: Box::<(dyn FakeTrait), Global>; // anonymous local
-    let _3: Box::<String, Global>; // anonymous local
-    let _4: String; // anonymous local
+    let mut _2: Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _3: Box::<String, Global>; // anonymous local
+    let mut _4: String; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -871,10 +881,10 @@ fn construct::<String>(x: String) -> Box::<(dyn FakeTrait), Global>
 #[lang_item(DropGlue)]
 fn drop_glue::<String>(_1: &'_ mut String)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut String; // arg #1
-    let _2: *mut Vec::<u8, Global>; // anonymous local
-    let _3: (); // anonymous local
+    let mut _2: *mut Vec::<u8, Global>; // anonymous local
+    let mut _3: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -898,15 +908,15 @@ fn drop_glue::<String>(_1: &'_ mut String)
 #[lang_item(DropGlue)]
 fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait), Global>)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
-    let _2: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
-    let _3: (); // anonymous local
-    let _4: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
-    let _5: (); // anonymous local
-    let _6: *const (dyn FakeTrait); // anonymous local
-    let _7: *mut (dyn FakeTrait); // anonymous local
-    let _8: (); // anonymous local
+    let mut _2: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _3: (); // anonymous local
+    let mut _4: &'_ mut Box::<(dyn FakeTrait), Global>; // anonymous local
+    let mut _5: (); // anonymous local
+    let mut _6: *const (dyn FakeTrait); // anonymous local
+    let mut _7: *mut (dyn FakeTrait); // anonymous local
+    let mut _8: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -919,7 +929,7 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
         storage_live(_8);
         _0 = ();
         _6 = transmute<*const (dyn FakeTrait)>(copy (*_1)._0.pointer);
-        _7 = &raw mut (*_6) with_metadata(copy _6.metadata);
+        _7 = &raw mut (*_6) with_metadata(read _6.metadata);
         _8 = (copy (*_7.metadata))(move _7) -> bb1 (unwind: bb4);
     }
 
@@ -953,21 +963,21 @@ fn drop_glue::<Box::<(dyn FakeTrait), Global>>(_1: &'_ mut Box::<(dyn FakeTrait)
 // Full name: alloc::string::{impl SpecToString for T}::spec_to_string::<(dyn FakeTrait)>
 fn spec_to_string::<(dyn FakeTrait)>(self: &'_ (dyn FakeTrait)) -> String
 {
-    let _0: String; // return
+    let mut _0: String; // return
     let self: &'_ (dyn FakeTrait); // arg #1
-    let buf: String; // local
-    let formatter: Formatter::<'_>; // local
-    let write: &'_ mut (dyn FakeTrait); // local
-    let _5: &'_ mut String; // anonymous local
-    let options: FormattingOptions; // local
+    let mut buf: String; // local
+    let mut formatter: Formatter::<'_>; // local
+    let mut write: &'_ mut (dyn FakeTrait); // local
+    let mut _5: &'_ mut String; // anonymous local
+    let mut options: FormattingOptions; // local
     let _7: (); // anonymous local
-    let _8: Result::<(), Error>; // anonymous local
-    let _9: &'_ mut Formatter::<'_>; // anonymous local
-    let _10: Vec::<u8, Global>; // anonymous local
-    let _11: usize; // anonymous local
-    let _12: *const *const (); // anonymous local
-    let _13: *mut String; // anonymous local
-    let _14: (); // anonymous local
+    let mut _8: Result::<(), Error>; // anonymous local
+    let mut _9: &'_ mut Formatter::<'_>; // anonymous local
+    let mut _10: Vec::<u8, Global>; // anonymous local
+    let mut _11: usize; // anonymous local
+    let mut _12: *const *const (); // anonymous local
+    let mut _13: *mut String; // anonymous local
+    let mut _14: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1030,12 +1040,12 @@ fn spec_to_string::<(dyn FakeTrait)>(self: &'_ (dyn FakeTrait)) -> String
 #[diagnostic_item("box_new")]
 pub fn alloc::boxed::{Box::<_, Global>}::new::<String>(x: String) -> Box::<String, Global>
 {
-    let _0: Box::<String, Global>; // return
+    let mut _0: Box::<String, Global>; // return
     let x: String; // arg #1
-    let ptr: *mut String; // local
-    let _3: *mut u8; // anonymous local
-    let _4: *mut String; // anonymous local
-    let _5: (); // anonymous local
+    let mut ptr: *mut String; // local
+    let mut _3: *mut u8; // anonymous local
+    let mut _4: *mut String; // anonymous local
+    let mut _5: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1071,14 +1081,14 @@ pub fn alloc::boxed::{Box::<_, Global>}::new::<String>(x: String) -> Box::<Strin
 #[lang_item(DropGlue)]
 fn drop_glue::<Vec::<u8, Global>>(_1: &'_ mut Vec::<u8, Global>)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut Vec::<u8, Global>; // arg #1
-    let _2: &'_ mut Vec::<u8, Global>; // anonymous local
-    let _3: (); // anonymous local
-    let _4: *mut RawVec::<u8, Global>; // anonymous local
-    let _5: (); // anonymous local
-    let _6: *mut RawVec::<u8, Global>; // anonymous local
-    let _7: (); // anonymous local
+    let mut _2: &'_ mut Vec::<u8, Global>; // anonymous local
+    let mut _3: (); // anonymous local
+    let mut _4: *mut RawVec::<u8, Global>; // anonymous local
+    let mut _5: (); // anonymous local
+    let mut _6: *mut RawVec::<u8, Global>; // anonymous local
+    let mut _7: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1124,17 +1134,17 @@ fn drop_glue::<Vec::<u8, Global>>(_1: &'_ mut Vec::<u8, Global>)
 #[lang_item(DropGlue)]
 fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut (dyn FakeTrait); // arg #1
-    let _2: *mut (dyn FakeTrait); // anonymous local
-    let _3: (); // anonymous local
+    let mut _2: *mut (dyn FakeTrait); // anonymous local
+    let mut _3: (); // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         _0 = ();
-        _2 = &raw mut (*_1) with_metadata(copy _1.metadata);
+        _2 = &raw mut (*_1) with_metadata(read _1.metadata);
         _3 = (copy (*_2.metadata))(move _2) -> bb1 (unwind: bb2);
     }
 
@@ -1150,24 +1160,24 @@ fn drop_glue::<(dyn FakeTrait)>(_1: &'_ mut (dyn FakeTrait))
 // Full name: alloc::boxed::{impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>
 pub fn {impl Drop for Box::<_, _>}::drop::<(dyn FakeTrait), Global>(self: &'_ mut Box::<(dyn FakeTrait), Global>)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self: &'_ mut Box::<(dyn FakeTrait), Global>; // arg #1
     let layout: Layout; // local
-    let val: *const (dyn FakeTrait); // local
-    let _4: *mut (dyn FakeTrait); // anonymous local
+    let mut val: *const (dyn FakeTrait); // local
+    let mut _4: *mut (dyn FakeTrait); // anonymous local
     let _5: (); // anonymous local
-    let _6: &'_ Global; // anonymous local
-    let size: usize; // local
-    let alignment: Alignment; // local
+    let mut _6: &'_ Global; // anonymous local
+    let mut size: usize; // local
+    let mut alignment: Alignment; // local
     let align: usize; // local
     let _10: (); // anonymous local
     let _11: (); // anonymous local
-    let unique: NonNull::<u8>; // local
-    let _13: *mut u8; // anonymous local
+    let mut unique: NonNull::<u8>; // local
+    let mut _13: *mut u8; // anonymous local
     let ptr_14: NonNull::<(dyn FakeTrait)>; // local
     let ptr_15: PhantomData::<(dyn FakeTrait)>; // local
-    let _16: bool; // anonymous local
-    let _17: bool; // anonymous local
+    let mut _16: bool; // anonymous local
+    let mut _17: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1274,13 +1284,13 @@ pub fn core::fmt::Display::fmt::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait), _2: &
 #[track_caller]
 pub fn expect::<(), Error>(self: Result::<(), Error>, msg: &'_ str)
 {
-    let t: (); // return
+    let mut t: (); // return
     let self: Result::<(), Error>; // arg #1
     let msg: &'_ str; // arg #2
-    let _3: isize; // anonymous local
+    let mut _3: isize; // anonymous local
     let e: Error; // local
-    let _5: !; // anonymous local
-    let _6: &'_ (dyn FakeTrait); // anonymous local
+    let mut _5: !; // anonymous local
+    let mut _6: &'_ (dyn FakeTrait); // anonymous local
     let _7: &'_ Error; // anonymous local
 
     bb0: {
@@ -1323,15 +1333,15 @@ pub fn expect::<(), Error>(self: Result::<(), Error>, msg: &'_ str)
 // Full name: alloc::boxed::box_new_uninit
 fn box_new_uninit(layout: Layout) -> *mut u8
 {
-    let _0: *mut u8; // return
+    let mut _0: *mut u8; // return
     let layout: Layout; // arg #1
-    let _2: Result::<NonNull::<[u8]>, AllocError>; // anonymous local
-    let _3: isize; // anonymous local
+    let mut _2: Result::<NonNull::<[u8]>, AllocError>; // anonymous local
+    let mut _3: isize; // anonymous local
     let ptr: NonNull::<[u8]>; // local
-    let _5: !; // anonymous local
-    let _6: NonNull::<u8>; // anonymous local
-    let _7: *mut u8; // anonymous local
-    let _8: *mut [u8]; // anonymous local
+    let mut _5: !; // anonymous local
+    let mut _6: NonNull::<u8>; // anonymous local
+    let mut _7: *mut u8; // anonymous local
+    let mut _8: *mut [u8]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1388,13 +1398,13 @@ fn box_new_uninit(layout: Layout) -> *mut u8
 // Full name: alloc::vec::{impl Drop for Vec::<_, _>}::drop::<u8, Global>
 pub fn {impl Drop for Vec::<_, _>}::drop::<u8, Global>(self_1: &'_ mut Vec::<u8, Global>)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self_1: &'_ mut Vec::<u8, Global>; // arg #1
-    let self_2: *mut [u8]; // local
-    let self_3: *mut u8; // local
-    let len: usize; // local
-    let _5: NonNull::<u8>; // anonymous local
-    let _6: &'_ mut [u8]; // anonymous local
+    let mut self_2: *mut [u8]; // local
+    let mut self_3: *mut u8; // local
+    let mut len: usize; // local
+    let mut _5: NonNull::<u8>; // anonymous local
+    let mut _6: &'_ mut [u8]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1411,7 +1421,7 @@ pub fn {impl Drop for Vec::<_, _>}::drop::<u8, Global>(self_1: &'_ mut Vec::<u8,
         storage_dead(len);
         storage_dead(self_3);
         storage_live(_6);
-        _6 = &mut (*self_2) with_metadata(copy self_2.metadata);
+        _6 = &mut (*self_2) with_metadata(read self_2.metadata);
         _0 = drop_glue::<[u8]>(move _6) -> bb1 (unwind: bb2);
     }
 
@@ -1430,10 +1440,10 @@ pub fn {impl Drop for Vec::<_, _>}::drop::<u8, Global>(self_1: &'_ mut Vec::<u8,
 #[lang_item(DropGlue)]
 fn drop_glue::<RawVec::<u8, Global>>(_1: &'_ mut RawVec::<u8, Global>)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut RawVec::<u8, Global>; // arg #1
-    let _2: &'_ mut RawVec::<u8, Global>; // anonymous local
-    let _3: (); // anonymous local
+    let mut _2: &'_ mut RawVec::<u8, Global>; // anonymous local
+    let mut _3: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1466,20 +1476,20 @@ pub fn align_of_val::<(dyn FakeTrait)>(ptr_1: *const (dyn FakeTrait)) -> usize
 #[track_caller]
 fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: usize)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let align: usize; // arg #1
-    let _2: bool; // anonymous local
+    let mut _2: bool; // anonymous local
     let msg: &'_ str; // local
     let _4: !; // anonymous local
-    let _5: Arguments::<'_>; // anonymous local
-    let _6: u32; // anonymous local
-    let _7: NonNull::<u8>; // anonymous local
-    let _8: *const u8; // anonymous local
-    let _9: NonNull::<Argument::<'_>>; // anonymous local
-    let _10: usize; // anonymous local
-    let _11: usize; // anonymous local
-    let _12: usize; // anonymous local
-    let _13: *const str; // anonymous local
+    let mut _5: Arguments::<'_>; // anonymous local
+    let mut _6: u32; // anonymous local
+    let mut _7: NonNull::<u8>; // anonymous local
+    let mut _8: *const u8; // anonymous local
+    let mut _9: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: usize; // anonymous local
+    let mut _12: usize; // anonymous local
+    let mut _13: *const str; // anonymous local
     let _14: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -1509,7 +1519,7 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
         storage_live(_7);
         storage_live(_8);
         storage_live(_13);
-        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _13 = &raw const (*msg) with_metadata(read msg.metadata);
         _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
         _7 = transmute<NonNull::<u8>>(copy _8);
@@ -1550,22 +1560,22 @@ fn core::mem::alignment::{Alignment}::new_unchecked::precondition_check(align: u
 #[track_caller]
 fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_check(size: usize, alignment: Alignment)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let size: usize; // arg #1
     let alignment: Alignment; // arg #2
-    let _3: bool; // anonymous local
+    let mut _3: bool; // anonymous local
     let msg: &'_ str; // local
     let _5: !; // anonymous local
-    let _6: Arguments::<'_>; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: NonNull::<u8>; // anonymous local
-    let _10: *const u8; // anonymous local
-    let _11: NonNull::<Argument::<'_>>; // anonymous local
-    let _12: usize; // anonymous local
-    let _13: usize; // anonymous local
-    let _14: usize; // anonymous local
-    let _15: *const str; // anonymous local
+    let mut _6: Arguments::<'_>; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: usize; // anonymous local
+    let mut _9: NonNull::<u8>; // anonymous local
+    let mut _10: *const u8; // anonymous local
+    let mut _11: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _12: usize; // anonymous local
+    let mut _13: usize; // anonymous local
+    let mut _14: usize; // anonymous local
+    let mut _15: *const str; // anonymous local
     let _16: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -1595,7 +1605,7 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
         storage_live(_9);
         storage_live(_10);
         storage_live(_15);
-        _15 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _15 = &raw const (*msg) with_metadata(read msg.metadata);
         _10 = cast<*const u8>(copy _15);
         storage_dead(_15);
         _9 = transmute<NonNull::<u8>>(copy _10);
@@ -1632,12 +1642,12 @@ fn core::alloc::layout::{Layout}::from_size_alignment_unchecked::precondition_ch
 // Full name: alloc::alloc::{impl Allocator for Global}::deallocate
 pub fn impl_Allocator_for_Global::deallocate(self: &'_ Global, ptr: NonNull::<u8>, layout: Layout)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self: &'_ Global; // arg #1
     let ptr: NonNull::<u8>; // arg #2
     let layout: Layout; // arg #3
-    let _4: usize; // anonymous local
-    let _5: Alignment; // anonymous local
+    let mut _4: usize; // anonymous local
+    let mut _5: Alignment; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1676,46 +1686,46 @@ fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
 // Full name: alloc::alloc::{Global}::alloc_impl_runtime
 fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>, AllocError>
 {
-    let _0: Result::<NonNull::<[u8]>, AllocError>; // return
+    let mut _0: Result::<NonNull::<[u8]>, AllocError>; // return
     let layout: Layout; // arg #1
     let zeroed: bool; // arg #2
-    let size: usize; // local
-    let _4: NonNull::<[u8]>; // anonymous local
-    let self_5: NonNull::<u8>; // local
+    let mut size: usize; // local
+    let mut _4: NonNull::<[u8]>; // anonymous local
+    let mut self_5: NonNull::<u8>; // local
     let raw_ptr: *mut u8; // local
-    let _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
-    let self_8: Result::<NonNull::<u8>, AllocError>; // local
-    let self_9: Option::<NonNull::<u8>>; // local
-    let _10: Result::<!, AllocError>; // anonymous local
+    let mut _7: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let mut self_8: Result::<NonNull::<u8>, AllocError>; // local
+    let mut self_9: Option::<NonNull::<u8>>; // local
+    let mut _10: Result::<!, AllocError>; // anonymous local
     let ptr_11: NonNull::<u8>; // local
-    let _12: NonNull::<[u8]>; // anonymous local
-    let _13: Alignment; // anonymous local
-    let ptr_14: *mut [u8]; // local
-    let self_15: *mut u8; // local
+    let mut _12: NonNull::<[u8]>; // anonymous local
+    let mut _13: Alignment; // anonymous local
+    let mut ptr_14: *mut [u8]; // local
+    let mut self_15: *mut u8; // local
     let _16: (); // anonymous local
-    let _17: *mut (); // anonymous local
+    let mut _17: *mut (); // anonymous local
     let _18: (); // anonymous local
-    let _19: Alignment; // anonymous local
+    let mut _19: Alignment; // anonymous local
     let _20: (); // anonymous local
-    let _21: Alignment; // anonymous local
-    let _22: bool; // anonymous local
-    let _23: NonNull::<u8>; // anonymous local
-    let _24: usize; // anonymous local
+    let mut _21: Alignment; // anonymous local
+    let mut _22: bool; // anonymous local
+    let mut _23: NonNull::<u8>; // anonymous local
+    let mut _24: usize; // anonymous local
     let _25: (); // anonymous local
-    let _26: *mut (); // anonymous local
+    let mut _26: *mut (); // anonymous local
     let v_27: NonNull::<u8>; // local
     let v_28: NonNull::<u8>; // local
-    let ptr_29: *mut [u8]; // local
-    let self_30: *mut u8; // local
+    let mut ptr_29: *mut [u8]; // local
+    let mut self_30: *mut u8; // local
     let _31: (); // anonymous local
-    let _32: *mut (); // anonymous local
-    let _33: isize; // anonymous local
-    let _34: bool; // anonymous local
-    let _35: bool; // anonymous local
-    let _36: (); // anonymous local
-    let _37: bool; // anonymous local
-    let _38: bool; // anonymous local
-    let _39: bool; // anonymous local
+    let mut _32: *mut (); // anonymous local
+    let mut _33: isize; // anonymous local
+    let mut _34: bool; // anonymous local
+    let mut _35: bool; // anonymous local
+    let mut _36: (); // anonymous local
+    let mut _37: bool; // anonymous local
+    let mut _38: bool; // anonymous local
+    let mut _39: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1950,10 +1960,10 @@ fn alloc_impl_runtime(layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>,
 // Full name: alloc::alloc::handle_alloc_error
 pub fn handle_alloc_error(layout: Layout) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let layout: Layout; // arg #1
-    let _2: (Layout,); // anonymous local
-    let _3: Layout; // anonymous local
+    let mut _2: (Layout,); // anonymous local
+    let mut _3: Layout; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1978,7 +1988,7 @@ pub fn handle_alloc_error(layout: Layout) -> !
 #[lang_item(DropGlue)]
 fn drop_glue::<[u8]>(_1: &'_ mut [u8])
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut [u8]; // arg #1
 
     bb0: {
@@ -1991,9 +2001,9 @@ fn drop_glue::<[u8]>(_1: &'_ mut [u8])
 // Full name: alloc::raw_vec::{impl Drop for RawVec::<_, _>}::drop::<u8, Global>
 pub fn {impl Drop for RawVec::<_, _>}::drop::<u8, Global>(self: &'_ mut RawVec::<u8, Global>)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self: &'_ mut RawVec::<u8, Global>; // arg #1
-    let _2: &'_ mut RawVecInner::<Global>; // anonymous local
+    let mut _2: &'_ mut RawVecInner::<Global>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2022,12 +2032,12 @@ pub fn ctpop::<usize>(x_1: usize) -> u32
 #[track_caller]
 pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
-    let _3: (Arguments::<'_>, bool); // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: bool; // anonymous local
+    let mut _3: (Arguments::<'_>, bool); // anonymous local
+    let mut _4: Arguments::<'_>; // anonymous local
+    let mut _5: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2058,22 +2068,22 @@ extern fn __rust_dealloc(_1: NonNull::<u8>, _2: usize, _3: Alignment)
 #[track_caller]
 fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *mut ())
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let ptr: *mut (); // arg #1
-    let _2: bool; // anonymous local
+    let mut _2: bool; // anonymous local
     let msg: &'_ str; // local
     let _4: !; // anonymous local
-    let _5: Arguments::<'_>; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: NonNull::<u8>; // anonymous local
-    let _8: *const u8; // anonymous local
-    let _9: NonNull::<Argument::<'_>>; // anonymous local
-    let _10: usize; // anonymous local
-    let _11: usize; // anonymous local
-    let _12: usize; // anonymous local
-    let _13: *const str; // anonymous local
+    let mut _5: Arguments::<'_>; // anonymous local
+    let mut _6: usize; // anonymous local
+    let mut _7: NonNull::<u8>; // anonymous local
+    let mut _8: *const u8; // anonymous local
+    let mut _9: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: usize; // anonymous local
+    let mut _12: usize; // anonymous local
+    let mut _13: *const str; // anonymous local
     let _14: &'_ [u8]; // anonymous local
-    let _15: bool; // anonymous local
+    let mut _15: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2097,7 +2107,7 @@ fn core::ptr::non_null::{NonNull::<_>}::new_unchecked::precondition_check(ptr: *
         storage_live(_7);
         storage_live(_8);
         storage_live(_13);
-        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _13 = &raw const (*msg) with_metadata(read msg.metadata);
         _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
         _7 = transmute<NonNull::<u8>>(copy _8);
@@ -2151,15 +2161,15 @@ extern fn __rust_alloc(_1: usize, _2: Alignment) -> *mut u8
 // Full name: core::intrinsics::assume
 #[rustc_intrinsic]
 pub fn assume(b_1: bool)
-= <intrinsic:assume>
+= <intrinsic:assume> with fallback core::intrinsics::assume::{fallback}
 
 // Full name: alloc::alloc::handle_alloc_error::ct_error
 fn ct_error(_1: Layout) -> !
 {
-    let _0: !; // return
-    let _1: Layout; // arg #1
+    let mut _0: !; // return
+    let mut _1: Layout; // arg #1
     let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
+    let mut _3: Arguments::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2187,16 +2197,16 @@ fn ct_error(_1: Layout) -> !
 
 fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVecInner::<Global>, elem_layout: Layout)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self: &'_ mut RawVecInner::<Global>; // arg #1
     let elem_layout: Layout; // arg #2
-    let _3: Option::<(NonNull::<u8>, Layout)>; // anonymous local
-    let _4: &'_ RawVecInner::<Global>; // anonymous local
-    let _5: isize; // anonymous local
+    let mut _3: Option::<(NonNull::<u8>, Layout)>; // anonymous local
+    let mut _4: &'_ RawVecInner::<Global>; // anonymous local
+    let mut _5: isize; // anonymous local
     let ptr: NonNull::<u8>; // local
     let layout: Layout; // local
     let _8: (); // anonymous local
-    let _9: &'_ Global; // anonymous local
+    let mut _9: &'_ Global; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2259,7 +2269,7 @@ fn alloc::raw_vec::{RawVecInner::<_>}::deallocate::<Global>(self: &'_ mut RawVec
 #[track_caller]
 fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let force_no_backtrace: bool; // arg #2
 
@@ -2277,18 +2287,41 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 }
 
+#[rustc_intrinsic]
+pub fn core::intrinsics::assume::{fallback}(b: bool)
+{
+    let mut _0: (); // return
+    let b: bool; // arg #1
+    let mut _2: (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _0 = ();
+        _2 = assume(copy b) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
+
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
-    let _0: Arguments::<'_>; // return
+    let mut _0: Arguments::<'_>; // return
     let s: &'_ str; // arg #1
-    let _2: NonNull::<u8>; // anonymous local
-    let _3: *const u8; // anonymous local
-    let _4: NonNull::<Argument::<'_>>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const str; // anonymous local
+    let mut _2: NonNull::<u8>; // anonymous local
+    let mut _3: *const u8; // anonymous local
+    let mut _4: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _5: usize; // anonymous local
+    let mut _6: usize; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: *const str; // anonymous local
     let _9: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -2296,7 +2329,7 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         storage_live(_2);
         storage_live(_3);
         storage_live(_8);
-        _8 = &raw const (*s) with_metadata(copy s.metadata);
+        _8 = &raw const (*s) with_metadata(read s.metadata);
         _3 = cast<*const u8>(copy _8);
         storage_dead(_8);
         _2 = transmute<NonNull::<u8>>(copy _3);
@@ -2327,16 +2360,16 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let _2: (); // anonymous local
-    let _3: bool; // anonymous local
-    let _4: !; // anonymous local
+    let mut _3: bool; // anonymous local
+    let mut _4: !; // anonymous local
     let pi: PanicInfo::<'_>; // local
-    let _6: &'_ Arguments::<'_>; // anonymous local
+    let mut _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Arguments::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
-    let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let mut _8: &'_ Location::<'_>; // anonymous local
+    let mut _9: &'_ PanicInfo::<'_>; // anonymous local
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
@@ -2408,25 +2441,25 @@ pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 // Full name: alloc::raw_vec::{RawVecInner::<_>}::current_memory::<Global>
 fn current_memory::<Global>(self_1: &'_ RawVecInner::<Global>, elem_layout: Layout) -> Option::<(NonNull::<u8>, Layout)>
 {
-    let _0: Option::<(NonNull::<u8>, Layout)>; // return
+    let mut _0: Option::<(NonNull::<u8>, Layout)>; // return
     let self_1: &'_ RawVecInner::<Global>; // arg #1
     let elem_layout: Layout; // arg #2
-    let self_3: usize; // local
-    let _4: usize; // anonymous local
-    let self_5: UsizeNoHighBit; // local
+    let mut self_3: usize; // local
+    let mut _4: usize; // anonymous local
+    let mut self_5: UsizeNoHighBit; // local
     let alloc_size: usize; // local
-    let rhs: usize; // local
-    let self_8: UsizeNoHighBit; // local
+    let mut rhs: usize; // local
+    let mut self_8: UsizeNoHighBit; // local
     let layout: Layout; // local
-    let align: usize; // local
-    let _11: (NonNull::<u8>, Layout); // anonymous local
+    let mut align: usize; // local
+    let mut _11: (NonNull::<u8>, Layout); // anonymous local
     let _12: (); // anonymous local
-    let _13: Alignment; // anonymous local
+    let mut _13: Alignment; // anonymous local
     let _14: (); // anonymous local
-    let self_15: NonNull::<u8>; // local
-    let self_16: PhantomData::<u8>; // local
-    let _17: bool; // anonymous local
-    let _18: bool; // anonymous local
+    let mut self_15: NonNull::<u8>; // local
+    let mut self_16: PhantomData::<u8>; // local
+    let mut _17: bool; // anonymous local
+    let mut _18: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2529,7 +2562,7 @@ pub fn abort() -> !
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
-    let _0: &'_ Location::<'_>; // return
+    let mut _0: &'_ Location::<'_>; // return
 
     bb0: {
         storage_live(_0);
@@ -2547,7 +2580,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 
 fn core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
-    let _0: PanicInfo::<'_>; // return
+    let mut _0: PanicInfo::<'_>; // return
     let message: &'_ Arguments::<'_>; // arg #1
     let location: &'_ Location::<'_>; // arg #2
     let can_unwind: bool; // arg #3
@@ -2568,23 +2601,23 @@ extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
 #[track_caller]
 fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let lhs: usize; // arg #1
     let rhs: usize; // arg #2
     let msg: &'_ str; // local
     let _4: !; // anonymous local
-    let _5: Arguments::<'_>; // anonymous local
+    let mut _5: Arguments::<'_>; // anonymous local
     let _6: bool; // anonymous local
-    let _7: (u64, bool); // anonymous local
-    let _8: u64; // anonymous local
-    let _9: u64; // anonymous local
-    let _10: NonNull::<u8>; // anonymous local
-    let _11: *const u8; // anonymous local
-    let _12: NonNull::<Argument::<'_>>; // anonymous local
-    let _13: usize; // anonymous local
-    let _14: usize; // anonymous local
-    let _15: usize; // anonymous local
-    let _16: *const str; // anonymous local
+    let mut _7: (u64, bool); // anonymous local
+    let mut _8: u64; // anonymous local
+    let mut _9: u64; // anonymous local
+    let mut _10: NonNull::<u8>; // anonymous local
+    let mut _11: *const u8; // anonymous local
+    let mut _12: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _13: usize; // anonymous local
+    let mut _14: usize; // anonymous local
+    let mut _15: usize; // anonymous local
+    let mut _16: *const str; // anonymous local
     let _17: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -2615,7 +2648,7 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
         storage_live(_10);
         storage_live(_11);
         storage_live(_16);
-        _16 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _16 = &raw const (*msg) with_metadata(read msg.metadata);
         _11 = cast<*const u8>(copy _16);
         storage_dead(_16);
         _10 = transmute<NonNull::<u8>>(copy _11);
@@ -2660,28 +2693,28 @@ fn core::num::{usize}::unchecked_mul::precondition_check(lhs: usize, rhs: usize)
 #[track_caller]
 fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(size: usize, align: usize)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let size: usize; // arg #1
     let align: usize; // arg #2
-    let _3: bool; // anonymous local
+    let mut _3: bool; // anonymous local
     let msg: &'_ str; // local
     let _5: !; // anonymous local
-    let _6: Arguments::<'_>; // anonymous local
-    let _7: bool; // anonymous local
-    let alignment: Alignment; // local
-    let _9: u32; // anonymous local
+    let mut _6: Arguments::<'_>; // anonymous local
+    let mut _7: bool; // anonymous local
+    let mut alignment: Alignment; // local
+    let mut _9: u32; // anonymous local
     let _10: (); // anonymous local
-    let _11: usize; // anonymous local
-    let _12: usize; // anonymous local
-    let _13: NonNull::<u8>; // anonymous local
-    let _14: *const u8; // anonymous local
-    let _15: NonNull::<Argument::<'_>>; // anonymous local
-    let _16: usize; // anonymous local
-    let _17: usize; // anonymous local
-    let _18: usize; // anonymous local
-    let _19: *const str; // anonymous local
+    let mut _11: usize; // anonymous local
+    let mut _12: usize; // anonymous local
+    let mut _13: NonNull::<u8>; // anonymous local
+    let mut _14: *const u8; // anonymous local
+    let mut _15: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _16: usize; // anonymous local
+    let mut _17: usize; // anonymous local
+    let mut _18: usize; // anonymous local
+    let mut _19: *const str; // anonymous local
     let _20: &'_ [u8]; // anonymous local
-    let _21: bool; // anonymous local
+    let mut _21: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2745,7 +2778,7 @@ fn core::alloc::layout::{Layout}::from_size_align_unchecked::precondition_check(
         storage_live(_13);
         storage_live(_14);
         storage_live(_19);
-        _19 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _19 = &raw const (*msg) with_metadata(read msg.metadata);
         _14 = cast<*const u8>(copy _19);
         storage_dead(_19);
         _13 = transmute<NonNull::<u8>>(copy _14);
@@ -2796,15 +2829,15 @@ pub fn mul_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
 // Full name: alloc::string::{impl core::fmt::Display for String}::fmt
 pub fn impl_Display_for_String::fmt(self: &'_ String, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ String; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
     let _3: &'_ str; // anonymous local
     let _4: &'_ [u8]; // anonymous local
     let _5: *const [u8]; // anonymous local
-    let _6: *const u8; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: NonNull::<u8>; // anonymous local
+    let mut _6: *const u8; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: NonNull::<u8>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2821,7 +2854,7 @@ pub fn impl_Display_for_String::fmt(self: &'_ String, f: &'_ mut Formatter::<'_>
         _5 = *const (copy _6, move _7);
         storage_dead(_7);
         storage_dead(_6);
-        _4 = &(*_5) with_metadata(copy _5.metadata);
+        _4 = &(*_5) with_metadata(read _5.metadata);
         storage_dead(_5);
         _3 = transmute<&'_ str>(copy _4);
         storage_dead(_4);
@@ -2845,7 +2878,7 @@ pub fn impl_Display_for_str::fmt(_1: &'_ str, _2: &'_ mut Formatter::<'_>) -> Re
 // Full name: alloc::string::{impl core::fmt::Write for String}::write_str
 pub fn impl_Write_for_String::write_str(self: &'_ mut String, s: &'_ str) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ mut String; // arg #1
     let s: &'_ str; // arg #2
     let _3: (); // anonymous local
@@ -2869,7 +2902,7 @@ pub fn impl_Write_for_String::write_str(self: &'_ mut String, s: &'_ str) -> Res
 // Full name: alloc::string::{impl core::fmt::Write for String}::write_char
 pub fn write_char(self: &'_ mut String, c: char) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ mut String; // arg #1
     let c: char; // arg #2
     let _3: (); // anonymous local
@@ -2893,7 +2926,7 @@ pub fn write_char(self: &'_ mut String, c: char) -> Result::<(), Error>
 // Full name: core::fmt::Write::write_fmt::<String>
 pub fn write_fmt::<String>(self: &'_ mut String, args: Arguments::<'_>) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ mut String; // arg #1
     let args: Arguments::<'_>; // arg #2
 
@@ -2915,26 +2948,26 @@ pub fn write_fmt::<String>(self: &'_ mut String, args: Arguments::<'_>) -> Resul
 #[diagnostic_item("string_push_str")]
 pub fn push_str(self_1: &'_ mut String, string: &'_ str)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self_1: &'_ mut String; // arg #1
     let string: &'_ str; // arg #2
-    let self_3: &'_ mut Vec::<u8, Global>; // local
+    let mut self_3: &'_ mut Vec::<u8, Global>; // local
     let other: &'_ [u8]; // local
-    let iterator: Iter::<'_, u8>; // local
+    let mut iterator: Iter::<'_, u8>; // local
     let len: usize; // local
     let ptr: NonNull::<u8>; // local
-    let self_8: NonNull::<[u8]>; // local
+    let mut self_8: NonNull::<[u8]>; // local
     let end_or_len: *const u8; // local
-    let _10: *mut u8; // anonymous local
-    let self_11: *mut u8; // local
-    let _12: *const [u8]; // anonymous local
-    let _13: *mut u8; // anonymous local
-    let _14: *mut [u8]; // anonymous local
+    let mut _10: *mut u8; // anonymous local
+    let mut self_11: *mut u8; // local
+    let mut _12: *const [u8]; // anonymous local
+    let mut _13: *mut u8; // anonymous local
+    let mut _14: *mut [u8]; // anonymous local
     let slice: &'_ [u8]; // local
-    let self_16: &'_ Iter::<'_, u8>; // local
+    let mut self_16: &'_ Iter::<'_, u8>; // local
     let _17: (); // anonymous local
-    let _18: *const [u8]; // anonymous local
-    let _19: usize; // anonymous local
+    let mut _18: *const [u8]; // anonymous local
+    let mut _19: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -2951,7 +2984,7 @@ pub fn push_str(self_1: &'_ mut String, string: &'_ str)
         storage_live(ptr);
         storage_live(self_8);
         storage_live(_12);
-        _12 = &raw const (*other) with_metadata(copy other.metadata);
+        _12 = &raw const (*other) with_metadata(read other.metadata);
         self_8 = transmute<NonNull::<[u8]>>(copy _12);
         storage_dead(_12);
         storage_live(_13);
@@ -2984,7 +3017,7 @@ pub fn push_str(self_1: &'_ mut String, string: &'_ str)
     bb1: {
         storage_dead(self_16);
         storage_live(_18);
-        _18 = &raw const (*slice) with_metadata(copy slice.metadata);
+        _18 = &raw const (*slice) with_metadata(read slice.metadata);
         _17 = append_elements::<u8, Global>(move self_3, move _18) -> bb2 (unwind: bb3);
     }
 
@@ -3008,30 +3041,30 @@ pub fn push_str(self_1: &'_ mut String, string: &'_ str)
 // Full name: alloc::string::{String}::push
 pub fn push(self_1: &'_ mut String, ch: char)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self_1: &'_ mut String; // arg #1
     let ch: char; // arg #2
     let len: usize; // local
     let ch_len: usize; // local
     let _5: (); // anonymous local
-    let additional: usize; // local
+    let mut additional: usize; // local
     let _7: (); // anonymous local
-    let _8: *mut u8; // anonymous local
-    let self_9: *mut u8; // local
-    let new_len: usize; // local
-    let _11: bool; // anonymous local
-    let code: u32; // local
-    let _13: bool; // anonymous local
-    let _14: bool; // anonymous local
-    let _15: bool; // anonymous local
-    let _16: &'_ mut Vec::<u8, Global>; // anonymous local
-    let _17: NonNull::<u8>; // anonymous local
+    let mut _8: *mut u8; // anonymous local
+    let mut self_9: *mut u8; // local
+    let mut new_len: usize; // local
+    let mut _11: bool; // anonymous local
+    let mut code: u32; // local
+    let mut _13: bool; // anonymous local
+    let mut _14: bool; // anonymous local
+    let mut _15: bool; // anonymous local
+    let mut _16: &'_ mut Vec::<u8, Global>; // anonymous local
+    let mut _17: NonNull::<u8>; // anonymous local
     let _18: (); // anonymous local
-    let _19: usize; // anonymous local
-    let self_20: UsizeNoHighBit; // local
-    let _21: (); // anonymous local
-    let _22: usize; // anonymous local
-    let _23: bool; // anonymous local
+    let mut _19: usize; // anonymous local
+    let mut self_20: UsizeNoHighBit; // local
+    let mut _21: (); // anonymous local
+    let mut _22: usize; // anonymous local
+    let mut _23: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3166,14 +3199,14 @@ pub fn push(self_1: &'_ mut String, ch: char)
 // Full name: core::fmt::Write::write_fmt::{impl SpecWriteFmt for &'_ mut W}::spec_write_fmt::<'_, String>
 fn spec_write_fmt::<'_, String>(self: &'_ mut String, args: Arguments::<'_>) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ mut String; // arg #1
     let args: Arguments::<'_>; // arg #2
-    let _3: Option::<&'_ str>; // anonymous local
-    let _4: &'_ Arguments::<'_>; // anonymous local
-    let _5: isize; // anonymous local
+    let mut _3: Option::<&'_ str>; // anonymous local
+    let mut _4: &'_ Arguments::<'_>; // anonymous local
+    let mut _5: isize; // anonymous local
     let s: &'_ str; // local
-    let _7: &'_ mut (dyn FakeTrait); // anonymous local
+    let mut _7: &'_ mut (dyn FakeTrait); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3238,29 +3271,29 @@ fn spec_write_fmt::<'_, String>(self: &'_ mut String, args: Arguments::<'_>) -> 
 // Full name: core::slice::iter::{Iter::<'_, _>}::make_slice::<'_, u8>
 fn make_slice::<'_, u8>(self_1: &'_ Iter::<'_, u8>) -> &'_ [u8]
 {
-    let _0: &'_ [u8]; // return
+    let mut _0: &'_ [u8]; // return
     let self_1: &'_ Iter::<'_, u8>; // arg #1
-    let data: *const u8; // local
-    let self_3: NonNull::<u8>; // local
+    let mut data: *const u8; // local
+    let mut self_3: NonNull::<u8>; // local
     let len: usize; // local
-    let self_5: *const u8; // local
+    let mut self_5: *const u8; // local
     let end: NonNull::<u8>; // local
-    let _7: *const u8; // anonymous local
-    let subtracted: NonNull::<u8>; // local
-    let self_9: *mut u8; // local
-    let origin: *const u8; // local
-    let self_11: *const u8; // local
+    let mut _7: *const u8; // anonymous local
+    let mut subtracted: NonNull::<u8>; // local
+    let mut self_9: *mut u8; // local
+    let mut origin: *const u8; // local
+    let mut self_11: *const u8; // local
     let _12: (); // anonymous local
-    let _13: *const (); // anonymous local
-    let _14: *const (); // anonymous local
-    let _15: bool; // anonymous local
-    let _16: bool; // anonymous local
-    let _17: !; // anonymous local
+    let mut _13: *const (); // anonymous local
+    let mut _14: *const (); // anonymous local
+    let mut _15: bool; // anonymous local
+    let mut _16: bool; // anonymous local
+    let mut _17: !; // anonymous local
     let _18: (); // anonymous local
-    let _19: *mut (); // anonymous local
+    let mut _19: *mut (); // anonymous local
     let _20: *const [u8]; // anonymous local
-    let _21: bool; // anonymous local
-    let _22: bool; // anonymous local
+    let mut _21: bool; // anonymous local
+    let mut _22: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3371,7 +3404,7 @@ fn make_slice::<'_, u8>(self_1: &'_ Iter::<'_, u8>) -> &'_ [u8]
     bb14: {
         storage_live(_20);
         _20 = *const (copy data, copy len);
-        _0 = &(*_20) with_metadata(copy _20.metadata);
+        _0 = &(*_20) with_metadata(read _20.metadata);
         storage_dead(_20);
         storage_dead(data);
         return;
@@ -3397,25 +3430,25 @@ fn make_slice::<'_, u8>(self_1: &'_ Iter::<'_, u8>) -> &'_ [u8]
 // Full name: alloc::vec::{Vec::<_, _>}::append_elements::<u8, Global>
 fn append_elements::<u8, Global>(self_1: &'_ mut Vec::<u8, Global>, other: *const [u8])
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self_1: &'_ mut Vec::<u8, Global>; // arg #1
     let other: *const [u8]; // arg #2
     let _3: (); // anonymous local
-    let count: usize; // local
+    let mut count: usize; // local
     let len: usize; // local
-    let _6: bool; // anonymous local
-    let src: *const u8; // local
-    let dst: *mut u8; // local
-    let self_9: *mut u8; // local
-    let _10: bool; // anonymous local
-    let _11: NonNull::<u8>; // anonymous local
+    let mut _6: bool; // anonymous local
+    let mut src: *const u8; // local
+    let mut dst: *mut u8; // local
+    let mut self_9: *mut u8; // local
+    let mut _10: bool; // anonymous local
+    let mut _11: NonNull::<u8>; // anonymous local
     let _12: (); // anonymous local
-    let _13: *const (); // anonymous local
-    let _14: *mut (); // anonymous local
-    let _15: (); // anonymous local
-    let _16: usize; // anonymous local
-    let _17: bool; // anonymous local
-    let _18: (); // anonymous local
+    let mut _13: *const (); // anonymous local
+    let mut _14: *mut (); // anonymous local
+    let mut _15: (); // anonymous local
+    let mut _16: usize; // anonymous local
+    let mut _17: bool; // anonymous local
+    let mut _18: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3514,18 +3547,18 @@ fn append_elements::<u8, Global>(self_1: &'_ mut Vec::<u8, Global>, other: *cons
 #[diagnostic_item("vec_reserve")]
 pub fn reserve::<u8, Global>(self_1: &'_ mut Vec::<u8, Global>, additional: usize)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let self_1: &'_ mut Vec::<u8, Global>; // arg #1
     let additional: usize; // arg #2
-    let len: usize; // local
-    let self_4: &'_ mut RawVecInner::<Global>; // local
-    let elem_layout: Layout; // local
-    let _6: bool; // anonymous local
+    let mut len: usize; // local
+    let mut self_4: &'_ mut RawVecInner::<Global>; // local
+    let mut elem_layout: Layout; // local
+    let mut _6: bool; // anonymous local
     let _7: (); // anonymous local
-    let _8: usize; // anonymous local
-    let self_9: usize; // local
-    let elem_size: usize; // local
-    let self_11: UsizeNoHighBit; // local
+    let mut _8: usize; // anonymous local
+    let mut self_9: usize; // local
+    let mut elem_size: usize; // local
+    let mut self_11: UsizeNoHighBit; // local
 
     bb0: {
         storage_live(_0);
@@ -3587,41 +3620,41 @@ pub fn reserve::<u8, Global>(self_1: &'_ mut Vec::<u8, Global>, additional: usiz
 // Full name: core::char::methods::encode_utf8_raw_unchecked
 pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let code: u32; // arg #1
     let dst: *mut u8; // arg #2
     let len: usize; // local
     let last1: u8; // local
-    let _5: u8; // anonymous local
-    let _6: u32; // anonymous local
+    let mut _5: u8; // anonymous local
+    let mut _6: u32; // anonymous local
     let last2: u8; // local
-    let _8: u8; // anonymous local
-    let _9: u32; // anonymous local
-    let _10: u32; // anonymous local
+    let mut _8: u8; // anonymous local
+    let mut _9: u32; // anonymous local
+    let mut _10: u32; // anonymous local
     let last3: u8; // local
-    let _12: u8; // anonymous local
-    let _13: u32; // anonymous local
-    let _14: u32; // anonymous local
+    let mut _12: u8; // anonymous local
+    let mut _13: u32; // anonymous local
+    let mut _14: u32; // anonymous local
     let last4: u8; // local
-    let _16: u8; // anonymous local
-    let _17: u32; // anonymous local
-    let _18: u32; // anonymous local
-    let _19: usize; // anonymous local
-    let _20: *mut u8; // anonymous local
-    let _21: *mut u8; // anonymous local
-    let _22: *mut u8; // anonymous local
-    let _23: *mut u8; // anonymous local
-    let _24: *mut u8; // anonymous local
-    let _25: *mut u8; // anonymous local
-    let _26: bool; // anonymous local
-    let _27: bool; // anonymous local
-    let _28: bool; // anonymous local
-    let _29: usize; // anonymous local
-    let _30: usize; // anonymous local
-    let _31: usize; // anonymous local
-    let _32: usize; // anonymous local
-    let _33: usize; // anonymous local
-    let _34: usize; // anonymous local
+    let mut _16: u8; // anonymous local
+    let mut _17: u32; // anonymous local
+    let mut _18: u32; // anonymous local
+    let mut _19: usize; // anonymous local
+    let mut _20: *mut u8; // anonymous local
+    let mut _21: *mut u8; // anonymous local
+    let mut _22: *mut u8; // anonymous local
+    let mut _23: *mut u8; // anonymous local
+    let mut _24: *mut u8; // anonymous local
+    let mut _25: *mut u8; // anonymous local
+    let mut _26: bool; // anonymous local
+    let mut _27: bool; // anonymous local
+    let mut _28: bool; // anonymous local
+    let mut _29: usize; // anonymous local
+    let mut _30: usize; // anonymous local
+    let mut _31: usize; // anonymous local
+    let mut _32: usize; // anonymous local
+    let mut _33: usize; // anonymous local
+    let mut _34: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -3795,20 +3828,20 @@ pub fn encode_utf8_raw_unchecked(code: u32, dst: *mut u8)
 #[track_caller]
 fn alloc::vec::{Vec::<_, _>}::set_len::precondition_check(new_len: usize, capacity: usize)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let new_len: usize; // arg #1
     let capacity: usize; // arg #2
-    let _3: bool; // anonymous local
+    let mut _3: bool; // anonymous local
     let msg: &'_ str; // local
     let _5: !; // anonymous local
-    let _6: Arguments::<'_>; // anonymous local
-    let _7: NonNull::<u8>; // anonymous local
-    let _8: *const u8; // anonymous local
-    let _9: NonNull::<Argument::<'_>>; // anonymous local
-    let _10: usize; // anonymous local
-    let _11: usize; // anonymous local
-    let _12: usize; // anonymous local
-    let _13: *const str; // anonymous local
+    let mut _6: Arguments::<'_>; // anonymous local
+    let mut _7: NonNull::<u8>; // anonymous local
+    let mut _8: *const u8; // anonymous local
+    let mut _9: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: usize; // anonymous local
+    let mut _12: usize; // anonymous local
+    let mut _13: *const str; // anonymous local
     let _14: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -3832,7 +3865,7 @@ fn alloc::vec::{Vec::<_, _>}::set_len::precondition_check(new_len: usize, capaci
         storage_live(_7);
         storage_live(_8);
         storage_live(_13);
-        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _13 = &raw const (*msg) with_metadata(read msg.metadata);
         _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
         _7 = transmute<NonNull::<u8>>(copy _8);
@@ -3869,23 +3902,23 @@ fn alloc::vec::{Vec::<_, _>}::set_len::precondition_check(new_len: usize, capaci
 // Full name: core::fmt::{Arguments::<'_>}::as_statically_known_str::<'_>
 pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'_ str>
 {
-    let s: Option::<&'_ str>; // return
+    let mut s: Option::<&'_ str>; // return
     let self_1: &'_ Arguments::<'_>; // arg #1
-    let _2: bool; // anonymous local
-    let _3: bool; // anonymous local
+    let mut _2: bool; // anonymous local
+    let mut _3: bool; // anonymous local
     let bits: usize; // local
-    let _5: NonNull::<Argument::<'_>>; // anonymous local
-    let _6: usize; // anonymous local
+    let mut _5: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _6: usize; // anonymous local
     let _7: &'_ str; // anonymous local
     let _8: &'_ [u8]; // anonymous local
-    let data: *const u8; // local
-    let self_10: NonNull::<u8>; // local
-    let len: usize; // local
+    let mut data: *const u8; // local
+    let mut self_10: NonNull::<u8>; // local
+    let mut len: usize; // local
     let _12: (); // anonymous local
-    let _13: *mut (); // anonymous local
+    let mut _13: *mut (); // anonymous local
     let v: *const [u8]; // local
-    let _15: isize; // anonymous local
-    let _16: bool; // anonymous local
+    let mut _15: isize; // anonymous local
+    let mut _16: bool; // anonymous local
 
     bb0: {
         storage_live(s);
@@ -3933,7 +3966,7 @@ pub fn as_statically_known_str::<'_>(self_1: &'_ Arguments::<'_>) -> Option::<&'
     bb5: {
         storage_live(v);
         v = *const (copy data, copy len);
-        _8 = &(*v) with_metadata(copy v.metadata);
+        _8 = &(*v) with_metadata(read v.metadata);
         storage_dead(v);
         storage_dead(len);
         storage_dead(data);
@@ -3994,20 +4027,20 @@ pub fn write(_1: &'_ mut (dyn FakeTrait), _2: Arguments::<'_>) -> Result::<(), E
 #[track_caller]
 fn core::ptr::const_ptr::{*const T}::offset_from_unsigned::precondition_check(this: *const (), origin: *const ())
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let this: *const (); // arg #1
     let origin: *const (); // arg #2
-    let _3: bool; // anonymous local
+    let mut _3: bool; // anonymous local
     let msg: &'_ str; // local
     let _5: !; // anonymous local
-    let _6: Arguments::<'_>; // anonymous local
-    let _7: NonNull::<u8>; // anonymous local
-    let _8: *const u8; // anonymous local
-    let _9: NonNull::<Argument::<'_>>; // anonymous local
-    let _10: usize; // anonymous local
-    let _11: usize; // anonymous local
-    let _12: usize; // anonymous local
-    let _13: *const str; // anonymous local
+    let mut _6: Arguments::<'_>; // anonymous local
+    let mut _7: NonNull::<u8>; // anonymous local
+    let mut _8: *const u8; // anonymous local
+    let mut _9: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: usize; // anonymous local
+    let mut _12: usize; // anonymous local
+    let mut _13: *const str; // anonymous local
     let _14: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -4031,7 +4064,7 @@ fn core::ptr::const_ptr::{*const T}::offset_from_unsigned::precondition_check(th
         storage_live(_7);
         storage_live(_8);
         storage_live(_13);
-        _13 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _13 = &raw const (*msg) with_metadata(read msg.metadata);
         _8 = cast<*const u8>(copy _13);
         storage_dead(_13);
         _7 = transmute<NonNull::<u8>>(copy _8);
@@ -4068,30 +4101,30 @@ fn core::ptr::const_ptr::{*const T}::offset_from_unsigned::precondition_check(th
 #[track_caller]
 fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usize, align: usize, len: usize)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let data: *mut (); // arg #1
     let size: usize; // arg #2
     let align: usize; // arg #3
     let len: usize; // arg #4
-    let _5: bool; // anonymous local
-    let ptr: *const (); // local
-    let _7: bool; // anonymous local
+    let mut _5: bool; // anonymous local
+    let mut ptr: *const (); // local
+    let mut _7: bool; // anonymous local
     let msg: &'_ str; // local
     let _9: !; // anonymous local
-    let _10: Arguments::<'_>; // anonymous local
-    let _11: bool; // anonymous local
-    let _12: bool; // anonymous local
-    let _13: usize; // anonymous local
+    let mut _10: Arguments::<'_>; // anonymous local
+    let mut _11: bool; // anonymous local
+    let mut _12: bool; // anonymous local
+    let mut _13: usize; // anonymous local
     let max_len: usize; // local
-    let _15: NonNull::<u8>; // anonymous local
-    let _16: *const u8; // anonymous local
-    let _17: NonNull::<Argument::<'_>>; // anonymous local
-    let _18: usize; // anonymous local
-    let _19: usize; // anonymous local
-    let _20: usize; // anonymous local
-    let _21: *const str; // anonymous local
+    let mut _15: NonNull::<u8>; // anonymous local
+    let mut _16: *const u8; // anonymous local
+    let mut _17: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _18: usize; // anonymous local
+    let mut _19: usize; // anonymous local
+    let mut _20: usize; // anonymous local
+    let mut _21: *const str; // anonymous local
     let _22: &'_ [u8]; // anonymous local
-    let _23: bool; // anonymous local
+    let mut _23: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4169,7 +4202,7 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
         storage_live(_15);
         storage_live(_16);
         storage_live(_21);
-        _21 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _21 = &raw const (*msg) with_metadata(read msg.metadata);
         _16 = cast<*const u8>(copy _21);
         storage_dead(_21);
         _15 = transmute<NonNull::<u8>>(copy _16);
@@ -4212,11 +4245,11 @@ fn core::slice::raw::from_raw_parts::precondition_check(data: *mut (), size: usi
 #[lang_item(Panic)]
 pub fn panic(expr: &'_ str) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let expr: &'_ str; // arg #1
     let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
+    let mut _3: Arguments::<'_>; // anonymous local
+    let mut _4: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4253,37 +4286,37 @@ pub fn ptr_offset_from_unsigned::<u8>(ptr_1: *const u8, base_2: *const u8) -> us
 #[track_caller]
 fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut (), size: usize, align: usize, count: usize)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let src: *const (); // arg #1
     let dst: *mut (); // arg #2
     let size: usize; // arg #3
     let align: usize; // arg #4
     let count: usize; // arg #5
-    let _6: bool; // anonymous local
+    let mut _6: bool; // anonymous local
     let zero_size: bool; // local
-    let _8: bool; // anonymous local
-    let is_zst: bool; // local
-    let _10: bool; // anonymous local
-    let ptr: *const (); // local
+    let mut _8: bool; // anonymous local
+    let mut is_zst: bool; // local
+    let mut _10: bool; // anonymous local
+    let mut ptr: *const (); // local
     let msg: &'_ str; // local
     let _13: !; // anonymous local
-    let _14: Arguments::<'_>; // anonymous local
-    let _15: bool; // anonymous local
-    let _16: bool; // anonymous local
-    let _17: usize; // anonymous local
-    let _18: bool; // anonymous local
-    let _19: bool; // anonymous local
-    let _20: usize; // anonymous local
-    let _21: NonNull::<u8>; // anonymous local
-    let _22: *const u8; // anonymous local
-    let _23: NonNull::<Argument::<'_>>; // anonymous local
-    let _24: usize; // anonymous local
-    let _25: usize; // anonymous local
-    let _26: usize; // anonymous local
-    let _27: *const str; // anonymous local
+    let mut _14: Arguments::<'_>; // anonymous local
+    let mut _15: bool; // anonymous local
+    let mut _16: bool; // anonymous local
+    let mut _17: usize; // anonymous local
+    let mut _18: bool; // anonymous local
+    let mut _19: bool; // anonymous local
+    let mut _20: usize; // anonymous local
+    let mut _21: NonNull::<u8>; // anonymous local
+    let mut _22: *const u8; // anonymous local
+    let mut _23: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _24: usize; // anonymous local
+    let mut _25: usize; // anonymous local
+    let mut _26: usize; // anonymous local
+    let mut _27: *const str; // anonymous local
     let _28: &'_ [u8]; // anonymous local
-    let _29: bool; // anonymous local
-    let _30: bool; // anonymous local
+    let mut _29: bool; // anonymous local
+    let mut _30: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4428,7 +4461,7 @@ fn core::ptr::copy_nonoverlapping::precondition_check(src: *const (), dst: *mut 
         storage_live(_21);
         storage_live(_22);
         storage_live(_27);
-        _27 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _27 = &raw const (*msg) with_metadata(read msg.metadata);
         _22 = cast<*const u8>(copy _27);
         storage_dead(_27);
         _21 = transmute<NonNull::<u8>>(copy _22);
@@ -4474,13 +4507,13 @@ pub fn copy_nonoverlapping::<u8>(src_1: *const u8, dst_2: *mut u8, count_3: usiz
 // Full name: alloc::raw_vec::{RawVecInner::<_>}::reserve::do_reserve_and_handle::<Global>
 fn do_reserve_and_handle::<Global>(slf: &'_ mut RawVecInner::<Global>, len: usize, additional: usize, elem_layout: Layout)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let slf: &'_ mut RawVecInner::<Global>; // arg #1
     let len: usize; // arg #2
     let additional: usize; // arg #3
     let elem_layout: Layout; // arg #4
-    let _5: Result::<(), TryReserveError>; // anonymous local
-    let _6: isize; // anonymous local
+    let mut _5: Result::<(), TryReserveError>; // anonymous local
+    let mut _6: isize; // anonymous local
     let err: TryReserveError; // local
     let _8: !; // anonymous local
 
@@ -4529,30 +4562,30 @@ fn do_reserve_and_handle::<Global>(slf: &'_ mut RawVecInner::<Global>, len: usiz
 // Full name: core::intrinsics::is_val_statically_known::<bool>
 #[rustc_intrinsic]
 pub fn is_val_statically_known::<bool>(_arg_1: bool) -> bool
-= <intrinsic:is_val_statically_known>
+= <intrinsic:is_val_statically_known> with fallback core::intrinsics::is_val_statically_known::{fallback}::<bool>
 
 // Full name: core::ptr::const_ptr::{*const T}::is_aligned_to::<()>
 pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
 {
-    let _0: bool; // return
+    let mut _0: bool; // return
     let self: *const (); // arg #1
     let align: usize; // arg #2
-    let _3: bool; // anonymous local
+    let mut _3: bool; // anonymous local
     let _4: !; // anonymous local
-    let _5: Arguments::<'_>; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: u32; // anonymous local
-    let _10: *const (); // anonymous local
-    let s: &'_ str; // local
-    let _12: NonNull::<u8>; // anonymous local
-    let _13: *const u8; // anonymous local
-    let _14: NonNull::<Argument::<'_>>; // anonymous local
-    let _15: usize; // anonymous local
-    let _16: usize; // anonymous local
-    let _17: usize; // anonymous local
-    let _18: *const str; // anonymous local
+    let mut _5: Arguments::<'_>; // anonymous local
+    let mut _6: usize; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: usize; // anonymous local
+    let mut _9: u32; // anonymous local
+    let mut _10: *const (); // anonymous local
+    let mut s: &'_ str; // local
+    let mut _12: NonNull::<u8>; // anonymous local
+    let mut _13: *const u8; // anonymous local
+    let mut _14: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _15: usize; // anonymous local
+    let mut _16: usize; // anonymous local
+    let mut _17: usize; // anonymous local
+    let mut _18: *const str; // anonymous local
     let _19: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -4594,7 +4627,7 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
         storage_live(_12);
         storage_live(_13);
         storage_live(_18);
-        _18 = &raw const (*s) with_metadata(copy s.metadata);
+        _18 = &raw const (*s) with_metadata(read s.metadata);
         _13 = cast<*const u8>(copy _18);
         storage_dead(_18);
         _12 = transmute<NonNull::<u8>>(copy _13);
@@ -4636,25 +4669,25 @@ pub fn is_aligned_to::<()>(self: *const (), align: usize) -> bool
 // Full name: core::ub_checks::maybe_is_nonoverlapping::runtime
 fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
 {
-    let _0: bool; // return
+    let mut _0: bool; // return
     let src: *const (); // arg #1
     let dst: *const (); // arg #2
     let size_3: usize; // arg #3
     let count: usize; // arg #4
     let src_usize: usize; // local
     let dst_usize: usize; // local
-    let _7: !; // anonymous local
+    let mut _7: !; // anonymous local
     let size_8: usize; // local
-    let _9: Option::<usize>; // anonymous local
+    let mut _9: Option::<usize>; // anonymous local
     let diff: usize; // local
     let _11: u64; // anonymous local
     let b: bool; // local
-    let _13: (u64, bool); // anonymous local
-    let _14: u64; // anonymous local
-    let _15: u64; // anonymous local
-    let a: usize; // local
+    let mut _13: (u64, bool); // anonymous local
+    let mut _14: u64; // anonymous local
+    let mut _15: u64; // anonymous local
+    let mut a: usize; // local
     let _17: (); // anonymous local
-    let _18: bool; // anonymous local
+    let mut _18: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -4750,55 +4783,55 @@ fn runtime(src: *const (), dst: *const (), size_3: usize, count: usize) -> bool
 // Full name: alloc::raw_vec::{RawVecInner::<_>}::grow_amortized::<Global>
 fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, additional: usize, elem_layout: Layout) -> Result::<(), TryReserveError>
 {
-    let _0: Result::<(), TryReserveError>; // return
+    let mut _0: Result::<(), TryReserveError>; // return
     let self_1: &'_ mut RawVecInner::<Global>; // arg #1
     let len: usize; // arg #2
     let additional: usize; // arg #3
     let elem_layout: Layout; // arg #4
-    let size: usize; // local
-    let _6: ControlFlow::<Result::<!, TryReserveErrorKind>, usize>; // anonymous local
-    let self_7: Result::<usize, TryReserveErrorKind>; // local
-    let self_8: Option::<usize>; // local
+    let mut size: usize; // local
+    let mut _6: ControlFlow::<Result::<!, TryReserveErrorKind>, usize>; // anonymous local
+    let mut self_7: Result::<usize, TryReserveErrorKind>; // local
+    let mut self_8: Option::<usize>; // local
     let residual_9: Result::<!, TryReserveErrorKind>; // local
     let required_cap: usize; // local
     let cap_11: usize; // local
-    let v1_12: usize; // local
-    let _13: usize; // anonymous local
-    let self_14: UsizeNoHighBit; // local
+    let mut v1_12: usize; // local
+    let mut _13: usize; // anonymous local
+    let mut self_14: UsizeNoHighBit; // local
     let cap_15: usize; // local
-    let v1_16: usize; // local
-    let _17: ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>; // anonymous local
-    let self_18: Result::<NonNull::<[u8]>, TryReserveError>; // local
-    let _19: &'_ RawVecInner::<Global>; // anonymous local
+    let mut v1_16: usize; // local
+    let mut _17: ControlFlow::<Result::<!, TryReserveError>, NonNull::<[u8]>>; // anonymous local
+    let mut self_18: Result::<NonNull::<[u8]>, TryReserveError>; // local
+    let mut _19: &'_ RawVecInner::<Global>; // anonymous local
     let residual_20: Result::<!, TryReserveError>; // local
     let ptr: NonNull::<[u8]>; // local
-    let b: bool; // local
-    let _23: (usize, bool); // anonymous local
-    let _24: usize; // anonymous local
+    let mut b: bool; // local
+    let mut _23: (usize, bool); // anonymous local
+    let mut _24: usize; // anonymous local
     let _25: (); // anonymous local
     let v_26: usize; // local
     let v_27: usize; // local
     let e_28: TryReserveErrorKind; // local
-    let _29: Result::<!, TryReserveErrorKind>; // anonymous local
-    let _30: isize; // anonymous local
+    let mut _29: Result::<!, TryReserveErrorKind>; // anonymous local
+    let mut _30: isize; // anonymous local
     let e_31: TryReserveErrorKind; // local
-    let _32: TryReserveError; // anonymous local
-    let _33: bool; // anonymous local
-    let _34: bool; // anonymous local
-    let _35: isize; // anonymous local
+    let mut _32: TryReserveError; // anonymous local
+    let mut _33: bool; // anonymous local
+    let mut _34: bool; // anonymous local
+    let mut _35: isize; // anonymous local
     let v_36: NonNull::<[u8]>; // local
     let e_37: TryReserveError; // local
-    let _38: Result::<!, TryReserveError>; // anonymous local
-    let _39: Unique::<u8>; // anonymous local
-    let _40: NonNull::<u8>; // anonymous local
-    let _41: UsizeNoHighBit; // anonymous local
-    let _42: *mut u8; // anonymous local
-    let _43: *mut [u8]; // anonymous local
-    let _44: isize; // anonymous local
+    let mut _38: Result::<!, TryReserveError>; // anonymous local
+    let mut _39: Unique::<u8>; // anonymous local
+    let mut _40: NonNull::<u8>; // anonymous local
+    let mut _41: UsizeNoHighBit; // anonymous local
+    let mut _42: *mut u8; // anonymous local
+    let mut _43: *mut [u8]; // anonymous local
+    let mut _44: isize; // anonymous local
     let e_45: TryReserveError; // local
-    let _46: bool; // anonymous local
-    let _47: (); // anonymous local
-    let _48: (); // anonymous local
+    let mut _46: bool; // anonymous local
+    let mut _47: (); // anonymous local
+    let mut _48: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5062,13 +5095,13 @@ fn grow_amortized::<Global>(self_1: &'_ mut RawVecInner::<Global>, len: usize, a
 // Full name: alloc::raw_vec::handle_error
 fn handle_error(e: TryReserveError) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let e: TryReserveError; // arg #1
-    let _2: TryReserveErrorKind; // anonymous local
-    let _3: &'_ TryReserveError; // anonymous local
-    let _4: isize; // anonymous local
+    let mut _2: TryReserveErrorKind; // anonymous local
+    let mut _3: &'_ TryReserveError; // anonymous local
+    let mut _4: isize; // anonymous local
     let layout: Layout; // local
-    let _6: Layout; // anonymous local
+    let mut _6: Layout; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5122,21 +5155,34 @@ fn handle_error(e: TryReserveError) -> !
     }
 }
 
+#[rustc_intrinsic]
+pub fn core::intrinsics::is_val_statically_known::{fallback}::<bool>(_arg: bool) -> bool
+{
+    let mut _0: bool; // return
+    let _arg: bool; // arg #1
+
+    bb0: {
+        storage_live(_0);
+        _0 = const false;
+        return;
+    }
+}
+
 // Full name: core::intrinsics::cold_path
 #[miri::intrinsic_fallback_is_spec]
 #[rustc_intrinsic]
 pub fn cold_path()
-= <intrinsic:cold_path>
+= <intrinsic:cold_path> with fallback (spec) core::intrinsics::cold_path::{fallback}
 
 // Full name: core::panicking::panic_nounwind
 #[lang_item(PanicNounwind)]
 pub fn panic_nounwind(expr: &'_ str) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let expr: &'_ str; // arg #1
     let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
+    let mut _3: Arguments::<'_>; // anonymous local
+    let mut _4: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5174,61 +5220,61 @@ pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
 #[miri::intrinsic_fallback_is_spec]
 #[rustc_intrinsic]
 pub fn integer_max::<usize>(a_1: usize, b_2: usize) -> usize
-= <intrinsic:integer_max>
+= <intrinsic:integer_max> with fallback (spec) core::intrinsics::integer_max::{fallback}::<usize>
 
 // Full name: alloc::raw_vec::{RawVecInner::<_>}::finish_grow::<Global>
 fn finish_grow::<Global>(self_1: &'_ RawVecInner::<Global>, cap: usize, elem_layout_3: Layout) -> Result::<NonNull::<[u8]>, TryReserveError>
 {
-    let _0: Result::<NonNull::<[u8]>, TryReserveError>; // return
+    let mut _0: Result::<NonNull::<[u8]>, TryReserveError>; // return
     let self_1: &'_ RawVecInner::<Global>; // arg #1
     let cap: usize; // arg #2
     let elem_layout_3: Layout; // arg #3
     let new_layout: Layout; // local
-    let _5: ControlFlow::<Result::<!, TryReserveError>, Layout>; // anonymous local
-    let self_6: Result::<Layout, TryReserveError>; // local
+    let mut _5: ControlFlow::<Result::<!, TryReserveError>, Layout>; // anonymous local
+    let mut self_6: Result::<Layout, TryReserveError>; // local
     let residual: Result::<!, TryReserveError>; // local
     let val: Layout; // local
     let memory: Result::<NonNull::<[u8]>, AllocError>; // local
-    let _10: Option::<(NonNull::<u8>, Layout)>; // anonymous local
-    let _11: isize; // anonymous local
+    let mut _10: Option::<(NonNull::<u8>, Layout)>; // anonymous local
+    let mut _11: isize; // anonymous local
     let ptr: NonNull::<u8>; // local
     let old_layout: Layout; // local
-    let cond: bool; // local
-    let _15: usize; // anonymous local
-    let _16: usize; // anonymous local
-    let _17: &'_ Global; // anonymous local
-    let _18: &'_ Global; // anonymous local
-    let self_19: Result::<Layout, LayoutError>; // local
+    let mut cond: bool; // local
+    let mut _15: usize; // anonymous local
+    let mut _16: usize; // anonymous local
+    let mut _17: &'_ Global; // anonymous local
+    let mut _18: &'_ Global; // anonymous local
+    let mut self_19: Result::<Layout, LayoutError>; // local
     let _20: u64; // anonymous local
     let b: bool; // local
-    let _22: (u64, bool); // anonymous local
-    let _23: u64; // anonymous local
-    let _24: u64; // anonymous local
-    let size: usize; // local
+    let mut _22: (u64, bool); // anonymous local
+    let mut _23: u64; // anonymous local
+    let mut _24: u64; // anonymous local
+    let mut size: usize; // local
     let _26: (); // anonymous local
-    let _27: bool; // anonymous local
-    let _28: Layout; // anonymous local
-    let _29: usize; // anonymous local
-    let _30: usize; // anonymous local
+    let mut _27: bool; // anonymous local
+    let mut _28: Layout; // anonymous local
+    let mut _29: usize; // anonymous local
+    let mut _30: usize; // anonymous local
     let t_31: Layout; // local
     let v: Layout; // local
     let e_33: TryReserveError; // local
-    let _34: Result::<!, TryReserveError>; // anonymous local
-    let _35: isize; // anonymous local
+    let mut _34: Result::<!, TryReserveError>; // anonymous local
+    let mut _35: isize; // anonymous local
     let e_36: TryReserveError; // local
-    let _37: bool; // anonymous local
-    let _38: Alignment; // anonymous local
-    let _39: Alignment; // anonymous local
+    let mut _37: bool; // anonymous local
+    let mut _38: Alignment; // anonymous local
+    let mut _39: Alignment; // anonymous local
     let _40: (); // anonymous local
-    let _41: isize; // anonymous local
+    let mut _41: isize; // anonymous local
     let t_42: NonNull::<[u8]>; // local
-    let _43: TryReserveError; // anonymous local
-    let _44: TryReserveErrorKind; // anonymous local
-    let elem_layout_45: usize; // local
-    let elem_layout_46: Alignment; // local
-    let _47: (); // anonymous local
-    let _48: bool; // anonymous local
-    let _49: (); // anonymous local
+    let mut _43: TryReserveError; // anonymous local
+    let mut _44: TryReserveErrorKind; // anonymous local
+    let mut elem_layout_45: usize; // local
+    let mut elem_layout_46: Alignment; // local
+    let mut _47: (); // anonymous local
+    let mut _48: bool; // anonymous local
+    let mut _49: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5499,10 +5545,10 @@ fn finish_grow::<Global>(self_1: &'_ RawVecInner::<Global>, cap: usize, elem_lay
 // Full name: alloc::collections::{TryReserveError}::kind
 pub fn kind(self: &'_ TryReserveError) -> TryReserveErrorKind
 {
-    let _0: TryReserveErrorKind; // return
+    let mut _0: TryReserveErrorKind; // return
     let self: &'_ TryReserveError; // arg #1
-    let _2: isize; // anonymous local
-    let _3: Layout; // anonymous local
+    let mut _2: isize; // anonymous local
+    let mut _3: Layout; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5537,9 +5583,9 @@ pub fn kind(self: &'_ TryReserveError) -> TryReserveErrorKind
 // Full name: alloc::raw_vec::capacity_overflow
 fn capacity_overflow() -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let _1: !; // anonymous local
-    let _2: Arguments::<'_>; // anonymous local
+    let mut _2: Arguments::<'_>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -5565,10 +5611,72 @@ fn capacity_overflow() -> !
     }
 }
 
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn core::intrinsics::cold_path::{fallback}()
+{
+    let mut _0: (); // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = ();
+        return;
+    }
+}
+
+#[miri::intrinsic_fallback_is_spec]
+#[rustc_intrinsic]
+pub fn core::intrinsics::integer_max::{fallback}::<usize>(a: usize, b: usize) -> usize
+{
+    let mut _0: usize; // return
+    let a: usize; // arg #1
+    let b: usize; // arg #2
+    let mut _3: bool; // anonymous local
+    let mut _4: &'_ usize; // anonymous local
+    let mut _5: &'_ usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        storage_live(_4);
+        _4 = &a;
+        storage_live(_5);
+        _5 = &b;
+        _3 = lt(move _4, move _5) -> bb1 (unwind: bb5);
+    }
+
+    bb1: {
+        if move _3 -> bb2 else -> bb3;
+    }
+
+    bb2: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = copy b;
+        goto bb4;
+    }
+
+    bb3: {
+        storage_dead(_5);
+        storage_dead(_4);
+        _0 = copy a;
+        goto bb4;
+    }
+
+    bb4: {
+        storage_dead(_3);
+        return;
+    }
+
+    bb5: {
+        unwind_terminate;
+    }
+}
+
 // Full name: alloc::alloc::{impl Allocator for Global}::allocate
 pub fn allocate(self: &'_ Global, layout: Layout) -> Result::<NonNull::<[u8]>, AllocError>
 {
-    let _0: Result::<NonNull::<[u8]>, AllocError>; // return
+    let mut _0: Result::<NonNull::<[u8]>, AllocError>; // return
     let self: &'_ Global; // arg #1
     let layout: Layout; // arg #2
 
@@ -5589,18 +5697,18 @@ pub fn allocate(self: &'_ Global, layout: Layout) -> Result::<NonNull::<[u8]>, A
 #[track_caller]
 fn core::hint::assert_unchecked::precondition_check(cond: bool)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let cond: bool; // arg #1
     let msg: &'_ str; // local
     let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let _5: NonNull::<u8>; // anonymous local
-    let _6: *const u8; // anonymous local
-    let _7: NonNull::<Argument::<'_>>; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: usize; // anonymous local
-    let _10: usize; // anonymous local
-    let _11: *const str; // anonymous local
+    let mut _4: Arguments::<'_>; // anonymous local
+    let mut _5: NonNull::<u8>; // anonymous local
+    let mut _6: *const u8; // anonymous local
+    let mut _7: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _8: usize; // anonymous local
+    let mut _9: usize; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: *const str; // anonymous local
     let _12: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -5621,7 +5729,7 @@ fn core::hint::assert_unchecked::precondition_check(cond: bool)
         storage_live(_5);
         storage_live(_6);
         storage_live(_11);
-        _11 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _11 = &raw const (*msg) with_metadata(read msg.metadata);
         _6 = cast<*const u8>(copy _11);
         storage_dead(_11);
         _5 = transmute<NonNull::<u8>>(copy _6);
@@ -5658,7 +5766,7 @@ fn core::hint::assert_unchecked::precondition_check(cond: bool)
 // Full name: alloc::alloc::{impl Allocator for Global}::grow
 pub fn grow(self: &'_ Global, ptr: NonNull::<u8>, old_layout: Layout, new_layout: Layout) -> Result::<NonNull::<[u8]>, AllocError>
 {
-    let _0: Result::<NonNull::<[u8]>, AllocError>; // return
+    let mut _0: Result::<NonNull::<[u8]>, AllocError>; // return
     let self: &'_ Global; // arg #1
     let ptr: NonNull::<u8>; // arg #2
     let old_layout: Layout; // arg #3
@@ -5681,75 +5789,75 @@ pub fn grow(self: &'_ Global, ptr: NonNull::<u8>, old_layout: Layout, new_layout
 // Full name: alloc::alloc::{Global}::grow_impl_runtime
 fn grow_impl_runtime(self_1: &'_ Global, ptr_2: NonNull::<u8>, old_layout: Layout, new_layout: Layout, zeroed: bool) -> Result::<NonNull::<[u8]>, AllocError>
 {
-    let _0: Result::<NonNull::<[u8]>, AllocError>; // return
+    let mut _0: Result::<NonNull::<[u8]>, AllocError>; // return
     let self_1: &'_ Global; // arg #1
     let ptr_2: NonNull::<u8>; // arg #2
     let old_layout: Layout; // arg #3
     let new_layout: Layout; // arg #4
     let zeroed: bool; // arg #5
-    let old_size: usize; // local
-    let _7: bool; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: usize; // anonymous local
+    let mut old_size: usize; // local
+    let mut _7: bool; // anonymous local
+    let mut _8: usize; // anonymous local
+    let mut _9: usize; // anonymous local
     let new_size: usize; // local
-    let cond: bool; // local
+    let mut cond: bool; // local
     let raw_ptr: *mut u8; // local
-    let _13: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
-    let self_14: Result::<NonNull::<u8>, AllocError>; // local
-    let self_15: Option::<NonNull::<u8>>; // local
-    let _16: Result::<!, AllocError>; // anonymous local
+    let mut _13: ControlFlow::<Result::<!, AllocError>, NonNull::<u8>>; // anonymous local
+    let mut self_14: Result::<NonNull::<u8>, AllocError>; // local
+    let mut self_15: Option::<NonNull::<u8>>; // local
+    let mut _16: Result::<!, AllocError>; // anonymous local
     let ptr_17: NonNull::<u8>; // local
     let _18: (); // anonymous local
-    let self_19: *mut u8; // local
-    let count: usize; // local
-    let _21: NonNull::<[u8]>; // anonymous local
-    let _22: ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>>; // anonymous local
-    let self_23: Result::<NonNull::<[u8]>, AllocError>; // local
-    let _24: Result::<!, AllocError>; // anonymous local
+    let mut self_19: *mut u8; // local
+    let mut count: usize; // local
+    let mut _21: NonNull::<[u8]>; // anonymous local
+    let mut _22: ControlFlow::<Result::<!, AllocError>, NonNull::<[u8]>>; // anonymous local
+    let mut self_23: Result::<NonNull::<[u8]>, AllocError>; // local
+    let mut _24: Result::<!, AllocError>; // anonymous local
     let new_ptr: NonNull::<[u8]>; // local
-    let src: *const u8; // local
-    let dst: *mut u8; // local
+    let mut src: *const u8; // local
+    let mut dst: *mut u8; // local
     let _28: (); // anonymous local
-    let _29: Alignment; // anonymous local
-    let _30: Alignment; // anonymous local
+    let mut _29: Alignment; // anonymous local
+    let mut _30: Alignment; // anonymous local
     let _31: (); // anonymous local
-    let _32: bool; // anonymous local
-    let _33: NonNull::<u8>; // anonymous local
-    let _34: usize; // anonymous local
+    let mut _32: bool; // anonymous local
+    let mut _33: NonNull::<u8>; // anonymous local
+    let mut _34: usize; // anonymous local
     let _35: (); // anonymous local
-    let _36: *mut (); // anonymous local
+    let mut _36: *mut (); // anonymous local
     let v_37: NonNull::<u8>; // local
     let v_38: NonNull::<u8>; // local
-    let _39: isize; // anonymous local
-    let _40: bool; // anonymous local
+    let mut _39: isize; // anonymous local
+    let mut _40: bool; // anonymous local
     let _41: (); // anonymous local
-    let _42: *const (); // anonymous local
-    let _43: bool; // anonymous local
-    let ptr_44: *mut [u8]; // local
-    let self_45: *mut u8; // local
+    let mut _42: *const (); // anonymous local
+    let mut _43: bool; // anonymous local
+    let mut ptr_44: *mut [u8]; // local
+    let mut self_45: *mut u8; // local
     let _46: (); // anonymous local
-    let _47: *mut (); // anonymous local
-    let _48: isize; // anonymous local
+    let mut _47: *mut (); // anonymous local
+    let mut _48: isize; // anonymous local
     let v_49: NonNull::<[u8]>; // local
-    let _50: isize; // anonymous local
-    let _51: bool; // anonymous local
-    let _52: NonNull::<u8>; // anonymous local
-    let _53: *mut u8; // anonymous local
-    let _54: *mut [u8]; // anonymous local
+    let mut _50: isize; // anonymous local
+    let mut _51: bool; // anonymous local
+    let mut _52: NonNull::<u8>; // anonymous local
+    let mut _53: *mut u8; // anonymous local
+    let mut _54: *mut [u8]; // anonymous local
     let _55: (); // anonymous local
-    let _56: *const (); // anonymous local
-    let _57: *mut (); // anonymous local
-    let _58: bool; // anonymous local
-    let _59: (); // anonymous local
-    let _60: bool; // anonymous local
-    let _61: (); // anonymous local
-    let _62: (); // anonymous local
-    let _63: bool; // anonymous local
-    let _64: (); // anonymous local
-    let _65: usize; // anonymous local
-    let _66: bool; // anonymous local
-    let _67: bool; // anonymous local
-    let _68: bool; // anonymous local
+    let mut _56: *const (); // anonymous local
+    let mut _57: *mut (); // anonymous local
+    let mut _58: bool; // anonymous local
+    let mut _59: (); // anonymous local
+    let mut _60: bool; // anonymous local
+    let mut _61: (); // anonymous local
+    let mut _62: (); // anonymous local
+    let mut _63: bool; // anonymous local
+    let mut _64: (); // anonymous local
+    let mut _65: usize; // anonymous local
+    let mut _66: bool; // anonymous local
+    let mut _67: bool; // anonymous local
+    let mut _68: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -6134,26 +6242,26 @@ extern fn __rust_realloc(_1: NonNull::<u8>, _2: usize, _3: Alignment, _4: usize)
 #[track_caller]
 fn core::ptr::write_bytes::precondition_check(addr: *const (), align: usize, zero_size: bool)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let addr: *const (); // arg #1
     let align: usize; // arg #2
     let zero_size: bool; // arg #3
-    let _4: bool; // anonymous local
+    let mut _4: bool; // anonymous local
     let msg: &'_ str; // local
     let _6: !; // anonymous local
-    let _7: Arguments::<'_>; // anonymous local
-    let _8: bool; // anonymous local
-    let _9: bool; // anonymous local
-    let _10: usize; // anonymous local
-    let _11: NonNull::<u8>; // anonymous local
-    let _12: *const u8; // anonymous local
-    let _13: NonNull::<Argument::<'_>>; // anonymous local
-    let _14: usize; // anonymous local
-    let _15: usize; // anonymous local
-    let _16: usize; // anonymous local
-    let _17: *const str; // anonymous local
+    let mut _7: Arguments::<'_>; // anonymous local
+    let mut _8: bool; // anonymous local
+    let mut _9: bool; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: NonNull::<u8>; // anonymous local
+    let mut _12: *const u8; // anonymous local
+    let mut _13: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _14: usize; // anonymous local
+    let mut _15: usize; // anonymous local
+    let mut _16: usize; // anonymous local
+    let mut _17: *const str; // anonymous local
     let _18: &'_ [u8]; // anonymous local
-    let _19: bool; // anonymous local
+    let mut _19: bool; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -6209,7 +6317,7 @@ fn core::ptr::write_bytes::precondition_check(addr: *const (), align: usize, zer
         storage_live(_11);
         storage_live(_12);
         storage_live(_17);
-        _17 = &raw const (*msg) with_metadata(copy msg.metadata);
+        _17 = &raw const (*msg) with_metadata(read msg.metadata);
         _12 = cast<*const u8>(copy _17);
         storage_dead(_17);
         _11 = transmute<NonNull::<u8>>(copy _12);
@@ -6256,7 +6364,7 @@ pub fn write_bytes::<u8>(dst_1: *mut u8, val_2: u8, count_3: usize)
 #[lang_item(DropGlue)]
 fn drop_glue::<Error>(_1: &'_ mut Error)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut Error; // arg #1
 
     bb0: {
@@ -6269,7 +6377,7 @@ fn drop_glue::<Error>(_1: &'_ mut Error)
 // Full name: core::fmt::{impl core::fmt::Debug for Error}::fmt
 pub fn impl_Debug_for_Error::fmt(self: &'_ Error, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ Error; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
 
@@ -6289,6 +6397,28 @@ pub fn impl_Debug_for_Error::fmt(self: &'_ Error, f: &'_ mut Formatter::<'_>) ->
 
 pub fn core::fmt::{Formatter::<'_>}::write_str::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str) -> Result::<(), Error>
 = <missing>
+
+// Full name: core::cmp::impls::{impl PartialOrd<usize> for usize}::lt
+pub fn lt(self: &'_ usize, other: &'_ usize) -> bool
+{
+    let mut _0: bool; // return
+    let self: &'_ usize; // arg #1
+    let other: &'_ usize; // arg #2
+    let mut _3: usize; // anonymous local
+    let mut _4: usize; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_3);
+        _3 = copy (*self);
+        storage_live(_4);
+        _4 = copy (*other);
+        _0 = move _3 < move _4;
+        storage_dead(_4);
+        storage_dead(_3);
+        return;
+    }
+}
 
 
 

@@ -122,11 +122,11 @@ impl "impl_Debug_for_unit" core::fmt::Debug for () {
 // Full name: test_crate::trait_error
 fn trait_error(s: &'_ [u8])
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let s: &'_ [u8]; // arg #1
     let _array: [u8; 4usize]; // local
-    let _3: Result::<[u8; 4usize], TryFromSliceError>; // anonymous local
-    let _4: &'_ [u8]; // anonymous local
+    let mut _3: Result::<[u8; 4usize], TryFromSliceError>; // anonymous local
+    let mut _4: &'_ [u8]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -134,7 +134,7 @@ fn trait_error(s: &'_ [u8])
         storage_live(_array);
         storage_live(_3);
         storage_live(_4);
-        _4 = &(*s) with_metadata(copy s.metadata);
+        _4 = &(*s) with_metadata(read s.metadata);
         _3 = try_into::<&'_ [u8], [u8; 4usize]>(move _4) -> bb1 (unwind: bb4);
     }
 
@@ -162,7 +162,7 @@ fn trait_error(s: &'_ [u8])
 // Full name: core::convert::{impl TryInto<U> for T}::try_into::<&'_ [u8], [u8; 4usize]>
 pub fn try_into::<&'_ [u8], [u8; 4usize]>(self: &'_ [u8]) -> Result::<[u8; 4usize], TryFromSliceError>
 {
-    let _0: Result::<[u8; 4usize], TryFromSliceError>; // return
+    let mut _0: Result::<[u8; 4usize], TryFromSliceError>; // return
     let self: &'_ [u8]; // arg #1
 
     bb0: {
@@ -183,12 +183,12 @@ pub fn try_into::<&'_ [u8], [u8; 4usize]>(self: &'_ [u8]) -> Result::<[u8; 4usiz
 #[track_caller]
 pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], TryFromSliceError>) -> [u8; 4usize]
 {
-    let t: [u8; 4usize]; // return
+    let mut t: [u8; 4usize]; // return
     let self: Result::<[u8; 4usize], TryFromSliceError>; // arg #1
-    let _2: isize; // anonymous local
+    let mut _2: isize; // anonymous local
     let e: TryFromSliceError; // local
-    let _4: !; // anonymous local
-    let _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _4: !; // anonymous local
+    let mut _5: &'_ (dyn FakeTrait); // anonymous local
     let _6: &'_ TryFromSliceError; // anonymous local
 
     bb0: {
@@ -230,19 +230,19 @@ pub fn unwrap::<[u8; 4usize], TryFromSliceError>(self: Result::<[u8; 4usize], Tr
 // Full name: core::array::{impl TryFrom<&'_ [T]> for [T; N]}::try_from::<'_, u8, 4usize>
 pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], TryFromSliceError>
 {
-    let _0: Result::<[u8; 4usize], TryFromSliceError>; // return
+    let mut _0: Result::<[u8; 4usize], TryFromSliceError>; // return
     let slice: &'_ [u8]; // arg #1
-    let self_2: Result::<&'_ [u8; 4usize], TryFromSliceError>; // local
-    let self_3: Option::<&'_ [u8; 4usize]>; // local
-    let _4: bool; // anonymous local
-    let _5: usize; // anonymous local
+    let mut self_2: Result::<&'_ [u8; 4usize], TryFromSliceError>; // local
+    let mut self_3: Option::<&'_ [u8; 4usize]>; // local
+    let mut _4: bool; // anonymous local
+    let mut _5: usize; // anonymous local
     let ptr: *const [u8; 4usize]; // local
-    let self_7: *const u8; // local
+    let mut self_7: *const u8; // local
     let _8: &'_ [u8; 4usize]; // anonymous local
-    let _9: *const [u8]; // anonymous local
+    let mut _9: *const [u8]; // anonymous local
     let v_10: &'_ [u8; 4usize]; // local
     let v_11: [u8; 4usize]; // local
-    let _12: &'_ [u8; 4usize]; // anonymous local
+    let mut _12: &'_ [u8; 4usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -260,7 +260,7 @@ pub fn try_from::<'_, u8, 4usize>(slice: &'_ [u8]) -> Result::<[u8; 4usize], Try
         storage_dead(_5);
         storage_live(ptr);
         storage_live(self_7);
-        _9 = &raw const (*slice) with_metadata(copy slice.metadata);
+        _9 = &raw const (*slice) with_metadata(read slice.metadata);
         self_7 = cast<*const u8>(copy _9);
         ptr = cast<*const [u8; 4usize]>(copy _9);
         storage_dead(self_7);
@@ -313,7 +313,7 @@ fn unwrap_failed(_1: &'_ str, _2: &'_ (dyn FakeTrait)) -> !
 #[lang_item(DropGlue)]
 fn drop_glue::<TryFromSliceError>(_1: &'_ mut TryFromSliceError)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut TryFromSliceError; // arg #1
 
     bb0: {
@@ -326,10 +326,10 @@ fn drop_glue::<TryFromSliceError>(_1: &'_ mut TryFromSliceError)
 // Full name: core::array::{impl core::fmt::Debug for TryFromSliceError}::fmt
 pub fn impl_Debug_for_TryFromSliceError::fmt(self: &'_ TryFromSliceError, f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ TryFromSliceError; // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: &'_ (dyn FakeTrait); // anonymous local
+    let mut _3: &'_ (dyn FakeTrait); // anonymous local
     let _4: &'_ &'_ (); // anonymous local
     let _5: &'_ (); // anonymous local
 
@@ -364,7 +364,7 @@ pub fn debug_tuple_field1_finish::<'_>(_1: &'_ mut Formatter::<'_>, _2: &'_ str,
 #[lang_item(DropGlue)]
 fn drop_glue::<&'_ ()>(_1: &'_ mut &'_ ())
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut &'_ (); // arg #1
 
     bb0: {
@@ -377,10 +377,10 @@ fn drop_glue::<&'_ ()>(_1: &'_ mut &'_ ())
 // Full name: core::fmt::{impl core::fmt::Debug for &'_ T}::fmt::<'_, ()>
 pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, ()>(self: &'_ &'_ (), f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ &'_ (); // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
-    let _3: &'_ (); // anonymous local
+    let mut _3: &'_ (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -401,7 +401,7 @@ pub fn {impl core::fmt::Debug for &'_ T}::fmt::<'_, ()>(self: &'_ &'_ (), f: &'_
 // Full name: core::fmt::{impl core::fmt::Debug for ()}::fmt
 pub fn impl_Debug_for_unit::fmt(self: &'_ (), f: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 {
-    let _0: Result::<(), Error>; // return
+    let mut _0: Result::<(), Error>; // return
     let self: &'_ (); // arg #1
     let f: &'_ mut Formatter::<'_>; // arg #2
 

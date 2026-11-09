@@ -23,10 +23,10 @@ trait FakeTrait
 // Full name: test_crate::call_unsafe_fn
 fn call_unsafe_fn()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let x: *const u32; // local
-    let _2: u32; // anonymous local
-    let _3: *const u32; // anonymous local
+    let mut _2: u32; // anonymous local
+    let mut _3: *const u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -62,9 +62,9 @@ fn call_unsafe_fn()
 // Full name: test_crate::deref_raw_ptr
 fn deref_raw_ptr()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let x: *const u32; // local
-    let _2: u32; // anonymous local
+    let mut _2: u32; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -90,9 +90,9 @@ fn deref_raw_ptr()
 // Full name: test_crate::access_mutable_static
 fn access_mutable_static()
 {
-    let _0: (); // return
-    let _1: *mut usize; // anonymous local
-    let _2: (usize, bool); // anonymous local
+    let mut _0: (); // return
+    let mut _1: *mut usize; // anonymous local
+    let mut _2: (usize, bool); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -126,7 +126,7 @@ fn access_mutable_static()
 // Full name: test_crate::access_union_field
 fn access_union_field()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let one: Foo; // local
     let _two: [u32; 2usize]; // local
 
@@ -146,8 +146,8 @@ fn access_union_field()
 
 fn test_crate::assume()
 {
-    let _0: (); // return
-    let _1: (); // anonymous local
+    let mut _0: (); // return
+    let mut _1: (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -169,7 +169,7 @@ fn test_crate::assume()
 #[diagnostic_item("ptr_null")]
 pub fn null::<u32>() -> *const u32
 {
-    let _0: *const u32; // return
+    let mut _0: *const u32; // return
 
     bb0: {
         storage_live(_0);
@@ -182,7 +182,7 @@ pub fn null::<u32>() -> *const u32
 #[track_caller]
 pub fn read::<u32>(self: *const u32) -> u32
 {
-    let _0: u32; // return
+    let mut _0: u32; // return
     let self: *const u32; // arg #1
 
     bb0: {
@@ -200,7 +200,7 @@ pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
 // Full name: test_crate::COUNTER
 fn COUNTER() -> usize
 {
-    let _0: usize; // return
+    let mut _0: usize; // return
 
     bb0: {
         storage_live(_0);
@@ -211,7 +211,31 @@ fn COUNTER() -> usize
 
 #[rustc_intrinsic]
 pub fn core::intrinsics::assume(b_1: bool)
-= <intrinsic:assume>
+= <intrinsic:assume> with fallback {fallback}
+
+// Full name: core::intrinsics::assume::{fallback}
+#[rustc_intrinsic]
+pub fn {fallback}(b: bool)
+{
+    let mut _0: (); // return
+    let b: bool; // arg #1
+    let mut _2: (); // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        _0 = ();
+        _2 = core::intrinsics::assume(copy b) -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
 
 
 

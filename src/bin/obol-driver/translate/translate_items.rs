@@ -113,11 +113,12 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                 let ty = bt_ctx.translate_type_decl(id, item_meta, &adt, &generics)?;
                 self.translated.type_decls.set_slot(id, ty);
             }
-            TransItemSource::Fun(instance) => {
+            TransItemSource::Fun(instance) | TransItemSource::IntrinsicFallback(instance) => {
                 let Some(ItemId::Fun(id)) = trans_id else {
                     unreachable!()
                 };
-                let fun_decl = bt_ctx.translate_function(id, item_meta, *instance)?;
+                let is_fallback = matches!(item_src, TransItemSource::IntrinsicFallback(_));
+                let fun_decl = bt_ctx.translate_function(id, item_meta, *instance, is_fallback)?;
                 self.translated.fun_decls.set_slot(id, fun_decl);
             }
             TransItemSource::Global(def, ty) => {
@@ -438,6 +439,7 @@ impl ItemTransCtx<'_, '_> {
         def_id: FunDeclId,
         item_meta: ItemMeta,
         def: mir::mono::Instance,
+        is_fallback: bool,
     ) -> Result<FunDecl, Error> {
         trace!("About to translate function:\n{:?}", def);
         let span = item_meta.span;
@@ -446,14 +448,39 @@ impl ItemTransCtx<'_, '_> {
         trace!("Translating function signature");
         let mut signature = self.translate_function_signature(def, span)?;
 
-        let body = if let Some(name) = def.intrinsic_name() {
+        let body = if let Some(name) = def.intrinsic_name()
+            && !is_fallback
+        {
             let arg_names = self.translate_argument_names(def, signature.inputs.len());
-            Body::Intrinsic { name, arg_names }
+            let tcx = self.t_ctx.tcx;
+            let intrinsic = tcx
+                .intrinsic(rustc_public::rustc_internal::internal(
+                    tcx,
+                    def.def.def_id(),
+                ))
+                .unwrap();
+            let fallback = (!intrinsic.must_be_overridden).then(|| FunDeclRef {
+                id: self.register_intrinsic_fallback_id(span, def),
+                generics: Box::new(GenericArgs::empty()),
+            });
+            // from nightly-2026-10-29 onwards, we can use tcx.tool_attrs for this (https://rust.tf/164900)
+            let fallback_is_spec = item_meta
+                .attr_info
+                .attributes
+                .iter()
+                .filter_map(|a| a.as_unknown())
+                .any(|a| a.path == "miri::intrinsic_fallback_is_spec");
+            Body::Intrinsic {
+                name,
+                arg_names,
+                fallback,
+                fallback_is_spec,
+            }
         } else if let Some(name) = self.as_extern_name(def) {
             Body::Extern(name)
         } else if item_meta.opacity.with_private_contents().is_opaque()
             || matches!(def.kind, mir::mono::InstanceKind::Virtual { .. })
-            || matches!(def.kind, mir::mono::InstanceKind::Intrinsic)
+            || (matches!(def.kind, mir::mono::InstanceKind::Intrinsic) && !is_fallback)
         {
             Body::Opaque
         } else if let Some(internal_body) = self.get_internal_body(def) {

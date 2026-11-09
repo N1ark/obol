@@ -145,7 +145,7 @@ trait FakeTrait
 // Full name: test_crate::slice_pat1
 fn slice_pat1()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let array: [i32; 4usize]; // local
     let _a: i32; // local
     let _b: [i32; 2usize]; // local
@@ -174,13 +174,13 @@ fn slice_pat1()
 // Full name: test_crate::slice_pat2
 fn slice_pat2()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let array_ref: &'_ [i32; 4usize]; // local
     let _2: &'_ [i32; 4usize]; // anonymous local
     let _a: &'_ i32; // local
     let _b: &'_ [i32; 2usize]; // local
     let _c: &'_ i32; // local
-    let _6: &'_ [i32; 4usize]; // anonymous local
+    let mut _6: &'_ [i32; 4usize]; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -210,21 +210,21 @@ fn slice_pat2()
 // Full name: test_crate::slice_pat3
 fn slice_pat3()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let slice: &'_ [i32]; // local
-    let _2: &'_ [i32; 4usize]; // anonymous local
+    let mut _2: &'_ [i32; 4usize]; // anonymous local
     let _3: &'_ [i32; 4usize]; // anonymous local
-    let _4: !; // anonymous local
+    let mut _4: !; // anonymous local
     let _a: &'_ i32; // local
     let _b: &'_ [i32]; // local
     let _c: &'_ i32; // local
-    let _8: usize; // anonymous local
-    let _9: usize; // anonymous local
-    let _10: usize; // anonymous local
-    let _11: bool; // anonymous local
-    let _12: &'_ [i32; 4usize]; // anonymous local
-    let _13: usize; // anonymous local
-    let _14: usize; // anonymous local
+    let mut _8: usize; // anonymous local
+    let mut _9: usize; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: bool; // anonymous local
+    let mut _12: &'_ [i32; 4usize]; // anonymous local
+    let mut _13: usize; // anonymous local
+    let mut _14: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -256,10 +256,10 @@ fn slice_pat3()
         _a = &(*slice)[const 0usize];
         storage_live(_b);
         storage_live(_13);
-        _13 = copy slice.metadata ub.- const 1usize;
+        _13 = read slice.metadata ub.- const 1usize;
         storage_live(_14);
-        _14 = copy _13 ub.- const 1usize;
-        _b = &(*slice)[const 1usize..-const 1usize] with_metadata(copy _14);
+        _14 = read _13 ub.- const 1usize;
+        _b = &(*slice)[const 1usize..-const 1usize] with_metadata(read _14);
         storage_live(_c);
         _c = &(*slice)[-const 1usize];
         _0 = const ();
@@ -286,12 +286,12 @@ fn slice_pat3()
 // Full name: test_crate::slice_pat4
 fn slice_pat4(x: &'_ [u32])
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let x: &'_ [u32]; // arg #1
-    let _2: usize; // anonymous local
-    let _3: usize; // anonymous local
-    let _4: usize; // anonymous local
-    let _5: bool; // anonymous local
+    let mut _2: usize; // anonymous local
+    let mut _3: usize; // anonymous local
+    let mut _4: usize; // anonymous local
+    let mut _5: bool; // anonymous local
     let _y: &'_ u32; // local
 
     bb0: {
@@ -329,13 +329,13 @@ fn slice_pat4(x: &'_ [u32])
 // Full name: test_crate::slice_pat5
 fn slice_pat5(x: &'_ Unsized)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let x: &'_ Unsized; // arg #1
-    let _2: usize; // anonymous local
-    let _3: *const [u32]; // anonymous local
-    let _4: usize; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: bool; // anonymous local
+    let mut _2: usize; // anonymous local
+    let mut _3: *const [u32]; // anonymous local
+    let mut _4: usize; // anonymous local
+    let mut _5: usize; // anonymous local
+    let mut _6: bool; // anonymous local
     let _y: u32; // local
 
     bb0: {
@@ -347,7 +347,7 @@ fn slice_pat5(x: &'_ Unsized)
         storage_live(_6);
         _0 = ();
         _ = (*x)._0;
-        _3 = &raw const (*x)._0 with_metadata(copy x.metadata);
+        _3 = &raw const (*x)._0 with_metadata(read x.metadata);
         _4 = noretag copy _3.metadata;
         _2 = move _4;
         _5 = const 1usize;
@@ -378,11 +378,11 @@ fn slice_pat5(x: &'_ Unsized)
 #[lang_item(Panic)]
 pub fn panic(expr: &'_ str) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let expr: &'_ str; // arg #1
     let _2: !; // anonymous local
-    let _3: Arguments::<'_>; // anonymous local
-    let _4: &'_ str; // anonymous local
+    let mut _3: Arguments::<'_>; // anonymous local
+    let mut _4: &'_ str; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -414,15 +414,15 @@ pub fn panic(expr: &'_ str) -> !
 // Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
 pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 {
-    let _0: Arguments::<'_>; // return
+    let mut _0: Arguments::<'_>; // return
     let s: &'_ str; // arg #1
-    let _2: NonNull::<u8>; // anonymous local
-    let _3: *const u8; // anonymous local
-    let _4: NonNull::<Argument::<'_>>; // anonymous local
-    let _5: usize; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const str; // anonymous local
+    let mut _2: NonNull::<u8>; // anonymous local
+    let mut _3: *const u8; // anonymous local
+    let mut _4: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _5: usize; // anonymous local
+    let mut _6: usize; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: *const str; // anonymous local
     let _9: &'_ [u8]; // anonymous local
 
     bb0: {
@@ -430,7 +430,7 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
         storage_live(_2);
         storage_live(_3);
         storage_live(_8);
-        _8 = &raw const (*s) with_metadata(copy s.metadata);
+        _8 = &raw const (*s) with_metadata(read s.metadata);
         _3 = cast<*const u8>(copy _8);
         storage_dead(_8);
         _2 = transmute<NonNull::<u8>>(copy _3);
@@ -461,16 +461,16 @@ pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let _2: (); // anonymous local
-    let _3: bool; // anonymous local
-    let _4: !; // anonymous local
+    let mut _3: bool; // anonymous local
+    let mut _4: !; // anonymous local
     let pi: PanicInfo::<'_>; // local
-    let _6: &'_ Arguments::<'_>; // anonymous local
+    let mut _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Arguments::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
-    let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let mut _8: &'_ Location::<'_>; // anonymous local
+    let mut _9: &'_ PanicInfo::<'_>; // anonymous local
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
@@ -548,7 +548,7 @@ pub fn abort() -> !
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
-    let _0: &'_ Location::<'_>; // return
+    let mut _0: &'_ Location::<'_>; // return
 
     bb0: {
         storage_live(_0);
@@ -567,7 +567,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 // Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
 fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
-    let _0: PanicInfo::<'_>; // return
+    let mut _0: PanicInfo::<'_>; // return
     let message: &'_ Arguments::<'_>; // arg #1
     let location: &'_ Location::<'_>; // arg #2
     let can_unwind: bool; // arg #3

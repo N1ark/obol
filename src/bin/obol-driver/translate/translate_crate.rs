@@ -94,6 +94,8 @@ pub enum TransItemSource {
     Global(mir::alloc::AllocId, GlobalTy), // the static or const itself, with its type
     NamedConst(ty::ConstDef, MyGenericArgs), // a named (top-level or associated) const item
     Fun(mir::mono::Instance),
+    /// The fallback body of an intrinsic. The instance is that of the intrinsic.
+    IntrinsicFallback(mir::mono::Instance),
     Type(ty::AdtDef, MyGenericArgs),
     Closure(ty::ClosureDef, MyGenericArgs),
     ClosureAsFn(ty::ClosureDef, MyGenericArgs),
@@ -119,7 +121,9 @@ impl TransItemSource {
                     _ => None,
                 }
             }
-            TransItemSource::Fun(instance) => Some(instance.def.def_id()),
+            TransItemSource::Fun(instance) | TransItemSource::IntrinsicFallback(instance) => {
+                Some(instance.def.def_id())
+            }
             TransItemSource::NamedConst(def, _) => Some(def.0),
             TransItemSource::Type(id, _) => Some(id.0),
             TransItemSource::Closure(def, _) => Some(def.def_id()),
@@ -164,6 +168,7 @@ impl TransItemSource {
             }
             TransItemSource::ForeignType(def) => (5, def.def_id().to_index(), 0),
             TransItemSource::VTable(ty, t) => (6, ty.to_index(), key_trait(t)),
+            TransItemSource::IntrinsicFallback(instance) => (7, instance.def.to_index(), 0),
             TransItemSource::NamedConst(def, gargs) => (11, def.0.to_index(), gargs.sort_key()),
             TransItemSource::TraitDecl(did) => (12, did.to_index(), 0),
             TransItemSource::TraitImpl(did) => (13, did.to_index(), 0),
@@ -207,7 +212,9 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
                     | TransItemSource::NamedConst(..) => {
                         ItemId::Global(self.translated.global_decls.reserve_slot())
                     }
-                    TransItemSource::Fun(..) | TransItemSource::ClosureAsFn(..) => {
+                    TransItemSource::Fun(..)
+                    | TransItemSource::IntrinsicFallback(..)
+                    | TransItemSource::ClosureAsFn(..) => {
                         ItemId::Fun(self.translated.fun_decls.reserve_slot())
                     }
                     TransItemSource::TraitDecl(..) => {
@@ -331,6 +338,17 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
     ) -> FunDeclId {
         *self
             .register_and_enqueue_id(src, TransItemSource::Fun(id))
+            .as_fun()
+            .unwrap()
+    }
+
+    pub(crate) fn register_intrinsic_fallback_id(
+        &mut self,
+        src: &Option<DepSource>,
+        id: mir::mono::Instance,
+    ) -> FunDeclId {
+        *self
+            .register_and_enqueue_id(src, TransItemSource::IntrinsicFallback(id))
             .as_fun()
             .unwrap()
     }
@@ -460,6 +478,15 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     ) -> FunDeclId {
         let src = self.make_dep_source(span);
         self.t_ctx.register_fun_decl_id(&src, id)
+    }
+
+    pub(crate) fn register_intrinsic_fallback_id(
+        &mut self,
+        span: Span,
+        id: mir::mono::Instance,
+    ) -> FunDeclId {
+        let src = self.make_dep_source(span);
+        self.t_ctx.register_intrinsic_fallback_id(&src, id)
     }
 
     pub(crate) fn register_closure_type_decl_id(

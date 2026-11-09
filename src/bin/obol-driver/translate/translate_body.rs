@@ -171,7 +171,7 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
             raise_error!(self, span, "`Offset` on a non-raw-pointer type")
         };
         let ptr = match ptr {
-            Operand::Copy(p) | Operand::Move(p) => p,
+            Operand::Copy(p, _) | Operand::Read(p) | Operand::Move(p) => p,
             op @ Operand::Const(_) => {
                 let ty = op.ty().clone();
                 self.rval_to_place(span, Rvalue::Use(op, WithRetag::No), ty)
@@ -181,7 +181,10 @@ impl<'tcx, 'tctx, 'ictx, 'bctx> BlockTransCtx<'tcx, 'tctx, 'ictx, 'bctx> {
         let size = ConstantExpr::new(ConstantExprKind::SizeOf(pointee.clone()), count_ty.clone());
         // MIR's `Offset` is UB if it goes out of bounds.
         let bytes = Rvalue::BinaryOp(BinOp::Mul(OverflowMode::UB), count, Operand::Const(size));
-        let bytes = Operand::Copy(self.rval_to_place(span, bytes, count_ty));
+        let bytes = Operand::Copy(
+            self.rval_to_place(span, bytes, count_ty),
+            self.dummy_copy_proof(),
+        );
         let offset = ProjectionElem::Offset {
             bytes: Box::new(bytes),
             in_bounds: true,
@@ -337,12 +340,20 @@ impl BodyTransCtx<'_, '_, '_> {
         self.locals_map.get(local).copied()
     }
 
-    pub(crate) fn push_var(&mut self, rid: usize, ty: Ty, name: Option<String>, span: Span) {
+    pub(crate) fn push_var(
+        &mut self,
+        rid: usize,
+        ty: Ty,
+        name: Option<String>,
+        span: Span,
+        mutable: bool,
+    ) {
         let local_id = self.locals.locals.push_with(|index| Local {
             index,
             name,
             ty,
             span,
+            mutable,
             drop_flag_for: None,
         });
         self.locals_map.insert(rid, local_id);
@@ -375,7 +386,8 @@ impl BodyTransCtx<'_, '_, '_> {
             let ty = self.translate_ty(span, var.ty)?;
 
             // Add the variable to the environment
-            self.push_var(index, ty, name, span);
+            let mutable = matches!(var.mutability, mir::Mutability::Mut);
+            self.push_var(index, ty, name, span, mutable);
         }
 
         Ok(())
@@ -641,7 +653,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let var_id = self.translate_local(local).unwrap();
                 let local = self.locals.place_for_var(var_id);
                 ProjectionElem::Index {
-                    offset: Box::new(Operand::Copy(local)),
+                    offset: Box::new(Operand::Copy(local, self.dummy_copy_proof())),
                     from_end: false,
                 }
             }
@@ -718,7 +730,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             mir::Operand::Copy(place) => {
                 let p = self.translate_place(span, place)?;
                 let ty = p.ty().clone();
-                Ok((Operand::Copy(p), ty))
+                Ok((Operand::Copy(p, self.dummy_copy_proof()), ty))
             }
             mir::Operand::Move(place) => {
                 let p = self.translate_place(span, place)?;
@@ -814,10 +826,8 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 ))
             }
             mir::Rvalue::CopyForDeref(place) => {
-                // According to the documentation, it seems to be an optimisation
-                // for drop elaboration. We treat it as a regular copy.
                 let place = self.translate_place(span, place)?;
-                Ok(Rvalue::Use(Operand::Copy(place), WithRetag::No))
+                Ok(Rvalue::Use(Operand::Read(place), WithRetag::No))
             }
             mir::Rvalue::Repeat(operand, cnst) => {
                 let count = self.translate_tyconst_to_const_expr(span, cnst)?;
@@ -825,11 +835,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 let TyKind::Array(_, _, elem_is_sized) = tgt_ty.kind() else {
                     raise_error!(self, span, "array repeat has non-array type")
                 };
-                // We don't solve traits, so the `Copy` proof is a placeholder.
                 Ok(Rvalue::Repeat {
                     operand,
                     count,
-                    elem_is_copy: TraitRef::new(TraitRefKind::Dyn, self.dummy_trait_decl_ref()),
+                    elem_is_copy: self.dummy_copy_proof(),
                     elem_is_sized: elem_is_sized.clone(),
                 })
             }
@@ -975,10 +984,11 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     mir::UnOp::Not => UnOp::Not,
                     mir::UnOp::Neg => UnOp::Neg(OverflowMode::UB),
                     mir::UnOp::PtrMetadata => match operand {
-                        Operand::Copy(p) | Operand::Move(p) => {
+                        Operand::Copy(p, _) | Operand::Read(p) | Operand::Move(p) => {
                             return Ok(Rvalue::Use(
                                 Operand::Copy(
                                     p.project(ProjectionElem::PtrMetadata, tgt_ty.clone()),
+                                    self.dummy_copy_proof(),
                                 ),
                                 WithRetag::No,
                             ));
@@ -1367,7 +1377,10 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     let drop_pointer = ptr_place
                         .project(ProjectionElem::PtrMetadata, unit_ptr_ptr_ptr_ty)
                         .deref();
-                    FnOperand::Dynamic(Operand::Copy(drop_pointer), RegionArgs::empty())
+                    FnOperand::Dynamic(
+                        Operand::Copy(drop_pointer, self.dummy_copy_proof()),
+                        RegionArgs::empty(),
+                    )
                 } else {
                     FnOperand::Regular(fn_ptr)
                 };
@@ -1735,7 +1748,9 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                 // If this is a VTable call, do something else
                 if let mir::mono::InstanceKind::Virtual { idx } = instance.kind {
                     let mut dyn_element_place = match &fn_args[0] {
-                        Operand::Copy(place) | Operand::Move(place) => place.clone(),
+                        Operand::Copy(place, _) | Operand::Read(place) | Operand::Move(place) => {
+                            place.clone()
+                        }
                         Operand::Const(_) => {
                             panic!("Unexpected constant as receiver for dyn trait method call")
                         }
@@ -1788,13 +1803,16 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                         dyn_element_place.project(ProjectionElem::PtrMetadata, unit_ptr_ptr_ptr_ty);
                     let fn_pointer = self.translate_ptr_offset(
                         span,
-                        Operand::Copy(vtable_ptr),
+                        Operand::Copy(vtable_ptr, self.dummy_copy_proof()),
                         offset,
                         &unit_ptr_ptr_ty,
                     )?;
                     let fn_pointer_place = self.locals.new_var(None, unit_ptr_ptr_ty.clone());
                     extra_stts.push(StatementKind::Assign(fn_pointer_place.clone(), fn_pointer));
-                    FnOperand::Dynamic(Operand::Copy(fn_pointer_place.deref()), RegionArgs::empty())
+                    FnOperand::Dynamic(
+                        Operand::Copy(fn_pointer_place.deref(), self.dummy_copy_proof()),
+                        RegionArgs::empty(),
+                    )
                 } else {
                     FnOperand::Regular(fn_ptr)
                 }

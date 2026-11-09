@@ -39,7 +39,7 @@ impl "impl_T_for_S" test_crate::T for S {
 // Full name: test_crate::{impl test_crate::T for S}::dyn_callable
 fn impl_T_for_S::dyn_callable(self: &'_ S) -> u8
 {
-    let _0: u8; // return
+    let mut _0: u8; // return
     let self: &'_ S; // arg #1
 
     bb0: {
@@ -52,15 +52,15 @@ fn impl_T_for_S::dyn_callable(self: &'_ S) -> u8
 // Full name: test_crate::main
 fn main()
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let x: &'_ (dyn FakeTrait); // local
-    let _2: &'_ S; // anonymous local
+    let mut _2: &'_ S; // anonymous local
     let _3: &'_ S; // anonymous local
-    let _4: u8; // anonymous local
-    let _5: &'_ (dyn FakeTrait); // anonymous local
-    let _6: &'_ S; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: *const *const (); // anonymous local
+    let mut _4: u8; // anonymous local
+    let mut _5: &'_ (dyn FakeTrait); // anonymous local
+    let mut _6: &'_ S; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: *const *const (); // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -78,7 +78,7 @@ fn main()
         storage_dead(_3);
         storage_live(_4);
         storage_live(_5);
-        _5 = &(*x) with_metadata(copy x.metadata);
+        _5 = &(*x) with_metadata(read x.metadata);
         storage_live(_7);
         _7 = const 4usize ub.* const size_of::<*const ()>();
         _8 = &raw const (*_5.metadata).offset!(copy _7);
@@ -105,7 +105,7 @@ fn test_crate::T::dyn_callable::<(dyn FakeTrait)>(_1: &'_ (dyn FakeTrait)) -> u8
 #[lang_item(DropGlue)]
 fn drop_glue::<S>(_1: &'_ mut S)
 {
-    let _0: (); // return
+    let mut _0: (); // return
     let _1: &'_ mut S; // arg #1
 
     bb0: {

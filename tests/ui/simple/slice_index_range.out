@@ -176,19 +176,19 @@ impl "impl_Display_for_usize" Display for usize {
 // Full name: test_crate::slice_index_range
 pub fn slice_index_range(slice: &'_ [u8]) -> &'_ [u8]
 {
-    let _0: &'_ [u8]; // return
+    let mut _0: &'_ [u8]; // return
     let slice: &'_ [u8]; // arg #1
     let _2: &'_ [u8]; // anonymous local
     let _3: &'_ [u8]; // anonymous local
-    let _4: &'_ [u8]; // anonymous local
-    let _5: RangeInclusive::<usize>; // anonymous local
+    let mut _4: &'_ [u8]; // anonymous local
+    let mut _5: RangeInclusive::<usize>; // anonymous local
 
     bb0: {
         storage_live(_0);
         storage_live(_2);
         storage_live(_3);
         storage_live(_4);
-        _4 = &(*slice) with_metadata(copy slice.metadata);
+        _4 = &(*slice) with_metadata(read slice.metadata);
         storage_live(_5);
         _5 = core::ops::range::{RangeInclusive::<_>}::new::<usize>(const 0usize, const 10usize) -> bb1 (unwind: bb4);
     }
@@ -200,8 +200,8 @@ pub fn slice_index_range(slice: &'_ [u8]) -> &'_ [u8]
     bb2: {
         storage_dead(_5);
         storage_dead(_4);
-        _2 = &(*_3) with_metadata(copy _3.metadata);
-        _0 = &(*_2) with_metadata(copy _2.metadata);
+        _2 = &(*_3) with_metadata(read _3.metadata);
+        _0 = &(*_2) with_metadata(read _2.metadata);
         storage_dead(_3);
         storage_dead(_2);
         return;
@@ -219,7 +219,7 @@ pub fn slice_index_range(slice: &'_ [u8]) -> &'_ [u8]
 #[lang_item(RangeInclusiveNew)]
 pub fn core::ops::range::{RangeInclusive::<_>}::new::<usize>(start: usize, end: usize) -> RangeInclusive::<usize>
 {
-    let _0: RangeInclusive::<usize>; // return
+    let mut _0: RangeInclusive::<usize>; // return
     let start: usize; // arg #1
     let end: usize; // arg #2
 
@@ -233,7 +233,7 @@ pub fn core::ops::range::{RangeInclusive::<_>}::new::<usize>(start: usize, end: 
 // Full name: core::slice::index::{impl Index<I> for [T]}::index::<u8, RangeInclusive::<usize>>
 pub fn impl_Index_for_slice::index::<u8, RangeInclusive::<usize>>(self: &'_ [u8], index: RangeInclusive::<usize>) -> &'_ [u8]
 {
-    let _0: &'_ [u8]; // return
+    let mut _0: &'_ [u8]; // return
     let self: &'_ [u8]; // arg #1
     let index: RangeInclusive::<usize>; // arg #2
 
@@ -254,28 +254,28 @@ pub fn impl_Index_for_slice::index::<u8, RangeInclusive::<usize>>(self: &'_ [u8]
 // Full name: core::slice::index::{impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>
 pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: RangeInclusive::<usize>, slice: &'_ [u8]) -> &'_ [u8]
 {
-    let _0: &'_ [u8]; // return
+    let mut _0: &'_ [u8]; // return
     let self_1: RangeInclusive::<usize>; // arg #1
     let slice: &'_ [u8]; // arg #2
-    let start: usize; // local
-    let end: usize; // local
+    let mut start: usize; // local
+    let mut end: usize; // local
     let exhausted: bool; // local
     let len: usize; // local
-    let _7: bool; // anonymous local
-    let _8: usize; // anonymous local
-    let _9: usize; // anonymous local
-    let _10: Option::<usize>; // anonymous local
-    let self_11: usize; // local
-    let rhs: usize; // local
+    let mut _7: bool; // anonymous local
+    let mut _8: usize; // anonymous local
+    let mut _9: usize; // anonymous local
+    let mut _10: Option::<usize>; // anonymous local
+    let mut self_11: usize; // local
+    let mut rhs: usize; // local
     let new_len: usize; // local
     let _14: *const [u8]; // anonymous local
-    let _15: *const [u8]; // anonymous local
-    let _16: !; // anonymous local
-    let _17: bool; // anonymous local
-    let _18: usize; // anonymous local
-    let _19: *const u8; // anonymous local
+    let mut _15: *const [u8]; // anonymous local
+    let mut _16: !; // anonymous local
+    let mut _17: bool; // anonymous local
+    let mut _18: usize; // anonymous local
+    let mut _19: *const u8; // anonymous local
     let _20: *const u8; // anonymous local
-    let _21: usize; // anonymous local
+    let mut _21: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -340,7 +340,7 @@ pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: R
         new_len = copy (_10 as variant Option::<usize>::Some)._0;
         storage_live(_14);
         storage_live(_15);
-        _15 = &raw const (*slice) with_metadata(copy slice.metadata);
+        _15 = &raw const (*slice) with_metadata(read slice.metadata);
         storage_live(_19);
         _19 = cast<*const u8>(copy _15);
         storage_live(_20);
@@ -351,7 +351,7 @@ pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: R
         storage_dead(_20);
         storage_dead(_19);
         storage_dead(_15);
-        _0 = &(*_14) with_metadata(copy _14.metadata);
+        _0 = &(*_14) with_metadata(read _14.metadata);
         storage_dead(_14);
         storage_dead(new_len);
         storage_dead(_10);
@@ -384,33 +384,33 @@ pub fn {impl SliceIndex<[T]> for RangeInclusive::<usize>}::index::<u8>(self_1: R
 #[track_caller]
 fn slice_index_fail(start: usize, end: usize, len: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let start: usize; // arg #1
     let end: usize; // arg #2
     let len: usize; // arg #3
     let _4: (); // anonymous local
-    let _5: bool; // anonymous local
-    let _6: usize; // anonymous local
-    let _7: usize; // anonymous local
-    let _8: !; // anonymous local
-    let _9: usize; // anonymous local
-    let _10: usize; // anonymous local
+    let mut _5: bool; // anonymous local
+    let mut _6: usize; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: !; // anonymous local
+    let mut _9: usize; // anonymous local
+    let mut _10: usize; // anonymous local
     let _11: (); // anonymous local
-    let _12: bool; // anonymous local
-    let _13: usize; // anonymous local
-    let _14: usize; // anonymous local
-    let _15: !; // anonymous local
-    let _16: usize; // anonymous local
-    let _17: usize; // anonymous local
+    let mut _12: bool; // anonymous local
+    let mut _13: usize; // anonymous local
+    let mut _14: usize; // anonymous local
+    let mut _15: !; // anonymous local
+    let mut _16: usize; // anonymous local
+    let mut _17: usize; // anonymous local
     let _18: (); // anonymous local
-    let _19: bool; // anonymous local
-    let _20: usize; // anonymous local
-    let _21: usize; // anonymous local
-    let _22: !; // anonymous local
-    let _23: usize; // anonymous local
-    let _24: usize; // anonymous local
-    let _25: usize; // anonymous local
-    let _26: usize; // anonymous local
+    let mut _19: bool; // anonymous local
+    let mut _20: usize; // anonymous local
+    let mut _21: usize; // anonymous local
+    let mut _22: !; // anonymous local
+    let mut _23: usize; // anonymous local
+    let mut _24: usize; // anonymous local
+    let mut _25: usize; // anonymous local
+    let mut _26: usize; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -538,7 +538,7 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic(start: usize, len: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let start: usize; // arg #1
     let len: usize; // arg #2
 
@@ -559,7 +559,7 @@ fn core::slice::index::slice_index_fail::do_panic(start: usize, len: usize) -> !
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#1(end: usize, len: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let end: usize; // arg #1
     let len: usize; // arg #2
 
@@ -580,7 +580,7 @@ fn core::slice::index::slice_index_fail::do_panic#1(end: usize, len: usize) -> !
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#2(start: usize, end: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let start: usize; // arg #1
     let end: usize; // arg #2
 
@@ -601,7 +601,7 @@ fn core::slice::index::slice_index_fail::do_panic#2(start: usize, end: usize) ->
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#3(end: usize, len: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let end: usize; // arg #1
     let len: usize; // arg #2
 
@@ -622,29 +622,29 @@ fn core::slice::index::slice_index_fail::do_panic#3(end: usize, len: usize) -> !
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic::runtime(start: usize, len: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let start: usize; // arg #1
     let len: usize; // arg #2
     let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let args_5: &'_ usize; // local
-    let args_6: &'_ usize; // local
+    let mut _4: Arguments::<'_>; // anonymous local
+    let mut args_5: &'_ usize; // local
+    let mut args_6: &'_ usize; // local
     let args_7: [Argument::<'_>; 2usize]; // local
-    let _8: Argument::<'_>; // anonymous local
-    let _9: Argument::<'_>; // anonymous local
+    let mut _8: Argument::<'_>; // anonymous local
+    let mut _9: Argument::<'_>; // anonymous local
     let args_10: &'_ [Argument::<'_>; 2usize]; // local
-    let _11: ArgumentType::<'_>; // anonymous local
-    let _12: NonNull::<()>; // anonymous local
-    let _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _11: ArgumentType::<'_>; // anonymous local
+    let mut _12: NonNull::<()>; // anonymous local
+    let mut _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _14: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _15: *const usize; // anonymous local
-    let _16: ArgumentType::<'_>; // anonymous local
-    let _17: NonNull::<()>; // anonymous local
-    let _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _15: *const usize; // anonymous local
+    let mut _16: ArgumentType::<'_>; // anonymous local
+    let mut _17: NonNull::<()>; // anonymous local
+    let mut _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _19: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _20: *const usize; // anonymous local
-    let _21: NonNull::<u8>; // anonymous local
-    let _22: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _20: *const usize; // anonymous local
+    let mut _21: NonNull::<u8>; // anonymous local
+    let mut _22: NonNull::<Argument::<'_>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -717,29 +717,29 @@ fn core::slice::index::slice_index_fail::do_panic::runtime(start: usize, len: us
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#1::runtime(end: usize, len: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let end: usize; // arg #1
     let len: usize; // arg #2
     let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let args_5: &'_ usize; // local
-    let args_6: &'_ usize; // local
+    let mut _4: Arguments::<'_>; // anonymous local
+    let mut args_5: &'_ usize; // local
+    let mut args_6: &'_ usize; // local
     let args_7: [Argument::<'_>; 2usize]; // local
-    let _8: Argument::<'_>; // anonymous local
-    let _9: Argument::<'_>; // anonymous local
+    let mut _8: Argument::<'_>; // anonymous local
+    let mut _9: Argument::<'_>; // anonymous local
     let args_10: &'_ [Argument::<'_>; 2usize]; // local
-    let _11: ArgumentType::<'_>; // anonymous local
-    let _12: NonNull::<()>; // anonymous local
-    let _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _11: ArgumentType::<'_>; // anonymous local
+    let mut _12: NonNull::<()>; // anonymous local
+    let mut _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _14: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _15: *const usize; // anonymous local
-    let _16: ArgumentType::<'_>; // anonymous local
-    let _17: NonNull::<()>; // anonymous local
-    let _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _15: *const usize; // anonymous local
+    let mut _16: ArgumentType::<'_>; // anonymous local
+    let mut _17: NonNull::<()>; // anonymous local
+    let mut _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _19: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _20: *const usize; // anonymous local
-    let _21: NonNull::<u8>; // anonymous local
-    let _22: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _20: *const usize; // anonymous local
+    let mut _21: NonNull::<u8>; // anonymous local
+    let mut _22: NonNull::<Argument::<'_>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -812,29 +812,29 @@ fn core::slice::index::slice_index_fail::do_panic#1::runtime(end: usize, len: us
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#2::runtime(start: usize, end: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let start: usize; // arg #1
     let end: usize; // arg #2
     let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let args_5: &'_ usize; // local
-    let args_6: &'_ usize; // local
+    let mut _4: Arguments::<'_>; // anonymous local
+    let mut args_5: &'_ usize; // local
+    let mut args_6: &'_ usize; // local
     let args_7: [Argument::<'_>; 2usize]; // local
-    let _8: Argument::<'_>; // anonymous local
-    let _9: Argument::<'_>; // anonymous local
+    let mut _8: Argument::<'_>; // anonymous local
+    let mut _9: Argument::<'_>; // anonymous local
     let args_10: &'_ [Argument::<'_>; 2usize]; // local
-    let _11: ArgumentType::<'_>; // anonymous local
-    let _12: NonNull::<()>; // anonymous local
-    let _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _11: ArgumentType::<'_>; // anonymous local
+    let mut _12: NonNull::<()>; // anonymous local
+    let mut _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _14: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _15: *const usize; // anonymous local
-    let _16: ArgumentType::<'_>; // anonymous local
-    let _17: NonNull::<()>; // anonymous local
-    let _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _15: *const usize; // anonymous local
+    let mut _16: ArgumentType::<'_>; // anonymous local
+    let mut _17: NonNull::<()>; // anonymous local
+    let mut _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _19: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _20: *const usize; // anonymous local
-    let _21: NonNull::<u8>; // anonymous local
-    let _22: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _20: *const usize; // anonymous local
+    let mut _21: NonNull::<u8>; // anonymous local
+    let mut _22: NonNull::<Argument::<'_>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -907,29 +907,29 @@ fn core::slice::index::slice_index_fail::do_panic#2::runtime(start: usize, end: 
 #[track_caller]
 fn core::slice::index::slice_index_fail::do_panic#3::runtime(end: usize, len: usize) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let end: usize; // arg #1
     let len: usize; // arg #2
     let _3: !; // anonymous local
-    let _4: Arguments::<'_>; // anonymous local
-    let args_5: &'_ usize; // local
-    let args_6: &'_ usize; // local
+    let mut _4: Arguments::<'_>; // anonymous local
+    let mut args_5: &'_ usize; // local
+    let mut args_6: &'_ usize; // local
     let args_7: [Argument::<'_>; 2usize]; // local
-    let _8: Argument::<'_>; // anonymous local
-    let _9: Argument::<'_>; // anonymous local
+    let mut _8: Argument::<'_>; // anonymous local
+    let mut _9: Argument::<'_>; // anonymous local
     let args_10: &'_ [Argument::<'_>; 2usize]; // local
-    let _11: ArgumentType::<'_>; // anonymous local
-    let _12: NonNull::<()>; // anonymous local
-    let _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _11: ArgumentType::<'_>; // anonymous local
+    let mut _12: NonNull::<()>; // anonymous local
+    let mut _13: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _14: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _15: *const usize; // anonymous local
-    let _16: ArgumentType::<'_>; // anonymous local
-    let _17: NonNull::<()>; // anonymous local
-    let _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
+    let mut _15: *const usize; // anonymous local
+    let mut _16: ArgumentType::<'_>; // anonymous local
+    let mut _17: NonNull::<()>; // anonymous local
+    let mut _18: unsafe fn(NonNull::<()>, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
     let _19: fn(&'_ usize, &'_ mut Formatter::<'_>) -> Result::<(), Error>; // anonymous local
-    let _20: *const usize; // anonymous local
-    let _21: NonNull::<u8>; // anonymous local
-    let _22: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _20: *const usize; // anonymous local
+    let mut _21: NonNull::<u8>; // anonymous local
+    let mut _22: NonNull::<Argument::<'_>>; // anonymous local
 
     bb0: {
         storage_live(_0);
@@ -1008,16 +1008,16 @@ pub fn fmt(_1: &'_ usize, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 #[lang_item(PanicFmt)]
 pub fn panic_fmt(fmt: Arguments::<'_>) -> !
 {
-    let _0: !; // return
+    let mut _0: !; // return
     let fmt: Arguments::<'_>; // arg #1
     let _2: (); // anonymous local
-    let _3: bool; // anonymous local
-    let _4: !; // anonymous local
+    let mut _3: bool; // anonymous local
+    let mut _4: !; // anonymous local
     let pi: PanicInfo::<'_>; // local
-    let _6: &'_ Arguments::<'_>; // anonymous local
+    let mut _6: &'_ Arguments::<'_>; // anonymous local
     let _7: &'_ Arguments::<'_>; // anonymous local
-    let _8: &'_ Location::<'_>; // anonymous local
-    let _9: &'_ PanicInfo::<'_>; // anonymous local
+    let mut _8: &'_ Location::<'_>; // anonymous local
+    let mut _9: &'_ PanicInfo::<'_>; // anonymous local
     let _10: &'_ PanicInfo::<'_>; // anonymous local
 
     bb0: {
@@ -1095,7 +1095,7 @@ pub fn abort() -> !
 #[track_caller]
 pub fn caller::<'_>() -> &'_ Location::<'_>
 {
-    let _0: &'_ Location::<'_>; // return
+    let mut _0: &'_ Location::<'_>; // return
 
     bb0: {
         storage_live(_0);
@@ -1113,7 +1113,7 @@ pub fn caller::<'_>() -> &'_ Location::<'_>
 
 fn core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
 {
-    let _0: PanicInfo::<'_>; // return
+    let mut _0: PanicInfo::<'_>; // return
     let message: &'_ Arguments::<'_>; // arg #1
     let location: &'_ Location::<'_>; // arg #2
     let can_unwind: bool; // arg #3
