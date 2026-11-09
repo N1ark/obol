@@ -157,6 +157,16 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     _ => ConstantExprKind::Adt(None, fields.into_iter().collect()),
                 }
             }
+            uneval::ConstKind::Repeat { value, .. } => {
+                let TyKind::Array(_, count, value_is_sized) = ty.kind() else {
+                    unreachable!("Unexpected type for a repeat constant: {ty:?}")
+                };
+                ConstantExprKind::Repeat {
+                    value: self.translate_read_const(span, value)?,
+                    count: count.clone(),
+                    value_is_sized: value_is_sized.clone(),
+                }
+            }
             uneval::ConstKind::FnDef { .. } => {
                 let TyKind::FnDef(fn_ptr) = ty.kind() else {
                     unreachable!("Unexpected type for a function item: {ty:?}")
