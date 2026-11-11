@@ -355,6 +355,7 @@ impl BodyTransCtx<'_, '_, '_> {
             span,
             mutable,
             drop_flag_for: None,
+            borrowck_constraints: Vec::new(),
         });
         self.locals_map.insert(rid, local_id);
     }

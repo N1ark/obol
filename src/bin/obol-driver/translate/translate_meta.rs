@@ -514,6 +514,11 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
         } else {
             self.tcx.visibility(internal).is_public()
         };
+        // Foreign items are conservatively treated as not exported: rustc only records this for the
+        // local crate.
+        let exported = internal
+            .as_local()
+            .is_some_and(|id| self.tcx.effective_visibilities(()).is_exported(id));
         let attributes = self.attributes_for(internal);
 
         let mut attributes: Vec<Attribute> = attributes
@@ -551,6 +556,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
             inline: None,
             public,
             rename,
+            exported,
         }
     }
 }

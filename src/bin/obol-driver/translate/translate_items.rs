@@ -228,6 +228,7 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
         self.translated.trait_decls.push(TraitDecl {
             def_id: TraitDeclId::ZERO,
             src: TraitDeclSource::Normal,
+            impl_restriction: ImplRestriction::Unrestricted,
             item_meta: ItemMeta {
                 name: fake_name,
                 span: Span::dummy(),
@@ -312,7 +313,8 @@ impl ItemTransCtx<'_, '_> {
             generics: GenericParams::empty(),
             kind,
             src: TypeSource::Normal,
-            layout,
+            layout: TargetLayouts(layout),
+            monomorphic_layouts: Default::default(),
             ptr_metadata,
             marker_traits,
         };
@@ -338,6 +340,7 @@ impl ItemTransCtx<'_, '_> {
             kind,
             src: TypeSource::Normal,
             layout: Default::default(),
+            monomorphic_layouts: Default::default(),
             ptr_metadata: PtrMetadata::None,
             marker_traits: self
                 .translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Foreign(*def))),
@@ -400,7 +403,8 @@ impl ItemTransCtx<'_, '_> {
             generics,
             kind: TypeDeclKind::Struct(fields),
             src: TypeSource::Builtin(BuiltinAdt::Tuple),
-            layout,
+            layout: TargetLayouts(layout),
+            monomorphic_layouts: Default::default(),
             ptr_metadata,
             marker_traits,
         })
@@ -437,7 +441,8 @@ impl ItemTransCtx<'_, '_> {
             generics: GenericParams::empty(),
             kind: TypeDeclKind::Struct(fields),
             src: TypeSource::Builtin(BuiltinAdt::Str),
-            layout,
+            layout: TargetLayouts(layout),
+            monomorphic_layouts: Default::default(),
             ptr_metadata: PtrMetadata::Length,
             marker_traits: self.translate_marker_traits(ty::Ty::from_rigid_kind(ty::RigidTy::Str)),
         })
@@ -683,7 +688,8 @@ impl ItemTransCtx<'_, '_> {
             generics: GenericParams::empty(),
             kind,
             src,
-            layout,
+            layout: TargetLayouts(layout),
+            monomorphic_layouts: Default::default(),
             ptr_metadata,
             marker_traits: self.translate_marker_traits(closure_ty),
         };
@@ -826,10 +832,20 @@ impl ItemTransCtx<'_, '_> {
     ) -> Result<TraitDecl, Error> {
         let internal = rustc_public::rustc_internal::internal(self.t_ctx.tcx, trait_def_id);
         let is_unsafe = self.t_ctx.tcx.trait_def(internal).safety.is_unsafe();
+        let impl_restriction = match self.t_ctx.tcx.trait_def(internal).impl_restriction {
+            rustc_middle::ty::RestrictionKind::Unrestricted => ImplRestriction::Unrestricted,
+            rustc_middle::ty::RestrictionKind::Restricted(mod_id, _) => {
+                ImplRestriction::Restricted(
+                    self.t_ctx
+                        .def_id_to_name(rustc_public::rustc_internal::stable(mod_id))?,
+                )
+            }
+        };
         Ok(TraitDecl {
             def_id: trans_id,
             item_meta,
             src: TraitDeclSource::Normal,
+            impl_restriction,
             is_unsafe,
             generics: GenericParams::empty(),
             implied_clauses: vec![].into(),
