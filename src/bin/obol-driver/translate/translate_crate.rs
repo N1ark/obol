@@ -794,8 +794,8 @@ impl<'tcx> TranslateCtx<'tcx> {
     /// which is a bit obscure, so we follow the same logic as Miri and charon. See:
     /// https://github.com/rust-lang/miri/blob/ddd2b2fc87565b16fd38e7cab9838295aaca1c40/src/shims/global_ctor.rs
     fn collect_global_ctors(&mut self) -> Vec<GlobalDeclId> {
+        use rustc_hir::def::DefKind;
         use rustc_middle::middle::codegen_fn_attrs::CodegenFnAttrFlags;
-        use rustc_middle::middle::exported_symbols::ExportedSymbol;
         use rustc_span::def_id::DefId as RustcDefId;
         use rustc_structures::CrateType;
         use rustc_target::spec::BinaryFormat;
@@ -812,6 +812,11 @@ impl<'tcx> TranslateCtx<'tcx> {
             BinaryFormat::Elf | BinaryFormat::Wasm => section == ".init_array",
             _ => false,
         };
+        let is_used = |def_id: RustcDefId| {
+            tcx.codegen_fn_attrs(def_id)
+                .flags
+                .intersects(CodegenFnAttrFlags::USED_COMPILER | CodegenFnAttrFlags::USED_LINKER)
+        };
         let mut ctors: Vec<RustcDefId> = vec![];
         let mut add_if_ctor = |def_id: RustcDefId, used: bool| {
             if used
@@ -826,26 +831,17 @@ impl<'tcx> TranslateCtx<'tcx> {
         // `#[used]` statics.
         for ldid in tcx.hir_crate_items(()).definitions() {
             if tcx.def_kind(ldid).has_codegen_attrs() && !tcx.is_foreign_item(ldid) {
-                let flags = tcx.codegen_fn_attrs(ldid).flags;
-                let used = flags.intersects(
-                    CodegenFnAttrFlags::USED_COMPILER | CodegenFnAttrFlags::USED_LINKER,
-                );
-                add_if_ctor(ldid.to_def_id(), used);
+                add_if_ctor(ldid.to_def_id(), is_used(ldid.to_def_id()));
             }
         }
-        // For binary crates, we also look at the exported symbols of the dependencies, because
-        // their constructors get linked into the final executable.
+        // For binary crates, we also look at the dependencies, because their constructors get
+        // linked into the final executable.
         if tcx.crate_types().contains(&CrateType::Executable) {
-            for &cnum in tcx.crates(()) {
-                if tcx.crate_dep_kind(cnum).macros_only() {
-                    continue;
-                }
-                for &(symbol, info) in tcx.exported_non_generic_symbols(cnum) {
-                    if let ExportedSymbol::NonGeneric(def_id) = symbol
-                        && !tcx.is_foreign_item(def_id)
-                    {
-                        add_if_ctor(def_id, info.used);
-                    }
+            for def_id in dependency_def_ids(tcx) {
+                if matches!(tcx.def_kind(def_id), DefKind::Static { .. })
+                    && !tcx.is_foreign_item(def_id)
+                {
+                    add_if_ctor(def_id, is_used(def_id));
                 }
             }
         }
@@ -879,24 +875,14 @@ fn exported_fns(tcx: TyCtxt<'_>) -> std::collections::HashMap<String, ExportedFn
     use rustc_ast::expand::allocator::*;
     use rustc_hir::attrs::Linkage;
     use rustc_hir::def::DefKind;
-    use rustc_middle::middle::exported_symbols::ExportedSymbol;
     use rustc_symbol_mangling::mangle_internal_symbol;
 
     let local = tcx
         .hir_crate_items(())
         .definitions()
         .map(|ldid| ldid.to_def_id());
-    let dependencies = tcx
-        .crates(())
-        .iter()
-        .filter(|&&cnum| !tcx.crate_dep_kind(cnum).macros_only())
-        .flat_map(|&cnum| tcx.exported_non_generic_symbols(cnum))
-        .filter_map(|(symbol, _)| match symbol {
-            ExportedSymbol::NonGeneric(def_id) => Some(*def_id),
-            _ => None,
-        });
     let candidates = local
-        .chain(dependencies)
+        .chain(dependency_def_ids(tcx))
         .filter(|&def_id| matches!(tcx.def_kind(def_id), DefKind::Fn | DefKind::AssocFn))
         .filter(|&def_id| !tcx.is_foreign_item(def_id))
         .filter(|&def_id| !tcx.generics_of(def_id).requires_monomorphization(tcx))
@@ -925,6 +911,24 @@ fn exported_fns(tcx: TyCtxt<'_>) -> std::collections::HashMap<String, ExportedFn
         }
     }
     exported_fns
+}
+
+/// All the definitions of the crate's dependencies (except macro-only ones). Exported items are
+/// found by walking these rather than with `exported_non_generic_symbols`, which is empty for
+/// crates compiled without codegen, like the standard library in Obol's sysroot for other
+/// targets. Items with an extern indicator or `#[used]` are always reachable, so the result is
+/// the same.
+fn dependency_def_ids(tcx: TyCtxt<'_>) -> impl Iterator<Item = rustc_hir::def_id::DefId> + '_ {
+    use rustc_hir::def_id::{DefId, DefIndex};
+    tcx.crates(())
+        .iter()
+        .filter(move |&&cnum| !tcx.crate_dep_kind(cnum).macros_only())
+        .flat_map(move |&krate| {
+            (0..tcx.num_extern_def_ids(krate)).map(move |i| DefId {
+                krate,
+                index: DefIndex::from_usize(i),
+            })
+        })
 }
 
 pub(crate) const FAKE_DYN_TRAIT: TraitDeclId = TraitDeclId::ZERO;
