@@ -1,5 +1,6 @@
 extern crate rustc_abi;
 extern crate rustc_ast;
+extern crate rustc_attr_ir;
 extern crate rustc_hir;
 extern crate rustc_middle;
 extern crate rustc_public;
@@ -1415,7 +1416,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     cond: self.translate_operand(span, cond)?,
                     expected: *expected,
                     check_kind: Some(kind),
-                    panic_fn: None,
+                    panic_fn: self.translate_assert_panic_fn(span, msg),
                 };
                 let target = self.translate_basic_block_id(*target);
                 let on_unwind = self.translate_unwind(span, unwind);
@@ -1697,6 +1698,22 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
         }
     }
 
+    /// The function rustc's code generation calls when the check `msg` fails (`panic_bounds_check`,
+    /// `panic_const_add_overflow`, ...; see `failed_check_lang_item`), if the crate graph defines it.
+    fn translate_assert_panic_fn(
+        &mut self,
+        span: Span,
+        msg: &mir::AssertMessage,
+    ) -> Option<FunDeclRef> {
+        let tcx = self.t_ctx.tcx;
+        let def_id = tcx.lang_items().get(failed_check_lang_item(msg)?)?;
+        let instance = rustc_internal::stable(rustc_middle::ty::Instance::mono(tcx, def_id));
+        Some(FunDeclRef {
+            id: self.register_fun_decl_id(span, instance),
+            generics: Box::new(GenericArgs::empty()),
+        })
+    }
+
     fn translate_unwind(&mut self, span: Span, unwind: &mir::UnwindAction) -> BlockId {
         match unwind {
             mir::UnwindAction::Continue => {
@@ -1866,4 +1883,38 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
             .map(|arg| self.translate_operand(span, arg))
             .try_collect()
     }
+}
+
+/// The lang item rustc's code generation calls when the check `msg` fails, with the operands of
+/// the check and the location of the assert (`codegen_assert_terminator`): `panic_bounds_check`
+/// and `panic_misaligned_pointer_dereference` take operands, the others print a fixed message
+/// (`AssertKind::panic_function`). Coroutine checks are not supported.
+fn failed_check_lang_item(msg: &mir::AssertMessage) -> Option<rustc_attr_ir::LangItem> {
+    use mir::{AssertMessage, BinOp};
+    use rustc_attr_ir::LangItem;
+    Some(match msg {
+        AssertMessage::BoundsCheck { .. } => LangItem::PanicBoundsCheck,
+        AssertMessage::MisalignedPointerDereference { .. } => {
+            LangItem::PanicMisalignedPointerDereference
+        }
+        AssertMessage::Overflow(op, _, _) => match op {
+            BinOp::Add => LangItem::PanicAddOverflow,
+            BinOp::Sub => LangItem::PanicSubOverflow,
+            BinOp::Mul => LangItem::PanicMulOverflow,
+            BinOp::Div => LangItem::PanicDivOverflow,
+            BinOp::Rem => LangItem::PanicRemOverflow,
+            BinOp::Shl => LangItem::PanicShlOverflow,
+            BinOp::Shr => LangItem::PanicShrOverflow,
+            _ => return None,
+        },
+        AssertMessage::OverflowNeg(_) => LangItem::PanicNegOverflow,
+        AssertMessage::DivisionByZero(_) => LangItem::PanicDivZero,
+        AssertMessage::RemainderByZero(_) => LangItem::PanicRemZero,
+        AssertMessage::NullPointerDereference => LangItem::PanicNullPointerDereference,
+        AssertMessage::NullReferenceConstructed => LangItem::PanicNullReferenceConstructed,
+        AssertMessage::InvalidEnumConstruction(_) => LangItem::PanicInvalidEnumConstruction,
+        AssertMessage::ResumedAfterReturn(_)
+        | AssertMessage::ResumedAfterPanic(_)
+        | AssertMessage::ResumedAfterDrop(_) => return None,
+    })
 }

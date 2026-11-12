@@ -196,7 +196,7 @@ fn main()
         storage_live(_4);
         _4 = const 0usize;
         _5 = copy _4 < const 2usize;
-        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb4);
+        assert assert(move _5 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -224,6 +224,12 @@ fn main()
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::panic_bounds_check
+#[track_caller]
+#[lang_item(PanicBoundsCheck)]
+fn panic_bounds_check(_1: usize, _2: usize) -> !
+= <missing>
 
 // Full name: core::sync::atomic::{Atomic::<u64>}::load
 pub fn load(self: &'_ Atomic::<u64>, order: Ordering) -> u64

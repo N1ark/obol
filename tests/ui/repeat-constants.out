@@ -54,7 +54,7 @@ fn main()
         storage_live(_2);
         _2 = const 5usize;
         _3 = copy _2 < const 1048576usize;
-        assert assert(move _3 == true) (bounds_check) -> bb1 (unwind: bb4);
+        assert assert(move _3 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb1 (unwind: bb4);
     }
 
     bb1: {
@@ -67,7 +67,7 @@ fn main()
         _5 = const 7usize;
         _6 = noretag copy _4.metadata;
         _7 = copy _5 < copy _6;
-        assert assert(move _7 == true) (bounds_check) -> bb2 (unwind: bb3);
+        assert assert(move _7 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -89,6 +89,12 @@ fn main()
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::panic_bounds_check
+#[track_caller]
+#[lang_item(PanicBoundsCheck)]
+fn panic_bounds_check(_1: usize, _2: usize) -> !
+= <missing>
 
 
 

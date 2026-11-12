@@ -598,7 +598,7 @@ fn cbd(prf_input: [u8; 33usize])
         storage_live(_13);
         _13 = const 0usize;
         _14 = copy _13 < const 33usize;
-        assert assert(move _14 == true) (bounds_check) -> bb6 (unwind: bb7);
+        assert assert(move _14 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb6 (unwind: bb7);
     }
 
     bb6: {
@@ -834,6 +834,12 @@ pub fn next::<u8>(self: &'_ mut Range::<u8>) -> Option::<u8>
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::panic_bounds_check
+#[track_caller]
+#[lang_item(PanicBoundsCheck)]
+fn panic_bounds_check(_1: usize, _2: usize) -> !
+= <missing>
 
 // Full name: core::slice::{[T]}::len::<u8>
 #[lang_item(SliceLen)]

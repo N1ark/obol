@@ -621,7 +621,7 @@ pub fn advance_slices::<'_>(bufs: &'_ mut &'_ mut [core::io::io_slice::IoSlice::
         _19 = noretag copy (*bufs);
         _15 = noretag copy _19.metadata;
         _16 = const 0usize < copy _15;
-        assert assert(move _16 == true) (bounds_check) -> bb19 (unwind: bb25);
+        assert assert(move _16 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb19 (unwind: bb25);
     }
 
     bb19: {
@@ -1013,6 +1013,12 @@ fn slice_index_fail(start: usize, end: usize, len: usize) -> !
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::panic_bounds_check
+#[track_caller]
+#[lang_item(PanicBoundsCheck)]
+fn panic_bounds_check(_1: usize, _2: usize) -> !
+= <missing>
 
 // Full name: core::panicking::panic_fmt
 #[track_caller]

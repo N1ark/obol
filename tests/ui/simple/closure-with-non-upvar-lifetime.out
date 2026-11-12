@@ -93,7 +93,7 @@ fn test_crate::call_fn::{closure}::<i8, extern "rust-call" fn((usize,)) -> u8, (
         _6 = &raw const (*_10) with_metadata(read _10.metadata);
         _7 = noretag copy _6.metadata;
         _8 = copy _5 < copy _7;
-        assert assert(move _8 == true) (bounds_check) -> bb1 (unwind: bb2);
+        assert assert(move _8 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -108,6 +108,12 @@ fn test_crate::call_fn::{closure}::<i8, extern "rust-call" fn((usize,)) -> u8, (
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::panic_bounds_check
+#[track_caller]
+#[lang_item(PanicBoundsCheck)]
+fn panic_bounds_check(_1: usize, _2: usize) -> !
+= <missing>
 
 
 

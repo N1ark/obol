@@ -23,7 +23,7 @@ pub fn first(s: &'_ [u32]) -> u32
         _2 = const 0usize;
         _3 = noretag copy s.metadata;
         _4 = copy _2 < copy _3;
-        assert assert(move _4 == true) (bounds_check) -> bb1 (unwind: bb2);
+        assert assert(move _4 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -36,6 +36,12 @@ pub fn first(s: &'_ [u32]) -> u32
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::panic_bounds_check
+#[track_caller]
+#[lang_item(PanicBoundsCheck)]
+fn panic_bounds_check(_1: usize, _2: usize) -> !
+= <missing>
 
 
 

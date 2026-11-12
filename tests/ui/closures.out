@@ -53,6 +53,17 @@ struct (_,)::<&'_ usize> {
   _0: &'_ usize,
 }
 
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+struct str {
+  _0: [u8],
+}
+
 struct (_, _)::<&'_ u32, &'_ u32> {
   _0: &'_ u32,
   _1: &'_ u32,
@@ -74,6 +85,43 @@ struct (_,)::<&'_ mut usize> {
 struct (_, _)::<usize, bool> {
   _0: usize,
   _1: bool,
+}
+
+// Full name: core::fmt::Arguments::<'_>
+#[lang_item(FormatArguments)]
+pub struct Arguments::<'_> {
+  template: NonNull::<u8>,
+  args: NonNull::<Argument::<'_>>,
+}
+
+// Full name: core::ptr::non_null::NonNull::<u8>
+#[lang_item(NonNull)]
+pub struct NonNull::<u8> {
+  pointer: *const u8 is !null,
+}
+
+// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
+#[lang_item(NonNull)]
+pub struct NonNull::<Argument::<'_>> {
+  pointer: *const Argument::<'_> is !null,
+}
+
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
+
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
 }
 
 // Full name: core::ops::try_trait::NeverShortCircuit::<i32>
@@ -110,6 +158,24 @@ pub struct NonNull::<ManuallyDrop::<[i32; 256usize]>> {
 // Full name: core::marker::PhantomData::<&'_ mut [i32]>
 #[lang_item(PhantomData)]
 pub struct PhantomData::<&'_ mut [i32]> {}
+
+// Full name: core::panic::location::Location::<'_>
+#[lang_item(PanicLocation)]
+pub struct Location::<'_> {
+  filename: NonNull::<str>,
+  line: u32,
+  col: u32,
+  _filename: PhantomData::<&'_ str>,
+}
+
+// Full name: core::panic::panic_info::PanicInfo::<'_>
+#[lang_item(PanicInfo)]
+pub struct PanicInfo::<'_> {
+  message: &'_ Arguments::<'_>,
+  location: &'_ Location::<'_>,
+  can_unwind: bool,
+  force_no_backtrace: bool,
+}
 
 // Full name: core::mem::maybe_uninit::MaybeUninit::<i32>
 #[lang_item(MaybeUninit)]
@@ -166,31 +232,8 @@ pub struct ManuallyDrop::<i32> {
   value: i32,
 }
 
-struct str {
-  _0: [u8],
-}
-
 struct (_,)::<i32> {
   _0: i32,
-}
-
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
-}
-
-// Full name: core::ptr::non_null::NonNull::<u8>
-#[lang_item(NonNull)]
-pub struct NonNull::<u8> {
-  pointer: *const u8 is !null,
-}
-
-// Full name: core::ptr::non_null::NonNull::<Argument::<'_>>
-#[lang_item(NonNull)]
-pub struct NonNull::<Argument::<'_>> {
-  pointer: *const Argument::<'_> is !null,
 }
 
 struct (_, _)::<u64, bool> {
@@ -243,48 +286,15 @@ struct (_, _)::<Arguments::<'_>, bool> {
   _1: bool,
 }
 
-// Full name: core::fmt::Arguments::<'_>
-#[lang_item(FormatArguments)]
-pub struct Arguments::<'_> {
-  template: NonNull::<u8>,
-  args: NonNull::<Argument::<'_>>,
+// Full name: core::ptr::non_null::NonNull::<str>
+#[lang_item(NonNull)]
+pub struct NonNull::<str> {
+  pointer: *const str is !null,
 }
 
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::location::Location::<'_>
-#[lang_item(PanicLocation)]
-pub struct Location::<'_> {
-  filename: NonNull::<str>,
-  line: u32,
-  col: u32,
-  _filename: PhantomData::<&'_ str>,
-}
-
-// Full name: core::panic::panic_info::PanicInfo::<'_>
-#[lang_item(PanicInfo)]
-pub struct PanicInfo::<'_> {
-  message: &'_ Arguments::<'_>,
-  location: &'_ Location::<'_>,
-  can_unwind: bool,
-  force_no_backtrace: bool,
-}
+// Full name: core::marker::PhantomData::<&'_ str>
+#[lang_item(PhantomData)]
+pub struct PhantomData::<&'_ str> {}
 
 // Full name: core::fmt::FormattingOptions
 pub struct FormattingOptions {
@@ -295,16 +305,6 @@ pub struct FormattingOptions {
 
 // Full name: core::fmt::Error
 pub struct Error {}
-
-// Full name: core::ptr::non_null::NonNull::<str>
-#[lang_item(NonNull)]
-pub struct NonNull::<str> {
-  pointer: *const str is !null,
-}
-
-// Full name: core::marker::PhantomData::<&'_ str>
-#[lang_item(PhantomData)]
-pub struct PhantomData::<&'_ str> {}
 
 struct (_, _)::<u32, u32> {
   _0: u32,
@@ -325,6 +325,9 @@ pub struct Range::<usize> {
 // Full name: anon_const_0
 const anon_const_0: usize = 15usize
 
+// Full name: anon_const_1
+const anon_const_1: [u8; 28usize] = [97u8, 116u8, 116u8, 101u8, 109u8, 112u8, 116u8, 32u8, 116u8, 111u8, 32u8, 97u8, 100u8, 100u8, 32u8, 119u8, 105u8, 116u8, 104u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8]
+
 // Full name: core::mem::SizedTypeProperties::IS_ZST::<i32>
 pub const IS_ZST::<i32>: bool = false
 
@@ -332,29 +335,29 @@ pub const IS_ZST::<i32>: bool = false
 #[lang_item(SizeOf)]
 pub const SIZE::<i32>: usize = 4usize
 
-// Full name: anon_const_1
-const anon_const_1: [u8; 73usize] = [97u8, 115u8, 115u8, 101u8, 114u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8, 58u8, 32u8, 48u8, 32u8, 60u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 101u8, 95u8, 115u8, 105u8, 122u8, 101u8, 32u8, 38u8, 38u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 101u8, 95u8, 115u8, 105u8, 122u8, 101u8, 32u8, 60u8, 61u8, 32u8, 105u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 77u8, 65u8, 88u8, 32u8, 97u8, 115u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8]
-
 // Full name: anon_const_2
-const anon_const_2: [u8; 218usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 58u8, 58u8, 103u8, 101u8, 116u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 109u8, 117u8, 116u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 105u8, 115u8, 32u8, 119u8, 105u8, 116u8, 104u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_2: [u8; 73usize] = [97u8, 115u8, 115u8, 101u8, 114u8, 116u8, 105u8, 111u8, 110u8, 32u8, 102u8, 97u8, 105u8, 108u8, 101u8, 100u8, 58u8, 32u8, 48u8, 32u8, 60u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 101u8, 95u8, 115u8, 105u8, 122u8, 101u8, 32u8, 38u8, 38u8, 32u8, 112u8, 111u8, 105u8, 110u8, 116u8, 101u8, 101u8, 95u8, 115u8, 105u8, 122u8, 101u8, 32u8, 60u8, 61u8, 32u8, 105u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 77u8, 65u8, 88u8, 32u8, 97u8, 115u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8]
 
 // Full name: anon_const_3
-const anon_const_3: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 97u8, 100u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_3: [u8; 218usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 58u8, 58u8, 103u8, 101u8, 116u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 109u8, 117u8, 116u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 105u8, 110u8, 100u8, 101u8, 120u8, 32u8, 105u8, 115u8, 32u8, 119u8, 105u8, 116u8, 104u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_4
-const anon_const_4: [u8; 201usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 111u8, 102u8, 102u8, 115u8, 101u8, 116u8, 95u8, 102u8, 114u8, 111u8, 109u8, 95u8, 117u8, 110u8, 115u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 96u8, 115u8, 101u8, 108u8, 102u8, 32u8, 62u8, 61u8, 32u8, 111u8, 114u8, 105u8, 103u8, 105u8, 110u8, 96u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_4: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 97u8, 100u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_5
-const anon_const_5: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 115u8, 117u8, 98u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_5: [u8; 201usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 112u8, 116u8, 114u8, 58u8, 58u8, 111u8, 102u8, 102u8, 115u8, 101u8, 116u8, 95u8, 102u8, 114u8, 111u8, 109u8, 95u8, 117u8, 110u8, 115u8, 105u8, 103u8, 110u8, 101u8, 100u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 96u8, 115u8, 101u8, 108u8, 102u8, 32u8, 62u8, 61u8, 32u8, 111u8, 114u8, 105u8, 103u8, 105u8, 110u8, 96u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_6
-const anon_const_6: [u8; 3usize] = [105u8, 51u8, 50u8]
+const anon_const_6: [u8; 186usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 117u8, 115u8, 105u8, 122u8, 101u8, 58u8, 58u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 115u8, 117u8, 98u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 111u8, 118u8, 101u8, 114u8, 102u8, 108u8, 111u8, 119u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: anon_const_7
-const anon_const_7: [u8; 62usize] = [33u8, 109u8, 101u8, 109u8, 58u8, 58u8, 99u8, 111u8, 110u8, 106u8, 117u8, 114u8, 101u8, 95u8, 122u8, 115u8, 116u8, 32u8, 105u8, 110u8, 118u8, 111u8, 107u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 116u8, 121u8, 112u8, 101u8, 32u8, 192u8, 25u8, 44u8, 32u8, 119u8, 104u8, 105u8, 99u8, 104u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 122u8, 101u8, 114u8, 111u8, 45u8, 115u8, 105u8, 122u8, 101u8, 100u8, 0u8]
+const anon_const_7: [u8; 3usize] = [105u8, 51u8, 50u8]
 
 // Full name: anon_const_8
-const anon_const_8: [u8; 218usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 58u8, 58u8, 103u8, 101u8, 116u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 109u8, 117u8, 116u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 105u8, 115u8, 32u8, 119u8, 105u8, 116u8, 104u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
+const anon_const_8: [u8; 62usize] = [33u8, 109u8, 101u8, 109u8, 58u8, 58u8, 99u8, 111u8, 110u8, 106u8, 117u8, 114u8, 101u8, 95u8, 122u8, 115u8, 116u8, 32u8, 105u8, 110u8, 118u8, 111u8, 107u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 116u8, 121u8, 112u8, 101u8, 32u8, 192u8, 25u8, 44u8, 32u8, 119u8, 104u8, 105u8, 99u8, 104u8, 32u8, 105u8, 115u8, 32u8, 110u8, 111u8, 116u8, 32u8, 122u8, 101u8, 114u8, 111u8, 45u8, 115u8, 105u8, 122u8, 101u8, 100u8, 0u8]
+
+// Full name: anon_const_9
+const anon_const_9: [u8; 218usize] = [117u8, 110u8, 115u8, 97u8, 102u8, 101u8, 32u8, 112u8, 114u8, 101u8, 99u8, 111u8, 110u8, 100u8, 105u8, 116u8, 105u8, 111u8, 110u8, 40u8, 115u8, 41u8, 32u8, 118u8, 105u8, 111u8, 108u8, 97u8, 116u8, 101u8, 100u8, 58u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 58u8, 58u8, 103u8, 101u8, 116u8, 95u8, 117u8, 110u8, 99u8, 104u8, 101u8, 99u8, 107u8, 101u8, 100u8, 95u8, 109u8, 117u8, 116u8, 32u8, 114u8, 101u8, 113u8, 117u8, 105u8, 114u8, 101u8, 115u8, 32u8, 116u8, 104u8, 97u8, 116u8, 32u8, 116u8, 104u8, 101u8, 32u8, 114u8, 97u8, 110u8, 103u8, 101u8, 32u8, 105u8, 115u8, 32u8, 119u8, 105u8, 116u8, 104u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 115u8, 108u8, 105u8, 99u8, 101u8, 10u8, 10u8, 84u8, 104u8, 105u8, 115u8, 32u8, 105u8, 110u8, 100u8, 105u8, 99u8, 97u8, 116u8, 101u8, 115u8, 32u8, 97u8, 32u8, 98u8, 117u8, 103u8, 32u8, 105u8, 110u8, 32u8, 116u8, 104u8, 101u8, 32u8, 112u8, 114u8, 111u8, 103u8, 114u8, 97u8, 109u8, 46u8, 32u8, 84u8, 104u8, 105u8, 115u8, 32u8, 85u8, 110u8, 100u8, 101u8, 102u8, 105u8, 110u8, 101u8, 100u8, 32u8, 66u8, 101u8, 104u8, 97u8, 118u8, 105u8, 111u8, 114u8, 32u8, 99u8, 104u8, 101u8, 99u8, 107u8, 32u8, 105u8, 115u8, 32u8, 111u8, 112u8, 116u8, 105u8, 111u8, 110u8, 97u8, 108u8, 44u8, 32u8, 97u8, 110u8, 100u8, 32u8, 99u8, 97u8, 110u8, 110u8, 111u8, 116u8, 32u8, 98u8, 101u8, 32u8, 114u8, 101u8, 108u8, 105u8, 101u8, 100u8, 32u8, 111u8, 110u8, 32u8, 102u8, 111u8, 114u8, 32u8, 115u8, 97u8, 102u8, 101u8, 116u8, 121u8, 46u8]
 
 // Full name: FakeTrait
 trait FakeTrait
@@ -460,7 +463,7 @@ pub fn incr_u32(x: u32) -> u32
     }
 
     bb1: {
-        assert assert(move _3._1 == false) (overflow) -> bb2 (unwind: bb3);
+        assert assert(move _3._1 == false) (overflow) (panic_fn: panic_const_add_overflow) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -1007,6 +1010,39 @@ fn test_fnmut_with_ref()
 #[rustc_intrinsic]
 pub fn add_with_overflow::<u32>(x_1: u32, y_2: u32) -> (u32, bool)
 = <intrinsic:add_with_overflow>
+
+// Full name: core::panicking::panic_const::panic_const_add_overflow
+#[track_caller]
+#[lang_item(PanicAddOverflow)]
+pub fn panic_const_add_overflow() -> !
+{
+    let mut _0: !; // return
+    let _1: !; // anonymous local
+    let mut _2: Arguments::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_1);
+        storage_live(_2);
+        _2 = from_str::<'_>(const unsize_cast<&'_ str, 28usize>(&raw const anon_const_1)) -> bb1 (unwind: bb4);
+    }
+
+    bb1: {
+        _1 = panic_fmt(move _2) -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        unwind_continue;
+    }
+
+    bb4: {
+        unwind_continue;
+    }
+}
 
 // Full name: test_crate::map_option::<u32, incr_u32>
 #[allow(clippy::manual_map)]
@@ -1555,7 +1591,7 @@ fn test_crate::test_closure_capture::{closure}::<i8, extern "rust-call" fn((u32,
     }
 
     bb1: {
-        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb7);
+        assert assert(move _7._1 == false) (overflow) (panic_fn: panic_const_add_overflow) -> bb2 (unwind: bb7);
     }
 
     bb2: {
@@ -1568,7 +1604,7 @@ fn test_crate::test_closure_capture::{closure}::<i8, extern "rust-call" fn((u32,
     }
 
     bb3: {
-        assert assert(move _9._1 == false) (overflow) -> bb4 (unwind: bb5);
+        assert assert(move _9._1 == false) (overflow) (panic_fn: panic_const_add_overflow) -> bb4 (unwind: bb5);
     }
 
     bb4: {
@@ -1653,7 +1689,7 @@ fn test_crate::test_fnmut_with_ref::{closure}::<i16, extern "rust-call" fn((&'_ 
 
     bb1: {
         _7 = noretag copy (*_1).upvar_0;
-        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+        assert assert(move _5._1 == false) (overflow) (panic_fn: panic_const_add_overflow) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -1670,6 +1706,134 @@ fn test_crate::test_fnmut_with_ref::{closure}::<i16, extern "rust-call" fn((&'_ 
 
     bb4: {
         undefined_behavior;
+    }
+}
+
+// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
+pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
+{
+    let mut _0: Arguments::<'_>; // return
+    let s: &'_ str; // arg #1
+    let mut _2: NonNull::<u8>; // anonymous local
+    let mut _3: *const u8; // anonymous local
+    let mut _4: NonNull::<Argument::<'_>>; // anonymous local
+    let mut _5: usize; // anonymous local
+    let mut _6: usize; // anonymous local
+    let mut _7: usize; // anonymous local
+    let mut _8: *const str; // anonymous local
+    let _9: &'_ [u8]; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        storage_live(_8);
+        _8 = &raw const (*s) with_metadata(read s.metadata);
+        _3 = cast<*const u8>(copy _8);
+        storage_dead(_8);
+        _2 = transmute<NonNull::<u8>>(copy _3);
+        storage_dead(_3);
+        storage_live(_4);
+        storage_live(_5);
+        storage_live(_6);
+        storage_live(_7);
+        storage_live(_9);
+        _9 = transmute<&'_ [u8]>(copy s);
+        _7 = noretag copy _9.metadata;
+        storage_dead(_9);
+        _6 = move _7 wrap.<< const 1i32;
+        storage_dead(_7);
+        _5 = move _6 | const 1usize;
+        storage_dead(_6);
+        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
+        storage_dead(_5);
+        _0 = Arguments::<'_> { template: move _2, args: move _4 };
+        storage_dead(_4);
+        storage_dead(_2);
+        return;
+    }
+}
+
+// Full name: core::panicking::panic_fmt
+#[track_caller]
+#[lang_item(PanicFmt)]
+pub fn panic_fmt(fmt: Arguments::<'_>) -> !
+{
+    let mut _0: !; // return
+    let fmt: Arguments::<'_>; // arg #1
+    let _2: (); // anonymous local
+    let mut _3: bool; // anonymous local
+    let mut _4: !; // anonymous local
+    let pi: PanicInfo::<'_>; // local
+    let mut _6: &'_ Arguments::<'_>; // anonymous local
+    let _7: &'_ Arguments::<'_>; // anonymous local
+    let mut _8: &'_ Location::<'_>; // anonymous local
+    let mut _9: &'_ PanicInfo::<'_>; // anonymous local
+    let _10: &'_ PanicInfo::<'_>; // anonymous local
+
+    bb0: {
+        storage_live(_0);
+        storage_live(_2);
+        storage_live(_3);
+        _3 = const false;
+        if move _3 -> bb1 else -> bb4;
+    }
+
+    bb1: {
+        storage_live(_4);
+        _4 = abort() -> bb2 (unwind: bb3);
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+
+    bb3: {
+        undefined_behavior;
+    }
+
+    bb4: {
+        _2 = const ();
+        storage_dead(_3);
+        storage_dead(_2);
+        storage_live(pi);
+        storage_live(_6);
+        storage_live(_7);
+        _7 = &fmt;
+        _6 = &(*_7);
+        storage_live(_8);
+        _8 = caller::<'_>() -> bb5 (unwind: bb10);
+    }
+
+    bb5: {
+        pi = new::<'_>(move _6, move _8, const true, const false) -> bb6 (unwind: bb9);
+    }
+
+    bb6: {
+        storage_dead(_8);
+        storage_dead(_6);
+        storage_dead(_7);
+        storage_live(_9);
+        storage_live(_10);
+        _10 = &pi;
+        _9 = &(*_10);
+        _0 = panic_impl(move _9) -> bb7 (unwind: bb8);
+    }
+
+    bb7: {
+        undefined_behavior;
+    }
+
+    bb8: {
+        unwind_continue;
+    }
+
+    bb9: {
+        unwind_continue;
+    }
+
+    bb10: {
+        unwind_continue;
     }
 }
 
@@ -1790,7 +1954,7 @@ fn test_crate::test_map_option3::{closure}::<i8, extern "rust-call" fn((u32,)) -
     }
 
     bb1: {
-        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+        assert assert(move _5._1 == false) (overflow) (panic_fn: panic_const_add_overflow) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -1907,6 +2071,52 @@ pub fn try_map::<i32, NeverShortCircuit::<i32>, core::ops::try_trait::{NeverShor
 #[rustc_intrinsic]
 pub fn add_with_overflow::<usize>(x_1: usize, y_2: usize) -> (usize, bool)
 = <intrinsic:add_with_overflow>
+
+// Full name: core::intrinsics::abort
+#[rustc_intrinsic]
+pub fn abort() -> !
+= <intrinsic:abort>
+
+// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
+#[track_caller]
+pub fn caller::<'_>() -> &'_ Location::<'_>
+{
+    let mut _0: &'_ Location::<'_>; // return
+
+    bb0: {
+        storage_live(_0);
+        _0 = caller_location() -> bb1 (unwind: bb2);
+    }
+
+    bb1: {
+        return;
+    }
+
+    bb2: {
+        undefined_behavior;
+    }
+}
+
+// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
+fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
+{
+    let mut _0: PanicInfo::<'_>; // return
+    let message: &'_ Arguments::<'_>; // arg #1
+    let location: &'_ Location::<'_>; // arg #2
+    let can_unwind: bool; // arg #3
+    let force_no_backtrace: bool; // arg #4
+
+    bb0: {
+        storage_live(_0);
+        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
+        return;
+    }
+}
+
+// Full name: core::panicking::panic_fmt::panic_impl
+#[lang_item(PanicImpl)]
+extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
+= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
 
 // Full name: core::array::try_from_fn::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>, 256usize>
 pub fn try_from_fn::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>, 256usize>(cb: &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>) -> NeverShortCircuit::<[i32; 256usize]>
@@ -2026,6 +2236,11 @@ fn drop_glue::<Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_
         unwind_continue;
     }
 }
+
+// Full name: core::intrinsics::caller_location
+#[rustc_intrinsic]
+pub fn caller_location() -> &'_ Location::<'_>
+= <intrinsic:caller_location>
 
 // Full name: core::array::try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>
 fn try_from_fn_erased::<NeverShortCircuit::<i32>, &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>>(buffer: &'_ mut [MaybeUninit::<i32>], generator: &'_ mut Drain::<'_, '_, i32, core::ops::try_trait::{NeverShortCircuit::<_>}::wrap_mut_1::{closure}::{closure}>) -> ControlFlow::<NeverShortCircuitResidual, ()>
@@ -2456,7 +2671,7 @@ pub fn {impl Drop for Drain::<'_, '_, _, _>}::drop::<'_, '_, i32, core::ops::try
     }
 
     bb14: {
-        _19 = panic(const unsize_cast<&'_ str, 73usize>(&raw const anon_const_1)) -> bb15 (unwind: bb16);
+        _19 = panic(const unsize_cast<&'_ str, 73usize>(&raw const anon_const_2)) -> bb15 (unwind: bb16);
     }
 
     bb15: {
@@ -2706,7 +2921,7 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this: 
     }
 
     bb2: {
-        msg = const unsize_cast<&'_ str, 218usize>(&raw const anon_const_2);
+        msg = const unsize_cast<&'_ str, 218usize>(&raw const anon_const_3);
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
@@ -2721,7 +2936,7 @@ fn impl_SliceIndex_slice_for_usize::get_unchecked_mut::precondition_check(this: 
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 218usize>(&raw const anon_const_2));
+        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 218usize>(&raw const anon_const_3));
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -2795,7 +3010,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb2: {
-        msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_3);
+        msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_4);
         storage_live(_5);
         storage_live(_10);
         storage_live(_11);
@@ -2810,7 +3025,7 @@ fn core::num::{usize}::unchecked_add::precondition_check(lhs: usize, rhs: usize)
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 186usize>(&raw const anon_const_3));
+        _17 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 186usize>(&raw const anon_const_4));
         _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
@@ -2891,7 +3106,7 @@ fn core::ptr::const_ptr::{*const T}::offset_from_unsigned::precondition_check(th
     }
 
     bb2: {
-        msg = const unsize_cast<&'_ str, 201usize>(&raw const anon_const_4);
+        msg = const unsize_cast<&'_ str, 201usize>(&raw const anon_const_5);
         storage_live(_6);
         storage_live(_7);
         storage_live(_8);
@@ -2906,7 +3121,7 @@ fn core::ptr::const_ptr::{*const T}::offset_from_unsigned::precondition_check(th
         storage_live(_11);
         storage_live(_12);
         storage_live(_14);
-        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 201usize>(&raw const anon_const_4));
+        _14 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 201usize>(&raw const anon_const_5));
         _12 = noretag copy _14.metadata;
         storage_dead(_14);
         _11 = move _12 wrap.<< const 1i32;
@@ -3053,7 +3268,7 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
     }
 
     bb2: {
-        msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_5);
+        msg = const unsize_cast<&'_ str, 186usize>(&raw const anon_const_6);
         storage_live(_5);
         storage_live(_10);
         storage_live(_11);
@@ -3068,7 +3283,7 @@ fn core::num::{usize}::unchecked_sub::precondition_check(lhs: usize, rhs: usize)
         storage_live(_14);
         storage_live(_15);
         storage_live(_17);
-        _17 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 186usize>(&raw const anon_const_5));
+        _17 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 186usize>(&raw const anon_const_6));
         _15 = noretag copy _17.metadata;
         storage_dead(_17);
         _14 = move _15 wrap.<< const 1i32;
@@ -3145,7 +3360,7 @@ pub fn conjure_zst::<i32>() -> i32
 
     bb4: {
         storage_live(_1);
-        _1 = const unsize_cast<&'_ str, 3usize>(&raw const anon_const_6);
+        _1 = const unsize_cast<&'_ str, 3usize>(&raw const anon_const_7);
         storage_live(_4);
         storage_live(args_5);
         storage_live(_6);
@@ -3170,7 +3385,7 @@ pub fn conjure_zst::<i32>() -> i32
         storage_live(args_7);
         args_7 = &args_5;
         storage_live(_13);
-        _13 = transmute<NonNull::<u8>>(const &anon_const_7);
+        _13 = transmute<NonNull::<u8>>(const &anon_const_8);
         storage_live(_14);
         _14 = transmute<NonNull::<Argument::<'_>>>(copy args_7);
         _4 = Arguments::<'_> { template: move _13, args: move _14 };
@@ -3341,134 +3556,6 @@ pub fn panic_nounwind_fmt(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
 pub fn add_with_overflow::<u64>(x_1: u64, y_2: u64) -> (u64, bool)
 = <intrinsic:add_with_overflow>
 
-// Full name: core::fmt::{Arguments::<'_>}::from_str::<'_>
-pub fn from_str::<'_>(s: &'_ str) -> Arguments::<'_>
-{
-    let mut _0: Arguments::<'_>; // return
-    let s: &'_ str; // arg #1
-    let mut _2: NonNull::<u8>; // anonymous local
-    let mut _3: *const u8; // anonymous local
-    let mut _4: NonNull::<Argument::<'_>>; // anonymous local
-    let mut _5: usize; // anonymous local
-    let mut _6: usize; // anonymous local
-    let mut _7: usize; // anonymous local
-    let mut _8: *const str; // anonymous local
-    let _9: &'_ [u8]; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        storage_live(_8);
-        _8 = &raw const (*s) with_metadata(read s.metadata);
-        _3 = cast<*const u8>(copy _8);
-        storage_dead(_8);
-        _2 = transmute<NonNull::<u8>>(copy _3);
-        storage_dead(_3);
-        storage_live(_4);
-        storage_live(_5);
-        storage_live(_6);
-        storage_live(_7);
-        storage_live(_9);
-        _9 = transmute<&'_ [u8]>(copy s);
-        _7 = noretag copy _9.metadata;
-        storage_dead(_9);
-        _6 = move _7 wrap.<< const 1i32;
-        storage_dead(_7);
-        _5 = move _6 | const 1usize;
-        storage_dead(_6);
-        _4 = transmute<NonNull::<Argument::<'_>>>(move _5);
-        storage_dead(_5);
-        _0 = Arguments::<'_> { template: move _2, args: move _4 };
-        storage_dead(_4);
-        storage_dead(_2);
-        return;
-    }
-}
-
-// Full name: core::panicking::panic_fmt
-#[track_caller]
-#[lang_item(PanicFmt)]
-pub fn panic_fmt(fmt: Arguments::<'_>) -> !
-{
-    let mut _0: !; // return
-    let fmt: Arguments::<'_>; // arg #1
-    let _2: (); // anonymous local
-    let mut _3: bool; // anonymous local
-    let mut _4: !; // anonymous local
-    let pi: PanicInfo::<'_>; // local
-    let mut _6: &'_ Arguments::<'_>; // anonymous local
-    let _7: &'_ Arguments::<'_>; // anonymous local
-    let mut _8: &'_ Location::<'_>; // anonymous local
-    let mut _9: &'_ PanicInfo::<'_>; // anonymous local
-    let _10: &'_ PanicInfo::<'_>; // anonymous local
-
-    bb0: {
-        storage_live(_0);
-        storage_live(_2);
-        storage_live(_3);
-        _3 = const false;
-        if move _3 -> bb1 else -> bb4;
-    }
-
-    bb1: {
-        storage_live(_4);
-        _4 = abort() -> bb2 (unwind: bb3);
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-
-    bb3: {
-        undefined_behavior;
-    }
-
-    bb4: {
-        _2 = const ();
-        storage_dead(_3);
-        storage_dead(_2);
-        storage_live(pi);
-        storage_live(_6);
-        storage_live(_7);
-        _7 = &fmt;
-        _6 = &(*_7);
-        storage_live(_8);
-        _8 = caller::<'_>() -> bb5 (unwind: bb10);
-    }
-
-    bb5: {
-        pi = new::<'_>(move _6, move _8, const true, const false) -> bb6 (unwind: bb9);
-    }
-
-    bb6: {
-        storage_dead(_8);
-        storage_dead(_6);
-        storage_dead(_7);
-        storage_live(_9);
-        storage_live(_10);
-        _10 = &pi;
-        _9 = &(*_10);
-        _0 = panic_impl(move _9) -> bb7 (unwind: bb8);
-    }
-
-    bb7: {
-        undefined_behavior;
-    }
-
-    bb8: {
-        unwind_continue;
-    }
-
-    bb9: {
-        unwind_continue;
-    }
-
-    bb10: {
-        unwind_continue;
-    }
-}
-
 fn test_crate::test_array_map::{closure}::<i16, extern "rust-call" fn((i32,)) -> i32, ()>(_1: &'_ mut test_crate::test_array_map::{closure}::{closure}, spread_args: (i32,)) -> i32
 {
     let mut _0: i32; // return
@@ -3559,7 +3646,7 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
     }
 
     bb3: {
-        msg = const unsize_cast<&'_ str, 218usize>(&raw const anon_const_8);
+        msg = const unsize_cast<&'_ str, 218usize>(&raw const anon_const_9);
         storage_live(_8);
         storage_live(_9);
         storage_live(_10);
@@ -3574,7 +3661,7 @@ fn {impl SliceIndex<[T]> for Range::<usize>}::get_unchecked_mut::precondition_ch
         storage_live(_13);
         storage_live(_14);
         storage_live(_16);
-        _16 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 218usize>(&raw const anon_const_8));
+        _16 = transmute<&'_ [u8]>(const unsize_cast<&'_ str, 218usize>(&raw const anon_const_9));
         _14 = noretag copy _16.metadata;
         storage_dead(_16);
         _13 = move _14 wrap.<< const 1i32;
@@ -3620,60 +3707,9 @@ fn compiletime(fmt: Arguments::<'_>, force_no_backtrace: bool) -> !
     }
 }
 
-// Full name: core::intrinsics::abort
-#[rustc_intrinsic]
-pub fn abort() -> !
-= <intrinsic:abort>
-
-// Full name: core::panic::location::{Location::<'_>}::caller::<'_>
-#[track_caller]
-pub fn caller::<'_>() -> &'_ Location::<'_>
-{
-    let mut _0: &'_ Location::<'_>; // return
-
-    bb0: {
-        storage_live(_0);
-        _0 = caller_location() -> bb1 (unwind: bb2);
-    }
-
-    bb1: {
-        return;
-    }
-
-    bb2: {
-        undefined_behavior;
-    }
-}
-
-// Full name: core::panic::panic_info::{PanicInfo::<'_>}::new::<'_>
-fn new::<'_>(message: &'_ Arguments::<'_>, location: &'_ Location::<'_>, can_unwind: bool, force_no_backtrace: bool) -> PanicInfo::<'_>
-{
-    let mut _0: PanicInfo::<'_>; // return
-    let message: &'_ Arguments::<'_>; // arg #1
-    let location: &'_ Location::<'_>; // arg #2
-    let can_unwind: bool; // arg #3
-    let force_no_backtrace: bool; // arg #4
-
-    bb0: {
-        storage_live(_0);
-        _0 = PanicInfo::<'_> { message: copy message, location: copy location, can_unwind: copy can_unwind, force_no_backtrace: copy force_no_backtrace };
-        return;
-    }
-}
-
-// Full name: core::panicking::panic_fmt::panic_impl
-#[lang_item(PanicImpl)]
-extern fn panic_impl(_1: &'_ PanicInfo::<'_>) -> !
-= <extern:_RNvCs<hash>_7___rustc17rust_begin_unwind>
-
 // Full name: core::fmt::{impl Display for str}::fmt
 pub fn impl_Display_for_str::fmt(_1: &'_ str, _2: &'_ mut Formatter::<'_>) -> Result::<(), Error>
 = <missing>
-
-// Full name: core::intrinsics::caller_location
-#[rustc_intrinsic]
-pub fn caller_location() -> &'_ Location::<'_>
-= <intrinsic:caller_location>
 
 // Full name: core::ops::function::FnOnce::call_once::<test_crate::test_closure_u32::{closure}::{closure}, (u32,)>
 pub fn call_once::<test_crate::test_closure_u32::{closure}::{closure}, (u32,)>(_1: test_crate::test_closure_u32::{closure}::{closure}, _2: (u32,)) -> u32
@@ -3765,7 +3801,7 @@ fn test_crate::test_closure_u32s::{closure}::<i8, extern "rust-call" fn((u32, u3
     }
 
     bb1: {
-        assert assert(move _7._1 == false) (overflow) -> bb2 (unwind: bb3);
+        assert assert(move _7._1 == false) (overflow) (panic_fn: panic_const_add_overflow) -> bb2 (unwind: bb3);
     }
 
     bb2: {
@@ -3868,7 +3904,7 @@ fn test_crate::test_map_option2::{closure}::<i8, extern "rust-call" fn((u32,)) -
     }
 
     bb1: {
-        assert assert(move _5._1 == false) (overflow) -> bb2 (unwind: bb3);
+        assert assert(move _5._1 == false) (overflow) (panic_fn: panic_const_add_overflow) -> bb2 (unwind: bb3);
     }
 
     bb2: {

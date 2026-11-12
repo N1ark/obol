@@ -37,7 +37,7 @@ fn init_option()
         storage_live(_4);
         _4 = const 0usize;
         _5 = copy _4 < const 6usize;
-        assert assert(move _5 == true) (bounds_check) -> bb1 (unwind: bb2);
+        assert assert(move _5 == true) (bounds_check) (panic_fn: panic_bounds_check) -> bb1 (unwind: bb2);
     }
 
     bb1: {
@@ -53,6 +53,12 @@ fn init_option()
         unwind_continue;
     }
 }
+
+// Full name: core::panicking::panic_bounds_check
+#[track_caller]
+#[lang_item(PanicBoundsCheck)]
+fn panic_bounds_check(_1: usize, _2: usize) -> !
+= <missing>
 
 
 
