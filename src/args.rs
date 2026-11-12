@@ -54,7 +54,7 @@ pub struct CliOpts {
     pub start_from: Vec<String>,
     #[clap(
         long = "start-from-attribute",
-        help = "List of attributes (e.g. `kani::proof`) that count as entry points to generate; empty by default."
+        help = "List of attributes (e.g. `kani::proof`) that count as entry points to generate; empty by default. The monomorphic functions of the dependencies with them count too."
     )]
     pub start_from_attribute: Vec<String>,
     #[clap(
