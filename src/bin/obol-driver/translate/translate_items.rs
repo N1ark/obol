@@ -492,7 +492,10 @@ impl ItemTransCtx<'_, '_> {
                 fallback_is_spec,
             }
         } else if let Some(name) = self.as_extern_name(def) {
-            Body::Extern(name)
+            Body::Extern {
+                symbol: name,
+                definition: LinkedExtern::Unlinked,
+            }
         } else if item_meta.opacity.with_private_contents().is_opaque()
             || matches!(def.kind, mir::mono::InstanceKind::Virtual { .. })
             || (matches!(def.kind, mir::mono::InstanceKind::Intrinsic) && !is_fallback)

@@ -1415,6 +1415,7 @@ impl<'tcx> BlockTransCtx<'tcx, '_, '_, '_> {
                     cond: self.translate_operand(span, cond)?,
                     expected: *expected,
                     check_kind: Some(kind),
+                    panic_fn: None,
                 };
                 let target = self.translate_basic_block_id(*target);
                 let on_unwind = self.translate_unwind(span, unwind);
