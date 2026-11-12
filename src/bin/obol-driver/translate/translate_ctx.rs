@@ -68,6 +68,33 @@ pub struct TranslateCtx<'tcx> {
     // FIXME: in the future, we should look into preserving attributes that exist in the AST.
     // see https://rust-lang.zulipchat.com/#narrow/channel/131828-t-compiler/topic/Retrieving.20.60.23.5Btest.5D.60.20and.20.60.23.5Bshould_panic.5D.60/with/577547122
     pub test_functions: HashSet<rustc_hir::def_id::DefId>,
+    /// The functions that extern functions can link to, by symbol (see `exported_fns`); computed
+    /// on first use.
+    pub exported_fns: Option<HashMap<String, ExportedFns>>,
+}
+
+/// The functions exported under a given symbol.
+#[derive(Debug, Default, Clone, Copy)]
+pub enum ExportedFns {
+    #[default]
+    None,
+    Strong(rustc_hir::def_id::DefId),
+    Weak(rustc_hir::def_id::DefId),
+    /// More than one function is strongly exported under this symbol, which is a link error.
+    Many,
+}
+
+impl ExportedFns {
+    pub(crate) fn merge(&mut self, other: ExportedFns) {
+        use ExportedFns::*;
+        *self = match (*self, other) {
+            (Many, _) | (_, Many) | (Strong(_), Strong(_)) => Many,
+            (strong @ Strong(_), _) | (_, strong @ Strong(_)) => strong,
+            // The linker could pick either.
+            (weak @ Weak(_), _) | (_, weak @ Weak(_)) => weak,
+            (None, None) => None,
+        };
+    }
 }
 
 /// A translation context for items.

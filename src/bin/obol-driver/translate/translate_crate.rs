@@ -6,6 +6,7 @@ extern crate rustc_public;
 extern crate rustc_public_bridge;
 extern crate rustc_span;
 extern crate rustc_structures;
+extern crate rustc_symbol_mangling;
 extern crate rustc_target;
 
 use crate::translate::my_gen_args::MyGenericArgs;
@@ -827,6 +828,72 @@ impl<'tcx> TranslateCtx<'tcx> {
     }
 }
 
+impl TranslateCtx<'_> {
+    /// The functions exported under `symbol`, which extern functions with that symbol link to.
+    pub(crate) fn exported_fns(&mut self, symbol: &str) -> ExportedFns {
+        let tcx = self.tcx;
+        self.exported_fns
+            .get_or_insert_with(|| exported_fns(tcx))
+            .get(symbol)
+            .copied()
+            .unwrap_or_default()
+    }
+}
+
+/// The non-generic functions of the crate and its dependencies exported under a symbol
+/// (`#[no_mangle]`, `#[export_name]`, ...), by symbol.
+fn exported_fns(tcx: TyCtxt<'_>) -> std::collections::HashMap<String, ExportedFns> {
+    use rustc_ast::expand::allocator::*;
+    use rustc_hir::attrs::Linkage;
+    use rustc_hir::def::DefKind;
+    use rustc_middle::middle::exported_symbols::ExportedSymbol;
+    use rustc_symbol_mangling::mangle_internal_symbol;
+
+    let local = tcx
+        .hir_crate_items(())
+        .definitions()
+        .map(|ldid| ldid.to_def_id());
+    let dependencies = tcx
+        .crates(())
+        .iter()
+        .filter(|&&cnum| !tcx.crate_dep_kind(cnum).macros_only())
+        .flat_map(|&cnum| tcx.exported_non_generic_symbols(cnum))
+        .filter_map(|(symbol, _)| match symbol {
+            ExportedSymbol::NonGeneric(def_id) => Some(*def_id),
+            _ => None,
+        });
+    let candidates = local
+        .chain(dependencies)
+        .filter(|&def_id| matches!(tcx.def_kind(def_id), DefKind::Fn | DefKind::AssocFn))
+        .filter(|&def_id| !tcx.is_foreign_item(def_id))
+        .filter(|&def_id| !tcx.generics_of(def_id).requires_monomorphization(tcx))
+        .filter(|&def_id| tcx.codegen_fn_attrs(def_id).contains_extern_indicator());
+    let mut exported_fns = std::collections::HashMap::<String, ExportedFns>::new();
+    for def_id in candidates {
+        let new = match tcx.codegen_fn_attrs(def_id).linkage {
+            None | Some(Linkage::External) => ExportedFns::Strong(def_id),
+            Some(Linkage::WeakAny | Linkage::WeakODR) => ExportedFns::Weak(def_id),
+            _ => continue,
+        };
+        let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
+        let symbol = tcx.symbol_name(instance).name.to_string();
+        exported_fns.entry(symbol).or_default().merge(new);
+    }
+    // With the default allocator, rustc's codegen generates the allocator functions
+    // (`__rust_alloc`, ...) as shims that call the standard library's (`__rdl_alloc`, ...). Their
+    // signatures differ: `__rust_alloc(usize, Alignment)` links to `__rdl_alloc(usize, usize)`.
+    if tcx.allocator_kind(()) == Some(AllocatorKind::Default) {
+        for method in ALLOCATOR_METHODS {
+            let default_fn = mangle_internal_symbol(tcx, &default_fn_name(method.name));
+            if let Some(&exported) = exported_fns.get(&default_fn) {
+                let global_fn = mangle_internal_symbol(tcx, &global_fn_name(method.name));
+                exported_fns.insert(global_fn, exported);
+            }
+        }
+    }
+    exported_fns
+}
+
 pub(crate) const FAKE_DYN_TRAIT: TraitDeclId = TraitDeclId::ZERO;
 
 /// Describe the target platform we're compiling for. Mirrors charon's `register_target_info`.
@@ -970,6 +1037,7 @@ pub fn translate<'tcx, 'ctx>(
         type_trans_cache: Default::default(),
         alloc_types: Default::default(),
         test_functions: Default::default(),
+        exported_fns: None,
     };
 
     let triple = ctx.get_target_triple();

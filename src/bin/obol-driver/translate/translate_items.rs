@@ -13,7 +13,7 @@ use crate::translate::{
     my_gen_args::MyGenericArgs,
     translate_body::BodyTransCtx,
     translate_crate::{TransItemSource, TupleTy},
-    translate_ctx::{ItemTransCtx, TranslateCtx},
+    translate_ctx::{ExportedFns, ItemTransCtx, TranslateCtx},
 };
 
 impl<'tcx, 'ctx> TranslateCtx<'tcx> {
@@ -491,11 +491,9 @@ impl ItemTransCtx<'_, '_> {
                 fallback,
                 fallback_is_spec,
             }
-        } else if let Some(name) = self.as_extern_name(def) {
-            Body::Extern {
-                symbol: name,
-                definition: LinkedExtern::Unlinked,
-            }
+        } else if let Some(symbol) = self.as_extern_name(def) {
+            let definition = self.translate_extern_definition(span, &symbol);
+            Body::Extern { symbol, definition }
         } else if item_meta.opacity.with_private_contents().is_opaque()
             || matches!(def.kind, mir::mono::InstanceKind::Virtual { .. })
             || (matches!(def.kind, mir::mono::InstanceKind::Intrinsic) && !is_fallback)
@@ -536,6 +534,33 @@ impl ItemTransCtx<'_, '_> {
             ),
             ty,
         )
+    }
+
+    /// The function the linker binds the extern function `symbol` to.
+    fn translate_extern_definition(&mut self, span: Span, symbol: &str) -> LinkedExtern {
+        let exported = self.t_ctx.exported_fns(symbol);
+        let mut fun_ref = |def_id| {
+            let tcx = self.t_ctx.tcx;
+            let instance = rustc_middle::ty::Instance::mono(tcx, def_id);
+            let instance = rustc_public::rustc_internal::stable(instance);
+            FunDeclRef {
+                id: self.register_fun_decl_id(span, instance),
+                generics: Box::new(GenericArgs::empty()),
+            }
+        };
+        match exported {
+            ExportedFns::None => LinkedExtern::Unlinked,
+            ExportedFns::Strong(def_id) => LinkedExtern::StronglyLinked(fun_ref(def_id)),
+            ExportedFns::Weak(def_id) => LinkedExtern::WeaklyLinked(fun_ref(def_id)),
+            ExportedFns::Many => {
+                register_error!(
+                    self,
+                    span,
+                    "several functions are exported under the symbol `{symbol}`"
+                );
+                LinkedExtern::Unlinked
+            }
+        }
     }
 
     /// A foreign static with `#[linkage]` holds the address of the symbol it names (or null if that
