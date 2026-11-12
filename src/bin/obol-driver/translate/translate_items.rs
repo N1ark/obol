@@ -552,6 +552,7 @@ impl ItemTransCtx<'_, '_> {
             ExportedFns::None => LinkedExtern::Unlinked,
             ExportedFns::Strong(def_id) => LinkedExtern::StronglyLinked(fun_ref(def_id)),
             ExportedFns::Weak(def_id) => LinkedExtern::WeaklyLinked(fun_ref(def_id)),
+            ExportedFns::AllocatorShim(def_id) => LinkedExtern::AllocatorShim(fun_ref(def_id)),
             ExportedFns::Many => {
                 register_error!(
                     self,

@@ -80,6 +80,9 @@ pub enum ExportedFns {
     None,
     Strong(rustc_hir::def_id::DefId),
     Weak(rustc_hir::def_id::DefId),
+    /// A default allocator function (`__rdl_alloc`, ...), which rustc links the global allocator
+    /// function (`__rust_alloc`, ...) to through a shim.
+    AllocatorShim(rustc_hir::def_id::DefId),
     /// More than one function is strongly exported under this symbol, which is a link error.
     Many,
 }
@@ -93,6 +96,9 @@ impl ExportedFns {
             // The linker could pick either.
             (weak @ Weak(_), _) | (_, weak @ Weak(_)) => weak,
             (None, None) => None,
+            (AllocatorShim(_), _) | (_, AllocatorShim(_)) => {
+                panic!("allocator shims are added after merging exported functions")
+            }
         };
     }
 }

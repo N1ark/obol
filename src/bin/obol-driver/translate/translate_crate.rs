@@ -898,16 +898,17 @@ fn exported_fns(tcx: TyCtxt<'_>) -> std::collections::HashMap<String, ExportedFn
         let symbol = tcx.symbol_name(instance).name.to_string();
         exported_fns.entry(symbol).or_default().merge(new);
     }
-    // With the default allocator, rustc's codegen generates the allocator functions
-    // (`__rust_alloc`, ...) as shims that call the standard library's (`__rdl_alloc`, ...). Their
-    // signatures differ: `__rust_alloc(usize, Alignment)` links to `__rdl_alloc(usize, usize)`.
-    if tcx.allocator_kind(()) == Some(AllocatorKind::Default) {
-        for method in ALLOCATOR_METHODS {
-            let default_fn = mangle_internal_symbol(tcx, &default_fn_name(method.name));
-            if let Some(&exported) = exported_fns.get(&default_fn) {
-                let global_fn = mangle_internal_symbol(tcx, &global_fn_name(method.name));
-                exported_fns.insert(global_fn, exported);
-            }
+    // Unless a `#[global_allocator]` defines them, rustc's codegen generates the allocator
+    // functions (`__rust_alloc`, ...) as shims that call the standard library's (`__rdl_alloc`,
+    // ...). Their signatures differ: `__rust_alloc(usize, Alignment)` links to
+    // `__rdl_alloc(usize, usize)`.
+    for method in ALLOCATOR_METHODS {
+        let global_fn = mangle_internal_symbol(tcx, &global_fn_name(method.name));
+        let default_fn = mangle_internal_symbol(tcx, &default_fn_name(method.name));
+        if !exported_fns.contains_key(&global_fn)
+            && let Some(&ExportedFns::Strong(def_id)) = exported_fns.get(&default_fn)
+        {
+            exported_fns.insert(global_fn, ExportedFns::AllocatorShim(def_id));
         }
     }
     exported_fns
