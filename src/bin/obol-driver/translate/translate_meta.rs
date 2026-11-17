@@ -480,12 +480,34 @@ impl<'tcx, 'ctx> TranslateCtx<'tcx> {
 
     pub fn attributes_for(&self, def: rustc_hir::def_id::DefId) -> Vec<rustc_hir::Attribute> {
         if let Some(ldid) = def.as_local() {
-            self.tcx
+            return self
+                .tcx
                 .hir_attrs(self.tcx.local_def_id_to_hir_id(ldid))
-                .to_vec()
-        } else {
-            self.tcx.attrs_for_def(def).to_vec()
+                .to_vec();
         }
+        let mut attrs = self.tcx.attrs_for_def(def).to_vec();
+        // Crate metadata doesn't encode the allocator attributes: restore them from the codegen
+        // attributes, as Charon does.
+        if matches!(
+            self.tcx.def_kind(def),
+            rustc_hir::def::DefKind::Fn | rustc_hir::def::DefKind::AssocFn
+        ) {
+            use rustc_hir::attrs::AttributeKind::*;
+            use rustc_middle::middle::codegen_fn_attrs::CodegenFnAttrFlags;
+            let flags = self.tcx.codegen_fn_attrs(def).flags;
+            attrs.extend(
+                [
+                    (CodegenFnAttrFlags::ALLOCATOR, RustcAllocator),
+                    (CodegenFnAttrFlags::DEALLOCATOR, RustcDeallocator),
+                    (CodegenFnAttrFlags::REALLOCATOR, RustcReallocator),
+                    (CodegenFnAttrFlags::ALLOCATOR_ZEROED, RustcAllocatorZeroed),
+                ]
+                .into_iter()
+                .filter(|(flag, _)| flags.contains(*flag))
+                .map(|(_, attr)| rustc_hir::Attribute::Parsed(attr)),
+            );
+        }
+        attrs
     }
 
     pub(crate) fn translate_attr_info(&mut self, span: Span, src: &TransItemSource) -> AttrInfo {
