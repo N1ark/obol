@@ -827,6 +827,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     r_abi::FieldsShape::Union(_) => {
                         vec![translate_layout_data(&layout, vec![])].into()
                     }
+                    // Like Charon, Obol models `str` as a struct containing a single `[u8]`
+                    // field, which rustc's layout of the primitive does not describe.
+                    r_abi::FieldsShape::Array { .. } if ty.is_str() => vec![Some(VariantLayout {
+                        field_offsets: [OffsetExpr::new(0)].into(),
+                        inhabited: InhabitedPredicate::mk_true(),
+                        tagger: vec![],
+                    })]
+                    .into(),
                     r_abi::FieldsShape::Primitive | r_abi::FieldsShape::Array { .. } => {
                         vec![].into()
                     }
